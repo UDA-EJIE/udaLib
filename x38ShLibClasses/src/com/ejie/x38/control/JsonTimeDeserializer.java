@@ -50,7 +50,14 @@ public class JsonTimeDeserializer extends JsonDeserializer<Timestamp> {
 		try {
 			Locale locale = LocaleContextHolder.getLocale();
 			SimpleDateFormat format = DateTimeManager.getTimeFormat(locale);
-			Date date = format.parse(par.getText());
+			
+			String dateText = par.getText();
+			
+			if (dateText == null || "".equals(dateText)){
+				return null;
+			}
+			
+			Date date = format.parse(dateText);
 			return new Timestamp(date.getTime());
 		} catch (ParseException e) {
 			throw new JsonParseException(null, null, e);

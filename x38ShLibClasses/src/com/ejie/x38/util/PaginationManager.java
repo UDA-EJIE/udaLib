@@ -32,7 +32,7 @@ public class PaginationManager {
 			return queryAux;
 		}else if (pagination.getRows()!=null) {
 			Long paginationRows = pagination.getRows();	
-			queryAux= "SELECT * FROM (SELECT rownum rnum, a.*  FROM (" + query + ")a) where rnum > 1 and rnum < " +(paginationRows+1);
+			queryAux= "SELECT * FROM (SELECT rownum rnum, a.*  FROM (" + query + ")a) where rnum > 0 and rnum < " +(paginationRows+1);
 			return queryAux;
 		}else{
 			return query;

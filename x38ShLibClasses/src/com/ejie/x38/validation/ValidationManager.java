@@ -1,5 +1,5 @@
 /*
-* Copyright 2011 E.J.I.E., S.A.
+* Copyright 2012 E.J.I.E., S.A.
 *
 * Licencia con arreglo a la EUPL, Versión 1.1 exclusivamente (la «Licencia»);
 * Solo podrá usarse esta obra si se respeta la Licencia.
@@ -29,6 +29,7 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -41,9 +42,11 @@ import org.hibernate.validator.HibernateValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.NoSuchMessageException;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.util.StringUtils;
 
+import com.ejie.x38.util.DateTimeManager;
 import com.ejie.x38.util.ObjectConversionManager;
 import com.ejie.x38.util.StackTraceManager;
 import com.ejie.x38.util.StaticsContainer;
@@ -109,13 +112,13 @@ public class ValidationManager {
 		}
 	}
 	
-	private String summary (Set<ConstraintViolation<Object>> constraintViolations, String bean, Locale locale){
-		Iterator<ConstraintViolation<Object>> ite = constraintViolations.iterator();
+	private <T extends Object> String summary (Set<ConstraintViolation<T>> constraintViolations, String bean, Locale locale){
+		Iterator<ConstraintViolation<T>> ite = constraintViolations.iterator();
 		Map<String,List<Map<String,String>>> errors = new HashMap<String,List<Map<String,String>>>();
 		String propertyKey ="";
 		List<Map<String,String>> propertyErrors;
 		while (ite.hasNext()) {
-			ConstraintViolation<Object> constraintViolation = ite.next();
+			ConstraintViolation<T> constraintViolation = ite.next();
 			propertyKey = constraintViolation.getPropertyPath()+"";
 			if(errors.containsKey(propertyKey)){
 				propertyErrors = errors.get(propertyKey);				
@@ -152,6 +155,46 @@ public class ValidationManager {
     		return null;		
 		}
 	}
+	
+	public <T extends Object> Boolean writeValidationErrors(T object, HttpServletResponse response){
+		
+		Set<ConstraintViolation<T>> constraintViolations = validator.validate(object);
+		
+		if (!constraintViolations.isEmpty()){
+			String summary = this.summary(constraintViolations, object.getClass().getSimpleName(), LocaleContextHolder.getLocale());
+			response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+			response.setContentType("text/javascript;charset=UTF-8");
+			response.setHeader("Cache-Control", "no-cache");
+			response.setHeader("Expires", DateTimeManager.getHttpExpiredDate());
+			try {
+				response.getWriter().write(summary);
+				return true;
+			} catch (IOException e) {
+				logger.error(StackTraceManager.getStackTrace(e));
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+//	public <T extends Object> void writeValidationErrors(Set<ConstraintViolation<T>> constraintViolations, String beanName, HttpServletResponse response){
+//		
+//		if (!constraintViolations.isEmpty()){
+//			String summary = this.summary(constraintViolations, beanName);
+//			response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+//			response.setContentType("text/javascript;charset=UTF-8");
+//			response.setHeader("Cache-Control", "no-cache");
+//			response.setHeader("Expires", DateTimeManager.getHttpExpiredDate());
+//			try {
+//				response.getWriter().write(summary);
+//				
+//			} catch (IOException e) {
+//				logger.error(StackTraceManager.getStackTrace(e));
+//				/* TODO : Gestionar excepcion */
+//			}
+//		}
+//	}
 	
 	private String serialize (Object result){
 		StringWriter sw;

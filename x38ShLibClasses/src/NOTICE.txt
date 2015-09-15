@@ -1,6 +1,6 @@
 NOTICE.txt - UDA copyright notices
 
-UDA is Copyright 2011 by E.J.I.E., S.A.
+UDA is Copyright 2012 by E.J.I.E., S.A.
 	
 	* The plug-in and RUP components are licensed under the EUPL, Version 1.1 only 
 	(the "Licence");
@@ -98,5 +98,10 @@ THIRD PARTY COMPONENTS
 			form2object (https://github.com/maxatwork/form2js)
 			Copyright (c) 2010 Maxim Vasiliev
 			License: (https://github.com/maxatwork/form2js/blob/master/license.txt)
+
+		* jQuery File Upload Plugin 5.5.1			
+			jQuery File Upload (https://github.com/blueimp/jQuery-File-Upload)
+			Copyright 2010, Sebastian Tschan
+			License: MIT license (https://github.com/blueimp/jQuery-File-Upload)
 			
 			

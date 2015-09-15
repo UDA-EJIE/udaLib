@@ -1,5 +1,5 @@
 /*
-* Copyright 2011 E.J.I.E., S.A.
+* Copyright 2012 E.J.I.E., S.A.
 *
 * Licencia con arreglo a la EUPL, Versión 1.1 exclusivamente (la «Licencia»);
 * Solo podrá usarse esta obra si se respeta la Licencia.
@@ -64,12 +64,15 @@ public class ValidationFilter extends DelegatingFilterProxy {
 			try {
 				ValidationRequestWrapper requestWrapper = new ValidationRequestWrapper(req);
 				String data = readFormRequest(requestWrapper);
-				
-				int language = localeResolver.getCookieName().length()+1;
-				int languageIndex = req.getHeader("Cookie").indexOf(localeResolver.getCookieName()) + language;
-				Locale locale = new Locale(req.getHeader("Cookie").substring(languageIndex, languageIndex +2));
-				
-				String result = validationManager.validateObject(req.getHeader("bean"), data, locale);
+				String result = null;
+					
+				if (requestWrapper.getContentType() != null && requestWrapper.getContentType().contains("application/json")){
+					int language = localeResolver.getCookieName().length()+1;
+					int languageIndex = req.getHeader("Cookie").indexOf(localeResolver.getCookieName()) + language;
+					Locale locale = new Locale(req.getHeader("Cookie").substring(languageIndex, languageIndex +2));
+					
+					result = validationManager.validateObject(req.getHeader("bean"), data, locale);
+				}
 				
 				if (result == null){
 					//request data are correct

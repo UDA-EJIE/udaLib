@@ -1,5 +1,5 @@
 /*
-* Copyright 2011 E.J.I.E., S.A.
+* Copyright 2012 E.J.I.E., S.A.
 *
 * Licencia con arreglo a la EUPL, Versión 1.1 exclusivamente (la «Licencia»);
 * Solo podrá usarse esta obra si se respeta la Licencia.
@@ -24,9 +24,10 @@ import org.codehaus.jackson.map.JsonSerializer;
 import org.codehaus.jackson.map.SerializerProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 
-import com.ejie.x38.util.StackTraceManager;
+import com.ejie.x38.serialization.ThreadSafeCache;
 
 /**
  * 
@@ -38,38 +39,31 @@ public class CustomSerializer extends JsonSerializer<Object> {
 	protected final Logger logger =  LoggerFactory.getLogger(CustomSerializer.class);
 
 	@Override
-	public void serialize(Object value, JsonGenerator jgen,
+	public void serialize(Object obj, JsonGenerator jgen,
 			SerializerProvider provider) throws IOException,
 			JsonProcessingException {
-		try {
-			logger.debug("CustomSerializer.serialize()");
-			Class<?> clazz = value.getClass();
-			jgen.writeStartObject();
-			for (Entry<?, ?> entry : ThreadSafeCache.getMap().entrySet()) {
-				try{
-					jgen.writeFieldName((String) entry.getKey());
-					
-					/*
-					 * Controlar los valores null
-					 */
-					Object invoke = clazz
-					.getDeclaredMethod(
-							"get"
-									+ StringUtils.capitalize((String) entry
-											.getValue())).invoke(value);
-					
-					if (invoke==null){
-						jgen.writeString("");
-					}else{
-						jgen.writeString(invoke.toString());
-					}
-				}catch(Exception e){
+		
+		logger.debug("CustomSerializer.serialize()");
+
+		jgen.writeStartObject();
+		
+		for (Entry<?, ?> entry : ThreadSafeCache.getMap().entrySet()) {
+            BeanWrapper beanWrapper = new BeanWrapperImpl(obj);
+            
+            String propertyName = (String) entry.getValue();
+            
+            if(beanWrapper.isReadableProperty(propertyName)){
+            	jgen.writeFieldName((String) entry.getKey());
+            	Object propertyValue = beanWrapper.getPropertyValue(propertyName);
+            
+				if (propertyValue==null){
 					jgen.writeString("");
+				}else{
+					jgen.writeObject(propertyValue);
 				}
-			}
-			jgen.writeEndObject();
-		} catch (Exception e) {
-			logger.error(StackTraceManager.getStackTrace(e));
+            }
 		}
+		
+		jgen.writeEndObject();
 	}
 }

@@ -27,6 +27,7 @@ public class StaticsContainer {
 	public static String staticsUrl;
 	public static String modelPackageName;
 	public static String loginUrl;
+	public static boolean aplicInPortal;
 	public static String weblogicInstance;
 	public static String layout;
 	public static String language;

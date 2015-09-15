@@ -66,6 +66,13 @@ public class WebContextParameterManager implements ApplicationContextAware {
 		StaticsContainer.modelPackageName = "com.ejie."+StaticsContainer.webAppName+".model.";
 		logger.info("The URL to access the security provider of the application (\"XLNets\") is: "+props.getProperty("xlnets.path"));
 		StaticsContainer.loginUrl = props.getProperty("xlnets.path");
+		if(props.getProperty("xlnets.inPortal") != null && ((props.getProperty("xlnets.inPortal")).toLowerCase()).equals("true")){
+			logger.info("The application "+StaticsContainer.webAppName+" is integrated in the portals of lote3");
+			StaticsContainer.aplicInPortal = true;
+		} else {
+			logger.info("The application "+StaticsContainer.webAppName+" isn't integrated in the portals of lote3");
+			StaticsContainer.aplicInPortal = false;
+		}
 		if (StaticsContainer.loginUrl==null){
 			logger.error("Login URL is not Set!");
 		}

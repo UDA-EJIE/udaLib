@@ -1,5 +1,5 @@
 /*
-* Copyright 2011 E.J.I.E., S.A.
+* Copyright 2012 E.J.I.E., S.A.
 *
 * Licencia con arreglo a la EUPL, Versión 1.1 exclusivamente (la «Licencia»);
 * Solo podrá usarse esta obra si se respeta la Licencia.
@@ -18,6 +18,7 @@ package com.ejie.x38.security;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -26,6 +27,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
+
+import com.ejie.x38.util.ManagementUrl;
+import com.ejie.x38.util.StaticsContainer;
 
 /**
  * 
@@ -51,8 +55,33 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint,
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		
+		Cookie requestCookies[] = request.getCookies();
+		StringBuilder portalData = new StringBuilder("/");
+		
+		//valoracion del acelerador
+		String originalURL = ManagementUrl.getUrl(httpRequest);
+		
+		if(StaticsContainer.aplicInPortal){
+			if (requestCookies != null){
+				for (int i = 0; i < requestCookies.length; i++) {
+					if (requestCookies[i].getName().equals("r01PortalInfo")){
+						portalData.append(requestCookies[i].getValue ());
+						StringBuilder host = new StringBuilder(httpRequest.getServerName());
+						
+						if (originalURL.split(":").length > 1){
+							host.append(":");
+							host.append(httpRequest.getServerPort());
+						}
+						
+						originalURL = originalURL.replaceAll(host.toString(), host.toString()+portalData.toString());
+						break;
+					}
+		        }
+			}
+		}
+		
 		logger.info("XLNET Session isn't valid or not created!");
-		String url = getPerimetralSecurityWrapper().getURLLogin(httpRequest.getRequestURL().toString());
+		String url = getPerimetralSecurityWrapper().getURLLogin(originalURL);
 		logger.info("Redirecting to next URL:" + url);
 		httpResponse.sendRedirect(url);
 
