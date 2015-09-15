@@ -77,6 +77,10 @@ public class RequestJsonBodyMethodProcessor extends RequestResponseBodyMethodPro
 		
 		JsonNode baseNode = param.equals("param")?readTree:readTree.get(param);
 		
+		if (baseNode == null){
+			return null;
+		}
+		
 		Object arg = this.getMappingJacksonHttpMessageConverter().getObjectMapper().readValue(baseNode, parameter.getParameterType());
 		
         Annotation annotations[] = parameter.getParameterAnnotations();

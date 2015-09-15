@@ -40,7 +40,7 @@ public class IncidenceLoggingAdviceImpl implements IncidenceLoggingAdvice{
 		table.put(LogConstants.CRITICALITY, Level.ERROR.toString());
 		table.put(LogConstants.FUNCTIONALSUBSYSTEM, LogConstants.INCIDENCESUBSYSTEM);
 		table.put(LogConstants.ADITIONALINFO, StackTraceManager.getStackTrace(exception));
-		table.put(LogConstants.MESSAGE, exception.getMessage());
+		table.put(LogConstants.MESSAGE, exception.getMessage() == null ? "" : exception.getMessage());
 		loggingManager.logIncidences(target.getClass().getName(), logger, table);
 	}
 

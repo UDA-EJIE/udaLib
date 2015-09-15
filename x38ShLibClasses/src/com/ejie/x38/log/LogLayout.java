@@ -78,7 +78,7 @@ public class LogLayout extends LayoutBase<ILoggingEvent>{
 			table.put(LogConstants.LOGGERCLASS, event.getLoggerName());
 			table.put(LogConstants.SERVERINSTANCE, instance!=null ? instance:"");
 			table.put(LogConstants.CRITICALITY, event.getLevel()!=null ? event.getLevel()+"":"");
-			table.put(LogConstants.MESSAGE, event.getMessage()!=null ? event.getMessage()+"":"");
+			table.put(LogConstants.MESSAGE, event.getFormattedMessage()!=null ? event.getFormattedMessage()+"":"");
 			
 			//Assigning info of subsystema functional
 			if(argUdaObjec.get(LogConstants.INTERFUNCTIONALSUBSYSTEM) == null){
