@@ -1,2 +1,2 @@
-Manifest-Version: 2.4.0
+Manifest-Version: 2.4.4
 Class-Path: 
