@@ -1,17 +1,40 @@
+/*
+* Copyright 2011 E.J.I.E., S.A.
+*
+* Licencia con arreglo a la EUPL, Versión 1.1 exclusivamente (la «Licencia»);
+* Solo podrá usarse esta obra si se respeta la Licencia.
+* Puede obtenerse una copia de la Licencia en
+*
+* http://ec.europa.eu/idabc/eupl.html
+*
+* Salvo cuando lo exija la legislación aplicable o se acuerde por escrito,
+* el programa distribuido con arreglo a la Licencia se distribuye «TAL CUAL»,
+* SIN GARANTÍAS NI CONDICIONES DE NINGÚN TIPO, ni expresas ni implícitas.
+* Véase la Licencia en el idioma concreto que rige los permisos y limitaciones
+* que establece la Licencia.
+*/
 package com.ejie.x38.util;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Vector;
 
 import javax.xml.transform.TransformerException;
 
-import org.apache.log4j.Logger;
 import org.apache.xpath.XPathAPI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * 
+ * @author UDA
+ *
+ */
 public class XmlManager {
 
-	private static final Logger logger = Logger.getLogger(XmlManager.class);
+	private static final Logger logger =  LoggerFactory.getLogger(XmlManager.class);
 
 	/**
 	 * Funcion que devuelve un Nodo dado un XPath.
@@ -41,22 +64,26 @@ public class XmlManager {
 	 */
 	public static Vector<String> searchDomVector(Node docDom, String strPath) throws TransformerException {
 		NodeList NodeLiResultado = null;
+		ArrayList<String> arrayValores = null;
 		Vector<String> vecValores = null;
 		
 		NodeLiResultado = XPathAPI.selectNodeList(docDom, strPath);
 		if (NodeLiResultado.getLength() != 0) {
 			int x = 0;
-			vecValores = new Vector<String>();
+			arrayValores = new ArrayList<String>();
 			for (x = 0; x < NodeLiResultado.getLength(); x++) {
 				if (NodeLiResultado.item(x).hasChildNodes()) {
-					vecValores.add(NodeLiResultado.item(x).getFirstChild().getNodeValue());
+					arrayValores.add(NodeLiResultado.item(x).getFirstChild().getNodeValue());
 				} else {
-					vecValores.add("");
+					arrayValores.add("");
 				}
 			}
 		} else {
-			vecValores = new Vector<String>();
+			arrayValores = new ArrayList<String>();
 		}
+		Collections.copy(vecValores, arrayValores);
+		arrayValores = null;
 		return vecValores;
+		
 	}		
 }

@@ -1,3 +1,18 @@
+/*
+* Copyright 2011 E.J.I.E., S.A.
+*
+* Licencia con arreglo a la EUPL, Versión 1.1 exclusivamente (la «Licencia»);
+* Solo podrá usarse esta obra si se respeta la Licencia.
+* Puede obtenerse una copia de la Licencia en
+*
+* http://ec.europa.eu/idabc/eupl.html
+*
+* Salvo cuando lo exija la legislación aplicable o se acuerde por escrito,
+* el programa distribuido con arreglo a la Licencia se distribuye «TAL CUAL»,
+* SIN GARANTÍAS NI CONDICIONES DE NINGÚN TIPO, ni expresas ni implícitas.
+* Véase la Licencia en el idioma concreto que rige los permisos y limitaciones
+* que establece la Licencia.
+*/
 package com.ejie.x38.validation;
 
 import java.io.IOException;
@@ -19,26 +34,32 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.map.MappingJsonFactory;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.hibernate.validator.HibernateValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.util.StringUtils;
 
 import com.ejie.x38.util.ObjectConversionManager;
 import com.ejie.x38.util.StackTraceManager;
 import com.ejie.x38.util.StaticsContainer;
 
+/**
+ * 
+ * @author UDA
+ *
+ */
 public class ValidationManager {
 
 	@Resource
 	ReloadableResourceBundleMessageSource messageSource;
 	
 	private static final long serialVersionUID = 1L;
-	private final static Logger logger = Logger.getLogger(ValidationManager.class);
+	private final static Logger logger =  LoggerFactory.getLogger(ValidationManager.class);
 	private ValidatorFactory validatorFactory;
 	private Validator validator;
 	private MappingJsonFactory jsonFactory;
@@ -60,20 +81,18 @@ public class ValidationManager {
 			Set<ConstraintViolation<Object>> constraintViolations = validator.validate(instance);
 			return summary(constraintViolations, bean, locale);
 		}catch (Exception e) {
-			logger.log(Level.ERROR, StackTraceManager.getStackTrace(e));
+			logger.error(StackTraceManager.getStackTrace(e));
 			return "error!";
 		}
 	}
 	
 	public String validateProperty(String bean, String property, String value, Locale locale){
 		try{
-			String text = property.trim();
-			String rest = text.substring(1);
-			char character = text.charAt(0);
-			character = Character.toUpperCase(character);
-			String capitalicedProperty = character + rest;
+			
+			String capitalicedProperty = StringUtils.capitalize(property);
+			String capitalicedBean = StringUtils.capitalize(bean);
 	
-			Class<?> clazz = Class.forName(StaticsContainer.modelPackageName+bean);
+			Class<?> clazz = Class.forName(StaticsContainer.modelPackageName+capitalicedBean);
 			Constructor<?> cons = clazz.getConstructor();
 			Object obj = cons.newInstance((Object[])null);
 
@@ -85,7 +104,7 @@ public class ValidationManager {
 			Set<ConstraintViolation<Object>> constraintViolations = validator.validateProperty(obj, property);			
 			return summary(constraintViolations, bean, locale);
 		}catch (Exception e) {
-			logger.log(Level.ERROR, StackTraceManager.getStackTrace(e));
+			logger.error(StackTraceManager.getStackTrace(e));
 			return "error!";
 		}
 	}
@@ -115,7 +134,7 @@ public class ValidationManager {
 				node.put(constraintViolation.getConstraintDescriptor().getAnnotation().annotationType().getSimpleName(), interpolatedMessage);
 			}else{
 				node.put(constraintViolation.getConstraintDescriptor().getAnnotation().annotationType().getSimpleName(), "message not found");
-				logger.log(Level.FATAL, "Validation message for key "+constraintViolation.getConstraintDescriptor().getAnnotation().annotationType().getSimpleName()+" not found");
+				logger.error("Validation message for key "+constraintViolation.getConstraintDescriptor().getAnnotation().annotationType().getSimpleName()+" not found");
 			}
 			
 			propertyErrors.add(node);
@@ -143,7 +162,7 @@ public class ValidationManager {
 	      mapper.writeValue(jsonGenerator, result);
 	      sw.close();
 		} catch (IOException e) {
-			logger.log(Level.ERROR, StackTraceManager.getStackTrace(e));
+			logger.error(StackTraceManager.getStackTrace(e));
 			return "error!";
 		}
 		return sw.getBuffer().toString();

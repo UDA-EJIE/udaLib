@@ -1,23 +1,41 @@
+/*
+* Copyright 2011 E.J.I.E., S.A.
+*
+* Licencia con arreglo a la EUPL, Versión 1.1 exclusivamente (la «Licencia»);
+* Solo podrá usarse esta obra si se respeta la Licencia.
+* Puede obtenerse una copia de la Licencia en
+*
+* http://ec.europa.eu/idabc/eupl.html
+*
+* Salvo cuando lo exija la legislación aplicable o se acuerde por escrito,
+* el programa distribuido con arreglo a la Licencia se distribuye «TAL CUAL»,
+* SIN GARANTÍAS NI CONDICIONES DE NINGÚN TIPO, ni expresas ni implícitas.
+* Véase la Licencia en el idioma concreto que rige los permisos y limitaciones
+* que establece la Licencia.
+*/
 package com.ejie.x38.security;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.util.Assert;
 
-import com.ejie.x38.security.PerimetralSecurityWrapper;
-
+/**
+ * 
+ * @author UDA
+ *
+ */
 public class MyLogoutHandler implements LogoutHandler {
 	private boolean invalidateHttpSession;
 	private boolean invalidateXlnetSession;
 	private PerimetralSecurityWrapper perimetralSecurityWrapper;
-	static Logger logger = Logger.getLogger(MyLogoutHandler.class);
+	static Logger logger =  LoggerFactory.getLogger(MyLogoutHandler.class);
 
 	public PerimetralSecurityWrapper getPerimetralSecurityWrapper() {
 		return perimetralSecurityWrapper;
@@ -50,7 +68,7 @@ public class MyLogoutHandler implements LogoutHandler {
 
 		//Clear Spring Security Context
 		SecurityContextHolder.clearContext();
-		logger.log(Level.INFO, "SecurityContextHolder cleared!");
+		logger.info( "SecurityContextHolder cleared!");
 	}
 
 	public boolean isInvalidateHttpSession() {

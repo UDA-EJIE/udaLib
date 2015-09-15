@@ -1,3 +1,18 @@
+/*
+* Copyright 2011 E.J.I.E., S.A.
+*
+* Licencia con arreglo a la EUPL, Versión 1.1 exclusivamente (la «Licencia»);
+* Solo podrá usarse esta obra si se respeta la Licencia.
+* Puede obtenerse una copia de la Licencia en
+*
+* http://ec.europa.eu/idabc/eupl.html
+*
+* Salvo cuando lo exija la legislación aplicable o se acuerde por escrito,
+* el programa distribuido con arreglo a la Licencia se distribuye «TAL CUAL»,
+* SIN GARANTÍAS NI CONDICIONES DE NINGÚN TIPO, ni expresas ni implícitas.
+* Véase la Licencia en el idioma concreto que rige los permisos y limitaciones
+* que establece la Licencia.
+*/
 package com.ejie.x38.security;
 
 import java.util.Vector;
@@ -5,21 +20,26 @@ import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.TransformerException;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.w3c.dom.Document;
-
 import n38c.exe.N38API;
 import n38i.exe.N38DocumentPrinter;
 import n38i.exe.N38Excepcion;
 import n38i.exe.N38ParameterException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+
 import com.ejie.x38.util.StackTraceManager;
 import com.ejie.x38.util.XmlManager;
 
+/**
+ * 
+ * @author UDA
+ *
+ */
 public class XlnetCore {
 
-	private static final Logger logger = Logger.getLogger(XlnetCore.class);
+	private static final Logger logger =  LoggerFactory.getLogger(XlnetCore.class);
 
 	public static final String PATH_SUBTIPO_N38INSTANCIA = "/n38/elementos/elemento/elemento/elemento/parametro[@id='n38uidobjseguridad']/valor";
 	public static final String PATH_SUBTIPO_N38SESION = "/n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='?']/valor";
@@ -88,9 +108,9 @@ public class XlnetCore {
 		try {
 			if (XmlManager.searchDomNode(xmlSesion, PATH_CHECK_ERROR) != null) {
 				bResultado = true;
-				logger.log(Level.DEBUG, "XmlSesion contains errors: "+xmlSesion.getTextContent());
+				logger.debug("XmlSesion contains errors: "+xmlSesion.getTextContent());
 			}else{
-				logger.log(Level.DEBUG, "XmlSesion does not contain errors: "+xmlSesion.getTextContent());
+				logger.debug("XmlSesion does not contain errors: "+xmlSesion.getTextContent());
 			}
 		} catch (TransformerException e) {
 			logger.error("isXlnetSessionContainingErrors(): XML searching error: "+ StackTraceManager.getStackTrace(e));
@@ -108,9 +128,9 @@ public class XlnetCore {
 		try {
 			if (XmlManager.searchDomNode(xmlSesion, PATH_CHECK_WARNING) != null) {
 				bResultado = true;
-				logger.log(Level.DEBUG, "XmlSesion contains warnings: "+xmlSesion.getTextContent());
+				logger.debug("XmlSesion contains warnings: "+xmlSesion.getTextContent());
 			}else{
-				logger.log(Level.DEBUG, "XmlSesion is not containing warnings: "+xmlSesion.getTextContent());
+				logger.debug("XmlSesion is not containing warnings: "+xmlSesion.getTextContent());
 			}
 		} catch (TransformerException e) {
 			logger.error("isXlnetSessionContainingWarnings(): XML searching error: "+ e.getMessage());
@@ -149,9 +169,9 @@ public class XlnetCore {
 		try {
 			uidSesions = n38Api.n38ItemSesion(N38API.NOMBRE_N38UIDSESION);
 		} catch (N38ParameterException e) {
-			logger.log(Level.ERROR, StackTraceManager.getStackTrace(e));
+			logger.error(StackTraceManager.getStackTrace(e));
 		} catch (N38Excepcion e) {
-			logger.log(Level.ERROR, StackTraceManager.getStackTrace(e));
+			logger.error(StackTraceManager.getStackTrace(e));
 		}	
 		if(uidSesions!=null && uidSesions.length>0){
 			return uidSesions[0];
@@ -165,9 +185,9 @@ public class XlnetCore {
 		try {
 			personaUids = n38Api.n38ItemSesion("n38personasuid");
 		} catch (N38ParameterException e) {
-			logger.log(Level.ERROR, StackTraceManager.getStackTrace(e));
+			logger.error(StackTraceManager.getStackTrace(e));
 		} catch (N38Excepcion e) {
-			logger.log(Level.ERROR, StackTraceManager.getStackTrace(e));
+			logger.error(StackTraceManager.getStackTrace(e));
 		}	
 		if(personaUids!=null && personaUids.length>0){
 			return personaUids[0];
@@ -181,9 +201,9 @@ public class XlnetCore {
 		try {
 			personaPuestoUids = n38Api.n38ItemSesion(N38API.NOMBRE_N38PUESTOUID);
 		} catch (N38ParameterException e) {
-			logger.log(Level.ERROR, StackTraceManager.getStackTrace(e));
+			logger.error(StackTraceManager.getStackTrace(e));
 		} catch (N38Excepcion e) {
-			logger.log(Level.ERROR, StackTraceManager.getStackTrace(e));
+			logger.error(StackTraceManager.getStackTrace(e));
 		}	
 		if(personaPuestoUids!=null && personaPuestoUids.length>0){
 			return personaPuestoUids[0];

@@ -1,13 +1,28 @@
+/*
+* Copyright 2011 E.J.I.E., S.A.
+*
+* Licencia con arreglo a la EUPL, Versión 1.1 exclusivamente (la «Licencia»);
+* Solo podrá usarse esta obra si se respeta la Licencia.
+* Puede obtenerse una copia de la Licencia en
+*
+* http://ec.europa.eu/idabc/eupl.html
+*
+* Salvo cuando lo exija la legislación aplicable o se acuerde por escrito,
+* el programa distribuido con arreglo a la Licencia se distribuye «TAL CUAL»,
+* SIN GARANTÍAS NI CONDICIONES DE NINGÚN TIPO, ni expresas ni implícitas.
+* Véase la Licencia en el idioma concreto que rige los permisos y limitaciones
+* que establece la Licencia.
+*/
 package com.ejie.x38.serialization;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.Level;
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotWritableException;
@@ -17,15 +32,16 @@ import com.ejie.x38.util.StackTraceManager;
 
 /**
  * 
- * @author UDA
- *
  * Decide si la serializacion sucede por el cauce normal o si sucede a traves del serializador de UDA.
  * Todo depende de si el Filtro de UDA ha insertado cierta informacion en el ThreadLocal o no.
+ * 
+ * @author UDA
+ * 
  */
 public class UdaMappingJacksonHttpMessageConverter extends
 		MappingJacksonHttpMessageConverter {
 
-	protected final Logger logger = Logger
+	protected final Logger logger = LoggerFactory
 			.getLogger(UdaMappingJacksonHttpMessageConverter.class);
 
 	private ObjectMapper jacksonJsonObjectMapper;
@@ -40,16 +56,14 @@ public class UdaMappingJacksonHttpMessageConverter extends
 				.createJsonGenerator(outputMessage.getBody(), encoding);
 		try {
 			if (ThreadSafeCache.getMap().keySet().size() > 0) {
-				logger.log(Level.INFO,
-						"UDA's Serialization Mechanism is being triggered.");
+				logger.info("UDA's Serialization Mechanism is being triggered.");
 				jacksonJsonObjectMapper.writeValue(jsonGenerator, o);
 			} else {
-				logger.log(Level.INFO,
-						"Spring's Default Object Mapper is being triggered.");
+				logger.info("Spring's Default Object Mapper is being triggered.");
 				super.writeInternal(o, outputMessage);
 			}
 		} catch (Exception ex) {
-			logger.log(Level.ERROR, StackTraceManager.getStackTrace(ex));
+			logger.error(StackTraceManager.getStackTrace(ex));
 			throw new HttpMessageNotWritableException("Could not write JSON: "
 					+ ex.getMessage(), ex);
 		}

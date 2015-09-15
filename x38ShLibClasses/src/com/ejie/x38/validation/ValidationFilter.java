@@ -1,3 +1,18 @@
+/*
+* Copyright 2011 E.J.I.E., S.A.
+*
+* Licencia con arreglo a la EUPL, Versión 1.1 exclusivamente (la «Licencia»);
+* Solo podrá usarse esta obra si se respeta la Licencia.
+* Puede obtenerse una copia de la Licencia en
+*
+* http://ec.europa.eu/idabc/eupl.html
+*
+* Salvo cuando lo exija la legislación aplicable o se acuerde por escrito,
+* el programa distribuido con arreglo a la Licencia se distribuye «TAL CUAL»,
+* SIN GARANTÍAS NI CONDICIONES DE NINGÚN TIPO, ni expresas ni implícitas.
+* Véase la Licencia en el idioma concreto que rige los permisos y limitaciones
+* que establece la Licencia.
+*/
 package com.ejie.x38.validation;
 
 import java.io.BufferedReader;
@@ -13,17 +28,23 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
+import com.ejie.x38.util.DateTimeManager;
 import com.ejie.x38.util.StackTraceManager;
 
+/**
+ * 
+ * @author UDA
+ *
+ */
 public class ValidationFilter extends DelegatingFilterProxy {
 
-	private final static Logger logger = Logger
-			.getLogger(ValidationFilter.class);
+	private final static Logger logger = LoggerFactory
+		.getLogger(ValidationFilter.class);
 
 	private ValidationManager validationManager;
 	private CookieLocaleResolver localeResolver;
@@ -32,51 +53,59 @@ public class ValidationFilter extends DelegatingFilterProxy {
 			FilterChain filterChain) throws ServletException, IOException {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
+		
+		logger.debug("acces in the Validation filter.");
 
 		if ((req.getHeader("validation") != null)
 				&& (req.getHeader("validation").equalsIgnoreCase("true"))) {
+			
+				logger.info("The request require a data validation");
+				
 			try {
-				ValidationRequestWrapper requestWrapper = new ValidationRequestWrapper(
-						req);
-				String data = readFormRequest(new ValidationRequestWrapper(
-						requestWrapper));
+				ValidationRequestWrapper requestWrapper = new ValidationRequestWrapper(req);
+				String data = readFormRequest(requestWrapper);
+				
 				int language = localeResolver.getCookieName().length()+1;
-				//Locale locale = new Locale(requestWrapper.getHeader("Cookie").substring(language,(requestWrapper.getHeader("Cookie").indexOf(";"))));
-				int languageIndex = requestWrapper.getHeader("Cookie").indexOf(localeResolver.getCookieName()) + language;
-				Locale locale = new Locale(requestWrapper.getHeader("Cookie").substring(languageIndex, languageIndex +2));
-				String result = validationManager.validateObject(
-						req.getHeader("bean"), data, locale);
-				if (result != null && !result.equals("error!")) {
+				int languageIndex = req.getHeader("Cookie").indexOf(localeResolver.getCookieName()) + language;
+				Locale locale = new Locale(req.getHeader("Cookie").substring(languageIndex, languageIndex +2));
+				
+				String result = validationManager.validateObject(req.getHeader("bean"), data, locale);
+				
+				if (result == null){
+					//request data are correct
+					logger.info("Request data are correct. It continues processing the call.");
+					filterChain.doFilter(requestWrapper, response);
+					logger.debug("Exit from the Validation filter.");
+				} else {
+					logger.info("Request data are not correct.");
 					response.setContentType("text/javascript;charset=UTF-8");
 					res.setHeader("Cache-Control", "no-cache");
-					res.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-					res.getWriter().write(result);
+					res.setHeader("Expires", DateTimeManager.getHttpExpiredDate());
+					
+					if(!result.equals("error!")){
+						res.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+						res.getWriter().write(result);
+					} else {
+						res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+						res.getWriter().write("Error in the validate. The structure or morphology of the data is incorrect, review the data sent.");
+					}
+					logger.debug("Exit from the Validation filter.");
 					res.flushBuffer();
-					logger.log(Level.TRACE, "Response sent");
-				} else if (result == null) {
-					filterChain.doFilter(requestWrapper, response);
-					logger.log(Level.TRACE, "Response sent");
-				} else if (result.equals("error!")) {
-					response.setContentType("text/javascript;charset=UTF-8");
-					res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-					res.setHeader("Pragma", "cache");
-					res.setHeader("Expires", "0");
-					res.setHeader("Cache-Control", "private");
-					res.getWriter().write("Incorrect data.");
-					res.flushBuffer();					
 				}
+				
 			} catch (Exception e) {
-				logger.log(Level.ERROR, StackTraceManager.getStackTrace(e));
+				logger.error(StackTraceManager.getStackTrace(e));
 				HttpServletResponse resp = (HttpServletResponse) response;
 				try {
 					resp.sendRedirect(req.getContextPath() + "/error");
 				} catch (IOException e1) {
-					logger.log(Level.ERROR, StackTraceManager.getStackTrace(e1));
+					logger.error(StackTraceManager.getStackTrace(e1));
 				}
 			}
 		} else {
+			logger.info("The request not require a data validation");
 			filterChain.doFilter(request, response);
-			logger.log(Level.TRACE, "Response sent");
+			logger.debug("Exit from the Validation filter.");
 		}
 	}
 
@@ -100,7 +129,7 @@ public class ValidationFilter extends DelegatingFilterProxy {
 			}
 			return sb.toString();
 		} catch (Exception e) {
-			logger.log(Level.ERROR, StackTraceManager.getStackTrace(e));
+			logger.error(StackTraceManager.getStackTrace(e));
 			return null;
 		} finally {
 			try {
@@ -108,7 +137,7 @@ public class ValidationFilter extends DelegatingFilterProxy {
 				inputStreamReader.close();
 				inputStream.close();
 			} catch (Exception e) {
-				logger.log(Level.ERROR, StackTraceManager.getStackTrace(e));
+				logger.error(StackTraceManager.getStackTrace(e));
 				return null;
 			}
 		}

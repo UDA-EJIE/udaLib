@@ -1,3 +1,18 @@
+/*
+* Copyright 2011 E.J.I.E., S.A.
+*
+* Licencia con arreglo a la EUPL, Versión 1.1 exclusivamente (la «Licencia»);
+* Solo podrá usarse esta obra si se respeta la Licencia.
+* Puede obtenerse una copia de la Licencia en
+*
+* http://ec.europa.eu/idabc/eupl.html
+*
+* Salvo cuando lo exija la legislación aplicable o se acuerde por escrito,
+* el programa distribuido con arreglo a la Licencia se distribuye «TAL CUAL»,
+* SIN GARANTÍAS NI CONDICIONES DE NINGÚN TIPO, ni expresas ni implícitas.
+* Véase la Licencia en el idioma concreto que rige los permisos y limitaciones
+* que establece la Licencia.
+*/
 package com.ejie.x38.security;
 
 import java.util.Vector;
@@ -10,24 +25,29 @@ import javax.servlet.http.HttpSession;
 import n38a.exe.N38APISesion;
 import n38c.exe.N38API;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.w3c.dom.Document;
 
 import com.ejie.x38.util.StaticsContainer;
 
+/**
+ * 
+ * @author UDA
+ *
+ */
 public class PerimetralSecurityWrapperN38Impl implements
 		PerimetralSecurityWrapper {
 
-	private static final Logger logger = Logger
+	private static final Logger logger = LoggerFactory
 			.getLogger(PerimetralSecurityWrapperN38Impl.class);
 	
 	private Long xlnetCachingPeriod;
 
 	private N38API validateSession(HttpServletRequest httpRequest) {
-		logger.log(Level.INFO, "Refreshing XLNET session!");
+		logger.info( "Refreshing XLNET session!");
 		
 		N38API n38Api = XlnetCore.getN38API(httpRequest);
 		
@@ -35,7 +55,7 @@ public class PerimetralSecurityWrapperN38Impl implements
 
 		if (XlnetCore.isXlnetSessionContainingErrors(xmlSecurity)
 				|| XlnetCore.isXlnetSessionContainingWarnings(xmlSecurity)) {
-			logger.log(Level.ERROR, "XLNET session is invalid. Proceeding to clean the Security Context Holder.");
+			logger.error("XLNET session is invalid. Proceeding to clean the Security Context Holder.");
 			xmlSecurity = null;
 			return null;
 		}
@@ -49,6 +69,8 @@ public class PerimetralSecurityWrapperN38Impl implements
 
 		if(isXlnetCachingActive(httpRequest) && httpRequest.getSession(false)!=null && httpRequest.getSession(false).getAttribute("UserName")!=null){
 			result = (String) httpRequest.getSession(false).getAttribute("UserName");
+			logger.debug("Obtained the userName of the request: " + result);
+			logger.info("The incoming user \""+result+"\" is already authenticated in the security system");
 		}else{
 			if (httpRequest.getSession(false).getAttribute("Position") == null && httpRequest.getSession(false).getAttribute("UidSession") == null && httpRequest.getSession(false).getAttribute("UserProfiles") == null){
 				if ((validateSession(httpRequest)== null)){
@@ -66,11 +88,13 @@ public class PerimetralSecurityWrapperN38Impl implements
 				logger.trace("Connected User's Name is: "+result);
 			}
 			else{
-				logger.log(Level.WARN, "Connected User's Name is null!");
+				logger.warn("Connected User's Name is null!");
 				return null;
 			}
 			//Save the userName value
-			if(httpRequest.getSession(false)!=null)httpRequest.getSession(false).setAttribute("UserName", result);
+			if(httpRequest.getSession(false)!=null){
+				httpRequest.getSession(false).setAttribute("UserName", result);
+			}
 		}
 		return result;
 		
@@ -85,7 +109,7 @@ public class PerimetralSecurityWrapperN38Impl implements
 		}else{
 			if (httpRequest.getSession(false).getAttribute("UserName") == null && httpRequest.getSession(false).getAttribute("UidSession") == null && httpRequest.getSession(false).getAttribute("UserProfiles") == null){
 				if ((validateSession(httpRequest)== null)){
-					logger.log(Level.ERROR, "The XLNET session is invalid or the Xlnet's user isn't logger. Proceeding to clean the Security Context Holder.");
+					logger.error("The XLNET session is invalid or the Xlnet's user isn't logger. Proceeding to clean the Security Context Holder.");
 					SecurityContextHolder.clearContext();
 					throw new AuthenticationCredentialsNotFoundException("The XLNET session is invalid or the Xlnet's user isn't logger");
 				}
@@ -100,11 +124,13 @@ public class PerimetralSecurityWrapperN38Impl implements
 				logger.trace("Connected User's Position is: "+result);
 			}
 			else{
-				logger.log(Level.WARN, "Connected User's Position is null!");
+				logger.warn("Connected User's Position is null!");
 				return null;
 			}
 			//Save the position value
-			if(httpRequest.getSession(false)!=null)httpRequest.getSession(false).setAttribute("Position", result);
+			if(httpRequest.getSession(false)!=null){
+				httpRequest.getSession(false).setAttribute("Position", result);
+			}
 		}
 		return result;
 	}	
@@ -118,7 +144,7 @@ public class PerimetralSecurityWrapperN38Impl implements
 		}else{
 			if (httpRequest.getSession(false).getAttribute("Position") == null && httpRequest.getSession(false).getAttribute("UserName") == null && httpRequest.getSession(false).getAttribute("UserProfiles") == null){
 				if ((validateSession(httpRequest)== null)){
-					logger.log(Level.ERROR, "The XLNET session is invalid or the Xlnet's user isn't logger. Proceeding to clean the Security Context Holder.");
+					logger.error("The XLNET session is invalid or the Xlnet's user isn't logger. Proceeding to clean the Security Context Holder.");
 					SecurityContextHolder.clearContext();
 					throw new AuthenticationCredentialsNotFoundException("The XLNET session is invalid or the Xlnet's user isn't logger");
 				}
@@ -133,11 +159,13 @@ public class PerimetralSecurityWrapperN38Impl implements
 				logger.trace("Connected UserConnectedUidSession is: "+result);
 			}
 			else{
-				logger.log(Level.WARN, "Connected UserConnectedUidSession is null!");
+				logger.warn("Connected UserConnectedUidSession is null!");
 				return null;
 			}
 			//Save the uidSession value
-			if(httpRequest.getSession(false)!=null)httpRequest.getSession(false).setAttribute("UidSession", result);
+			if(httpRequest.getSession(false)!=null){
+				httpRequest.getSession(false).setAttribute("UidSession", result);
+			}
 		}
 		return result;
 		
@@ -153,7 +181,7 @@ public class PerimetralSecurityWrapperN38Impl implements
 		}else{
 			if (httpRequest.getSession(false).getAttribute("Position") ==null && httpRequest.getSession(false).getAttribute("UserName")==null && httpRequest.getSession(false).getAttribute("UidSession")!=null){
 				if ((validateSession(httpRequest)== null)){
-					logger.log(Level.ERROR, "The XLNET session is invalid or the Xlnet's user isn't logger. Proceeding to clean the Security Context Holder.");
+					logger.error("The XLNET session is invalid or the Xlnet's user isn't logger. Proceeding to clean the Security Context Holder.");
 					SecurityContextHolder.clearContext();
 					throw new AuthenticationCredentialsNotFoundException("The XLNET session is invalid or the Xlnet's user isn't logger");
 				}
@@ -174,7 +202,7 @@ public class PerimetralSecurityWrapperN38Impl implements
 				logger.trace("Connected UserProfiles are: "+result);
 			}
 			else{
-				logger.log(Level.WARN, "Connected UserProfiles is null!");
+				logger.warn("Connected UserProfiles is null!");
 				return null;
 			}
 			//Save the UserProfiles value
@@ -186,24 +214,28 @@ public class PerimetralSecurityWrapperN38Impl implements
 
 	@Override
 	public String getURLLogin(String originalURL) {
-		logger.log(Level.DEBUG, "Original URLLogin is :"+originalURL);
-		String resultURL = StaticsContainer.loginUrl;
-		if (originalURL != null && !"".equals(originalURL)) resultURL += "?N38API=" + originalURL;
-		logger.log(Level.DEBUG, "URLLogin is: "+resultURL);
+		logger.debug("Original URLLogin is :"+originalURL);
+		StringBuilder resultURL = new StringBuilder("StaticsContainer.loginUrl");
+
+		if (originalURL != null && !"".equals(originalURL)){
+			resultURL.append("?N38API=");
+			resultURL.append(originalURL);
+		}
+		logger.debug("URLLogin is: "+resultURL);
 		
-		return resultURL;
+		return resultURL.toString();
 	}
 
 	//Method not properly working due to N38 related issues
 	@Override
 	public void logout(HttpServletRequest httpRequest) {
 		String uidSession = getUserConnectedUidSession(httpRequest);
-		logger.log(Level.INFO, "Proceeding to destroy uidSession: "+ uidSession);
+		logger.info( "Proceeding to destroy uidSession: "+ uidSession);
 
 		N38APISesion n38ApiSesion = new N38APISesion();
 		n38ApiSesion.n38APISesionDestruir(uidSession);
 
-		logger.log(Level.INFO, "Session "+uidSession+" destroyed!");
+		logger.info( "Session "+uidSession+" destroyed!");
 	}
 	
 	private boolean isXlnetCachingActive(HttpServletRequest httpRequest){
@@ -240,7 +272,7 @@ public class PerimetralSecurityWrapperN38Impl implements
 							//It clears the cache of XLNets  
 							xlnetCleanCache(httpRequest);
 							
-							logger.log(Level.DEBUG, "Caching of session "+httpRequest.getSession(false).getId()+" expired, because the XLNets user has changed");
+							logger.info("XLNet's caching of session "+httpRequest.getSession(false).getId()+" expired, because the XLNets user has changed");
 							httpRequest.getSession(false).setAttribute("reloadData", "true");
 							httpRequest.getSession(false).setAttribute("userChange", "true");
 							caching = false;
@@ -265,7 +297,7 @@ public class PerimetralSecurityWrapperN38Impl implements
 	
 				httpRequest.getSession(false).setAttribute("reloadData", "true");
 				
-				logger.log(Level.DEBUG, "Caching of session "+httpRequest.getSession(false).getId()+" expired, after, at least, "+xlnetCachingPeriod+" Seconds");
+				logger.info("XLNet's caching of session "+httpRequest.getSession(false).getId()+" expired, after, at least, "+xlnetCachingPeriod+" Seconds");
 				caching = false;
 			}
 		}
@@ -277,13 +309,13 @@ public class PerimetralSecurityWrapperN38Impl implements
 			//It clears the cache of XLNets  
 			xlnetCleanCache(httpRequest);
 			
-			logger.log(Level.DEBUG, "Session "+httpRequest.getSession(false).getId()+" is new");
+			logger.info("Session server "+httpRequest.getSession(false).getId()+" is new");
 			caching = false;
 		}
 		//If the session does not exist, disable XLNET caching
 		if(httpRequest.getSession(false)==null){
 			httpRequest.getSession(true);
-			logger.log(Level.DEBUG, "Session "+httpRequest.getSession(false).getId()+" created");
+			logger.info("Session server "+httpRequest.getSession(false).getId()+" created");
 			caching = false;
 		}
 		

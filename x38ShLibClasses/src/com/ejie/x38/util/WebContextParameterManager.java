@@ -1,3 +1,18 @@
+/*
+* Copyright 2011 E.J.I.E., S.A.
+*
+* Licencia con arreglo a la EUPL, Versión 1.1 exclusivamente (la «Licencia»);
+* Solo podrá usarse esta obra si se respeta la Licencia.
+* Puede obtenerse una copia de la Licencia en
+*
+* http://ec.europa.eu/idabc/eupl.html
+*
+* Salvo cuando lo exija la legislación aplicable o se acuerde por escrito,
+* el programa distribuido con arreglo a la Licencia se distribuye «TAL CUAL»,
+* SIN GARANTÍAS NI CONDICIONES DE NINGÚN TIPO, ni expresas ni implícitas.
+* Véase la Licencia en el idioma concreto que rige los permisos y limitaciones
+* que establece la Licencia.
+*/
 package com.ejie.x38.util;
 
 import java.io.InputStream;
@@ -5,50 +20,57 @@ import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.context.WebApplicationContext;
 
+/**
+ * 
+ * @author UDA
+ *
+ */
 public class WebContextParameterManager implements ApplicationContextAware {
 
-	private static Logger logger = Logger.getLogger("com.ejie.x38.util.WebContextParameterManager");
+	private static Logger logger =  LoggerFactory.getLogger("com.ejie.x38.util.WebContextParameterManager");
 	
 	private WebApplicationContext webApplicationContext;
 	
 	@PostConstruct
 	public void init(){
 		Properties props = new Properties();
+		logger.info("Loads the application context parameters");
 		StaticsContainer.webAppName = webApplicationContext.getServletContext().getInitParameter("webAppName");
-		logger.log(Level.DEBUG, "Applications name is: "+StaticsContainer.webAppName);
+		logger.info("The applications name is: "+StaticsContainer.webAppName);
 		StaticsContainer.webId = webApplicationContext.getId();
-		logger.log(Level.DEBUG, "Applications Id is: "+StaticsContainer.webId);
+		logger.info("The applications Id is: "+StaticsContainer.webId);
+		
 		try{
-			logger.log(Level.DEBUG, "Loading properties from: "+StaticsContainer.webAppName+"/"+StaticsContainer.webAppName+".properties");
+			logger.debug("Loading properties from: "+StaticsContainer.webAppName+"/"+StaticsContainer.webAppName+".properties");
 			InputStream in = this.getClass().getClassLoader().getResourceAsStream(StaticsContainer.webAppName+"/"+StaticsContainer.webAppName+".properties");
 			props.load(in);
 			in.close();
 		}catch(Exception e){
-			logger.log(Level.ERROR, StackTraceManager.getStackTrace(e));
+			logger.error(StackTraceManager.getStackTrace(e));
 		}
-		logger.info("Loading static parameters");
-		logger.log(Level.DEBUG, "WARs specific Static Content URL is: "+props.getProperty("statics.path"));
+		
+		logger.info("WARs specific Static Content URL is: "+props.getProperty("statics.path"));
 		StaticsContainer.staticsUrl = props.getProperty("statics.path");
-//		logger.log(Level.DEBUG, "WARs default layout is: "+props.getProperty("statics.layout"));
+//		logger.debug("WARs default layout is: "+props.getProperty("statics.layout"));
 //		StaticsContainer.layout = props.getProperty("statics.layout");
-//		logger.log(Level.DEBUG, "WARs default language is: "+props.getProperty("statics.language"));
+//		logger.debug("WARs default language is: "+props.getProperty("statics.language"));
 //		StaticsContainer.language = props.getProperty("statics.language");
-		logger.log(Level.DEBUG, "Applications Model Package is: "+"com.ejie."+StaticsContainer.webAppName+".model.");
+		logger.info("Applications Model Package is: "+"com.ejie."+StaticsContainer.webAppName+".model.");
 		StaticsContainer.modelPackageName = "com.ejie."+StaticsContainer.webAppName+".model.";
-		logger.log(Level.DEBUG, "Applications Login URL is: "+props.getProperty("xlnets.path"));
+		logger.info("The URL to access the security provider of the application (\"XLNets\") is: "+props.getProperty("xlnets.path"));
 		StaticsContainer.loginUrl = props.getProperty("xlnets.path");
 		if (StaticsContainer.loginUrl==null){
-			logger.log(Level.ERROR, "Login URL is not Set!");
+			logger.error("Login URL is not Set!");
 		}
 		String weblogicInstance = System.getProperty("weblogic.Name");
-		logger.log(Level.DEBUG, "WebLogic Instance Name is: "+weblogicInstance);
+		logger.info("The WebLogic Instance Name is: "+weblogicInstance);
 		StaticsContainer.weblogicInstance = weblogicInstance;
 	}
 

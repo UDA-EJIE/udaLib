@@ -1,15 +1,36 @@
+/*
+* Copyright 2011 E.J.I.E., S.A.
+*
+* Licencia con arreglo a la EUPL, Versión 1.1 exclusivamente (la «Licencia»);
+* Solo podrá usarse esta obra si se respeta la Licencia.
+* Puede obtenerse una copia de la Licencia en
+*
+* http://ec.europa.eu/idabc/eupl.html
+*
+* Salvo cuando lo exija la legislación aplicable o se acuerde por escrito,
+* el programa distribuido con arreglo a la Licencia se distribuye «TAL CUAL»,
+* SIN GARANTÍAS NI CONDICIONES DE NINGÚN TIPO, ni expresas ni implícitas.
+* Véase la Licencia en el idioma concreto que rige los permisos y limitaciones
+* que establece la Licencia.
+*/
 package com.ejie.x38.security;
 
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * 
+ * @author UDA
+ *
+ */
 public class PerimetralSecurityWrapperMockImpl implements
 		PerimetralSecurityWrapper {
 
-	private static final Logger logger = Logger
+	private static final Logger logger = LoggerFactory
 			.getLogger(PerimetralSecurityWrapperMockImpl.class);
 
 	private String principal;
@@ -20,12 +41,14 @@ public class PerimetralSecurityWrapperMockImpl implements
 	
 	@Override
 	public String getUserConnectedUidSession(HttpServletRequest httpRequest) {
+		httpRequest.getSession(false).setAttribute("UidSession", uidSession);
 		return uidSession;
 	}
 
 	@Override
 	public String getUserPosition(HttpServletRequest httpRequest){
-		return "myPosition";
+		httpRequest.getSession(false).setAttribute("Position", "myPosition");
+		return "userPosition";
 	}
 	
 	@Override
@@ -34,14 +57,21 @@ public class PerimetralSecurityWrapperMockImpl implements
 		
 		//This utility enables the use of multiple users during stress tests
 		String idLog = httpRequest.getParameter("idLog");
-		if (idLog != null && !idLog.equals(""))
-		{
-			logger.debug(idLog == null ? "No obtenido parámetro idLog por request"
-					: "Obtenido idLog por Request: " + idLog);
-			userName = idLog == null ? userName : idLog;
+		if (idLog != null && !idLog.equals("")){
+			logger.debug("Obtained the userName of the request: " + idLog);
+			logger.info("The incoming user \""+idLog+"\" is already authenticated in the security system");
+			userName = idLog;
 		}else{
+			logger.debug("Not obtained the userName of the request");
+			logger.info("Accessing to the userName...");
 			userName = principal;
 		}
+		
+		//If the session does not exist, disable XLNET caching
+		if(httpRequest.getSession(false)==null){
+			httpRequest.getSession(true);
+		}
+		httpRequest.getSession(false).setAttribute("UserName", userName);
 		return userName;
 	}
 
