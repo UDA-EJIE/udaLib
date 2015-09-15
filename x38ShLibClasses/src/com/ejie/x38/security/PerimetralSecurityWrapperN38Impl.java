@@ -215,7 +215,7 @@ public class PerimetralSecurityWrapperN38Impl implements
 	@Override
 	public String getURLLogin(String originalURL) {
 		logger.debug("Original URLLogin is :"+originalURL);
-		StringBuilder resultURL = new StringBuilder("StaticsContainer.loginUrl");
+		StringBuilder resultURL = new StringBuilder(StaticsContainer.loginUrl);
 
 		if (originalURL != null && !"".equals(originalURL)){
 			resultURL.append("?N38API=");

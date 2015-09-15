@@ -15,8 +15,6 @@
 */
 package com.ejie.x38.util;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Vector;
 
 import javax.xml.transform.TransformerException;
@@ -33,7 +31,7 @@ import org.w3c.dom.NodeList;
  *
  */
 public class XmlManager {
-
+	
 	private static final Logger logger =  LoggerFactory.getLogger(XmlManager.class);
 
 	/**
@@ -64,26 +62,25 @@ public class XmlManager {
 	 */
 	public static Vector<String> searchDomVector(Node docDom, String strPath) throws TransformerException {
 		NodeList NodeLiResultado = null;
-		ArrayList<String> arrayValores = null;
-		Vector<String> vecValores = null;
+		Vector<String> vecValores = null ;
 		
 		NodeLiResultado = XPathAPI.selectNodeList(docDom, strPath);
 		if (NodeLiResultado.getLength() != 0) {
 			int x = 0;
-			arrayValores = new ArrayList<String>();
+			vecValores = new Vector<String>();
 			for (x = 0; x < NodeLiResultado.getLength(); x++) {
 				if (NodeLiResultado.item(x).hasChildNodes()) {
-					arrayValores.add(NodeLiResultado.item(x).getFirstChild().getNodeValue());
+					//arrayValores.add(NodeLiResultado.item(x).getFirstChild().getNodeValue());
+					vecValores.add(NodeLiResultado.item(x).getFirstChild().getNodeValue());
 				} else {
-					arrayValores.add("");
+					vecValores.add("");
 				}
 			}
 		} else {
-			arrayValores = new ArrayList<String>();
+			vecValores = new Vector<String>();
 		}
-		Collections.copy(vecValores, arrayValores);
-		arrayValores = null;
 		return vecValores;
 		
-	}		
+	}	
+
 }
