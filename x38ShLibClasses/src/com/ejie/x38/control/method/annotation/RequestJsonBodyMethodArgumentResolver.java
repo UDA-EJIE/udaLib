@@ -5,7 +5,6 @@ import java.util.List;
 import javax.validation.Validator;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.Conventions;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -16,8 +15,6 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor;
 
 import com.ejie.x38.control.bind.annotation.RequestJsonBody;
-
-import weblogic.apache.xml.utils.synthetic.reflection.Constructor;
 
 public class RequestJsonBodyMethodArgumentResolver implements HandlerMethodArgumentResolver {
 

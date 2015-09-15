@@ -6,9 +6,10 @@
 	<property name="srcDir" value="./src"/>
 	<property name="destDir" value="./target"/>
 	<property name="buildDir" value="./bin"/>
-	<property name="version" value="2.4.1-RELEASE"/>
+	<property name="version" value="2.4.2-RELEASE"/>
 	
 	<target name="mavenRunDependencies" description="Resuelve las dependencias del proyecto desde Maven">
+		<echo>${ant.home}</echo>
 		<path id="maven-ant-tasks.classpath" path="${ant.home}/lib/maven-ant-tasks-2.1.1.jar" />
 		<typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="antlib:org.apache.maven.artifact.ant" classpathref="maven-ant-tasks.classpath" />	
 		<property environment="env" />
@@ -23,10 +24,12 @@
 		<echo>Eliminando ficheros existentes ...</echo>
 		<delete file="${destDir}/x38ShLibClasses-${version}.jar" />
 		<delete file="${destDir}/x38ShLibClasses-dav-${version}.jar" />
+		<delete file="${destDir}/x38ShLibClasses-pif-${version}.jar" />
+		<delete file="${destDir}/x38ShLibClasses-rss-${version}.jar" />
 		
 		<echo>Generando ${destDir}/x38ShLibClasses-${version}.jar ...</echo>
 		<jar destfile="${destDir}/x38ShLibClasses-${version}.jar">
-			<fileset dir="${buildDir}" includes="com/ejie/x38/** LICENSE.txt NOTICE.txt" excludes="com/ejie/x38/webdav/**" />
+			<fileset dir="${buildDir}" includes="com/ejie/x38/** LICENSE.txt NOTICE.txt" excludes="com/ejie/x38/webdav/**, com/ejie/x38/pif/**, com/ejie/x38/rss/**" />
 			<fileset dir="${baseDir}" includes="build.xml pom.xml" />
 			<manifest>
 		      	<attribute name="Main-Class" value=""/>
@@ -38,6 +41,28 @@
 		<echo>Generando ${destDir}/x38ShLibClasses-dav-${version}.jar ...</echo>
 		<jar destfile="${destDir}/x38ShLibClasses-dav-${version}.jar">
 			<fileset dir="${buildDir}" includes="com/ejie/x38/webdav/** LICENSE.txt NOTICE.txt" />
+			<fileset dir="${baseDir}" includes="build.xml pom.xml" />
+			<manifest>
+		      	<attribute name="Main-Class" value=""/>
+		     	<attribute name="Manifest-Version" value="${version}"/>
+		     	<attribute name="Created-By" value="UDA"/>
+		     </manifest>
+		</jar>
+		
+		<echo>Generando ${destDir}/x38ShLibClasses-pif-${version}.jar ...</echo>
+		<jar destfile="${destDir}/x38ShLibClasses-pif-${version}.jar">
+			<fileset dir="${buildDir}" includes="com/ejie/x38/pif/** LICENSE.txt NOTICE.txt" />
+			<fileset dir="${baseDir}" includes="build.xml pom.xml" />
+			<manifest>
+		      	<attribute name="Main-Class" value=""/>
+		     	<attribute name="Manifest-Version" value="${version}"/>
+		     	<attribute name="Created-By" value="UDA"/>
+		     </manifest>
+		</jar>
+		
+		<echo>Generando ${destDir}/x38ShLibClasses-rss-${version}.jar ...</echo>
+		<jar destfile="${destDir}/x38ShLibClasses-rss-${version}.jar">
+			<fileset dir="${buildDir}" includes="com/ejie/x38/rss/** LICENSE.txt NOTICE.txt" />
 			<fileset dir="${baseDir}" includes="build.xml pom.xml" />
 			<manifest>
 		      	<attribute name="Main-Class" value=""/>
