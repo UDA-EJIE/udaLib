@@ -1,17 +1,25 @@
 package com.ejie.x38.rss;
 
+/**
+ * Representación de un canal de un feed RSS.
+ * 
+ * @author UDA
+ *
+ */
 public class RssChannel {
 
-	/*
-	 * The name of the channel. It's how people refer to your service. If you
-	 * have an HTML website that contains the same information as your RSS file,
-	 * the title of your channel should be the same as the title of your
-	 * website.
+	
+	/**
+	 * El nombre del canal. Es el cnombre por el que se va a referenciar el servicio.
 	 */
 	private String title;
-	// The URL to the HTML website corresponding to the channel.
+	/**
+	 * La URL del sitio web correspondiente al canal..
+	 */
 	private String link;
-	// Phrase or sentence describing the channel.
+	/**
+	 * Descripción del canal
+	 */
 	private String description;
 	
 	public RssChannel() {

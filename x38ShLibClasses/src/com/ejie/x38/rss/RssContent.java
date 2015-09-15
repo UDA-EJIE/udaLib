@@ -2,6 +2,12 @@ package com.ejie.x38.rss;
 
 import java.util.Date;
 
+/**
+ * Representación de un elemento de un reed RSS.
+ * 
+ * @author UDA
+ *
+ */
 public class RssContent {
 
 	// The title of the item.

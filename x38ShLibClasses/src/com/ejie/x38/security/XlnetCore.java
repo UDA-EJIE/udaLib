@@ -47,6 +47,7 @@ public class XlnetCore {
 	public static final String PATH_SUBTIPO_N38SESION = "/n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='?']/valor";
 	public static final String PATH_SUBTIPO_n38DOMINIOCOMUNCOOKIE = "/n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='n38dominiocomuncookie']/valor";
 	public static final String PATH_SUBTIPO_N38SUBJECTCERT = "/n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='n38subjectcert']/valor";
+	public static final String PATH_SUBTIPO_DNI = "/n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='dni']/valor";
 	public static final String PATH_SUBTIPO_ORGANIZATIONALUNIT = "/n38/elementos/elemento[@subtipo='OrganizationalUnit']/parametro[@id='ou']/valor[text()='?']/../../elemento[@subtipo=\"n38itemSeguridad\"]/parametro[@id=\"n38uidobjseguridad\"]/valor";
 	public static final String PATH_CHECK_ERROR = "/n38/error";
 	public static final String PATH_CHECK_WARNING = "/n38/warning";
@@ -186,15 +187,27 @@ public class XlnetCore {
 
 		try {
 			n38MultiSubjectCert = (XmlManager.searchDomNode(xmlSesion, PATH_SUBTIPO_N38SUBJECTCERT)).getFirstChild().getNodeValue().split(", ");
-			certinfo = new HashMap<String, String>();
 			
-			for(int i =0; i < n38MultiSubjectCert.length; i++){
-				n38SubjectCert = n38MultiSubjectCert[i].split("=");
-				if (n38SubjectCert.length > 1){
-					n38SubjectCertAux = n38SubjectCert;
-					certinfo.put(n38SubjectCert[0], n38SubjectCert[1]);
-				} else {
-					certinfo.put(n38SubjectCertAux[0], certinfo.get(n38SubjectCertAux[0]) + n38SubjectCert[0]);
+			// Comprobamos si el certificado es un único String
+			certinfo = new HashMap<String, String>();
+			if (n38MultiSubjectCert.length>1){
+				
+				for(int i =0; i < n38MultiSubjectCert.length; i++){
+					n38SubjectCert = n38MultiSubjectCert[i].split("=");
+					if (n38SubjectCert.length > 1){
+						n38SubjectCertAux = n38SubjectCert;
+						certinfo.put(n38SubjectCert[0], n38SubjectCert[1]);
+					} else {
+						certinfo.put(n38SubjectCertAux[0], certinfo.get(n38SubjectCertAux[0]) + n38SubjectCert[0]);
+					}
+				}
+			}else{
+				Node searchDomNode = XmlManager.searchDomNode(xmlSesion, XlnetCore.PATH_SUBTIPO_DNI);
+				if (searchDomNode !=null){
+					String dni =  searchDomNode.getFirstChild().getNodeValue();
+					certinfo.put("CN",dni);
+				}else if (n38MultiSubjectCert.length == 1){
+					certinfo.put("CN", n38MultiSubjectCert[0]);
 				}
 			}
 			
@@ -335,4 +348,5 @@ public class XlnetCore {
 			return null;
 		}
 	}	
+	
 }

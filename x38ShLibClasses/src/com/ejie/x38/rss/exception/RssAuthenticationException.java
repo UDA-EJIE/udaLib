@@ -1,10 +1,16 @@
 package com.ejie.x38.rss.exception;
 
-public class RssAuthenticationException extends RuntimeException {
+import org.springframework.security.core.AuthenticationException;
 
-	public RssAuthenticationException() {
-		super();
-	}
+/**
+ * Error producido en el proceso de autenticación del usuario que accede 
+ * al contenido del feed RSS. 
+ * 
+ * @author UDA
+ *
+ */
+public class RssAuthenticationException extends AuthenticationException {
+
 
 	public RssAuthenticationException(String message, Throwable cause) {
 		super(message, cause);
@@ -14,7 +20,4 @@ public class RssAuthenticationException extends RuntimeException {
 		super(message);
 	}
 
-	public RssAuthenticationException(Throwable cause) {
-		super(cause);
-	}
 }
