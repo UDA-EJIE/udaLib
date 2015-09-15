@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import n38a.exe.N38APISesion;
 import n38c.exe.N38API;
@@ -241,6 +242,7 @@ public class PerimetralSecurityWrapperN38Impl implements
 							
 							logger.log(Level.DEBUG, "Caching of session "+httpRequest.getSession(false).getId()+" expired, because the XLNets user has changed");
 							httpRequest.getSession(false).setAttribute("reloadData", "true");
+							httpRequest.getSession(false).setAttribute("userChange", "true");
 							caching = false;
 							
 							httpRequest.getSession(false).setAttribute("udaXLNetsSessionId", udaXLNetsSessionId.toString());
@@ -260,7 +262,7 @@ public class PerimetralSecurityWrapperN38Impl implements
 				
 				//It clears the cache of XLNets  
 				xlnetCleanCache(httpRequest);
-				
+	
 				httpRequest.getSession(false).setAttribute("reloadData", "true");
 				
 				logger.log(Level.DEBUG, "Caching of session "+httpRequest.getSession(false).getId()+" expired, after, at least, "+xlnetCachingPeriod+" Seconds");
@@ -299,10 +301,11 @@ public class PerimetralSecurityWrapperN38Impl implements
 	
 	//Cleaner method  of XLNETs cached information
 	private void xlnetCleanCache(HttpServletRequest httpRequest){
-		httpRequest.getSession(false).removeAttribute("UserName");
-		httpRequest.getSession(false).removeAttribute("Position");
-		httpRequest.getSession(false).removeAttribute("UidSession");
-		httpRequest.getSession(false).removeAttribute("UserProfiles");
+		HttpSession session = httpRequest.getSession(false);
+		session.removeAttribute("UserName");
+		session.removeAttribute("Position");
+		session.removeAttribute("UidSession");
+		session.removeAttribute("UserProfiles");
 	}
 	
 }

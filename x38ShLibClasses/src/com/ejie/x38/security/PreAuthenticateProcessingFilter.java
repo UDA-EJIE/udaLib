@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -65,6 +66,8 @@ public class PreAuthenticateProcessingFilter extends
 	protected Object getPreAuthenticatedPrincipal(HttpServletRequest request) {
 		String principalUser = null;
 		
+		HttpSession session = request.getSession(false);
+		
 		principalUser = this.perimetralSecurityWrapper.getUserConnectedUserName(request);
 		
 		if(principalUser != null){
@@ -80,13 +83,24 @@ public class PreAuthenticateProcessingFilter extends
 		}
 		
 		if(SecurityContextHolder.getContext().getAuthentication() != null && request.getSession(false) !=null && request.getSession(false).getAttribute("reloadData") !=null && request.getSession(false).getAttribute("reloadData").equals("true")){
-			setCheckForPrincipalChanges(true);
-			request.getSession().removeAttribute("reloadData");
+			
+			//if the user changes then the user session is invalidate  
+			if (session.getAttribute("userChange") == null){
+				setInvalidateSessionOnPrincipalChange(false);
+			} else {
+				session.removeAttribute("userChange");
+			}
+			
+			session.removeAttribute("reloadData");
+			
+			logger.log(Level.INFO, "Proceed to reload the user's credentials");
+			
 			return null;
 		} else {
-			setCheckForPrincipalChanges(false);
-			return principalUser;
+			setInvalidateSessionOnPrincipalChange(true);
 		}
+		
+		return principalUser;
 	}
 
 	// Getters & Setters
