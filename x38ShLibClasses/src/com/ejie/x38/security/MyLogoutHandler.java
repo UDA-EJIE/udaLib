@@ -99,9 +99,7 @@ public class MyLogoutHandler implements LogoutHandler {
 	}
 
 	public void setInvalidateUserSession(boolean invalidateUserSession) {
-		if(this.perimetralSecurityWrapper instanceof PerimetralSecurityWrapperN38Impl){
-			((PerimetralSecurityWrapperN38Impl) this.perimetralSecurityWrapper).setDestroyXLNetsSession(invalidateUserSession);			 
-		}
+		this.perimetralSecurityWrapper.setDestroySessionSecuritySystem(invalidateUserSession);			 
 		this.invalidateUserSession = invalidateUserSession;
 	}
 }

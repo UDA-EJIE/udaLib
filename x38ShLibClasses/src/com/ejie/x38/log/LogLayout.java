@@ -27,7 +27,7 @@ import ch.qos.logback.core.LayoutBase;
 import ch.qos.logback.core.LogbackException;
 
 import com.ejie.x38.log.security.CurrentUserManager;
-import com.ejie.x38.security.UserCredentials;
+import com.ejie.x38.security.Credentials;
 import com.ejie.x38.util.DateTimeManager;
 import com.ejie.x38.util.StackTraceManager;
 import com.ejie.x38.util.TableManager;
@@ -53,7 +53,7 @@ public class LogLayout extends LayoutBase<ILoggingEvent>{
 	
 	@SuppressWarnings("unchecked")
 	public String doLayout(ILoggingEvent event) throws LogbackException{
-		UserCredentials userCredentials = null;
+		Credentials Credentials = null;
 		Hashtable<String, String> table;
 		Object[] argArray = event.getArgumentArray();
 		HashMap<String, String> argUdaObjec = new HashMap<String, String>();
@@ -109,18 +109,18 @@ public class LogLayout extends LayoutBase<ILoggingEvent>{
 				} else {
 					//Get the data of the user credentials.
 					try{
-						userCredentials = (UserCredentials) SecurityContextHolder.getContext().getAuthentication().getCredentials();
+						Credentials = (Credentials) SecurityContextHolder.getContext().getAuthentication().getCredentials();
 					} catch(Exception e) {
 						if (!(e instanceof java.lang.NullPointerException)){
 							throw new LogbackException("System error logs. Error accessing the security context.",e);
 						}
 					}
 					
-					if (userCredentials != null){
+					if (Credentials != null){
 						//system log of the application with security context
 						table.put(LogConstants.USER, CurrentUserManager.getCurrentUsername());
-						table.put(LogConstants.SESSION, CurrentUserManager.getCurrentUserN38UidSesion(userCredentials));
-						table.put(LogConstants.POSITION, CurrentUserManager.getPosition(userCredentials));
+						table.put(LogConstants.SESSION, CurrentUserManager.getCurrentUserN38UidSesion(Credentials));
+						table.put(LogConstants.POSITION, CurrentUserManager.getPosition(Credentials));
 						
 					} else {
 						//System log of the application without security context

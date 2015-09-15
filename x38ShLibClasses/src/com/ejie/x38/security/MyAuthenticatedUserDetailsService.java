@@ -45,11 +45,11 @@ public class MyAuthenticatedUserDetailsService implements
 		logger.trace("User's token is: "+token.toString());
 		logger.trace("User's credentials are "+token.getCredentials().toString());
 
-		UserCredentials userCredentials = (UserCredentials) token
+		Credentials Credentials = (Credentials) token
 				.getCredentials();
 		UserDetails userDetails = null;
-		if (userCredentials != null) {
-			Vector<String> vectorProfilesXLNET = userCredentials.getUserProfiles();
+		if (Credentials != null) {
+			Vector<String> vectorProfilesXLNET = Credentials.getUserProfiles();
 			XlnetGrantedAuthority[] profiles = null;
 			if (vectorProfilesXLNET != null) {
 				profiles = new XlnetGrantedAuthority[vectorProfilesXLNET.size()];

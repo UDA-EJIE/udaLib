@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.ejie.x38.security.UserCredentials;
+import com.ejie.x38.security.Credentials;
 import com.ejie.x38.util.StackTraceManager;
 
 /**
@@ -35,11 +35,11 @@ public class CurrentUserManager{
 
 	private static final Logger logger =  LoggerFactory.getLogger(CurrentUserManager.class);
 	
-	public static String getCurrentUserN38UidSesion(UserCredentials userCredentials) {
+	public static String getCurrentUserN38UidSesion(Credentials Credentials) {
 		String uidSesion = " ";
 		try{
-			if (userCredentials != null) {
-				uidSesion = userCredentials.getUidSession();				
+			if (Credentials != null) {
+				uidSesion = Credentials.getUidSession();				
 			}
 		}catch(Exception e){
 			logger.error(StackTraceManager.getStackTrace(e));
@@ -59,9 +59,9 @@ public class CurrentUserManager{
 		return userName;
 	}
 	
-	public static String getPosition(UserCredentials userCredentials){
-		if (userCredentials!= null){
-			return userCredentials.getPosition();
+	public static String getPosition(Credentials Credentials){
+		if (Credentials!= null){
+			return Credentials.getPosition();
 		}else{
 			return " ";
 		}

@@ -35,7 +35,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.ejie.x38.log.LogConstants;
 import com.ejie.x38.security.StockUdaSecurityPadlocksImpl;
-import com.ejie.x38.security.UserCredentials;
+import com.ejie.x38.security.Credentials;
 import com.ejie.x38.util.ManagementUrl;
 
 /**
@@ -91,7 +91,7 @@ public class UdaListener implements ServletContextListener, HttpSessionListener,
 		HttpSession httpSession = null;
 		
 		SecurityContextImpl securityContext  = null;
-		UserCredentials credentials = null; 
+		Credentials credentials = null; 
 		Authentication authentication = null;
 		
 	    //Used to get the IP of the new request for the loggin System  
@@ -112,7 +112,7 @@ public class UdaListener implements ServletContextListener, HttpSessionListener,
 				if (securityContext != null){					
 					authentication = securityContext.getAuthentication();
 					if (authentication != null){
-						credentials = (UserCredentials)authentication.getCredentials();
+						credentials = (Credentials)authentication.getCredentials();
 					}
 				}				
 				

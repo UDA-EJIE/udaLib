@@ -23,12 +23,16 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.filter.DelegatingFilterProxy;
 
+import com.ejie.x38.security.StockUdaSecurityPadlocksImpl;
 import com.ejie.x38.serialization.ThreadSafeCache;
 import com.ejie.x38.util.StackTraceManager;
 import com.ejie.x38.util.ThreadStorageManager;
@@ -50,9 +54,11 @@ public class UdaFilter extends DelegatingFilterProxy {
 
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain filterChain) {
+
+		HttpServletRequest httpServletRequest = (HttpServletRequest)request;
+		
 		try {
 			
-			HttpServletRequest httpServletRequest = (HttpServletRequest)request;
 			
 			logger.debug( "New request with UDA identificator "+ThreadStorageManager.getCurrentThreadId()+" has started");
 			
@@ -68,33 +74,46 @@ public class UdaFilter extends DelegatingFilterProxy {
 			String rupMultiModelHeader = httpServletRequest.getHeader("RUP_MULTI_ENTITY");
 			if(rupMultiModelHeader!=null){
 				ThreadSafeCache.addValue("RUP_MULTI_ENTITY", "RUP_MULTI_ENTITY");
-				
-//				HashMap<?, ?> map = new ObjectMapper().readValue(rupMultiModelHeader, HashMap.class);
-//				for(Entry<?, ?> entry:map.entrySet()){
-//					ThreadSafeCache.addValue((String)entry.getKey(), (String)entry.getValue());
-//				}
 			}
 			
 			filterChain.doFilter(request, response);
 			logger.debug( "Request with UDA identificator "+ThreadStorageManager.getCurrentThreadId()+" has ended");			
 		} catch (Exception exception) {
 			logger.error(StackTraceManager.getStackTrace(exception));
+			
+			HttpSession session = httpServletRequest.getSession();
+			String sessionId = httpServletRequest.getSession().getId();
 
 			try {
+				
 				if (!response.isCommitted()){
+					ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(session.getServletContext());
+					StockUdaSecurityPadlocksImpl stockUdaSecurityPadlocks = (StockUdaSecurityPadlocksImpl)ctx.getBean("stockUdaSecurityPadlocks");
+					if (stockUdaSecurityPadlocks != null && stockUdaSecurityPadlocks.existingSecurityPadlock(sessionId)){
+						stockUdaSecurityPadlocks.setAllowedAccessThread(sessionId, null);
+						stockUdaSecurityPadlocks.release(sessionId);
+					}
 					
 					HttpServletRequest req = (HttpServletRequest) request;
 					HttpServletResponse res = (HttpServletResponse) response;
 					
-					StringBuilder error = new StringBuilder("?");
-					error.append("exception_name=").append(exception.getClass().getName());
+					StringBuilder error = new StringBuilder(req.getContextPath());
+					error.append("/error?exception_name=").append(exception.getClass().getName());
 					error.append("&exception_message=").append(exception.getMessage());
 					error.append("&exception_trace=");
+					int outLength = error.length();
+					
 					for (StackTraceElement trace : exception.getStackTrace()) {
-						error.append(trace.toString()).append("</br>");
+						outLength = outLength + 5 /* </br> */ + trace.toString().length();
+						if (outLength <= 2044 /* IE Query String limit */){
+							error.append(trace.toString()).append("</br>");
+						} else {
+							break;
+						}
 					}
 					
-					res.sendRedirect(req.getContextPath() + "/error"+error);
+//					res.sendRedirect(req.getContextPath() + "/error"+error);
+					res.sendRedirect(error.toString());
 				}
 			} catch (Exception exc) {				
 				logger.error("Problem with sending of the response",exc);

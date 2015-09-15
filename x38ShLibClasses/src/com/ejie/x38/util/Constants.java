@@ -36,4 +36,8 @@ public class Constants {
 	public static final SimpleDateFormat YYYYMMDD_HHMMSS_DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	
 	public static final SimpleDateFormat HHMMSS_TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
+	
+	
+	//security
+	public static final String dataNotApplicable = "N/A";
 }

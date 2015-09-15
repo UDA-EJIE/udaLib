@@ -27,7 +27,7 @@ import ch.qos.logback.core.LogbackException;
 
 import com.ejie.x38.log.LogConstants;
 import com.ejie.x38.log.security.CurrentUserManager;
-import com.ejie.x38.security.UserCredentials;
+import com.ejie.x38.security.Credentials;
 
 /**
  * 
@@ -124,12 +124,12 @@ public class TransactionMetadata implements Serializable{
 		
 		if (securityContext != null){
 			
-			UserCredentials userCredentials = (UserCredentials) this.getSecurityContext().getAuthentication().getCredentials();
+			Credentials Credentials = (Credentials) this.getSecurityContext().getAuthentication().getCredentials();
 			
 			SecurityContextHolder.setContext(this.getSecurityContext());
 			MDC.put(LogConstants.USER, CurrentUserManager.getCurrentUsername());
-			MDC.put(LogConstants.SESSION, CurrentUserManager.getCurrentUserN38UidSesion(userCredentials));
-			MDC.put(LogConstants.POSITION, CurrentUserManager.getPosition(userCredentials));
+			MDC.put(LogConstants.SESSION, CurrentUserManager.getCurrentUserN38UidSesion(Credentials));
+			MDC.put(LogConstants.POSITION, CurrentUserManager.getPosition(Credentials));
 		} else {
 			logger.info("Remote service has not received the security context of the caller server. If the application has security services, is likely to occur a exception");
 		}

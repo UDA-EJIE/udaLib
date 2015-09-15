@@ -26,6 +26,7 @@ import ch.qos.logback.core.status.ErrorStatus;
 import ch.qos.logback.core.status.Status;
 import ch.qos.logback.core.status.StatusListener;
 import ch.qos.logback.core.status.StatusManager;
+import ch.qos.logback.core.util.StatusPrinter;
 
 /**
  *
@@ -45,14 +46,18 @@ public class UdaLogStatusListener extends ContextAwareBase implements StatusList
 		StringBuilder sb = null;
 		if (ErrorStatus.ERROR == status.getEffectiveLevel()){
 			sb = new StringBuilder(status.toString());
-			logger.error(sb.toString(), status.getThrowable());
-		} else if (ErrorStatus.WARN == status.getEffectiveLevel()){
-			sb = new StringBuilder(status.toString());
-			logger.warn(sb.toString());
-		} else {
-			sb = new StringBuilder(status.toString());
-			logger.info(sb.toString());
+			StatusPrinter.buildStr(sb, "", status);
+			System.out.println(sb);
+			sb = null;
+//			logger.error(sb.toString(), status.getThrowable());
 		}
+//		else if (ErrorStatus.WARN == status.getEffectiveLevel()){
+//			sb = new StringBuilder(status.toString());
+//			logger.warn(sb.toString());
+//		} else {
+//			sb = new StringBuilder(status.toString());
+//			logger.info(sb.toString());
+//		}
 	}
 
 	public void addStatusEvent(Status status) {

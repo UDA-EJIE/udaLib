@@ -23,21 +23,22 @@ import java.util.HashMap;
  *
  */
 public class StockUdaSecurityPadlocksImpl implements StockUdaSecurityPadlocks{
-	 
+	
 	   private final HashMap<String, UdaSecurityPadlock> SecurityPadlocks = new HashMap<String, UdaSecurityPadlock>();
 	   
 	   // Create fuctions
 	   public synchronized void  createSecurityPadlock(String sessionId, Long allowedAccessThread){
-		   this.SecurityPadlocks.put(sessionId, new UdaSecurityPadlock(allowedAccessThread));
+		   this.SecurityPadlocks.put(getBaseSessionId(sessionId), new UdaSecurityPadlock(allowedAccessThread));
 	   } 
 	   
 	   public synchronized void createSecurityPadlock(String sessionId, Long allowedAccessThread, int semaphoreLimit){
-		   this.SecurityPadlocks.put(sessionId, new UdaSecurityPadlock(allowedAccessThread, semaphoreLimit));
+		   
+		   this.SecurityPadlocks.put(getBaseSessionId(sessionId), new UdaSecurityPadlock(allowedAccessThread, semaphoreLimit));
 	   }
 	   
 	   // Modify values
 	   public Long getAllowedAccessThread(String sessionId){
-		   UdaSecurityPadlock udaSecurityPadlock = this.SecurityPadlocks.get(sessionId);
+		   UdaSecurityPadlock udaSecurityPadlock = this.SecurityPadlocks.get(getBaseSessionId(sessionId));
 		   if (udaSecurityPadlock != null){
 			   return udaSecurityPadlock.getAllowedAccessThread(); 
 		   } else {
@@ -46,7 +47,7 @@ public class StockUdaSecurityPadlocksImpl implements StockUdaSecurityPadlocks{
 	   }
 	   
 	   public void setAllowedAccessThread(String sessionId, Long accessThread){
-		   UdaSecurityPadlock udaSecurityPadlock = this.SecurityPadlocks.get(sessionId);
+		   UdaSecurityPadlock udaSecurityPadlock = this.SecurityPadlocks.get(getBaseSessionId(sessionId));
 		   if (udaSecurityPadlock != null){
 			   udaSecurityPadlock.setAllowedAccessThread(accessThread); 
 		   } else {
@@ -57,7 +58,7 @@ public class StockUdaSecurityPadlocksImpl implements StockUdaSecurityPadlocks{
 	   
 	   //Control functions
 	   public boolean existingSecurityPadlock(String sessionId){
-		   UdaSecurityPadlock udaSecurityPadlock = this.SecurityPadlocks.get(sessionId);
+		   UdaSecurityPadlock udaSecurityPadlock = this.SecurityPadlocks.get(getBaseSessionId(sessionId));
 		   if (udaSecurityPadlock != null){
 			   return true;
 		   } else {
@@ -66,7 +67,7 @@ public class StockUdaSecurityPadlocksImpl implements StockUdaSecurityPadlocks{
 	   }
 	   
 	   public boolean allowedAccess(String sessionId, Long accessThread) throws NullPointerException{
-		   UdaSecurityPadlock udaSecurityPadlock = this.SecurityPadlocks.get(sessionId);
+		   UdaSecurityPadlock udaSecurityPadlock = this.SecurityPadlocks.get(getBaseSessionId(sessionId));
 		   if (udaSecurityPadlock != null){
 			   return udaSecurityPadlock.allowedAccess(accessThread);
 		   } else {
@@ -76,7 +77,7 @@ public class StockUdaSecurityPadlocksImpl implements StockUdaSecurityPadlocks{
 	   }
 	   
 	   public void acquire(String sessionId) throws NullPointerException, InterruptedException{
-		   UdaSecurityPadlock udaSecurityPadlock = this.SecurityPadlocks.get(sessionId);
+		   UdaSecurityPadlock udaSecurityPadlock = this.SecurityPadlocks.get(getBaseSessionId(sessionId));
 		   if (udaSecurityPadlock != null){
 			   udaSecurityPadlock.acquire();
 		   } else {
@@ -85,7 +86,7 @@ public class StockUdaSecurityPadlocksImpl implements StockUdaSecurityPadlocks{
 	   }
 	   
 	   public void release(String sessionId) throws NullPointerException{
-		   UdaSecurityPadlock udaSecurityPadlock = this.SecurityPadlocks.get(sessionId);
+		   UdaSecurityPadlock udaSecurityPadlock = this.SecurityPadlocks.get(getBaseSessionId(sessionId));
 		   if (udaSecurityPadlock != null){
 			   udaSecurityPadlock.release();
 		   } else {
@@ -94,7 +95,7 @@ public class StockUdaSecurityPadlocksImpl implements StockUdaSecurityPadlocks{
 	   }
 	   
 	   public boolean tryAcquire(String sessionId) throws NullPointerException{
-		   UdaSecurityPadlock udaSecurityPadlock = this.SecurityPadlocks.get(sessionId);
+		   UdaSecurityPadlock udaSecurityPadlock = this.SecurityPadlocks.get(getBaseSessionId(sessionId));
 		   if (udaSecurityPadlock != null){
 			   return udaSecurityPadlock.tryAcquire();
 		   } else {
@@ -104,8 +105,16 @@ public class StockUdaSecurityPadlocksImpl implements StockUdaSecurityPadlocks{
 	   
 	   // Functions to control the Session's garbage
 	   public void deleteCredentialLoadObject(String sessionId){
-			if (this.SecurityPadlocks.get(sessionId) != null){
-				this.SecurityPadlocks.remove(sessionId);
+		   UdaSecurityPadlock udaSecurityPadlock = this.SecurityPadlocks.get(getBaseSessionId(sessionId));
+			if (udaSecurityPadlock != null){
+				udaSecurityPadlock.freeAllThreads();
+				this.SecurityPadlocks.remove(getBaseSessionId(sessionId));
 			}
-		} 
+		}
+	   
+	   private String getBaseSessionId(String sessionId){
+		   String[] baseSessionId = sessionId.split("!"); 
+		   return baseSessionId[0];
+		   
+	   }
 }

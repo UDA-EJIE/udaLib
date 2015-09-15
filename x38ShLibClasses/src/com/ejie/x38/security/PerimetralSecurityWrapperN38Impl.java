@@ -16,6 +16,8 @@
 package com.ejie.x38.security;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 
@@ -52,11 +54,13 @@ public class PerimetralSecurityWrapperN38Impl implements
 	
 	private Long xlnetCachingPeriod = new Long(0);
 	private String xlnetsDomain = null;
-	private boolean destroyXLNetsSession = false;
+	private boolean destroySessionSecuritySystem = false;
 	private String userChangeUrl = null;
 	private ExcludeFilter excludeFilter = null;
 	private UdaCustomJdbcDaoImpl alternativeStorageUserCredentials = null;
 	private HashMap<String, String> anonymousProfile = new HashMap<String, String>();
+	private AlternativeOriginCredentialsApp alternativeOriginCredentialsApp = null;
+	private Credentials specificCredentials = null; 
 	
 	public PerimetralSecurityWrapperN38Impl(){
 		this.anonymousProfile.put("position", "udaAnonymousPosition");
@@ -69,13 +73,13 @@ public class PerimetralSecurityWrapperN38Impl implements
 		
 		//Getting Authentication credentials
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		UserCredentials credentials = null; 
+		Credentials credentials = null; 
 		
 		//Setpoint of the User Session. if the session is not created, it will proceed to create it
 		HttpSession httpSession = httpRequest.getSession(true);
 		
 		if (authentication != null){
-			credentials = (UserCredentials)authentication.getCredentials();
+			credentials = (Credentials)authentication.getCredentials();
 		}
 		
 		if (credentials != null){
@@ -158,14 +162,14 @@ public class PerimetralSecurityWrapperN38Impl implements
 		String userName = null;
 		String xlnetUserId = getXlnetsUserId(httpRequest);
 		HttpSession httpSession = httpRequest.getSession(false);
-		UserCredentials credentials = null; 
+		Credentials credentials = null; 
 		Authentication authentication = null;
 		
 		//Getting Authentication credentials
 		authentication = SecurityContextHolder.getContext().getAuthentication();
 		
 		if (authentication != null){
-			credentials = (UserCredentials)authentication.getCredentials();
+			credentials = (Credentials)authentication.getCredentials();
 		}
 		
 		if(httpSession != null){
@@ -174,7 +178,7 @@ public class PerimetralSecurityWrapperN38Impl implements
 			if (!(userName == null && credentials == null)){
 				if (userName == null){
 					httpSession.removeAttribute("fullName");
-					httpSession.removeAttribute("destroyXLNetsSession");
+					httpSession.removeAttribute("destroySessionSecuritySystem");
 					userName = credentials.getUserName();
 				} else {
 					httpSession.removeAttribute("userName");
@@ -190,13 +194,21 @@ public class PerimetralSecurityWrapperN38Impl implements
 		return userName;		
 	}
 	
-	public HashMap<String, String> getUserDataInfo(HttpServletRequest httpRequest){
-		HashMap<String, String> userData = null;
+	public HashMap<String, String> getUserDataInfo(HttpServletRequest httpRequest, boolean isCertificate){
 		HttpSession httpSession = httpRequest.getSession(false);
 		String fullName = (String) httpSession.getAttribute("fullName");
 		
-		//Returning UserPosition
-		userData = new HashMap<String, String>();
+		//Returning UserDataInfo
+		HashMap<String, String> userData = new HashMap<String, String>();
+		HashMap<String, String> userInfo = null;
+		N38API n38Api;
+		Document xmlSesion;
+		
+		if(isCertificate){
+			n38Api = XlnetCore.getN38API(httpRequest);
+			xmlSesion = XlnetCore.getN38ItemSesion(n38Api);
+			userData = XlnetCore.getN38SubjectCert(xmlSesion);
+		}
 		
 		if (fullName != null){
 			userData.put("fullName", fullName);
@@ -206,10 +218,7 @@ public class PerimetralSecurityWrapperN38Impl implements
 			httpSession.removeAttribute("name");
 			httpSession.removeAttribute("surname");
 		} else {
-			N38API n38Api = XlnetCore.getN38API(httpRequest);
-			Document xmlSesion = XlnetCore.getN38ItemSesion(n38Api);
-			HashMap<String, String> userInfo = null;
-			
+			n38Api = XlnetCore.getN38API(httpRequest);
 			if(!(XlnetCore.getParameterSession(n38Api, "n38uidOrg").equals("0"))){
 				//User is in the XLNets's LDap
 				userInfo = XlnetCore.getUserDataInfo(n38Api);
@@ -220,16 +229,16 @@ public class PerimetralSecurityWrapperN38Impl implements
 				
 			} else {
 				//User isn't in the XLNets's LDap
-				userInfo = XlnetCore.getN38SubjectCert(xmlSesion);
-				userData.put("name", userInfo.get("GIVENNAME"));
-				userData.put("surname", userInfo.get("SURNAME"));
-				userData.put("fullName",  userInfo.get("CN"));
-				httpSession.setAttribute("fullName",userInfo.get("CN"));
+				userData.put("name", userData.get("GIVENNAME"));
+				userData.put("surname", userData.get("SURNAME"));
+				userData.put("fullName",  userData.get("CN"));
+				httpSession.setAttribute("fullName",userData.get("CN"));
 			}
 			
 			xmlSesion = null;
 			userInfo = null;
 		}
+		
 		
 		logger.trace("Connected User's data is: "+userData.toString());
 		
@@ -391,7 +400,8 @@ public class PerimetralSecurityWrapperN38Impl implements
 					//Deleting security context data
 					n38Api = null;
 					xmlSesion = null;
-					deleteAllXLNetsCookies(httpRequest, httpResponse);
+					//deleteAllXLNetsCookies(httpRequest, httpResponse);
+					logout(httpRequest, httpResponse);
 					authenticationLogContextClean();
 					
 					return false;
@@ -516,13 +526,10 @@ public class PerimetralSecurityWrapperN38Impl implements
 		N38API n38Api = XlnetCore.getN38API(httpRequest);
 		HttpSession httpSession = httpRequest.getSession(false);
 		Document xmlSecurityData = null;
+		Vector<String> userProfiles = new Vector<String>();
 		String UserName;
 		String serialNumber = null;
 		String policy;
-		
-		//Recharging  the lifetime of the cache
-//		httpSession.removeAttribute("udaTimeStamp");
-//		httpSession.setAttribute("udaTimeStamp", System.currentTimeMillis());
 		
 		//Recovering general data of XLNets user credentials
 		httpSession.setAttribute("nif", XlnetCore.getParameterSession(n38Api, N38API.NOMBRE_DNI));
@@ -541,18 +548,32 @@ public class PerimetralSecurityWrapperN38Impl implements
 			
 			//Recovering XLNets user credentials
 			httpSession.setAttribute("userName", UserName);
-			httpSession.setAttribute("destroyXLNetsSession", this.destroyXLNetsSession);
 			httpSession.setAttribute("position", XlnetCore.getParameterSession(n38Api, N38API.NOMBRE_N38PUESTOUID));
 			httpSession.setAttribute("uidSession", XlnetCore.getParameterSession(n38Api, N38API.NOMBRE_N38UIDSESION));
 			httpSession.setAttribute("udaValidateSessionId", xLNetsUserId);
 			
-			xmlSecurityData = XlnetCore.getN38ItemSeguridad(n38Api, StaticsContainer.webAppName);
-			if (xmlSecurityData != null) {
-				httpSession.setAttribute("userProfiles", XlnetCore.searchParameterIntoXlnetSesion(xmlSecurityData, XlnetCore.PATH_SUBTIPO_N38INSTANCIA));
-			} else {
-				httpSession.setAttribute("userProfiles", null);
+			//Getting user's profiles
+			if(this.alternativeOriginCredentialsApp != null && this.alternativeOriginCredentialsApp.existAditionalsAppCodes(httpRequest)){
+				List<String> appCodes = this.alternativeOriginCredentialsApp.getAppCodes(httpRequest);
+				Iterator<String> appCodesIterator = appCodes.iterator();
+				String appCode;
+				
+				while(appCodesIterator.hasNext()){
+					appCode = appCodesIterator.next();
+					xmlSecurityData = XlnetCore.getN38ItemSeguridad(n38Api, appCode);
+					if (xmlSecurityData != null) {
+						userProfiles.addAll(XlnetCore.searchParameterIntoXlnetSesion(xmlSecurityData, XlnetCore.PATH_SUBTIPO_N38INSTANCIA));
+					}
+				}
 			}
 			
+			xmlSecurityData = XlnetCore.getN38ItemSeguridad(n38Api, StaticsContainer.webAppName);
+			if (xmlSecurityData != null) {
+				userProfiles.addAll(XlnetCore.searchParameterIntoXlnetSesion(xmlSecurityData, XlnetCore.PATH_SUBTIPO_N38INSTANCIA));
+			}
+			//Set obtain user's profiles
+			httpSession.setAttribute("userProfiles", userProfiles);
+					
 		} else{
 			//User isn't in the XLNets's LDap
 			UserName = (String) httpSession.getAttribute("fullName");
@@ -578,6 +599,8 @@ public class PerimetralSecurityWrapperN38Impl implements
 			
 			httpSession.setAttribute("userProfiles", userprofile);
 		}
+		
+		httpSession.setAttribute("destroySessionSecuritySystem", this.destroySessionSecuritySystem);
 
 		return UserName;
 	}
@@ -622,12 +645,20 @@ public class PerimetralSecurityWrapperN38Impl implements
 		return this.anonymousProfile;
 	}
 	
-	public boolean getDestroyXLNetsSession(){
-		return this.destroyXLNetsSession;
+	public boolean getDestroySessionSecuritySystem(){
+		return this.destroySessionSecuritySystem;
 	}
 	
-	public ExcludeFilter excludeFilter(){
+	public ExcludeFilter getExcludeFilter(){
 		return this.excludeFilter;
+	}
+	
+	public Object getAlternativeOriginCredentialsApp(){
+		return this.alternativeOriginCredentialsApp;
+	}
+	
+	public Credentials getSpecificCredentials(){
+		return this.specificCredentials;
 	}
 	
 	public void setXlnetCachingPeriod(Long xlnetCachingPeriod) {
@@ -653,12 +684,49 @@ public class PerimetralSecurityWrapperN38Impl implements
 		this.anonymousProfile = anonymousProfile;
 	}
 	
-	public boolean setDestroyXLNetsSession(boolean destroyXLNetsSession){
-		return this.destroyXLNetsSession = destroyXLNetsSession;
+	public void setDestroySessionSecuritySystem(boolean destroySessionSecuritySystem){
+		this.destroySessionSecuritySystem = destroySessionSecuritySystem;
 	}
 	
 	public void setExcludeFilter(ExcludeFilter excludeFilter){
 		this.excludeFilter = excludeFilter;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public void setAlternativeOriginCredentialsApp(Object alternativeOriginCredentialsApp){
+		
+		AlternativeOriginCredentialsApp alternativeOriginCredentialsAppObject;
+		
+		try{
+			if(alternativeOriginCredentialsApp instanceof String){
+				alternativeOriginCredentialsAppObject = new AlternativeOriginCredentialsAppImp((String)alternativeOriginCredentialsApp);			 
+			} else if(alternativeOriginCredentialsApp instanceof List<?>){
+				
+				List<Object> validateAlternativeOriginCredentialsApp = (List<Object>)alternativeOriginCredentialsApp;
+				
+				for (Object o : validateAlternativeOriginCredentialsApp)
+				      if (!(o instanceof String))
+				    	  throw new UnsatisfiedDependencyException("security-config", "PerimetralSecurityWrapperN38Impl", "alternativeOriginCredentialsApp", "The specified object is not correct to the parameter  \"alternativeOriginCredentialsApp\". The object must be instace of String, List <String> or AlternativeOriginCredentialsApp.");
+			
+				alternativeOriginCredentialsAppObject = new AlternativeOriginCredentialsAppImp((List<String>)alternativeOriginCredentialsApp);
+			} else if(alternativeOriginCredentialsApp instanceof AlternativeOriginCredentialsApp){
+				alternativeOriginCredentialsAppObject = (AlternativeOriginCredentialsApp) alternativeOriginCredentialsApp;
+			} else {
+				throw new UnsatisfiedDependencyException("security-config", "PerimetralSecurityWrapperN38Impl", "alternativeOriginCredentialsApp", "The specified object is not correct to the parameter  \"alternativeOriginCredentialsApp\". The object must be instace of String, List <String> or AlternativeOriginCredentialsApp.");
+			}
+		} catch (Exception e) {
+			//As the specified object is not correct to the parameter  "alternativeOriginCredentialsApp", an exception is raised and the application doesn't will deploy an exception is raised and does not load  
+			UnsatisfiedDependencyException exc = new UnsatisfiedDependencyException("security-config", "PerimetralSecurityWrapperN38Impl", "alternativeOriginCredentialsApp", "The specified object is not correct to the parameter  \"alternativeOriginCredentialsApp\". The object must be instace of String, List <String> or AlternativeOriginCredentialsApp.");
+			logger.error("The specified object is not correct to the parameter  \"alternativeOriginCredentialsApp\". The object must be instace of String, List <String> or AlternativeOriginCredentialsApp.", exc);
+			throw exc;
+		}
+		
+		this.alternativeOriginCredentialsApp = alternativeOriginCredentialsAppObject;
+	}
+	
+	public void setSpecificCredentials(Credentials credentials){
+		this.specificCredentials = credentials;
+	}
+	
 }
+

@@ -34,10 +34,18 @@ public class JQGridJSONModel {
 	}
 	public JQGridJSONModel(Pagination pagination, Long recordNum, List<?> rows) {
 		super();
-		this.page = pagination.getPage().toString();
+		this.page = (pagination.getPage()!=null)?pagination.getPage().toString():"";
 		this.rows = rows;
-		this.setTotal(recordNum, pagination.getRows());
+		this.setTotal(recordNum, (pagination.getRows()!=null)?pagination.getRows():0);
 		this.records = recordNum.intValue();
+	}
+	
+	public JQGridJSONModel(Pagination pagination, Long recordNum, Long total, List<?> rows) {
+		super();
+		this.page = (pagination.getPage()!=null)?pagination.getPage().toString():"";
+		this.rows = rows;
+		this.setTotal(recordNum, (pagination.getRows()!=null)?pagination.getRows():0);
+		this.records = total.intValue();
 	}
 	
 	/**

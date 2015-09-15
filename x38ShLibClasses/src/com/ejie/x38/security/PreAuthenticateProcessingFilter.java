@@ -16,8 +16,6 @@
 package com.ejie.x38.security;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Vector;
 
 import javax.annotation.Resource;
 import javax.servlet.FilterChain;
@@ -55,7 +53,7 @@ public  class PreAuthenticateProcessingFilter extends
 			.getLogger(PreAuthenticateProcessingFilter.class);
 
 	//Semaphore for not concurrent access
-	private StockUdaSecurityPadlocksImpl stockUdaSecurityPadlocks;
+	protected StockUdaSecurityPadlocksImpl stockUdaSecurityPadlocks;
 	private PerimetralSecurityWrapper perimetralSecurityWrapper;
 
 	/**
@@ -86,7 +84,7 @@ public  class PreAuthenticateProcessingFilter extends
 				httpSession.removeAttribute("reloadData");
 				httpSession.removeAttribute("uidSession");
 				httpSession.removeAttribute("userChange");
-				httpSession.removeAttribute("destroyXLNetsSession");
+				httpSession.removeAttribute("destroySessionSecuritySystem");
 				
 				((HttpServletResponse) response).sendError(403, messageSource.getMessage("security.ajaxLoadError", null, LocaleContextHolder.getLocale()));
 			}			
@@ -107,38 +105,26 @@ public  class PreAuthenticateProcessingFilter extends
 
 	@Override
 	protected synchronized Object getPreAuthenticatedCredentials(HttpServletRequest request) {
-		UserCredentials result = null;
-		boolean isAjax = request.getHeaders("X-Requested-With").hasMoreElements();
-		String uidSession = getPerimetralSecurityWrapper().getUserConnectedUidSession(request);
-		String userName = getPerimetralSecurityWrapper().getUserConnectedUserName(request);
-		String position = getPerimetralSecurityWrapper().getUserPosition(request);
-		Vector <String> UserInstances = getPerimetralSecurityWrapper().getUserInstances(request);
-		String udaValidateSessionId = getPerimetralSecurityWrapper().getUdaValidateSessionId(request);
-		String policy = getPerimetralSecurityWrapper().getPolicy(request);
-		boolean certificate = getPerimetralSecurityWrapper().getIsCertificate(request);
-		String nif = getPerimetralSecurityWrapper().getNif(request);
-		HashMap<String, String> userData = getPerimetralSecurityWrapper().getUserDataInfo(request);
-		boolean destroySession = false;
+
+		Credentials result = this.perimetralSecurityWrapper.getSpecificCredentials();
 		
-		Object object = getPerimetralSecurityWrapper();
-		
-		if(object instanceof PerimetralSecurityWrapperN38Impl){
-			destroySession = ((PerimetralSecurityWrapperN38Impl) object).getDestroyXLNetsSession();			 
+		if (result == null){
+			result = new UserCredentials();
 		}
 		
-		result= new UserCredentials(UserInstances, userName, userData.get("name"), userData.get("surname"), userData.get("fullName"),nif, uidSession, position, udaValidateSessionId, policy, certificate, destroySession);
-		logger.info( "The incoming user's Credentials are loading. The data of its credentials is: [uidSession = "+uidSession+" ] [userName = "+userName+" ] [position = "+position+"]");
-				
-		MDC.put(LogConstants.SESSION,uidSession);
-		MDC.put(LogConstants.USER,userName);
-		MDC.put(LogConstants.POSITION,position);
+		//Load data's credential of user
+		result.loadCredentialsData(this.perimetralSecurityWrapper, request);
 		
-		if(isAjax){
-			stockUdaSecurityPadlocks.setAllowedAccessThread(request.getSession().getId(), null);
-			stockUdaSecurityPadlocks.release(request.getSession().getId());
-		}
+		//Code associated to the security system of UDA. It is very important to operation of the internal gestion of the system.    
+		MDC.put(LogConstants.SESSION,result.getUidSession());
+		MDC.put(LogConstants.USER,result.getUserName());
+		MDC.put(LogConstants.POSITION,result.getPosition());
+		
+		stockUdaSecurityPadlocks.setAllowedAccessThread(request.getSession().getId(), null);
+		stockUdaSecurityPadlocks.release(request.getSession().getId());
 		
 		request.getSession().removeAttribute("credentialsLoading");
+		//[END] Code associated to the security system of UDA.
 				
 		return result;
 	}
@@ -148,20 +134,16 @@ public  class PreAuthenticateProcessingFilter extends
 		String principalUser = null;
 		HttpSession session = httpRequest.getSession(false);
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		boolean isAjax = httpRequest.getHeaders("X-Requested-With").hasMoreElements();
 		
 		if(!stockUdaSecurityPadlocks.existingSecurityPadlock(session.getId())){
 			stockUdaSecurityPadlocks.createSecurityPadlock(session.getId(), null);
 		}
 		
-		if(isAjax){
-			if (!stockUdaSecurityPadlocks.allowedAccess(session.getId(), ThreadStorageManager.getCurrentThreadId())){
-				try{
-					stockUdaSecurityPadlocks.acquire(session.getId());
-				} catch (InterruptedException e) {
-					throw new SecurityException("UDA's Security system error", e.getCause());
-				}
-			} else {
+		if (!stockUdaSecurityPadlocks.allowedAccess(session.getId(), ThreadStorageManager.getCurrentThreadId())){
+			try{
+				stockUdaSecurityPadlocks.acquire(session.getId());
+			} catch (InterruptedException e) {
+				throw new SecurityException("UDA's Security system error", e.getCause());
 			}
 		}
 				
@@ -214,7 +196,7 @@ public  class PreAuthenticateProcessingFilter extends
 	
 	// Getters & Setters
 	public PerimetralSecurityWrapper getPerimetralSecurityWrapper() {
-		return perimetralSecurityWrapper;
+		return this.perimetralSecurityWrapper;
 	}
 
 	public void setPerimetralSecurityWrapper(PerimetralSecurityWrapper perimetralSecurityWrapper) {

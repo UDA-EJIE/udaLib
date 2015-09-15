@@ -55,10 +55,12 @@ public class PerimetralSecurityWrapperMockImpl implements
 
 	private ArrayList<HashMap<String,Object>> principal;
 	private String userChangeUrl;
+	private Credentials specificCredentials = null;
+	private boolean destroySessionSecuritySystem = false;
 
 	public String validateSession(HttpServletRequest httpRequest, HttpServletResponse response) throws SecurityException{
 		
-		UserCredentials credentials = null; 
+		Credentials credentials = null; 
 		Authentication authentication = null;
 		StringBuilder udaMockSessionId = new StringBuilder();
 		HttpSession httpSession = httpRequest.getSession(true);
@@ -85,7 +87,7 @@ public class PerimetralSecurityWrapperMockImpl implements
 			authentication = SecurityContextHolder.getContext().getAuthentication();
 			
 			if (authentication != null){
-				credentials = (UserCredentials)authentication.getCredentials();
+				credentials = (Credentials)authentication.getCredentials();
 			}
 					
 			//If the sessionId changed, disable XLNET caching
@@ -125,7 +127,6 @@ public class PerimetralSecurityWrapperMockImpl implements
 		return (String)user.get("position");		
 	}
 	
-	//encuentrame
 	public String getUdaValidateSessionId(HttpServletRequest httpRequest) {
 		StringBuilder udaMockSessionId = new StringBuilder();
 		
@@ -159,9 +160,15 @@ public class PerimetralSecurityWrapperMockImpl implements
 		return udaMockUserName.getValue();
 	}
 	
-	public HashMap<String, String> getUserDataInfo(HttpServletRequest httpRequest){
+	@SuppressWarnings("unchecked")
+	public HashMap<String, String> getUserDataInfo(HttpServletRequest httpRequest, boolean isCertificate){
+		//falta la especificacion de datos de las credenciles para el mock
 		HashMap<String, Object> user = getUserData(principal, getUserConnectedUserName(httpRequest));
 		HashMap<String, String> userData = new HashMap<String, String>();
+		
+		if(isCertificate && user.get("subjectCert") != null){
+			userData = (HashMap<String, String>)user.get("subjectCert");
+		}
 		
 		userData.put("name", (String)user.get("name"));
 		userData.put("surname", (String)user.get("surname"));
@@ -312,6 +319,14 @@ public class PerimetralSecurityWrapperMockImpl implements
 	}
 	
 	//Getters & Setters
+	public Credentials getSpecificCredentials(){
+		return this.specificCredentials;
+	}
+	
+	public boolean getDestroySessionSecuritySystem(){
+		return this.destroySessionSecuritySystem;
+	}
+	
 	public ArrayList<HashMap<String,Object>> getPrincipal() {
 		return principal;
 	}
@@ -322,6 +337,7 @@ public class PerimetralSecurityWrapperMockImpl implements
 		//Data of User Anonymous
 		HashMap<String, Object> userAnonymous = new HashMap<String, Object>(); 
 		ArrayList<String> roles = new ArrayList<String>();
+		HashMap<String,String> subjectCert = new HashMap<String,String>();
 		roles.add("UDAANONYMOUS");
 		
 		userAnonymous.put("userName", "udaAnonymousUser");
@@ -332,6 +348,7 @@ public class PerimetralSecurityWrapperMockImpl implements
 		userAnonymous.put("policy", "udaAnonymousPolicy");
 		userAnonymous.put("position", "udaAnonymousPosition");
 		userAnonymous.put("isCertificate", "no");
+		userAnonymous.put("subjectCert",subjectCert);
 		userAnonymous.put("roles", roles);
 		
 		this.principal.add(userAnonymous);
@@ -344,5 +361,13 @@ public class PerimetralSecurityWrapperMockImpl implements
 	
 	public void setUserChangeUrl(String userChangeUrl) {
 		this.userChangeUrl = userChangeUrl;
-	}	
+	}
+	
+	public void setSpecificCredentials(Credentials credentials){
+		this.specificCredentials = credentials;	
+	}
+	
+	public void setDestroySessionSecuritySystem(boolean destroySessionSecuritySystem){
+		this.destroySessionSecuritySystem = destroySessionSecuritySystem;
+	}
 }

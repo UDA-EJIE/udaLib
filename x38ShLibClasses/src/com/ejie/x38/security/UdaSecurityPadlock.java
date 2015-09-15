@@ -57,6 +57,10 @@ import java.util.concurrent.Semaphore;
 	   this.credentialLoad.acquire();
    }
    
+   protected void freeAllThreads(){
+	   this.credentialLoad.release(this.credentialLoad.getQueueLength());
+   }
+   
    protected void release(){
 	   this.credentialLoad.release();
    }
