@@ -16,6 +16,7 @@
 package com.ejie.x38.control.exception;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Locale;
 import java.util.Map;
 
@@ -64,7 +65,11 @@ public class FileExceedsFileSizeLimitHandler implements HandlerExceptionResolver
 				if (IframeXHREmulationUtils.isIframeEmulationRequired(request)){
 					IframeXHREmulationUtils.writeIframeHttpStatus(response, messageError.getBytes(), HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE);
 				}else{
-					response.sendError(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE, messageJSON.toString());
+					String content = messageJSON.toString();
+					response.setStatus(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE);
+					response.setContentLength(content.getBytes(Charset.forName(response.getCharacterEncoding())).length);
+					response.getWriter().print(content);
+					response.flushBuffer();
 				}
 				
 			} catch (IOException e) {

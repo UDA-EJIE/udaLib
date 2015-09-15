@@ -32,6 +32,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -55,7 +56,8 @@ public class PerimetralSecurityWrapperMockImpl implements
 
 	private ArrayList<HashMap<String,Object>> principal;
 	private String userChangeUrl;
-	private Credentials specificCredentials = null;
+	private Object specificCredentials = null;
+	private String specificCredentialsName = null;
 	private boolean destroySessionSecuritySystem = false;
 
 	public String validateSession(HttpServletRequest httpRequest, HttpServletResponse response) throws SecurityException{
@@ -81,7 +83,7 @@ public class PerimetralSecurityWrapperMockImpl implements
 		if (udaMockUserName != null){
 			udaMockSessionId.append(udaMockUserName.getValue()); 
 			udaMockSessionId.append("-");
-			udaMockSessionId.append(httpRequest.getSession(true).getId());
+			udaMockSessionId.append(httpRequest.getSession(false).getId());
 			
 			//Getting Authentication credentials
 			authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -319,8 +321,22 @@ public class PerimetralSecurityWrapperMockImpl implements
 	}
 	
 	//Getters & Setters
-	public Credentials getSpecificCredentials(){
+	public Object getSpecificCredentials(){
 		return this.specificCredentials;
+	}
+	
+	public Credentials getCredentials(){
+		if (specificCredentialsName == null){
+			return new UserCredentials();
+		} else {
+			try {
+				return (Credentials)Class.forName(specificCredentialsName).newInstance();
+			}catch (Exception e) {
+				logger.error("getCredentials(): The object specified to the parameter \"SpecificCredentials\" is not correct. The object has not been instantiated", e);
+				SecurityException sec = new SecurityException("getCredentials(): The object specified to the parameter \"SpecificCredentials\" is not correct. The object has not been instantiated", e.getCause());
+				throw sec;
+			}
+		}
 	}
 	
 	public boolean getDestroySessionSecuritySystem(){
@@ -363,10 +379,25 @@ public class PerimetralSecurityWrapperMockImpl implements
 		this.userChangeUrl = userChangeUrl;
 	}
 	
-	public void setSpecificCredentials(Credentials credentials){
-		this.specificCredentials = credentials;	
+	public void setSpecificCredentials(Object credentials){
+		Object specificCredentials = credentials; 
+		
+		try{
+			if(specificCredentials instanceof String){
+				specificCredentials = Class.forName((String)credentials).newInstance();
+			}
+			if(specificCredentials instanceof Credentials){
+				this.specificCredentialsName = specificCredentials.getClass().getName();				
+			} else {
+				throw new UnsatisfiedDependencyException("security-config", "PerimetralSecurityWrapperN38Impl", "setSpecificCredentials", "The specified object is not correct to the parameter  \"SpecificCredentials\". The object must be instace of String (className of a Class than extend the \"Credentials\" Class) or one Bean of a Class than extend the \"Credentials\" Class.");
+			}
+		} catch (Exception e) {
+			throw new UnsatisfiedDependencyException("security-config", "PerimetralSecurityWrapperN38Impl", "setSpecificCredentials", "The specified object is not correct to the parameter  \"SpecificCredentials\". The object must be instace of String (className of a Class than extend the \"Credentials\" Class) or one Bean of a Class than extend the \"Credentials\" Class.");
+		} finally {
+			this.specificCredentials = specificCredentials;
+		}
 	}
-	
+		
 	public void setDestroySessionSecuritySystem(boolean destroySessionSecuritySystem){
 	}
 }

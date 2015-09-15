@@ -16,6 +16,7 @@
 package com.ejie.x38.security;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import javax.annotation.Resource;
 import javax.servlet.RequestDispatcher;
@@ -56,19 +57,23 @@ public class MyAccessDeniedHandler implements AccessDeniedHandler {
 				if (this.errorPage != null){
 					httpServletRequest.setAttribute("SPRING_SECURITY_403_EXCEPTION", accessDeniedException);
 	
-					httpServletResponse.setStatus(403);
+					httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
 	
 					RequestDispatcher dispatcher = httpServletRequest.getRequestDispatcher(this.errorPage);
 					dispatcher.forward(httpServletRequest, httpServletResponse);
 				} else {
-					httpServletResponse.sendError(403, accessDeniedException.getMessage());
+					String content = accessDeniedException.getMessage();
+					httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
+					httpServletResponse.setContentLength(content.getBytes(Charset.forName(httpServletResponse.getCharacterEncoding())).length);
+					httpServletResponse.getWriter().print(content);
+					httpServletResponse.flushBuffer();
 				}
 				
 			} else {
 				String message = messageSource.getMessage("security.ajaxAccesError", null, LocaleContextHolder.getLocale());
 				ServletOutputStream servletOutputStream = httpServletResponse.getOutputStream();
 
-				httpServletResponse.setStatus(403);
+				httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
 				servletOutputStream.print(message);
 				httpServletResponse.flushBuffer();		
 			}

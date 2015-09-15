@@ -52,7 +52,7 @@ public interface PerimetralSecurityWrapper {
 	
 	public String getNif(HttpServletRequest httpRequest);
 	 
-	public Credentials getSpecificCredentials();
+	public Credentials getCredentials();
 	
 	public boolean getDestroySessionSecuritySystem();
 	

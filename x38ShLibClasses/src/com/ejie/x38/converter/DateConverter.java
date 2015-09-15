@@ -37,7 +37,7 @@ public class DateConverter implements Converter<String, Date> {
 	public Date convert(String strFecha) {
 		try {
 			Locale locale = LocaleContextHolder.getLocale();
-			SimpleDateFormat format = DateTimeManager.getDateTimeFormat(locale);
+			SimpleDateFormat format = strFecha.length()>10?DateTimeManager.getTimestampFormat(locale):DateTimeManager.getDateTimeFormat(locale);
 			return format.parse(strFecha);
 		} catch (ParseException ex) {
 			ex.printStackTrace();

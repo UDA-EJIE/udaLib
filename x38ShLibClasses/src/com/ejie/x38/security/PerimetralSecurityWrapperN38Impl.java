@@ -60,7 +60,8 @@ public class PerimetralSecurityWrapperN38Impl implements
 	private UdaCustomJdbcDaoImpl alternativeStorageUserCredentials = null;
 	private HashMap<String, String> anonymousProfile = new HashMap<String, String>();
 	private AlternativeOriginCredentialsApp alternativeOriginCredentialsApp = null;
-	private Credentials specificCredentials = null; 
+	private String specificCredentialsName = null;
+	private Object specificCredentials = null; 
 	
 	public PerimetralSecurityWrapperN38Impl(){
 		this.anonymousProfile.put("position", "udaAnonymousPosition");
@@ -90,7 +91,7 @@ public class PerimetralSecurityWrapperN38Impl implements
 					return excludeFilter.getAccessDeniedUrl();
 				
 				//If the sessionId changed, disable XLNET caching
-				}else if(!(credentials.getUdaValidateSessionId().equals(udaXLNetsSessionId.toString()))){
+				}else if(credentials.getUdaValidateSessionId().compareTo(udaXLNetsSessionId.toString()) !=0){
 					
 					logger.info("XLNet's caching of session "+httpSession.getId()+" expired, because the XLNets user has changed");
 					authenticationLogContextClean();
@@ -117,7 +118,8 @@ public class PerimetralSecurityWrapperN38Impl implements
 				//If the last XLNET session refresh was performed more than X minutes ago, disable caching
 				} else if(httpSession!=null && httpSession.getAttribute("udaTimeStamp")!=null){
 					if(reloadData(httpRequest)){
-		
+						logger.info("XLNet's caching of session "+httpSession.getId()+" expired, after, at least, "+xlnetCachingPeriod+" Seconds");
+						
 						//Validate the Object of XLnets
 						if(isN38ApiValid(httpRequest, httpResponse)){
 							loadReloadData(httpRequest, ThreadStorageManager.getCurrentThreadId());
@@ -126,12 +128,9 @@ public class PerimetralSecurityWrapperN38Impl implements
 							udaXLNetsSessionId = null;
 							springSecurityContextClean(httpSession);
 							return "false";
-						}
-						
-						logger.info("XLNet's caching of session "+httpSession.getId()+" expired, after, at least, "+xlnetCachingPeriod+" Seconds");
+						}						
 					}
-				}
-				
+				}				
 				return "true";
 				
 			} else {
@@ -143,6 +142,7 @@ public class PerimetralSecurityWrapperN38Impl implements
 				return "false";
 			}
 		} else {
+			logger.info("authentication.getCredentials() null");
 			//Validate the Object of XLnets
 			if(udaXLNetsSessionId != null && isN38ApiValid(httpRequest, httpResponse)){
 				//The entry is accepting by the security system
@@ -157,7 +157,7 @@ public class PerimetralSecurityWrapperN38Impl implements
 	}
 	
 	/* Methods to recovery the credentials data */
-	
+
 	public String getUserConnectedUserName(HttpServletRequest httpRequest) {
 		String userName = null;
 		String xlnetUserId = getXlnetsUserId(httpRequest);
@@ -379,11 +379,11 @@ public class PerimetralSecurityWrapperN38Impl implements
 	//Validates the N38API and, if is necessary, cleans the XLNets cookies
 	protected boolean isN38ApiValid(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws SecurityException{
 		
-		N38API n38Api;
 		Document xmlSesion = null;
-		HttpSession httpSession = httpRequest.getSession(true);
+		HttpSession httpSession = httpRequest.getSession(false);
 		HashMap<String, String> userInfo = null;
-				
+		
+		N38API n38Api;
 		n38Api = XlnetCore.getN38API(httpRequest);
 		
 		if (n38Api != null){
@@ -444,7 +444,7 @@ public class PerimetralSecurityWrapperN38Impl implements
 			return false;
 		}
 	}
-	
+		
 	//Cleaner method unregister Authentication Configuration
 	private void authenticationLogContextClean(){
 		MDC.put(LogConstants.SESSION,"N/A");
@@ -505,13 +505,20 @@ public class PerimetralSecurityWrapperN38Impl implements
 				}
 			}
 		}
-		
+
+		logger.debug( "getXlnetsUserId: udaXlnetsSession value");
 		if (n38UidSesion != null && n38UidSistemasXLNetS != null){
 			udaXLNetsSessionId.append(n38UidSistemasXLNetS.getValue()).append("-").append(n38UidSesion.getValue());
-			return (udaXLNetsSessionId.toString());
+			logger.debug( "getXlnetsUserId: cookie - n38UidSistemasXLNetS => " + n38UidSistemasXLNetS.getValue());
+		} else if (n38UidSesion != null){
+			udaXLNetsSessionId.append(n38UidSesion.getValue());
+			logger.debug( "getXlnetsUserId: cookie - n38UidSesion => " + n38UidSesion.getValue());
 		} else {
+			logger.debug( "getXlnetsUserId: null");
 			return null;
 		}
+		logger.debug( "getXlnetsUserId: udaXlnetsSession value => " + udaXLNetsSessionId.toString());
+		return udaXLNetsSessionId.toString();
 	}
 	
 	//Recovery and storage of the Credential info of XLNets    
@@ -588,8 +595,8 @@ public class PerimetralSecurityWrapperN38Impl implements
 				httpSession.setAttribute("position", this.alternativeStorageUserCredentials.loadUserPosition(UserName, serialNumber, n38Api));
 			}
 			
-			//Deleting the SERIALNUMBER object 
-			httpSession.removeAttribute("SERIALNUMBER");
+			//Deleting the serialNumber object 
+			httpSession.removeAttribute("serialNumber");
 			
 			httpSession.setAttribute("userProfiles", userprofile);
 		}
@@ -603,19 +610,18 @@ public class PerimetralSecurityWrapperN38Impl implements
 		HttpSession session = httpRequest.getSession(false);
 		
 		if(session != null && session.getAttribute("reloadData") == null){
+			logger.debug( "loadReloadData: " + currentThreadId.toString());
 			session.setAttribute("reloadData",currentThreadId);
 		}
 	}
 	
 	private synchronized boolean reloadData(HttpServletRequest httpRequest){
-		HttpSession httpSession = httpRequest.getSession();
+		HttpSession httpSession = httpRequest.getSession(false);
 		
 		if(httpSession.getAttribute("credentialsLoading") == null && (System.currentTimeMillis() - Long.valueOf(httpSession.getAttribute("udaTimeStamp")+"")) > xlnetCachingPeriod.longValue()){
-			
 			//Recharging  the lifetime of the cache
 			httpSession.removeAttribute("udaTimeStamp");
 			httpSession.setAttribute("udaTimeStamp", System.currentTimeMillis());
-			
 			return true;
 		} else {
 			return false;
@@ -651,8 +657,22 @@ public class PerimetralSecurityWrapperN38Impl implements
 		return this.alternativeOriginCredentialsApp;
 	}
 	
-	public Credentials getSpecificCredentials(){
+	public Object getSpecificCredentials(){
 		return this.specificCredentials;
+	}
+	
+	public Credentials getCredentials(){
+		if (specificCredentialsName == null){
+			return new UserCredentials();
+		} else {
+			try {
+				return (Credentials)Class.forName(specificCredentialsName).newInstance();
+			}catch (Exception e) {
+				logger.error("getCredentials(): The object specified to the parameter \"SpecificCredentials\" is not correct. The object has not been instantiated", e);
+				SecurityException sec = new SecurityException("getCredentials(): The object specified to the parameter \"SpecificCredentials\" is not correct. The object has not been instantiated", e.getCause());
+				throw sec;
+			}
+		}
 	}
 	
 	public void setXlnetCachingPeriod(Long xlnetCachingPeriod) {
@@ -718,8 +738,23 @@ public class PerimetralSecurityWrapperN38Impl implements
 		this.alternativeOriginCredentialsApp = alternativeOriginCredentialsAppObject;
 	}
 	
-	public void setSpecificCredentials(Credentials credentials){
-		this.specificCredentials = credentials;
+	public void setSpecificCredentials(Object credentials){
+		Object specificCredentials = credentials; 
+		
+		try{
+			if(specificCredentials instanceof String){
+				specificCredentials = Class.forName((String)credentials).newInstance();
+			}
+			if(specificCredentials instanceof Credentials){
+				this.specificCredentialsName = specificCredentials.getClass().getName();				
+			} else {
+				throw new UnsatisfiedDependencyException("security-config", "PerimetralSecurityWrapperN38Impl", "setSpecificCredentials", "The specified object is not correct to the parameter  \"SpecificCredentials\". The object must be instace of String (className of a Class than extend the \"Credentials\" Class) or one Bean of a Class than extend the \"Credentials\" Class.");
+			}
+		} catch (Exception e) {
+			throw new UnsatisfiedDependencyException("security-config", "PerimetralSecurityWrapperN38Impl", "setSpecificCredentials", "The specified object is not correct to the parameter  \"SpecificCredentials\". The object must be instace of String (className of a Class than extend the \"Credentials\" Class) or one Bean of a Class than extend the \"Credentials\" Class.");
+		} finally {
+			this.specificCredentials = specificCredentials;
+		}
 	}
 	
 }

@@ -106,7 +106,7 @@ public class XlnetCore {
 
 	public static boolean isXlnetSessionContainingErrors(Document xmlSesion) {
 		if (xmlSesion != null)
-			logger.trace("XmlSesion is: "+xmlSesion.getTextContent());
+			logger.debug("XmlSesion is: "+xmlSesion.getTextContent());
 
 		if (xmlSesion == null)
 			throw new IllegalArgumentException(

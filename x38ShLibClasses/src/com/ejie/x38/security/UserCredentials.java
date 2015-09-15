@@ -43,20 +43,20 @@ public class UserCredentials implements Credentials {
 	private static final Logger logger = LoggerFactory
 	.getLogger(UserCredentials.class);
 	
-	private String nif;
-	private String policy;
-	private String userName;
-	private String name;
-	private String surname;
-	private String fullName;
-	private String position;
-	private String uidSession;
-	private boolean isCertificate;
-	private String udaValidateSessionId;
-	private Vector<String> userProfiles;
+	private String nif = null;
+	private String policy = null;
+	private String userName = "NULL";
+	private String name = "NULL";
+	private String surname = "NULL";
+	private String fullName = "NULL";
+	private String position = "NULL";
+	private String uidSession = null;
+	private boolean isCertificate = false;
+	private String udaValidateSessionId = null;
+	private Vector<String> userProfiles = null;
 	private boolean destroySessionSecuritySystem = false;
 	private DynaBean subjectCert = null;
-	private ArrayList<String> userDataProperties;
+	private ArrayList<String> userDataProperties = null;
 	
 	//Constructor functions
 	public UserCredentials(){
@@ -219,11 +219,23 @@ public class UserCredentials implements Credentials {
 
 		strBuffer.append("UserCredentials [");
 		strBuffer.append("userName=").append(userName).append(";");
-		strBuffer.append("nif=").append(nif).append(";");
+		
+		if(nif != null){
+			strBuffer.append("nif=").append("Object NOT NULL (info protected)").append(";");
+		} else {
+			strBuffer.append("nif=").append("NULL").append(";");
+		}
+		
 		strBuffer.append("name=").append(name).append(";");
 		strBuffer.append("surName=").append(surname).append(";");
 		strBuffer.append("fullName=").append(fullName).append(";");
-		strBuffer.append("uidSession=").append(uidSession).append(";");
+		
+		if(uidSession != null){
+			strBuffer.append("uidSession=").append("Object NOT NULL (info protected)").append(";");
+		} else {
+			strBuffer.append("uidSession=").append("NULL").append(";");
+		}
+		
 		strBuffer.append("position=").append(position).append(";");
 		
 		if(udaValidateSessionId != null){
@@ -248,7 +260,11 @@ public class UserCredentials implements Credentials {
 			strBuffer.append("isCertificate=").append("false").append(";");
 		}
 		
-		strBuffer.append("policy=").append(policy).append(";");
+		if(policy != null){
+			strBuffer.append("policy=").append("Object NOT NULL (info protected)").append(";");
+		} else {
+			strBuffer.append("policy=").append("NULL").append(";");
+		}
 		
 		if(destroySessionSecuritySystem){
 			strBuffer.append("destroySessionSecuritySystem=").append("true").append(";");

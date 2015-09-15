@@ -23,16 +23,12 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.filter.DelegatingFilterProxy;
 
-import com.ejie.x38.security.StockUdaSecurityPadlocksImpl;
 import com.ejie.x38.serialization.ThreadSafeCache;
 import com.ejie.x38.util.StackTraceManager;
 import com.ejie.x38.util.ThreadStorageManager;
@@ -81,18 +77,18 @@ public class UdaFilter extends DelegatingFilterProxy {
 		} catch (Exception exception) {
 			logger.error(StackTraceManager.getStackTrace(exception));
 			
-			HttpSession session = httpServletRequest.getSession();
-			String sessionId = httpServletRequest.getSession().getId();
+//			HttpSession session = httpServletRequest.getSession();
+//			String sessionId = httpServletRequest.getSession().getId();
 
 			try {
 				
 				if (!response.isCommitted()){
-					ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(session.getServletContext());
-					StockUdaSecurityPadlocksImpl stockUdaSecurityPadlocks = (StockUdaSecurityPadlocksImpl)ctx.getBean("stockUdaSecurityPadlocks");
-					if (stockUdaSecurityPadlocks != null && stockUdaSecurityPadlocks.existingSecurityPadlock(sessionId)){
-						stockUdaSecurityPadlocks.setAllowedAccessThread(sessionId, null);
-						stockUdaSecurityPadlocks.release(sessionId);
-					}
+//					ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(session.getServletContext());
+//					StockUdaSecurityPadlocksImpl stockUdaSecurityPadlocks = (StockUdaSecurityPadlocksImpl)ctx.getBean("stockUdaSecurityPadlocks");
+//					if (stockUdaSecurityPadlocks != null && stockUdaSecurityPadlocks.existingSecurityPadlock(sessionId)){
+//						stockUdaSecurityPadlocks.setAllowedAccessThread(sessionId, null);
+//						stockUdaSecurityPadlocks.release(sessionId);
+//					}
 					
 					HttpServletRequest req = (HttpServletRequest) request;
 					HttpServletResponse res = (HttpServletResponse) response;

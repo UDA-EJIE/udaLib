@@ -1,6 +1,7 @@
 package com.ejie.x38.control.exception.handler;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +56,11 @@ public class MvcValidationExceptionHandler {
 		if (request.getHeaders("X-Requested-With").hasMoreElements() && bindingResult.hasFieldErrors()) {
 			//AJAX request;
 			Map<String, List<String>> errorMap = validationManager.getErrorsAsMap(bindingResult);
-			response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE, validationManager.getMessageJSON(errorMap).toString());
+			String content = validationManager.getMessageJSON(errorMap).toString();
+			response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+			response.setContentLength(content.getBytes(Charset.forName(response.getCharacterEncoding())).length);
+			response.getWriter().print(content);
+			response.flushBuffer();
 			return null;
 		}else{
 			//Non-AJAX request

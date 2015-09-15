@@ -23,6 +23,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
@@ -33,15 +34,15 @@ import org.springframework.util.Assert;
  * @author UDA
  *
  */
-@Deprecated
-public class XlnetAuthenticationProvider implements AuthenticationProvider,
+public class UdaAuthenticationProvider implements AuthenticationProvider,
 		Ordered, InitializingBean {
 	private static final Logger logger = LoggerFactory
-			.getLogger(XlnetAuthenticationProvider.class);
+			.getLogger(UdaAuthenticationProvider.class);
 
 	private AuthenticationUserDetailsService<Authentication> myAuthenticatedUserDetailsService;
 	private boolean throwExceptionWhenTokenRejected = false;
 	private int order = -1; // default: same as non-ordered
+	private static UserCredentials cleanUserCredentials = new UserCredentials(); 
 
 	/**
 	 * Authenticate the given PreAuthenticatedAuthenticationToken.
@@ -135,5 +136,18 @@ public class XlnetAuthenticationProvider implements AuthenticationProvider,
 	public void setMyAuthenticatedUserDetailsService(
 			AuthenticationUserDetailsService<Authentication> myAuthenticatedUserDetailsService) {
 		this.myAuthenticatedUserDetailsService = myAuthenticatedUserDetailsService;
+	}
+	
+	/**
+	 * Get the credentials object of the current user.
+	 * 
+	 */
+	public Credentials getUserCredentials() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if(authentication != null && authentication.getCredentials() != null){
+			return (Credentials)authentication.getCredentials();
+		} else {
+			return cleanUserCredentials;
+		}	
 	}
 }
