@@ -21,10 +21,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Object mapper propio de UDA en el que se realiza la configuración necesaria.
  * 
  * @author UDA
  *
  */
+@Deprecated
 public class CustomObjectMapper extends ObjectMapper{
 
 	protected final Logger logger =  LoggerFactory.getLogger(CustomObjectMapper.class);

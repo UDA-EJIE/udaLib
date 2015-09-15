@@ -1,5 +1,5 @@
 /*
-* Copyright 2011 E.J.I.E., S.A.
+* Copyright 2012 E.J.I.E., S.A.
 *
 * Licencia con arreglo a la EUPL, Versión 1.1 exclusivamente (la «Licencia»);
 * Solo podrá usarse esta obra si se respeta la Licencia.
@@ -19,10 +19,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
- * 
- * @author UDA
+ * @deprecated As of release 2.0.0
  *
+ * @author UDA
  */
+@Deprecated
 @ResponseStatus(value=HttpStatus.METHOD_FAILURE)
 public class MethodFailureException extends ControlException{
 	

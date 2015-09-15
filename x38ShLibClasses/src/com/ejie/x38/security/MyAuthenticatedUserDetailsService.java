@@ -1,5 +1,5 @@
 /*
-* Copyright 2011 E.J.I.E., S.A.
+* Copyright 2012 E.J.I.E., S.A.
 *
 * Licencia con arreglo a la EUPL, Versión 1.1 exclusivamente (la «Licencia»);
 * Solo podrá usarse esta obra si se respeta la Licencia.
@@ -32,7 +32,7 @@ import org.springframework.util.Assert;
  *
  */
 public class MyAuthenticatedUserDetailsService implements
-		AuthenticationUserDetailsService {
+		AuthenticationUserDetailsService<Authentication> {
 
 	private static final Logger logger = LoggerFactory
 			.getLogger(MyAuthenticatedUserDetailsService.class);
@@ -49,8 +49,7 @@ public class MyAuthenticatedUserDetailsService implements
 				.getCredentials();
 		UserDetails userDetails = null;
 		if (userCredentials != null) {
-			Vector<String> vectorProfilesXLNET = getPerimetralSecurityWrapper()
-					.getUserInstances(userCredentials.getHttpRequest());
+			Vector<String> vectorProfilesXLNET = userCredentials.getUserProfiles();
 			XlnetGrantedAuthority[] profiles = null;
 			if (vectorProfilesXLNET != null) {
 				profiles = new XlnetGrantedAuthority[vectorProfilesXLNET.size()];

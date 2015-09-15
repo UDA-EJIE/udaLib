@@ -35,6 +35,7 @@ import com.ejie.x38.util.StackTraceManager;
  * @author UDA
  *
  */
+@Deprecated
 public class ValidationServlet implements HttpRequestHandler {
 
 	private ValidationManager validationManager;

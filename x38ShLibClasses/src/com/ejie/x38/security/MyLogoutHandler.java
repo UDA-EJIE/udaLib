@@ -33,7 +33,7 @@ import org.springframework.util.Assert;
  */
 public class MyLogoutHandler implements LogoutHandler {
 	private boolean invalidateHttpSession;
-	private boolean invalidateXlnetSession;
+	private boolean invalidateUserSession;
 	private PerimetralSecurityWrapper perimetralSecurityWrapper;
 	static Logger logger =  LoggerFactory.getLogger(MyLogoutHandler.class);
 
@@ -51,9 +51,9 @@ public class MyLogoutHandler implements LogoutHandler {
 			HttpServletResponse response, Authentication authentication) {
 
 		//Destroy XLNET session
-		if(invalidateXlnetSession){
+		if(invalidateUserSession){
 			Assert.notNull(request, "HttpServletRequest required");			
-			getPerimetralSecurityWrapper().logout(request);
+			getPerimetralSecurityWrapper().logout(request, response);
 			logger.info("XLNET " +getPerimetralSecurityWrapper().getUserConnectedUidSession(request)+ " Session destroyed!");
 		}
 
@@ -79,11 +79,11 @@ public class MyLogoutHandler implements LogoutHandler {
 		this.invalidateHttpSession = invalidateHttpSession;
 	}
 
-	public boolean isInvalidateXlnetSession() {
-		return invalidateXlnetSession;
+	public boolean isInvalidateUserSession() {
+		return invalidateUserSession;
 	}
 
-	public void setInvalidateXlnetSession(boolean invalidateXlnetSession) {
-		this.invalidateXlnetSession = invalidateXlnetSession;
+	public void setInvalidateUserSession(boolean invalidateUserSession) {
+		this.invalidateUserSession = invalidateUserSession;
 	}
 }

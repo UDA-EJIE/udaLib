@@ -1,5 +1,5 @@
 /*
-* Copyright 2011 E.J.I.E., S.A.
+* Copyright 2012 E.J.I.E., S.A.
 *
 * Licencia con arreglo a la EUPL, Versión 1.1 exclusivamente (la «Licencia»);
 * Solo podrá usarse esta obra si se respeta la Licencia.
@@ -16,21 +16,21 @@
 package com.ejie.x38.security;
 
 import java.io.IOException;
+import java.util.Vector;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 
-import com.ejie.x38.control.exception.MethodFailureException;
 import com.ejie.x38.log.LogConstants;
 
 /**
@@ -53,9 +53,21 @@ public class PreAuthenticateProcessingFilter extends
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
+		
 		logger.info("the request is entering in the security system");
-		super.doFilter(request, response, chain);
-		logger.info("the request is exiting of the security system");
+
+		String valid = getPerimetralSecurityWrapper().validateSession((HttpServletRequest)request, (HttpServletResponse) response);
+
+		if(valid.equals("true")){
+			super.doFilter(request, response, chain);
+			logger.info("the request is exiting of the security system");
+		} else if(valid.equals("false")) {
+			chain.doFilter(request, response);
+			logger.info("the request is exiting of the security system");
+		} else {
+			((HttpServletResponse) response).sendRedirect(valid);
+			return;
+		}
 	}
 	
 
@@ -66,24 +78,18 @@ public class PreAuthenticateProcessingFilter extends
 		String uidSession = getPerimetralSecurityWrapper().getUserConnectedUidSession(request);
 		String userName = getPerimetralSecurityWrapper().getUserConnectedUserName(request);
 		String position = getPerimetralSecurityWrapper().getUserPosition(request);
+		Vector <String> UserInstances = getPerimetralSecurityWrapper().getUserInstances(request);
+		String udaValidateSessionId = getPerimetralSecurityWrapper().getUdaValidateSessionId(request);
+		String policy = getPerimetralSecurityWrapper().getPolicy(request);
+		boolean certificate = getPerimetralSecurityWrapper().getIsCertificate(request);
+		String nif = getPerimetralSecurityWrapper().getNif(request);
 		
+		result= new UserCredentials(UserInstances, userName, nif, uidSession, position, udaValidateSessionId, policy, certificate);
+		logger.info( "The incoming user's Credentials are loading. The data of its credentials is: [uidSession = "+uidSession+" ] [userName = "+userName+" ] [position = "+position+"]");
+				
 		MDC.put(LogConstants.SESSION,uidSession);
 		MDC.put(LogConstants.USER,userName);
 		MDC.put(LogConstants.POSITION,position);
-		
-		if (uidSession != null && userName != null && position != null){
-			result= new UserCredentials(request, userName, uidSession, position);
-			logger.info( "The incoming user's Credentials are loading. The data of its credentials is: [uidSession = "+uidSession+" ] [userName = "+userName+" ] [position = "+position+"]");
-		} else {
-			StringBuilder exceptionString = new StringBuilder();
-			exceptionString.append("There was an  unexpected error in method: \"");
-			exceptionString.append(Thread.currentThread().getStackTrace()[1].getMethodName());
-			exceptionString.append("\" filter: \"");
-			exceptionString.append(this.getFilterName());
-			exceptionString.append("\".");
-			exceptionString.append(" (The value of uidSession or userName or position is null)");
-			throw new MethodFailureException(exceptionString.toString());
-		}
 		
 		return result;
 	}
@@ -91,39 +97,29 @@ public class PreAuthenticateProcessingFilter extends
 	@Override
 	protected Object getPreAuthenticatedPrincipal(HttpServletRequest request) {
 		String principalUser = null;
-		
+			
 		HttpSession session = request.getSession(false);
 		
 		principalUser = this.perimetralSecurityWrapper.getUserConnectedUserName(request);
 		
-		if(principalUser != null){
-			logger.info( "The incoming user is: "+principalUser);
-		} else {
-			StringBuilder exceptionString = new StringBuilder();
-			exceptionString.append("There was an  unexpected error in method: \"");
-			exceptionString.append(Thread.currentThread().getStackTrace()[1].getMethodName());
-			exceptionString.append("\" filter: \"");
-			exceptionString.append(this.getFilterName());
-			exceptionString.append("\".");
-			throw new MethodFailureException(exceptionString.toString());
-		}
+		logger.info( "The incoming user is: "+principalUser);
 		
-		if(SecurityContextHolder.getContext().getAuthentication() != null && request.getSession(false) !=null && request.getSession(false).getAttribute("reloadData") !=null && request.getSession(false).getAttribute("reloadData").equals("true")){
+		if(session != null && session.getAttribute("reloadData") !=null && session.getAttribute("reloadData").equals("true")){
 			
 			//if the user changes then the user session is invalidate  
 			if (session.getAttribute("userChange") == null){
-				logger.info( "The cache of user's credentials is expired. Proceeds to recharge the user's credentials");
+				logger.info("The cache of user's credentials is expired. Proceeds to recharge the user's credentials");
 				setInvalidateSessionOnPrincipalChange(false);
 			} else {
-				logger.info( "The incoming user and the authenticated user are not equal. Proceed to load the new user's credentials");
+				logger.info("The incoming user and the authenticated user are not equal. Proceed to load the new user's credentials");
 				session.removeAttribute("userChange");
 			}
 			
 			session.removeAttribute("reloadData");
 			
 			logger.info("Proceed to reload the user's credentials");
-			
-			return null;
+						
+			//return null;
 		} else {
 			setInvalidateSessionOnPrincipalChange(true);
 		}

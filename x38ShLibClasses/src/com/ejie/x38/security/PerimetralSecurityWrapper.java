@@ -1,5 +1,5 @@
 /*
-* Copyright 2011 E.J.I.E., S.A.
+* Copyright 2012 E.J.I.E., S.A.
 *
 * Licencia con arreglo a la EUPL, Versión 1.1 exclusivamente (la «Licencia»);
 * Solo podrá usarse esta obra si se respeta la Licencia.
@@ -15,9 +15,11 @@
 */
 package com.ejie.x38.security;
 
+import java.io.IOException;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * 
@@ -25,16 +27,26 @@ import javax.servlet.http.HttpServletRequest;
  *
  */
 public interface PerimetralSecurityWrapper {
+	
+	public String validateSession(HttpServletRequest httpRequest, HttpServletResponse response) throws IOException;
+	
+	public String getUserConnectedUserName(HttpServletRequest httpRequest);
 
-	public abstract String getUserConnectedUserName(HttpServletRequest httpRequest);
-
-	public abstract String getUserConnectedUidSession(HttpServletRequest httpRequest);
+	public String getUserConnectedUidSession(HttpServletRequest httpRequest);
+	
+	public String getUdaValidateSessionId(HttpServletRequest httpRequest);
 	
 	public String getUserPosition(HttpServletRequest httpRequest);
 
-	public String getURLLogin(String originalURL);
+	public String getURLLogin(String originalURL, boolean ajax);
 
+	public String getPolicy(HttpServletRequest httpRequest);
+	
+	public boolean getIsCertificate(HttpServletRequest httpRequest);
+	
 	public Vector<String> getUserInstances(HttpServletRequest httpRequest);
 
-	public void logout(HttpServletRequest httpRequest);
+	public void logout(HttpServletRequest httpRequest, HttpServletResponse httpResponse);
+	
+	public String getNif(HttpServletRequest httpRequest);
 }

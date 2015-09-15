@@ -1,5 +1,5 @@
 /*
-* Copyright 2011 E.J.I.E., S.A.
+* Copyright 2012 E.J.I.E., S.A.
 *
 * Licencia con arreglo a la EUPL, Versión 1.1 exclusivamente (la «Licencia»);
 * Solo podrá usarse esta obra si se respeta la Licencia.
@@ -38,7 +38,7 @@ public class XlnetAuthenticationProvider implements AuthenticationProvider,
 	private static final Logger logger = LoggerFactory
 			.getLogger(XlnetAuthenticationProvider.class);
 
-	private AuthenticationUserDetailsService myAuthenticatedUserDetailsService;
+	private AuthenticationUserDetailsService<Authentication> myAuthenticatedUserDetailsService;
 	private boolean throwExceptionWhenTokenRejected = false;
 	private int order = -1; // default: same as non-ordered
 
@@ -132,7 +132,7 @@ public class XlnetAuthenticationProvider implements AuthenticationProvider,
 	 * 
 	 */
 	public void setMyAuthenticatedUserDetailsService(
-			AuthenticationUserDetailsService myAuthenticatedUserDetailsService) {
+			AuthenticationUserDetailsService<Authentication> myAuthenticatedUserDetailsService) {
 		this.myAuthenticatedUserDetailsService = myAuthenticatedUserDetailsService;
 	}
 }

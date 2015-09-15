@@ -3,17 +3,17 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.ejie.x38</groupId>
   <artifactId>x38ShLibClasses</artifactId>
-  <packaging>pom</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <version>2.0.0</version>
   <name>x38ShLibClasses</name>
   <url>http://maven.apache.org</url>
 	<properties>
-		<org.springframework.version>3.0.5.RELEASE</org.springframework.version>
-		<org.logback.version>0.9.29</org.logback.version>
+		<org.springframework.version>3.1.1.RELEASE</org.springframework.version>
+		<org.springframework.security.version>3.1.0.RELEASE</org.springframework.security.version>
+		<org.logback.version>1.0.6</org.logback.version>
 		<org.slf4j.version>1.6.1</org.slf4j.version>
 		<eclipselink.version>2.3.0</eclipselink.version>
 		<javax.persistence.version>2.0.1</javax.persistence.version>
-		<org.springframework.security.version>3.0.5.RELEASE</org.springframework.security.version>
 	</properties>
 	<dependencies>
 		<!--  Spring -->
@@ -22,6 +22,7 @@
 			<artifactId>spring-context</artifactId>
 			<version>${org.springframework.version}</version>
 			<exclusions>
+				<!-- Exclude Commons Logging in favor of logback -->
 				<exclusion>
 					<groupId>commons-logging</groupId>
 					<artifactId>commons-logging</artifactId>
@@ -30,14 +31,16 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
+			<artifactId>spring-webmvc</artifactId>
 			<version>${org.springframework.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
+			<artifactId>spring-orm</artifactId>
 			<version>${org.springframework.version}</version>
 		</dependency>
+		
+		<!-- Spring Security -->
 		<dependency>
 		    <groupId>org.springframework.security</groupId>
 		    <artifactId>spring-security-core</artifactId>
@@ -58,6 +61,90 @@
 		    <artifactId>spring-security-web</artifactId>
 		    <version>${org.springframework.security.version}</version>
 		</dependency>	
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-taglibs</artifactId>
+        	<version>${org.springframework.security.version}</version>
+		</dependency>
+		
+		<!-- Logging -->
+            <!-- SLF4J -->
+		<dependency>
+                  <groupId>org.slf4j</groupId>
+                  <artifactId>jcl-over-slf4j</artifactId>
+                  <version>${org.slf4j.version}</version>
+                  <scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${org.slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-ext</artifactId>
+			<version>${org.slf4j.version}</version>
+			<exclusions>
+				<!-- Exclude Compiler assisted localization library (CAL10N) -->
+				<exclusion>
+					<groupId>ch.qos.cal10n</groupId>
+					<artifactId>cal10n-api</artifactId>
+				</exclusion>				
+			</exclusions>			
+		 </dependency>
+            <!-- Logback -->
+            <dependency>
+                  <groupId>ch.qos.logback</groupId>
+                  <artifactId>logback-core</artifactId>
+                  <version>${org.logback.version}</version>
+            </dependency>
+            <dependency>
+                  <groupId>ch.qos.logback</groupId>
+                  <artifactId>logback-classic</artifactId>
+                  <version>${org.logback.version}</version>
+            </dependency>
+			<!-- Jdbcdslog -->
+			<dependency>
+				<groupId>org</groupId>
+				<artifactId>jdbcdslog</artifactId>
+				<version>1.0.5</version>
+			</dependency>
+
+		<!-- JSR 303 with Hibernate Validator -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>4.2.0.Final</version>
+		</dependency>
+		
+		<!-- Joda Time -->
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>1.6</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- Jackson JSON Mapper -->
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+			<version>1.9.7</version>
+		</dependency>
+
+		<!-- AspectJ-->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>1.6.9</version>
+		</dependency>
+		
+		<!-- Apache commons fileupload -->
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>1.2.1</version>
+		</dependency>
 		
 		<!-- n38 -->
 		<dependency>
@@ -83,35 +170,6 @@
 			<version>2.7.1</version>
 		</dependency>
 		
-		<!-- Logging -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${org.slf4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-ext</artifactId>
-			<version>${org.slf4j.version}</version>
-			<exclusions>
-				<!-- Exclude Compiler assisted localization library (CAL10N) -->
-				<exclusion>
-					<groupId>ch.qos.cal10n</groupId>
-					<artifactId>cal10n-api</artifactId>
-				</exclusion>				
-			</exclusions>			
-		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>${org.logback.version}</version>
-		</dependency>
-		<!-- AspectJ-->
-		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>aspectjweaver</artifactId>
-			<version>1.6.9</version>
-		</dependency>
 		<!-- Servlet -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -119,6 +177,7 @@
 			<version>2.5</version>
 			<scope>provided</scope>
 		</dependency>
+
 		<!--  EclipseLink -->
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
@@ -134,7 +193,7 @@
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
-			<version>1.7.2</version>
+			<version>1.9.7</version>
 		</dependency>
 		<!--  JSR 303 with Hibernate Validator -->
 		<dependency>
@@ -142,42 +201,16 @@
 			<artifactId>hibernate-validator</artifactId>
 			<version>4.2.0.Final</version>
 		</dependency>
-
-		<dependency>
-		  <groupId>commons-logging</groupId>
-		  <artifactId>commons-logging</artifactId>
-		  <version>1.1.1</version>
-		</dependency>
 	</dependencies>
-
 	<repositories>
 		<repository>
 	        <id>ejie</id>
 	        <name>ejie</name>
-	        <url>http://www.otc.ejiedes.net/archiva/repository/repoCACRep</url>
+	        <url>http://www.otc.ejiedes.net/archiva/repository/repoCAC</url>
 	        <snapshots>
 	        	<enabled>true</enabled>
 	        </snapshots>
         </repository>	
-        	
-		<!-- For Hibernate Validator -->
-		<repository>
-			<id>org.jboss.repository.release</id>
-			<name>JBoss Maven Release Repository</name>			
-			<url>https://repository.jboss.org/nexus/content/repositories/releases</url>
-			<snapshots><enabled>false</enabled></snapshots>
-		</repository>
-		<!-- For AspectJ -->
-		<repository>
-			<id>repo2.maven.org</id>
-			<name>Official Maven Repository</name>			
-			<url>http://repo2.maven.org/maven2/</url>
-			<snapshots><enabled>true</enabled></snapshots>		
-		</repository>
-		<repository>
-			<id>EclipseLink Repo</id>
-			<url>http://www.eclipse.org/downloads/download.php?r=1&amp;nf=1&amp;file=/rt/eclipselink/maven.repo</url>
-		</repository> 
 	</repositories>
   <build>
    <plugins>

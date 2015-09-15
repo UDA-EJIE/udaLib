@@ -73,4 +73,16 @@ public class Pagination implements java.io.Serializable{
 		result.append("}");
 		return result.toString();
 	}
+	
+	/**
+	 * Mapeo directo parametros jQGrid -> Pagination 
+	 * @param sidx
+	 */
+	public void setSidx (String sidx) {
+		this.sort = sidx;
+	}
+	public void setSord (String sord) {
+		this.ascDsc = sord;
+	}
+	
 }

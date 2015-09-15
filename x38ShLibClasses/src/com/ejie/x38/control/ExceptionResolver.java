@@ -24,13 +24,11 @@ import org.springframework.web.servlet.ModelAndView;
 import com.ejie.x38.util.StackTraceManager;
 
 /**
- * 
- * Valido si se quiere implementar un sistema de captura de excepciones centralizado.
- * Actualmente, no se utiliza.
- * 
+ * @deprecated As of release 2.0.0
+ *
  * @author UDA
- * 
  */
+@Deprecated
 public class ExceptionResolver implements HandlerExceptionResolver{
 
 	@Override

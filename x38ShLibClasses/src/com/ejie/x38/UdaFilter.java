@@ -16,6 +16,7 @@
 package com.ejie.x38;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.servlet.FilterChain;
@@ -28,6 +29,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.filter.DelegatingFilterProxy;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.ejie.x38.serialization.ThreadSafeCache;
 import com.ejie.x38.util.StackTraceManager;
@@ -52,23 +54,46 @@ public class UdaFilter extends DelegatingFilterProxy {
 			FilterChain filterChain) {
 		try {
 			
+			HttpServletRequest httpServletRequest = (HttpServletRequest)request;
+			
 			logger.debug( "New request with UDA identificator "+ThreadStorageManager.getCurrentThreadId()+" has started");
-			if(((HttpServletRequest)request).getHeader("RUP")!=null){
-				HashMap<?, ?> map = new ObjectMapper().readValue(((HttpServletRequest)request).getHeader("RUP"), HashMap.class);
+			
+			String rupHeader = httpServletRequest.getHeader("RUP");
+			if(rupHeader!=null){
+				ThreadSafeCache.addValue("RUP", "RUP");
+				HashMap<?, ?> map = new ObjectMapper().readValue(rupHeader, HashMap.class);
 				for(Entry<?, ?> entry:map.entrySet()){
 					ThreadSafeCache.addValue((String)entry.getKey(), (String)entry.getValue());
 				}
 			}
 			
+			String rupMultiModelHeader = httpServletRequest.getHeader("RUP_MULTI_ENTITY");
+			if(rupMultiModelHeader!=null){
+				ThreadSafeCache.addValue("RUP_MULTI_ENTITY", "RUP_MULTI_ENTITY");
+				
+//				HashMap<?, ?> map = new ObjectMapper().readValue(rupMultiModelHeader, HashMap.class);
+//				for(Entry<?, ?> entry:map.entrySet()){
+//					ThreadSafeCache.addValue((String)entry.getKey(), (String)entry.getValue());
+//				}
+			}
+			
 			filterChain.doFilter(request, response);
 			logger.debug( "Request with UDA identificator "+ThreadStorageManager.getCurrentThreadId()+" has ended");			
-		} catch (Exception e) {
-			logger.error(StackTraceManager.getStackTrace(e));
-			HttpServletResponse resp = (HttpServletResponse)response;
-			HttpServletRequest req = (HttpServletRequest)request;
+		} catch (Exception exception) {
+			logger.error(StackTraceManager.getStackTrace(exception));
+
 			try {
-				if (!resp.isCommitted()){
-					resp.sendRedirect(req.getContextPath() + "/error");
+				if (!response.isCommitted()){
+					RedirectView redirectView = new RedirectView("error");
+					Map<String, Object> model = new HashMap<String, Object>();
+					model.put("exception_name", exception.getClass().getName());
+					model.put("exception_message", exception.getMessage());
+					StringBuilder sbTrace = new StringBuilder();
+					for (StackTraceElement trace : exception.getStackTrace()) {
+						sbTrace.append(trace.toString()).append("</br>");
+					}
+					model.put("exception_trace", sbTrace);
+					redirectView.render(model, (HttpServletRequest)request, (HttpServletResponse)response);
 				}
 			} catch (Exception exc) {				
 				logger.error("Problem with sending of the response",exc);

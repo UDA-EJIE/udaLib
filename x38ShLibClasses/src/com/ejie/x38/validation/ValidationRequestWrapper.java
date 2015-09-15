@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
  * @author UDA
  * 
  */
+@Deprecated
 public class ValidationRequestWrapper extends HttpServletRequestWrapper {
     
     private static Logger log =  LoggerFactory.getLogger("com.ejie.x38.validation.ValidationRequestWrapper");

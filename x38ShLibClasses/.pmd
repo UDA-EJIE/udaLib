@@ -2,12 +2,6 @@
 <pmd>
     <useProjectRuleSet>false</useProjectRuleSet>
     <ruleSetFile>.ruleset</ruleSetFile>
-    <excludePatterns>
-        <excludePattern></excludePattern>
-    </excludePatterns>
-    <includePatterns>
-        <includePattern></includePattern>
-    </includePatterns>
     <rules>
         <rule>
             <name>AvoidDecimalLiteralsInBigDecimalConstructor</name>
@@ -55,7 +49,7 @@
         </rule>
         <rule>
             <name>CloneMethodMustImplementCloneable</name>
-            <ruleset>Clone Implementation Rules</ruleset>
+            <ruleset>Type Resolution Rules</ruleset>
         </rule>
         <rule>
             <name>CloneThrowsCloneNotSupportedException</name>
@@ -159,7 +153,7 @@
         </rule>
         <rule>
             <name>UnusedImports</name>
-            <ruleset>Import Statement Rules</ruleset>
+            <ruleset>Type Resolution Rules</ruleset>
         </rule>
         <rule>
             <name>LoggerIsNotStaticFinal</name>

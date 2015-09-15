@@ -17,8 +17,6 @@ package com.ejie.x38.validation;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -31,9 +29,12 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
+import javax.validation.Path;
+import javax.validation.Path.Node;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import javax.validation.groups.Default;
 
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.map.MappingJsonFactory;
@@ -41,40 +42,314 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.hibernate.validator.HibernateValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 
+import com.ejie.x38.json.JSONObject;
 import com.ejie.x38.util.DateTimeManager;
-import com.ejie.x38.util.ObjectConversionManager;
 import com.ejie.x38.util.StackTraceManager;
 import com.ejie.x38.util.StaticsContainer;
 
 /**
+ * Proporciona el API de validación de UDA. 
  * 
  * @author UDA
  *
  */
 public class ValidationManager {
 
-	@Resource
-	ReloadableResourceBundleMessageSource messageSource;
-	
 	private static final long serialVersionUID = 1L;
+	
 	private final static Logger logger =  LoggerFactory.getLogger(ValidationManager.class);
-	private ValidatorFactory validatorFactory;
+	
+	@Resource
+	private ReloadableResourceBundleMessageSource messageSource;
+
+	@Autowired(required=false)
 	private Validator validator;
-	private MappingJsonFactory jsonFactory;
 	
 	@PostConstruct
 	public void init() {
-		validatorFactory = Validation.byProvider(HibernateValidator.class).configure().buildValidatorFactory();
-		validator = validatorFactory.getValidator();
-		jsonFactory = new MappingJsonFactory();
-		messageSource.setFallbackToSystemLocale(false);
+		if (this.validator==null){
+			ValidatorFactory validatorFactory = Validation.byProvider(HibernateValidator.class).configure().buildValidatorFactory();
+			this.validator = validatorFactory.getValidator();
+		}
+	}
+
+	/**
+	 * Realiza la validación de la instancia indicada como parámetro. Las
+	 * validaciones se realizan a partir de las anotaciones realizadas sobre las
+	 * propiedades del bean. Los errores se añaden al objeto errors indicado
+	 * como parámetro.
+	 * 
+	 * @param errors
+	 *            Parámetro sobre el que se van a añadir los errores de
+	 *            validación que se produzcan.
+	 * @param obj
+	 *            Intancia del objeto que se desea validar.
+	 * @param groups
+	 *            Grupos de validacion que se van a utilizar para realizar la
+	 *            validación. En caso de no especificarse ninguno se tomará del
+	 *            grupo Default.class como grupo por defecto.
+	 */
+	public void validate(Errors errors, Object obj, Class<?>... groups) {
+		// En caso de no especificarse grupos de validaciones se toma el grupo Default por defecto.
+		if (groups == null || groups.length == 0 || groups[0] == null) {
+			groups = new Class<?>[] { Default.class };
+		}
+		
+		// Se realiza la validacion de la instancia
+		Set<ConstraintViolation<Object>> violations = validator.validate(obj,
+				groups);
+	    
+		// A partir de las violaciones obtenidas a partir de la validacion
+		// realizada, se añaden en la propiedad Errors
+		for (ConstraintViolation<Object> v : violations) {
+			Path path = v.getPropertyPath();
+			String propertyName = "";
+			if (path != null) {
+				for (Node n : path) {
+					propertyName += n.getName() + ".";
+				}
+				propertyName = propertyName.substring(0,
+						propertyName.length() - 1);
+			}
+			String constraintName = v.getConstraintDescriptor().getAnnotation()
+					.annotationType().getSimpleName();
+			if (propertyName == null || "".equals(propertyName)) {
+				errors.reject(constraintName, v.getMessage());
+			} else {
+				errors.rejectValue(propertyName, constraintName, v.getMessage());
+			}
+		}
+	}
+
+
+	/**
+	 * Método que permite realizar la validación de
+	 * una propiedad del bean.
+	 * 
+	 * @param bean
+	 *            Nombre del tipo del bean sobre el que se deben de validar los
+	 *            datos.
+	 * @param property
+	 *            Nombre de la propiedad del bean que se debe de validar.
+	 * @param value
+	 *            Valor de la propiedad que se debe de validar.
+	 * @param locale
+	 *            Locale actual que define el idioma a utilizar en la
+	 *            internacionalización de los mensajes.
+	 * @return Texto de error que contiene los mensajes de error resultantes de la validación.
+	 */
+	public String validateProperty(String bean, String property, String value, Locale locale){
+		try{
+			
+			String capitalicedBean = StringUtils.capitalize(bean);
+	
+			BeanWrapper beanWrapper = new BeanWrapperImpl(Class.forName(StaticsContainer.modelPackageName+capitalicedBean));
+			beanWrapper.setAutoGrowNestedPaths(true);
+			beanWrapper.setPropertyValue(property, value);
+			
+			Set<ConstraintViolation<Object>> constraintViolations = validator.validateProperty(beanWrapper.getWrappedInstance(), property, Default.class);			
+			return summary(constraintViolations, bean, locale);
+		}catch (Exception e) {
+			logger.error(StackTraceManager.getStackTrace(e));
+			return "error!";
+		}
 	}
 	
+	
+	/**
+	 * Genera, a partir de unos errores indicados como parámetros, un mapa en el
+	 * cual cada elemento está formado del siguiente modo:<br>
+	 * <br>
+	 * - El key del elemento del mapa está formado por el nombre de la propiedad
+	 * sobre la que se ha producido el error de la validación o por el
+	 * identificador que se ha asignado a la validación.<br>
+	 * <br>
+	 * - El objeto asociado al key está formado por una lista de mensajes de
+	 * error internacionalizados a partir del key de error.
+	 * 
+	 * @param errors
+	 *            Conjunto de errores que se desean procesar.
+	 * @return Mapa resultante que contiene los errores procesados.
+	 */
+	public Map<String,List<String>> getErrorsAsMap(Errors errors){
+		// Se obtiene la locale actual que va a ser utilizada para realizar la
+		// internacionalización de los mensajes de error.
+		Locale locale = LocaleContextHolder.getLocale();
+		// Mapa en el que se van a almacenar los errores 
+		Map<String,List<String>> errorsMap = new HashMap<String, List<String>>();
+		// Lista de errores que se han producido al realizarse el databinding
+		List<? extends ObjectError> fieldErrors = errors.getAllErrors();
+		// Se recorre cada error
+		for (Iterator<? extends ObjectError> iterator = fieldErrors.iterator(); iterator.hasNext();) {
+		
+			ObjectError objectError = (ObjectError) iterator.next();
+			String errorMessage;
+			String key;
+			
+			// Se comprueba si el error está asociado a la validación de una
+			// propiedad de un bean
+			if (objectError instanceof FieldError){
+				FieldError fieldError = (FieldError)objectError;
+				// En caso de que se trate de un FieldError se toma el nombre
+				// del campo como el key que se utilizará en el elemento del
+				// mapa.
+				key = fieldError.getField();
+				// Se trata de obtener el mensaje internacionalizado a partir del key del error.
+				try{
+					// En caso de existir se toma el mensaje internacionalizado como el texto de error a mostrar.
+					errorMessage = messageSource.getMessage(fieldError.getDefaultMessage(), null, locale);
+				}catch (NoSuchMessageException e) {
+					// En caso de producirse un error en la obtención del texto se toma el key como texto a mostrar.
+					errorMessage = fieldError.getCode();
+				}
+			}else{
+				// En caso de que se trate de un FieldError se toma el code
+				// del error como el key que se utilizará en el elemento del
+				// mapa.
+				key = objectError.getCode();
+				// Se trata de obtener el mensaje internacionalizado a partir del key del error.
+				try{
+					// En caso de existir se toma el mensaje internacionalizado como el texto de error a mostrar.
+					errorMessage = messageSource.getMessage(objectError.getDefaultMessage(), null, locale);
+				}catch (NoSuchMessageException e) {
+					// En caso de producirse un error en la obtención del texto se toma el key como texto a mostrar.
+					errorMessage = objectError.getDefaultMessage();
+				}
+			}
+			
+			// Se comprrueba si error se ha insertado y a en el mapa
+			if(errorsMap.containsKey(key)){
+				// En caso de existir se añade el mensaje de error en la lista de errores.
+				errorsMap.get(key).add(errorMessage);
+			}else{
+				// En caso de no existir se genera un nuevo elemento en el mapa
+				// con una lista de errores en la cual se añade el mensaje de
+				// error.
+				List<String> listaErrores = new ArrayList<String>();
+				listaErrores.add(errorMessage);
+				errorsMap.put(key,listaErrores);
+			}
+		}
+		// Se devuelve el mapa de errores
+		return errorsMap;
+	}
+	
+	/**
+	 * Genera, a partir de unos errores indicados como parámetros, una lista
+	 * formada por los mensajes de error internacionalizados.
+	 * 
+	 * @param errors
+	 *            Conjunto de errores que se desean procesar.
+	 * @return Lista resultanete que contiene los mensajes de error procesados.
+	 */
+	public List<String> getErrorsAsList(Errors errors){
+		// Se obtiene la locale actual que va a ser utilizada para realizar la
+		// internacionalización de los mensajes de error.
+		Locale locale = LocaleContextHolder.getLocale();
+		// Mapa en el que se van a almacenar los errores 
+		List<String> list = new ArrayList<String>();
+		// Lista de errores que se han producido al realizarse el databinding
+		List<FieldError> fieldErrors = errors.getFieldErrors();
+		
+		// Se recorre cada error
+		for (Iterator<FieldError> iterator = fieldErrors.iterator(); iterator.hasNext();) {
+		
+			FieldError fieldError = (FieldError) iterator.next();
+			String errorMessage;
+			
+			try{
+				errorMessage = messageSource.getMessage(fieldError.getCode(), null, locale);
+			}catch (NoSuchMessageException e) {
+				errorMessage = fieldError.getCode();
+			}
+
+			list.add(errorMessage);
+			
+		}
+		
+		return list;
+	}
+
+	/**
+	 * Genera a partir de un mensaje y un estilo, una estructura para devolver
+	 * una estructura que pueda ser convertida a formato JSON e interpretada por
+	 * el feedback.
+	 * 
+	 * @param msg
+	 *            Mensaje que debe ser visualizado por el feedback.
+	 * @param style
+	 *            Estilo que se debe mostrar con el feedback.
+	 * @return Estrutura que contiene el mensaje y el estilo que se debe de
+	 *         visualizar en el feedback.
+	 */
+	public Map<String,Object> getRupFeedbackMsg(String msg, String style){
+		Map<String,Object> map = new HashMap<String, Object>();
+		map.put("label", msg);
+		if (style!=null && !"".equals(style)){
+			map.put("style", style);
+		}
+		return map;
+	}
+	
+	
+	/*
+	 * Metodos de validaciones
+	 */
+	public JSONObject getMessageJSON(Object fieldErrors){
+		return this.getMessageJSON(fieldErrors, null, null);
+	}
+	public JSONObject getMessageJSON(Object fieldErrors, Object feedbackMessage){
+		return this.getMessageJSON(fieldErrors, feedbackMessage, null);
+	}
+	public JSONObject getMessageJSON(Object fieldErrors, Object feedbackMessage, String style){
+		
+		JSONObject message = new JSONObject();
+		
+		if (feedbackMessage!=null ){
+			
+			JSONObject feedbackObj = new JSONObject();
+			feedbackObj.put("message", feedbackMessage);
+			
+			if (style!=null && !"".equals(style)){
+				feedbackObj.put("style", style);
+			}
+			message.put("rupFeedback", feedbackObj);
+		}
+		
+		if (fieldErrors!=null){
+			message.put("rupErrorFields", fieldErrors);
+		}
+		
+		return message;
+	}
+	
+	/**
+	 * Método utilizado por el ValidationFilter para realizar la validación de
+	 * la información enviada en la request.
+	 * 
+	 * @param bean
+	 *            Nombre del tipo del bean sobre el que se deben de validar los
+	 *            datos.
+	 * @param data
+	 *            Datos enviados en la petición.
+	 * @param locale
+	 *            Locale actual que define el idioma a utilizar en la
+	 *            internacionalización de los mensajes.
+	 * @return Texto de error que contiene los mensajes de error y que van a ser
+	 *         enviados por el ValidationFilter.
+	 */
+	@Deprecated
 	public String validateObject(String bean, String data, Locale locale){
 		try{
 			Class<?> clazz = Class.forName(StaticsContainer.modelPackageName+bean);
@@ -89,29 +364,62 @@ public class ValidationManager {
 		}
 	}
 	
-	public String validateProperty(String bean, String property, String value, Locale locale){
-		try{
-			
-			String capitalicedProperty = StringUtils.capitalize(property);
-			String capitalicedBean = StringUtils.capitalize(bean);
-	
-			Class<?> clazz = Class.forName(StaticsContainer.modelPackageName+capitalicedBean);
-			Constructor<?> cons = clazz.getConstructor();
-			Object obj = cons.newInstance((Object[])null);
-
-			Method getter = clazz.getMethod("get" + capitalicedProperty, new Class[]{});
-			Method meth = clazz.getMethod("set" + capitalicedProperty, getter.getReturnType());
-			Object res = ObjectConversionManager.convert(value, getter.getReturnType());
-			meth.invoke(obj, res);			
-			
-			Set<ConstraintViolation<Object>> constraintViolations = validator.validateProperty(obj, property);			
-			return summary(constraintViolations, bean, locale);
-		}catch (Exception e) {
-			logger.error(StackTraceManager.getStackTrace(e));
-			return "error!";
+	/**
+	 * Realiza la validación del objeto indicado y envía en la response los
+	 * errores de validación que se han producido.
+	 * 
+	 * @param <T>
+	 *            Tipo del objeto que se va a validar.
+	 * @param object
+	 *            Objeto sobre el que se va a realizar la validación.
+	 * @param response
+	 *            HttpServletResponse sobre la que se van a escribir los errores
+	 *            de validación.
+	 * @return True/false dependiendo del resultado de la validación.
+	 */
+	@Deprecated
+	public <T extends Object> Boolean writeValidationErrors(T object, HttpServletResponse response){
+		
+		Set<ConstraintViolation<T>> constraintViolations = validator.validate(object);
+		
+		if (!constraintViolations.isEmpty()){
+			String summary = this.summary(constraintViolations, object.getClass().getSimpleName(), LocaleContextHolder.getLocale());
+			response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+			response.setContentType("text/javascript;charset=UTF-8");
+			response.setHeader("Cache-Control", "no-cache");
+			response.setHeader("Expires", DateTimeManager.getHttpExpiredDate());
+			try {
+				response.getWriter().write(summary);
+				return true;
+			} catch (IOException e) {
+				logger.error(StackTraceManager.getStackTrace(e));
+				return true;
+			}
 		}
+		
+		return false;
 	}
 	
+	
+	// MÉTODOS PRIVADOS
+	
+	/**
+	 * Genera una cadena de error en formato JSON a partir de los errores de
+	 * validación que se han producido.
+	 * 
+	 * @param <T>
+	 *            Tipo del objeto que se va a validar.
+	 * @param constraintViolations
+	 *            Errores de validación sobre los que se desea generar el
+	 *            mensaje.
+	 * @param bean
+	 *            Nombre del tipo de bean sobre el que se ha realizado la
+	 *            validación.
+	 * @param locale
+	 *            Locale actual que define el idioma a utilizar en la
+	 *            internacionalización de los mensajes.
+	 * @return Cadena de error resultante.
+	 */
 	private <T extends Object> String summary (Set<ConstraintViolation<T>> constraintViolations, String bean, Locale locale){
 		Iterator<ConstraintViolation<T>> ite = constraintViolations.iterator();
 		Map<String,List<Map<String,String>>> errors = new HashMap<String,List<Map<String,String>>>();
@@ -156,64 +464,25 @@ public class ValidationManager {
 		}
 	}
 	
-	public <T extends Object> Boolean writeValidationErrors(T object, HttpServletResponse response){
-		
-		Set<ConstraintViolation<T>> constraintViolations = validator.validate(object);
-		
-		if (!constraintViolations.isEmpty()){
-			String summary = this.summary(constraintViolations, object.getClass().getSimpleName(), LocaleContextHolder.getLocale());
-			response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-			response.setContentType("text/javascript;charset=UTF-8");
-			response.setHeader("Cache-Control", "no-cache");
-			response.setHeader("Expires", DateTimeManager.getHttpExpiredDate());
-			try {
-				response.getWriter().write(summary);
-				return true;
-			} catch (IOException e) {
-				logger.error(StackTraceManager.getStackTrace(e));
-				return true;
-			}
-		}
-		
-		return false;
-	}
-	
-//	public <T extends Object> void writeValidationErrors(Set<ConstraintViolation<T>> constraintViolations, String beanName, HttpServletResponse response){
-//		
-//		if (!constraintViolations.isEmpty()){
-//			String summary = this.summary(constraintViolations, beanName);
-//			response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-//			response.setContentType("text/javascript;charset=UTF-8");
-//			response.setHeader("Cache-Control", "no-cache");
-//			response.setHeader("Expires", DateTimeManager.getHttpExpiredDate());
-//			try {
-//				response.getWriter().write(summary);
-//				
-//			} catch (IOException e) {
-//				logger.error(StackTraceManager.getStackTrace(e));
-//				/* TODO : Gestionar excepcion */
-//			}
-//		}
-//	}
-	
-	private String serialize (Object result){
-		StringWriter sw;
-		try{
-	      sw = new StringWriter();
-	      ObjectMapper mapper = new ObjectMapper(); 
-	      JsonGenerator jsonGenerator = jsonFactory.createJsonGenerator(sw);
-	      mapper.writeValue(jsonGenerator, result);
-	      sw.close();
+	/**
+	 * Metodo utilizado para realizar la serialización de un objeto en formato JSON.
+	 * 
+	 * @param obj Objeto a serializar.
+	 * @return Serialización del objeto en formato JSON.
+	 */
+	private String serialize(Object obj) {
+		StringWriter sw = new StringWriter();
+		ObjectMapper mapper = new ObjectMapper();
+		MappingJsonFactory jsonFactory = new MappingJsonFactory();
+		try {
+			JsonGenerator jsonGenerator = jsonFactory.createJsonGenerator(sw);
+			mapper.writeValue(jsonGenerator, obj);
+			sw.close();
+
+			return sw.getBuffer().toString();
 		} catch (IOException e) {
 			logger.error(StackTraceManager.getStackTrace(e));
 			return "error!";
 		}
-		return sw.getBuffer().toString();
-	}
-	
-	//Getters & Setters
-	public void setMessageSource(
-			ReloadableResourceBundleMessageSource messageSource) {
-		this.messageSource = messageSource;
 	}
 }

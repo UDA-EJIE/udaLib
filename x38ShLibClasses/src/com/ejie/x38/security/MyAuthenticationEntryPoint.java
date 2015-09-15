@@ -55,8 +55,11 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint,
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		
+		String url;
 		Cookie requestCookies[] = request.getCookies();
 		StringBuilder portalData = new StringBuilder("/");
+		boolean isAjax = request.getHeaders("X-Requested-With").hasMoreElements();
+		boolean isPortal = false;
 		
 		//valoracion del acelerador
 		String originalURL = ManagementUrl.getUrl(httpRequest);
@@ -65,6 +68,8 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint,
 			if (requestCookies != null){
 				for (int i = 0; i < requestCookies.length; i++) {
 					if (requestCookies[i].getName().equals("r01PortalInfo")){
+						isPortal = true;
+						
 						portalData.append(requestCookies[i].getValue ());
 						StringBuilder host = new StringBuilder(httpRequest.getServerName());
 						
@@ -81,11 +86,14 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint,
 		}
 		
 		logger.info("XLNET Session isn't valid or not created!");
-		String url = getPerimetralSecurityWrapper().getURLLogin(originalURL);
+		if (!(isAjax && isPortal)){
+			url = getPerimetralSecurityWrapper().getURLLogin(originalURL , isAjax);
+		} else {
+			url = getPerimetralSecurityWrapper().getURLLogin(originalURL , isAjax)+"&R01HNoPortal=true";
+		}
+		
 		logger.info("Redirecting to next URL:" + url);
 		httpResponse.sendRedirect(url);
-
-		
 	}
 
 	@Override

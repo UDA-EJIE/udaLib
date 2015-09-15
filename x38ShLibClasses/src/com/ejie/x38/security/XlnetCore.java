@@ -1,5 +1,5 @@
 /*
-* Copyright 2011 E.J.I.E., S.A.
+* Copyright 2012 E.J.I.E., S.A.
 *
 * Licencia con arreglo a la EUPL, Versión 1.1 exclusivamente (la «Licencia»);
 * Solo podrá usarse esta obra si se respeta la Licencia.
@@ -15,6 +15,7 @@
 */
 package com.ejie.x38.security;
 
+import java.util.HashMap;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +29,7 @@ import n38i.exe.N38ParameterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 import com.ejie.x38.util.StackTraceManager;
 import com.ejie.x38.util.XmlManager;
@@ -43,6 +45,8 @@ public class XlnetCore {
 
 	public static final String PATH_SUBTIPO_N38INSTANCIA = "/n38/elementos/elemento/elemento/elemento/parametro[@id='n38uidobjseguridad']/valor";
 	public static final String PATH_SUBTIPO_N38SESION = "/n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='?']/valor";
+	public static final String PATH_SUBTIPO_n38DOMINIOCOMUNCOOKIE = "/n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='n38dominiocomuncookie']/valor";
+	public static final String PATH_SUBTIPO_N38SUBJECTCERT = "/n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='n38subjectcert']/valor";
 	public static final String PATH_SUBTIPO_ORGANIZATIONALUNIT = "/n38/elementos/elemento[@subtipo='OrganizationalUnit']/parametro[@id='ou']/valor[text()='?']/../../elemento[@subtipo=\"n38itemSeguridad\"]/parametro[@id=\"n38uidobjseguridad\"]/valor";
 	public static final String PATH_CHECK_ERROR = "/n38/error";
 	public static final String PATH_CHECK_WARNING = "/n38/warning";
@@ -139,6 +143,58 @@ public class XlnetCore {
 
 		return bResultado;
 	}
+	
+	public static String getN38DominioComunCookie(Document xmlSesion) {
+		
+		Node n38DominioComunCookieNode; 
+		
+		if (xmlSesion != null)
+			logger.trace("XmlSesion is: "+xmlSesion.getTextContent());
+
+		if (xmlSesion == null)
+			throw new IllegalArgumentException(
+					"isXlnetSessionContainingErrors(): The Document input parameter can't be NULL.");
+
+		try {
+			
+			n38DominioComunCookieNode = XmlManager.searchDomNode(xmlSesion, PATH_SUBTIPO_n38DOMINIOCOMUNCOOKIE);
+			return n38DominioComunCookieNode.getFirstChild().getNodeValue();
+			
+		} catch (TransformerException e) {
+			logger.error("isXlnetSessionContainingErrors(): XML searching error: "+ StackTraceManager.getStackTrace(e));
+			return null; 
+		}
+	}
+	
+	public static HashMap<String, String> getN38SubjectCert(Document xmlSesion) {
+		
+		String[] n38SubjectCert = new String[2];
+		String[] n38MultiSubjectCert;
+		HashMap<String, String> certinfo = null; 
+		
+		if (xmlSesion != null){
+			logger.trace("XmlSesion is: "+xmlSesion.getTextContent());
+		} else {
+			throw new IllegalArgumentException(
+			"isXlnetSessionContainingErrors(): The Document input parameter can't be NULL.");
+		}
+
+		try {
+			n38MultiSubjectCert = (XmlManager.searchDomNode(xmlSesion, PATH_SUBTIPO_N38SUBJECTCERT)).getFirstChild().getNodeValue().split(", ");
+			certinfo = new HashMap<String, String>(n38MultiSubjectCert.length);
+			
+			for(int i =0; i < n38MultiSubjectCert.length; i++){
+				n38SubjectCert = n38MultiSubjectCert[i].split("=");
+				certinfo.put(n38SubjectCert[0], n38SubjectCert[1]);
+			}
+			
+			return certinfo;
+			
+		} catch (TransformerException e) {
+			logger.error("isXlnetSessionContainingErrors(): XML searching error: "+ StackTraceManager.getStackTrace(e));
+			return null; 
+		}
+	}
 
 	public static Vector<String> searchParameterIntoXlnetSesion(Document xmlSesion, String searchUrl) {
 		if (xmlSesion == null)
@@ -164,6 +220,28 @@ public class XlnetCore {
 		return resultVector;
 	}
 	
+	public static String getParameterSession(N38API n38Api, String param){
+		String[] result = null;
+		
+		if (n38Api == null)
+			throw new IllegalArgumentException(
+					"getN38ItemSeguridad(): The N38API input parameter can't be NULL.");
+		
+		try {
+			result = n38Api.n38ItemSesion(param);
+		} catch (N38ParameterException e) {
+			logger.error(StackTraceManager.getStackTrace(e));
+		} catch (N38Excepcion e) {
+			logger.error(StackTraceManager.getStackTrace(e));
+		}	
+		if(result!=null && result.length>0){
+			return result[0];
+		}else{
+			return null;
+		}
+	}
+	
+	@Deprecated
 	public static String getUidSesion(N38API n38Api){
 		String[] uidSesions = null;
 		try {
@@ -179,7 +257,8 @@ public class XlnetCore {
 			return null;
 		}
 	}
-
+	
+	@Deprecated
 	public static String getLogin(N38API n38Api){
 		String[] personaUids = null;
 		try {
@@ -196,6 +275,7 @@ public class XlnetCore {
 		}
 	}
 	
+	@Deprecated
 	public static String getPuesto(N38API n38Api){
 		String[] personaPuestoUids = null;
 		try {

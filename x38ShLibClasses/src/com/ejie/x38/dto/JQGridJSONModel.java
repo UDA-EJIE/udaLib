@@ -23,10 +23,22 @@ import java.util.List;
  *
  */
 public class JQGridJSONModel {
+
 	private String page = null;
 	private List<?> rows = null;
 	private String total = null;
 	private Integer records = null;
+	
+	public JQGridJSONModel() {
+		super();
+	}
+	public JQGridJSONModel(Pagination pagination, Long recordNum, List<?> rows) {
+		super();
+		this.page = pagination.getPage().toString();
+		this.rows = rows;
+		this.setTotal(recordNum, pagination.getRows());
+		this.records = recordNum.intValue();
+	}
 	
 	/**
 	 * @return the page

@@ -17,9 +17,13 @@ package com.ejie.x38.control.exception;
 
 /**
  * 
+ * Excepción genérica de UDA
+ * 
+ * @deprecated As of release 2.0.0
+ * 
  * @author UDA
- *
- */
+*/
+@Deprecated
 public class ControlException extends RuntimeException{
 	protected Throwable throwable;
 	private static final long serialVersionUID = 1L;

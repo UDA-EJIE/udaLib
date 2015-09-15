@@ -42,6 +42,7 @@ import com.ejie.x38.util.DateTimeManager;
  * 
  */
 @Component
+@Deprecated
 public class JsonDateTimeDeserializer extends JsonDeserializer<Timestamp> {
 
 	@Override

@@ -41,6 +41,7 @@ import com.ejie.x38.util.StackTraceManager;
  * @author UDA
  *
  */
+@Deprecated
 public class ValidationFilter extends DelegatingFilterProxy {
 
 	private final static Logger logger = LoggerFactory

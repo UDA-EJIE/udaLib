@@ -38,6 +38,7 @@ import com.ejie.x38.util.DateTimeManager;
  * 
  */
 @Component
+@Deprecated
 public class JsonDateSerializer extends JsonSerializer<Date>{
 
 	@Override
