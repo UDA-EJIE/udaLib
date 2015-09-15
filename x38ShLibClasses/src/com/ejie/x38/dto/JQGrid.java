@@ -20,6 +20,7 @@ package com.ejie.x38.dto;
  * @author UDA
  *
  */
+@Deprecated
 public class JQGrid extends Pagination implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1L;

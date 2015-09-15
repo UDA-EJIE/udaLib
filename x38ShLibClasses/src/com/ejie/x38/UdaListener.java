@@ -28,10 +28,13 @@ import javax.servlet.http.HttpSessionListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.ejie.x38.log.LogConstants;
+import com.ejie.x38.security.StockUdaSecurityPadlocksImpl;
 import com.ejie.x38.security.UserCredentials;
 import com.ejie.x38.util.ManagementUrl;
 
@@ -45,7 +48,7 @@ import com.ejie.x38.util.ManagementUrl;
  * 
  */
 public class UdaListener implements ServletContextListener, HttpSessionListener, ServletRequestListener{
-
+	
 	Logger logger =  LoggerFactory.getLogger(UdaListener.class);
 	
 	@Override
@@ -68,6 +71,12 @@ public class UdaListener implements ServletContextListener, HttpSessionListener,
 	@Override
 	public void sessionDestroyed(HttpSessionEvent sessionEvent) {
 		logger.debug( "Session "+sessionEvent.getSession().getId()+" has been destroyed");
+		
+		HttpSession session = sessionEvent.getSession();
+        ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(session.getServletContext());
+        StockUdaSecurityPadlocksImpl stockUdaSecurityPadlocks = (StockUdaSecurityPadlocksImpl)ctx.getBean("stockUdaSecurityPadlocks");
+		stockUdaSecurityPadlocks.deleteCredentialLoadObject(sessionEvent.getSession().getId());
+		
 		sessionEvent.getSession().removeAttribute("udaTimeStamp");
 		sessionEvent.getSession().removeAttribute("udaVirgin");
 	}

@@ -36,7 +36,7 @@ public class MyLogoutHandler implements LogoutHandler {
 	private boolean invalidateUserSession;
 	private PerimetralSecurityWrapper perimetralSecurityWrapper;
 	static Logger logger =  LoggerFactory.getLogger(MyLogoutHandler.class);
-
+	
 	public PerimetralSecurityWrapper getPerimetralSecurityWrapper() {
 		return perimetralSecurityWrapper;
 	}
@@ -49,26 +49,41 @@ public class MyLogoutHandler implements LogoutHandler {
 	@Override
 	public void logout(HttpServletRequest request,
 			HttpServletResponse response, Authentication authentication) {
-
+		
+		HttpSession httpSession = request.getSession(false);
+		
+		//Clear Spring Security Context
+		logger.info("XLNET session is invalid. Proceeding to clean the Security Context Holder.");
+		
+		if(authentication != null){
+			authentication.setAuthenticated(false);
+		}
+		SecurityContextHolder.clearContext();
+		
+		if(httpSession != null && (httpSession.getAttribute("SPRING_SECURITY_CONTEXT") != null)){
+			httpSession.removeAttribute("SPRING_SECURITY_CONTEXT");
+		}
+		
+		logger.info( "SecurityContextHolder cleared!");
+		
 		//Destroy XLNET session
-		if(invalidateUserSession){
+		if(this.invalidateUserSession){
 			Assert.notNull(request, "HttpServletRequest required");			
 			getPerimetralSecurityWrapper().logout(request, response);
 			logger.info("XLNET " +getPerimetralSecurityWrapper().getUserConnectedUidSession(request)+ " Session destroyed!");
 		}
 
 		//Invalidate HTTP session
-		if (invalidateHttpSession) {
-			HttpSession session = request.getSession(false);
-			if (session != null) {
-				logger.info("Session " +session.getId()+ " invalidated!");
-				session.invalidate();				
+		if (httpSession != null && this.invalidateHttpSession) {
+			
+			//Cleaning the User Session of Weblogic
+			try{ 
+				logger.info("Session " +httpSession.getId()+ " invalidated!");
+				httpSession.invalidate();
+			} catch (IllegalStateException e) {
+				logger.info( "The user session isn't valid, it is not necessary delete it");
 			}
 		}
-
-		//Clear Spring Security Context
-		SecurityContextHolder.clearContext();
-		logger.info( "SecurityContextHolder cleared!");
 	}
 
 	public boolean isInvalidateHttpSession() {
@@ -84,6 +99,9 @@ public class MyLogoutHandler implements LogoutHandler {
 	}
 
 	public void setInvalidateUserSession(boolean invalidateUserSession) {
+		if(this.perimetralSecurityWrapper instanceof PerimetralSecurityWrapperN38Impl){
+			((PerimetralSecurityWrapperN38Impl) this.perimetralSecurityWrapper).setDestroyXLNetsSession(invalidateUserSession);			 
+		}
 		this.invalidateUserSession = invalidateUserSession;
 	}
 }

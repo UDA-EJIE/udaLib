@@ -30,12 +30,33 @@ public class UserCredentials implements Serializable {
 	private String nif;
 	private String policy;
 	private String userName;
+	private String name;
+	private String surname;
+	private String fullName;
 	private String position;
 	private String uidSession;
 	private boolean isCertificate;
 	private String udaValidateSessionId;
 	private Vector<String> userProfiles;
+	private boolean destroyXLNetsSession;
 
+	public UserCredentials(Vector<String> userProfiles, String userName, String name, String surname, String fullName, String nif,
+			String uidSession, String position, String udaValidateSessionId, String policy, boolean isCertificate, boolean destroyXLNetsSession) {
+		super();
+		this.nif = nif;
+		this.userName = userName;
+		this.name = name;
+		this.surname = surname;
+		this.fullName = fullName;
+		this.uidSession = uidSession;
+		this.position = position;
+		this.udaValidateSessionId = udaValidateSessionId;
+		this.userProfiles = userProfiles;
+		this.isCertificate = isCertificate;
+		this.policy = policy;
+		this.destroyXLNetsSession = destroyXLNetsSession;
+	}
+	
 	public UserCredentials(Vector<String> userProfiles, String userName, String nif,
 			String uidSession, String position, String udaValidateSessionId, String policy, boolean isCertificate) {
 		super();
@@ -55,6 +76,10 @@ public class UserCredentials implements Serializable {
 
 		strBuffer.append("UserCredentials [");
 		strBuffer.append("userName=").append(userName).append(";");
+		strBuffer.append("nif=").append(nif).append(";");
+		strBuffer.append("name=").append(name).append(";");
+		strBuffer.append("surName=").append(surname).append(";");
+		strBuffer.append("fullName=").append(fullName).append(";");
 		strBuffer.append("uidSession=").append(uidSession).append(";");
 		strBuffer.append("position=").append(position).append(";");
 		
@@ -72,6 +97,20 @@ public class UserCredentials implements Serializable {
 			}
 		} else {
 			strBuffer.append("userProfiles=").append("NULL").append(";");
+		}
+		
+		if(isCertificate){
+			strBuffer.append("isCertificate=").append("true").append(";");
+		} else {
+			strBuffer.append("isCertificate=").append("false").append(";");
+		}
+		
+		strBuffer.append("policy=").append(policy).append(";");
+		
+		if(destroyXLNetsSession){
+			strBuffer.append("destroyXLNetsSession=").append("true").append(";");
+		} else {
+			strBuffer.append("destroyXLNetsSession=").append("false").append(";");
 		}
 		
 		strBuffer.append("]");
@@ -103,6 +142,30 @@ public class UserCredentials implements Serializable {
 
 	public void setUserName(String userName) {
 		this.userName = userName;
+	}
+	
+	public String getFullName() {
+		return fullName;
+	}
+
+	public void setfullName(String fullName) {
+		this.fullName = fullName;
+	}
+	
+	public String getSurname() {
+		return surname;
+	}
+
+	public void setSurname(String surname) {
+		this.surname = surname;
+	}
+	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getPosition() {
@@ -143,5 +206,13 @@ public class UserCredentials implements Serializable {
 
 	public void setUserProfiles(Vector<String> userProfiles) {
 		this.userProfiles = userProfiles;
+	}
+	
+	public boolean getDestroyXLNetsSession() {
+		return this.destroyXLNetsSession;
+	}
+
+	public void setDestroyXLNetsSession(boolean destroyXLNetsSession) {
+		this.destroyXLNetsSession = destroyXLNetsSession;
 	}
 }

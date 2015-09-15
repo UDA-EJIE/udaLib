@@ -15,7 +15,6 @@
 */
 package com.ejie.x38.security;
 
-import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,7 +56,7 @@ public class PerimetralSecurityWrapperMockImpl implements
 	private ArrayList<HashMap<String,Object>> principal;
 	private String userChangeUrl;
 
-	public String validateSession(HttpServletRequest httpRequest, HttpServletResponse response) throws IOException{
+	public String validateSession(HttpServletRequest httpRequest, HttpServletResponse response) throws SecurityException{
 		
 		UserCredentials credentials = null; 
 		Authentication authentication = null;
@@ -151,9 +150,24 @@ public class PerimetralSecurityWrapperMockImpl implements
 			}
 		}
 		
-		httpRequest.getSession(false).setAttribute("userName", udaMockUserName.getValue());
+		if(httpRequest.getSession(false).getAttribute("fullName") == null){
+			HashMap<String, Object> user = getUserData(principal, udaMockUserName.getValue());
+		
+			httpRequest.getSession(false).setAttribute("fullName", (String)user.get("fullName"));
+		}
 		
 		return udaMockUserName.getValue();
+	}
+	
+	public HashMap<String, String> getUserDataInfo(HttpServletRequest httpRequest){
+		HashMap<String, Object> user = getUserData(principal, getUserConnectedUserName(httpRequest));
+		HashMap<String, String> userData = new HashMap<String, String>();
+		
+		userData.put("name", (String)user.get("name"));
+		userData.put("surname", (String)user.get("surname"));
+		userData.put("fullName", (String)user.get("fullName"));
+		
+		return (userData);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -186,7 +200,7 @@ public class PerimetralSecurityWrapperMockImpl implements
 	}
 	
 	public String getURLLogin(String originalURL, boolean ajax) {
-		String userName = null;
+		String dataUsers = null;
 		ArrayList<HashMap<String, String>> usersNames = new ArrayList<HashMap<String, String>> ();
 		Iterator<HashMap<String,Object>> usersIterator = principal.iterator();
 		HashMap<String, String> auxObject = new HashMap<String, String>();
@@ -200,10 +214,9 @@ public class PerimetralSecurityWrapperMockImpl implements
 		
 		while ( usersIterator.hasNext() ){
 			auxObject = new HashMap<String, String>();
-			user = usersIterator.next();
-			userName = (String)user.get("userName");
-			auxObject.put("i18nCaption", userName);
-			auxObject.put("value", userName);
+			user = usersIterator.next();			
+			auxObject.put("i18nCaption", (String)user.get("fullName"));
+			auxObject.put("value", (String)user.get("userName"));
 			
 			usersNames.add(auxObject);
 		}
@@ -212,7 +225,7 @@ public class PerimetralSecurityWrapperMockImpl implements
 			jsonGenerator = jsonFactory.createJsonGenerator(sw);
 			mapper.writeValue(jsonGenerator, usersNames);
 			sw.close();
-			userName = sw.getBuffer().toString();
+			dataUsers = sw.getBuffer().toString();
 			
 			//Deleting the objects of the serialization
 			jsonGenerator = null;
@@ -229,9 +242,9 @@ public class PerimetralSecurityWrapperMockImpl implements
 		}
 		
 		if (!ajax){
-			return(webApplicationContext.getServletContext().getContextPath()+"/mockLoginPage?mockUrl="+originalURL+"&userNames="+userName);
+			return(webApplicationContext.getServletContext().getContextPath()+"/mockLoginPage?mockUrl="+originalURL+"&userNames="+dataUsers);
 		} else {
-			return(webApplicationContext.getServletContext().getContextPath()+"/mockLoginAjaxPage?mockUrl="+originalURL+"&userNames="+userName);
+			return(webApplicationContext.getServletContext().getContextPath()+"/mockLoginAjaxPage?mockUrl="+originalURL+"&userNames="+dataUsers);
 		}
 	}
 
@@ -312,6 +325,9 @@ public class PerimetralSecurityWrapperMockImpl implements
 		roles.add("UDAANONYMOUS");
 		
 		userAnonymous.put("userName", "udaAnonymousUser");
+		userAnonymous.put("name", "uda");
+		userAnonymous.put("surName", "Anonymous User");
+		userAnonymous.put("fullName", "Uda Anonymous User");
 		userAnonymous.put("nif", "00000000a");
 		userAnonymous.put("policy", "udaAnonymousPolicy");
 		userAnonymous.put("position", "udaAnonymousPosition");

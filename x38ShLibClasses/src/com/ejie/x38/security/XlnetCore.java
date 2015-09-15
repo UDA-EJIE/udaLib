@@ -50,6 +50,10 @@ public class XlnetCore {
 	public static final String PATH_SUBTIPO_ORGANIZATIONALUNIT = "/n38/elementos/elemento[@subtipo='OrganizationalUnit']/parametro[@id='ou']/valor[text()='?']/../../elemento[@subtipo=\"n38itemSeguridad\"]/parametro[@id=\"n38uidobjseguridad\"]/valor";
 	public static final String PATH_CHECK_ERROR = "/n38/error";
 	public static final String PATH_CHECK_WARNING = "/n38/warning";
+	public static final String FILTRO_LDAP_PUESTOUID = "n38puestouid=";
+	public static final String PATH_PUESTOUID_SUBTIPO_SN = "/n38/elementos/elemento[@subtipo='n38persona']/parametro[@id='sn']/valor";
+	public static final String PATH_PUESTOUID_SUBTIPO_CN = "/n38/elementos/elemento[@subtipo='n38persona']/parametro[@id='cn']/valor";
+	public static final String PATH_PUESTOUID_SUBTIPO_GIVENNAME = "/n38/elementos/elemento[@subtipo='n38persona']/parametro[@id='givenname']/valor";
 
 	/**
 	 * Devuelve un objeto N38API a partir del contexto de una petición Request.
@@ -239,6 +243,37 @@ public class XlnetCore {
 		}else{
 			return null;
 		}
+	}
+	
+	public static HashMap<String, String> getUserDataInfo(N38API n38Api){
+		HashMap<String, String> result = new HashMap<String, String>();
+		
+		String[] n38puestouidString;
+		Document xmlPuesto;
+		
+		if (n38Api == null)
+			throw new IllegalArgumentException(
+					"getN38ItemSeguridad(): The N38API input parameter can't be NULL.");
+		
+		try {
+			n38puestouidString = n38Api.n38ItemSesion(N38API.NOMBRE_N38PUESTOUID);
+			xmlPuesto = n38Api.n38ItemObtenerPersonas(FILTRO_LDAP_PUESTOUID+n38puestouidString[0]);
+			
+			try {
+				result.put("name",XmlManager.searchDomNode(xmlPuesto, PATH_PUESTOUID_SUBTIPO_GIVENNAME).getFirstChild().getNodeValue());
+				result.put("surname",XmlManager.searchDomNode(xmlPuesto, PATH_PUESTOUID_SUBTIPO_SN).getFirstChild().getNodeValue());
+				result.put("fullName", XmlManager.searchDomNode(xmlPuesto, PATH_PUESTOUID_SUBTIPO_CN).getFirstChild().getNodeValue()); 
+				
+			} catch (TransformerException e) {
+				logger.error("isXlnetSessionContainingErrors(): XML searching error: "+ StackTraceManager.getStackTrace(e));
+				return null; 
+			}			
+		} catch (N38ParameterException e) {
+			logger.error(StackTraceManager.getStackTrace(e));
+		} catch (N38Excepcion e) {
+			logger.error(StackTraceManager.getStackTrace(e));
+		}	
+		return result;
 	}
 	
 	@Deprecated

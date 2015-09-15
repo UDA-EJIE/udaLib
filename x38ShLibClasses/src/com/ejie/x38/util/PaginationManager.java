@@ -22,6 +22,7 @@ import com.ejie.x38.dto.Pagination;
  * @author UDA
  *
  */
+@Deprecated
 public class PaginationManager {
 	public static String getQueryLimits(Pagination pagination , String query)
     {

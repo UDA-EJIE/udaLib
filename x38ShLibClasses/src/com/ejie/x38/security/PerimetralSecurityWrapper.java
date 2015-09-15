@@ -15,7 +15,7 @@
 */
 package com.ejie.x38.security;
 
-import java.io.IOException;
+import java.util.HashMap;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,10 +28,12 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface PerimetralSecurityWrapper {
 	
-	public String validateSession(HttpServletRequest httpRequest, HttpServletResponse response) throws IOException;
+	public String validateSession(HttpServletRequest httpRequest, HttpServletResponse response) throws SecurityException;
 	
 	public String getUserConnectedUserName(HttpServletRequest httpRequest);
-
+	
+	public HashMap<String, String> getUserDataInfo(HttpServletRequest httpRequest);
+	
 	public String getUserConnectedUidSession(HttpServletRequest httpRequest);
 	
 	public String getUdaValidateSessionId(HttpServletRequest httpRequest);
@@ -49,4 +51,5 @@ public interface PerimetralSecurityWrapper {
 	public void logout(HttpServletRequest httpRequest, HttpServletResponse httpResponse);
 	
 	public String getNif(HttpServletRequest httpRequest);
+	
 }

@@ -27,9 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
@@ -118,19 +116,6 @@ public class MvcInterceptor extends HandlerInterceptorAdapter{
 		return true;
 	}
 		
-	/**
-	 * Método que se ejecuta tras el método del Controller
-	 */
-	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-		//Si es una petición a una página
-		if (modelAndView!=null){
-			ModelMap model = (ModelMap) modelAndView.getModel();
-			if (!model.containsKey("defaultLayout")){
-				modelAndView.addObject("defaultLayout", defaultLayout);
-			}
-		}
-	}
-	
 	/**
 	 * Función que busca la cookie de idioma y determina si es idioma válido (devuelve la cookie)
 	 * @param cookies Conjunto de cookies de la request

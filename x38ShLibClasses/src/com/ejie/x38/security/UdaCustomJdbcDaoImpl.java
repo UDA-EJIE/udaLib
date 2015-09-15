@@ -20,7 +20,6 @@ import java.util.Vector;
 import n38c.exe.N38API;
 
 import org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl;
-import org.w3c.dom.Document;
 
 
 /**
@@ -37,9 +36,9 @@ public abstract class UdaCustomJdbcDaoImpl extends JdbcDaoImpl {
 		super();
 	}
 		
-	abstract protected String loadUserPosition(String userName, String dni, N38API n38Api, Document xmlSesion);
+	abstract protected String loadUserPosition(String userName, String dni, N38API n38Api);
 	
-	abstract protected Vector<String> loadUserAuthorities(String userName, String dni, N38API n38Api, Document xmlSesion);
+	abstract protected Vector<String> loadUserAuthorities(String userName, String dni, N38API n38Api);
 	
 	
 	//Getters & Setters

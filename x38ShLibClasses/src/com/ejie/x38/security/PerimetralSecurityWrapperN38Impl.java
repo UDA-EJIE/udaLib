@@ -15,7 +15,6 @@
 */
 package com.ejie.x38.security;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
@@ -38,6 +37,7 @@ import org.w3c.dom.Document;
 
 import com.ejie.x38.log.LogConstants;
 import com.ejie.x38.util.StaticsContainer;
+import com.ejie.x38.util.ThreadStorageManager;
 
 /**
  * 
@@ -50,10 +50,11 @@ public class PerimetralSecurityWrapperN38Impl implements
 	private static final Logger logger = LoggerFactory
 			.getLogger(PerimetralSecurityWrapperN38Impl.class);
 	
-	private Long xlnetCachingPeriod;
+	private Long xlnetCachingPeriod = new Long(0);
 	private String xlnetsDomain = null;
+	private boolean destroyXLNetsSession = false;
 	private String userChangeUrl = null;
-	private ExcludeFilter excludeFilter;
+	private ExcludeFilter excludeFilter = null;
 	private UdaCustomJdbcDaoImpl alternativeStorageUserCredentials = null;
 	private HashMap<String, String> anonymousProfile = new HashMap<String, String>();
 	
@@ -62,71 +63,64 @@ public class PerimetralSecurityWrapperN38Impl implements
 		this.anonymousProfile.put("userProfiles", "udaAnonymousProfile");
 	}
 
-	public String validateSession(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
+	public synchronized String validateSession(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws SecurityException {
+
+		String udaXLNetsSessionId = getXlnetsUserId(httpRequest);
 		
-		HttpSession httpSession = httpRequest.getSession(false);
+		//Getting Authentication credentials
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		UserCredentials credentials = null; 
-		Authentication authentication = null;
-
-		if (httpSession == null || (httpSession.getAttribute("securityRedirection") == null && httpSession.getAttribute("userChange") == null)){
-			
-			String udaXLNetsSessionId = getXlnetsUserId(httpRequest);
-			
-			//XLNets retrieve n38UidSesionGlobal cookie
-			if (udaXLNetsSessionId!=null){			
-
-				//Getting Authentication credentials
-				authentication = SecurityContextHolder.getContext().getAuthentication();
-				if (authentication != null){
-					credentials = (UserCredentials)authentication.getCredentials();
-				}
-						
+		
+		//Setpoint of the User Session. if the session is not created, it will proceed to create it
+		HttpSession httpSession = httpRequest.getSession(true);
+		
+		if (authentication != null){
+			credentials = (UserCredentials)authentication.getCredentials();
+		}
+		
+		if (credentials != null){
+			if(udaXLNetsSessionId != null){
+				
+				if(excludeFilter != null && (!excludeFilter.accept(httpRequest, httpResponse))){
+					springSecurityContextClean(httpSession);
+					return excludeFilter.getAccessDeniedUrl();
+				
 				//If the sessionId changed, disable XLNET caching
-				if (credentials != null){
-					//
-					if(!(credentials.getUdaValidateSessionId().equals(udaXLNetsSessionId.toString()))){
-						
-						logger.info("XLNet's caching of session "+httpSession.getId()+" expired, because the XLNets user has changed");
-						authenticationLogContextClean();
-						httpSession.setAttribute("reloadData", "true");
-						httpSession.setAttribute("userChange", "true");
-						
-						//Validate the Object of XLnets
-						if(!(isN38ApiValid(httpRequest, httpResponse))){
-							udaXLNetsSessionId = null;
-							return "false";
-						} else if (excludeFilter != null && (!excludeFilter.accept(httpRequest, httpResponse))){
-							SecurityContextHolder.clearContext();
-							httpSession.setAttribute("securityRedirection", "true");
-							return excludeFilter.getAccessDeniedUrl();
-						}
-						
-						if(userChangeUrl != null){
-							SecurityContextHolder.clearContext();
-							return userChangeUrl;
-						}
+				}else if(!(credentials.getUdaValidateSessionId().equals(udaXLNetsSessionId.toString()))){
+					
+					logger.info("XLNet's caching of session "+httpSession.getId()+" expired, because the XLNets user has changed");
+					authenticationLogContextClean();
+					
+					//redirect, if is necesary
+					if(userChangeUrl != null){
+						udaXLNetsSessionId = null;
+						springSecurityContextClean(httpSession);
+						return userChangeUrl;
 					}
-				} else {
 					
 					//Validate the Object of XLnets
 					if(!(isN38ApiValid(httpRequest, httpResponse))){
 						udaXLNetsSessionId = null;
+						springSecurityContextClean(httpSession);
 						return "false";
-					} else if (excludeFilter != null && (!excludeFilter.accept(httpRequest, httpResponse))){
-						httpSession.setAttribute("securityRedirection", "true");
-						return excludeFilter.getAccessDeniedUrl();
-					}
-				}
-				
+					} 
+					
+					//springSecurityContextClean(httpSession);
+					loadReloadData(httpRequest, ThreadStorageManager.getCurrentThreadId());
+					httpSession.setAttribute("userChange", "true");
+					
+					
 				//If the last XLNET session refresh was performed more than X minutes ago, disable caching
-				if(httpSession!=null && httpSession.getAttribute("udaTimeStamp")!=null){
-					if((System.currentTimeMillis()- Long.valueOf(httpSession.getAttribute("udaTimeStamp")+""))>TimeUnit.MILLISECONDS.convert(xlnetCachingPeriod.longValue(), TimeUnit.SECONDS)){
+				} else if(httpSession!=null && httpSession.getAttribute("udaTimeStamp")!=null){
+					if(reloadData(httpRequest)){
 		
 						//Validate the Object of XLnets
 						if(isN38ApiValid(httpRequest, httpResponse)){
-							httpSession.setAttribute("reloadData", "true");
+							loadReloadData(httpRequest, ThreadStorageManager.getCurrentThreadId());
 						} else {
+							authenticationLogContextClean();
 							udaXLNetsSessionId = null;
+							springSecurityContextClean(httpSession);
 							return "false";
 						}
 						
@@ -135,22 +129,24 @@ public class PerimetralSecurityWrapperN38Impl implements
 				}
 				
 				return "true";
-					
+				
 			} else {
+				//There isn't a correct session of XLNET
 				logger.info("There isn't a correct session of XLNET");
+				logout(httpRequest, httpResponse);
+				springSecurityContextClean(httpSession);
 				udaXLNetsSessionId = null;
 				return "false";
 			}
-			
-		}else if (httpSession != null && httpSession.getAttribute("securityRedirection") != null && httpSession.getAttribute("securityRedirection").equals("true")){
-			httpSession.removeAttribute("securityRedirection");
-			return "false";
-			
-		}else {
+		} else {
 			//Validate the Object of XLnets
-			if(isN38ApiValid(httpRequest, httpResponse)){
+			if(udaXLNetsSessionId != null && isN38ApiValid(httpRequest, httpResponse)){
+				//The entry is accepting by the security system
+				udaXLNetsSessionId = null;
 				return "true";
 			} else {
+				//The entry isn't accepting by the security system
+				udaXLNetsSessionId = null;
 				return "false";
 			}
 		}
@@ -161,7 +157,7 @@ public class PerimetralSecurityWrapperN38Impl implements
 	public String getUserConnectedUserName(HttpServletRequest httpRequest) {
 		String userName = null;
 		String xlnetUserId = getXlnetsUserId(httpRequest);
-		
+		HttpSession httpSession = httpRequest.getSession(false);
 		UserCredentials credentials = null; 
 		Authentication authentication = null;
 		
@@ -172,22 +168,16 @@ public class PerimetralSecurityWrapperN38Impl implements
 			credentials = (UserCredentials)authentication.getCredentials();
 		}
 		
-		if(httpRequest.getSession(false) != null){
-			userName = (String)httpRequest.getSession(false).getAttribute("userName");
+		if(httpSession != null){
+			userName = (String)httpSession.getAttribute("userName");
 			
 			if (!(userName == null && credentials == null)){
-				if (credentials != null){
-					if (userName != null){
-						if(userName.equals(credentials.getUserName())){
-							httpRequest.getSession(false).removeAttribute("userName");
-						}
-					} else {
-						if (!(credentials.getUdaValidateSessionId().equals(xlnetUserId))){
-							userName = loadXlnetsCredentialInfo(httpRequest, xlnetUserId);
-						} else {
-							userName = credentials.getUserName();
-						}
-					}
+				if (userName == null){
+					httpSession.removeAttribute("fullName");
+					httpSession.removeAttribute("destroyXLNetsSession");
+					userName = credentials.getUserName();
+				} else {
+					httpSession.removeAttribute("userName");
 				}
 			} else {
 				userName = loadXlnetsCredentialInfo(httpRequest, xlnetUserId);
@@ -200,26 +190,58 @@ public class PerimetralSecurityWrapperN38Impl implements
 		return userName;		
 	}
 	
-	public String getUserPosition(HttpServletRequest httpRequest) {
-		UserCredentials credentials = null; 
-		Authentication authentication = null;
-		String userPosition = null;
+	public HashMap<String, String> getUserDataInfo(HttpServletRequest httpRequest){
+		HashMap<String, String> userData = null;
+		HttpSession httpSession = httpRequest.getSession(false);
+		String fullName = (String) httpSession.getAttribute("fullName");
 		
-		//Getting Authentication credentials
-		authentication = SecurityContextHolder.getContext().getAuthentication();
+		//Returning UserPosition
+		userData = new HashMap<String, String>();
 		
-		if (authentication != null){
-			credentials = (UserCredentials)authentication.getCredentials();
+		if (fullName != null){
+			userData.put("fullName", fullName);
+			userData.put("name", (String) httpSession.getAttribute("name"));
+			userData.put("surname", (String) httpSession.getAttribute("surname"));
+				
+			httpSession.removeAttribute("name");
+			httpSession.removeAttribute("surname");
+		} else {
+			N38API n38Api = XlnetCore.getN38API(httpRequest);
+			Document xmlSesion = XlnetCore.getN38ItemSesion(n38Api);
+			HashMap<String, String> userInfo = null;
+			
+			if(!(XlnetCore.getParameterSession(n38Api, "n38uidOrg").equals("0"))){
+				//User is in the XLNets's LDap
+				userInfo = XlnetCore.getUserDataInfo(n38Api);
+				userData.put("name", userInfo.get("name"));
+				userData.put("surname", userInfo.get("surname"));
+				userData.put("fullName", userInfo.get("fullName"));
+				httpSession.setAttribute("fullName",userInfo.get("fullName"));
+				
+			} else {
+				//User isn't in the XLNets's LDap
+				userInfo = XlnetCore.getN38SubjectCert(xmlSesion);
+				userData.put("name", userInfo.get("GIVENNAME"));
+				userData.put("surname", userInfo.get("SURNAME"));
+				userData.put("fullName",  userInfo.get("CN"));
+				httpSession.setAttribute("fullName",userInfo.get("CN"));
+			}
+			
+			xmlSesion = null;
+			userInfo = null;
 		}
+		
+		logger.trace("Connected User's data is: "+userData.toString());
+		
+		return userData;
+	}
+	
+	public String getUserPosition(HttpServletRequest httpRequest) {
+		String userPosition = null;
 		
 		userPosition = (String)httpRequest.getSession(false).getAttribute("position");
 		
-		//Returning UserPosition
-		if (userPosition == null){
-			userPosition = credentials.getPosition();
-		} else {
-			httpRequest.getSession(false).removeAttribute("position");
-		}
+		httpRequest.getSession(false).removeAttribute("position");
 		
 		logger.trace("Connected User's Position is: "+userPosition);
 		return userPosition;
@@ -227,29 +249,12 @@ public class PerimetralSecurityWrapperN38Impl implements
 	}	
 
 	public String getUdaValidateSessionId(HttpServletRequest httpRequest) {
-		UserCredentials credentials = null; 
-		Authentication authentication = null;
 		String udaValidateSessionId = null;
-		
-		//Getting Authentication credentials
-		authentication = SecurityContextHolder.getContext().getAuthentication();
-		
-		if (authentication != null){
-			credentials = (UserCredentials)authentication.getCredentials();
-		}
 		
 		udaValidateSessionId = (String)httpRequest.getSession(false).getAttribute("udaValidateSessionId");
 		
 		//Returning UdaValidateSessionId
-		if (udaValidateSessionId == null){
-			if(credentials != null){
-				udaValidateSessionId = credentials.getUdaValidateSessionId();
-			} else {
-				return null;
-			}
-		} else {
-			httpRequest.getSession(false).removeAttribute("udaValidateSessionId");
-		}
+		httpRequest.getSession(false).removeAttribute("udaValidateSessionId");
 		
 		logger.trace("Connected UserConnectedUidSession is: "+udaValidateSessionId);
 		return udaValidateSessionId;
@@ -258,133 +263,66 @@ public class PerimetralSecurityWrapperN38Impl implements
 
 	@SuppressWarnings("unchecked")
 	public Vector<String> getUserInstances(HttpServletRequest httpRequest) {		
-		UserCredentials credentials = null; 
-		Authentication authentication = null;
 		Vector<String> userInstances = null;
-		
-		//Getting Authentication credentials
-		authentication = SecurityContextHolder.getContext().getAuthentication();
-		
-		if (authentication != null){
-			credentials = (UserCredentials)authentication.getCredentials();
-		}
 		
 		userInstances = (Vector<String>)httpRequest.getSession(false).getAttribute("userProfiles");
 		
 		//Returning UserInstances
-		if (userInstances == null){
-			userInstances = credentials.getUserProfiles();
-		} else {
-			httpRequest.getSession(false).removeAttribute("userProfiles");
-		}
-		
+		httpRequest.getSession(false).removeAttribute("userProfiles");
+				
 		logger.trace("Connected UserConnectedUidSession is: "+userInstances);
 		return userInstances;
 		
 	}
 	
 	public String getUserConnectedUidSession(HttpServletRequest httpRequest) {
-		UserCredentials credentials = null; 
-		Authentication authentication = null;
 		String userConnectedUidSession = null;
+		HttpSession httpSession = httpRequest.getSession(false);
 		
-		//Getting Authentication credentials
-		authentication = SecurityContextHolder.getContext().getAuthentication();
+		if(httpSession != null){
+			userConnectedUidSession = (String)httpSession.getAttribute("uidSession");
 		
-		if (authentication != null){
-			credentials = (UserCredentials)authentication.getCredentials();
-		}
-		
-		userConnectedUidSession = (String)httpRequest.getSession(false).getAttribute("uidSession");
-		
-		//Returning UserConnectedUidSession
-		if (userConnectedUidSession == null){
-			if (credentials != null){
-				userConnectedUidSession = credentials.getUidSession();
-			} else {
-				return null;
-			}
-		} else {
+			//Returning UserConnectedUidSession
 			httpRequest.getSession(false).removeAttribute("uidSession");
+		
+			logger.trace("Connected UserConnectedUidSession is: "+userConnectedUidSession);
 		}
 		
-		logger.trace("Connected UserConnectedUidSession is: "+userConnectedUidSession);
 		return userConnectedUidSession;
-		
 	}
 	
 	public String getPolicy(HttpServletRequest httpRequest) {
-		UserCredentials credentials = null; 
-		Authentication authentication = null;
 		String userPolicy = null;
-		
-		//Getting Authentication credentials
-		authentication = SecurityContextHolder.getContext().getAuthentication();
-		
-		if (authentication != null){
-			credentials = (UserCredentials)authentication.getCredentials();
-		}
-		
+
 		userPolicy = (String)httpRequest.getSession(false).getAttribute("policy");
 		
 		//Returning UserPosition
-		if (userPolicy == null){
-			userPolicy = credentials.getPolicy();
-		} else {
-			httpRequest.getSession(false).removeAttribute("policy");
-		}
+		httpRequest.getSession(false).removeAttribute("policy");
 		
 		logger.trace("Connected User's Policy is: "+userPolicy);
 		return userPolicy;
 	}	
 	
 	public boolean getIsCertificate(HttpServletRequest httpRequest) {
-		UserCredentials credentials = null; 
-		Authentication authentication = null;
 		String userIsCertificate = null;
 		boolean userBooleanIsCertificate;
 		
-		//Getting Authentication credentials
-		authentication = SecurityContextHolder.getContext().getAuthentication();
-		
-		if (authentication != null){
-			credentials = (UserCredentials)authentication.getCredentials();
-		}
-		
 		userIsCertificate = (String)httpRequest.getSession(false).getAttribute("isCertificate");
 		
-		//Returning UserPosition
-		if (userIsCertificate == null){
-			userBooleanIsCertificate = credentials.getIsCertificate();
-		} else {
-			userBooleanIsCertificate = userIsCertificate.equals("true");
-			httpRequest.getSession(false).removeAttribute("isCertificate");
-		}
+		userBooleanIsCertificate = userIsCertificate.equals("true");
+		httpRequest.getSession(false).removeAttribute("isCertificate");
 		
 		logger.trace("Connected User's isCertificate is: "+userBooleanIsCertificate);
 		return userBooleanIsCertificate;
 	}
 	
 	public String getNif(HttpServletRequest httpRequest) {
-		UserCredentials credentials = null; 
-		Authentication authentication = null;
 		String userNif = null;
-		
-		//Getting Authentication credentials
-		authentication = SecurityContextHolder.getContext().getAuthentication();
-		
-		if (authentication != null){
-			credentials = (UserCredentials)authentication.getCredentials();
-		}
 		
 		userNif = (String)httpRequest.getSession(false).getAttribute("nif");
 		
-		//Returning UserPosition
-		if (userNif == null){
-			userNif = credentials.getNif();
-		} else {
-			httpRequest.getSession(false).removeAttribute("nif");
-		}
+		//Returning UserNif
+		httpRequest.getSession(false).removeAttribute("nif");
 		
 		logger.trace("Connected User's nif is: "+userNif);
 		return userNif;
@@ -411,95 +349,89 @@ public class PerimetralSecurityWrapperN38Impl implements
 	public void logout(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
 		
 		String uidSession = getUserConnectedUidSession(httpRequest);
-		
+			
 		if (uidSession == null){
 			N38API n38Api = XlnetCore.getN38API(httpRequest);
 			uidSession = XlnetCore.getParameterSession(n38Api, N38API.NOMBRE_N38UIDSESION);
 		}
 		
 		logger.info( "Proceeding to destroy uidSession: "+ uidSession);
-
+		
 		N38APISesion n38ApiSesion = new N38APISesion();
 		n38ApiSesion.n38APISesionDestruir(uidSession);
 		
-		//Cleaning SpringSecurity context
-		springSecurityContextClean();
-		
 		//Cleaning the cookies of XLNets 
 		deleteAllXLNetsCookies(httpRequest, httpResponse);
-
-		logger.info( "Session "+uidSession+" destroyed!");
+		
+		logger.info( "XLNets Session "+uidSession+" destroyed!");
+		
 	}
 	
 	//Validates the N38API and, if is necessary, cleans the XLNets cookies
-	protected boolean isN38ApiValid(HttpServletRequest httpRequest, HttpServletResponse httpResponse){
+	protected boolean isN38ApiValid(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws SecurityException{
 		
 		N38API n38Api;
 		Document xmlSesion = null;
-		
-		//It clears the cache of XLNets and SpringSecurity context  
-		xlnetCleanCache(httpRequest);
-		
+		HttpSession httpSession = httpRequest.getSession(true);
+		HashMap<String, String> userInfo = null;
+				
 		n38Api = XlnetCore.getN38API(httpRequest);
 		
 		if (n38Api != null){
 			logger.info( "Validating the session of XLNets!");
 			
-			xmlSesion = XlnetCore.getN38ItemSesion(n38Api);
-			
-			if (XlnetCore.isXlnetSessionContainingErrors(xmlSesion)
-					|| XlnetCore.isXlnetSessionContainingWarnings(xmlSesion)) {
+			try{
+				xmlSesion = XlnetCore.getN38ItemSesion(n38Api);
 				
-				logger.info("The XLNET session is invalid");
-				
-				//Cleaning objects
-				xlnetCleanCache(httpRequest);
-				
-				//Deleting security context data
-				n38Api = null;
-				xmlSesion = null;
-				springSecurityContextClean();
-				deleteAllXLNetsCookies(httpRequest, httpResponse);
-				authenticationLogContextClean();
-				
-				return false;
-			} else {
-				logger.info("XLNET session is valid.");
-				
-				//Saving the xml of XLNets Session
-				httpRequest.getSession(true).setAttribute("xmlSesion", xmlSesion);
-				
-				if(xlnetsDomain == null){
-					xlnetsDomain = XlnetCore.getN38DominioComunCookie(xmlSesion);
+				if (XlnetCore.isXlnetSessionContainingErrors(xmlSesion)
+						|| XlnetCore.isXlnetSessionContainingWarnings(xmlSesion)) {
+					
+					logger.info("The XLNET session is invalid");
+					
+					//Deleting security context data
+					n38Api = null;
+					xmlSesion = null;
+					deleteAllXLNetsCookies(httpRequest, httpResponse);
+					authenticationLogContextClean();
+					
+					return false;
+				} else {
+					logger.info("XLNET session is valid.");
+									
+					if(!(XlnetCore.getParameterSession(n38Api, "n38uidOrg").equals("0"))){
+						//User is in the XLNets's LDap
+						userInfo = XlnetCore.getUserDataInfo(n38Api);
+						httpSession.setAttribute("name", userInfo.get("name"));
+						httpSession.setAttribute("surname", userInfo.get("surname"));
+						httpSession.setAttribute("fullName", userInfo.get("fullName"));
+						
+					} else {
+						//User isn't in the XLNets's LDap
+						userInfo = XlnetCore.getN38SubjectCert(xmlSesion);
+						httpSession.setAttribute("serialNumber", userInfo.get("SERIALNUMBER"));
+						httpSession.setAttribute("name", userInfo.get("GIVENNAME"));
+						httpSession.setAttribute("surname", userInfo.get("SURNAME"));
+						httpSession.setAttribute("fullName", userInfo.get("CN"));
+					}
+					
+					if(xlnetsDomain == null){
+						xlnetsDomain = XlnetCore.getN38DominioComunCookie(xmlSesion);
+					}
+					
+					//Deleting security context data
+					n38Api = null;
+					xmlSesion = null;
+												
+					return true;
 				}
-				
-				//Deleting security context data
-				n38Api = null;
-				xmlSesion = null;
-											
-				return true;
-			}			
+			} catch (Exception e) {
+				logger.error("isN38ApiValid(): There was an access error in XLNets. it Is possible that you having any problem with the configuration of XLNets or XLNets have some own internal error (Check that the service works correctly).", e);
+				SecurityException sec = new SecurityException("isN38ApiValid(): There was an access error in XLNets. it Is possible that you having any problem with the configuration of XLNets or XLNets have some own internal error (Check that the service works correctly).", e.getCause());
+				throw sec;
+			}
 		} else {
-			xlnetCleanCache(httpRequest);
-			springSecurityContextClean();
 			deleteAllXLNetsCookies(httpRequest, httpResponse);
-			
 			return false;
-		}
-	}
-	
-	//Cleaner method of XLNETs cached information
-	private void xlnetCleanCache(HttpServletRequest httpRequest){
-		HttpSession session = httpRequest.getSession(false);
-		if(session != null){
-			session.removeAttribute("nif");
-			session.removeAttribute("policy");
-			session.removeAttribute("userName");
-			session.removeAttribute("position");
-			session.removeAttribute("uidSession");
-			session.removeAttribute("userProfiles");
-			session.removeAttribute("isCertificate");
-			session.removeAttribute("udaValidateSessionId");
 		}
 	}
 	
@@ -511,14 +443,18 @@ public class PerimetralSecurityWrapperN38Impl implements
 	}
 	
 	//Cleaner method of SpringSecurity context
-	private void springSecurityContextClean(){
-		logger.error("XLNET session is invalid. Proceeding to clean the Security Context Holder.");
+	private void springSecurityContextClean(HttpSession httpSession){
+		logger.info("XLNET session is invalid. Proceeding to clean the Security Context Holder.");
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		
 		if(authentication != null){
 			authentication.setAuthenticated(false);
 		}
 		SecurityContextHolder.clearContext();
+		
+		if(httpSession.getAttribute("SPRING_SECURITY_CONTEXT") != null){
+			httpSession.removeAttribute("SPRING_SECURITY_CONTEXT");
+		}
 	}
 	
 	//Delete all the security cookies of XLNets 
@@ -560,7 +496,6 @@ public class PerimetralSecurityWrapperN38Impl implements
 			}
 		}
 		
-		logger.debug( "getXlnetsUserId: udaXlnetsSession value");
 		if (n38UidSesion != null && n38UidSistemasXLNetS != null){
 			udaXLNetsSessionId.append(n38UidSistemasXLNetS.getValue()).append("-").append(n38UidSesion.getValue());
 			logger.debug( "getXlnetsUserId: cookie - n38UidSistemasXLNetS => " + n38UidSistemasXLNetS.getValue());
@@ -580,14 +515,14 @@ public class PerimetralSecurityWrapperN38Impl implements
 		
 		N38API n38Api = XlnetCore.getN38API(httpRequest);
 		HttpSession httpSession = httpRequest.getSession(false);
-		Document xmlSesion = (Document)httpSession.getAttribute("xmlSesion");
 		Document xmlSecurityData = null;
 		String UserName;
-		HashMap<String, String> userInfo = null;
+		String serialNumber = null;
 		String policy;
 		
 		//Recharging  the lifetime of the cache
-		httpSession.setAttribute("udaTimeStamp", System.currentTimeMillis());
+//		httpSession.removeAttribute("udaTimeStamp");
+//		httpSession.setAttribute("udaTimeStamp", System.currentTimeMillis());
 		
 		//Recovering general data of XLNets user credentials
 		httpSession.setAttribute("nif", XlnetCore.getParameterSession(n38Api, N38API.NOMBRE_DNI));
@@ -601,11 +536,12 @@ public class PerimetralSecurityWrapperN38Impl implements
 		}
 		
 		if(!(XlnetCore.getParameterSession(n38Api, "n38uidOrg").equals("0"))){
-			
+			//User is in the XLNets's LDap
 			UserName = XlnetCore.getParameterSession(n38Api, "n38personasuid");
 			
 			//Recovering XLNets user credentials
 			httpSession.setAttribute("userName", UserName);
+			httpSession.setAttribute("destroyXLNetsSession", this.destroyXLNetsSession);
 			httpSession.setAttribute("position", XlnetCore.getParameterSession(n38Api, N38API.NOMBRE_N38PUESTOUID));
 			httpSession.setAttribute("uidSession", XlnetCore.getParameterSession(n38Api, N38API.NOMBRE_N38UIDSESION));
 			httpSession.setAttribute("udaValidateSessionId", xLNetsUserId);
@@ -616,10 +552,11 @@ public class PerimetralSecurityWrapperN38Impl implements
 			} else {
 				httpSession.setAttribute("userProfiles", null);
 			}
-		} else{
 			
-			userInfo = XlnetCore.getN38SubjectCert(xmlSesion);
-			UserName = userInfo.get("CN");
+		} else{
+			//User isn't in the XLNets's LDap
+			UserName = (String) httpSession.getAttribute("fullName");
+			serialNumber = (String) httpSession.getAttribute("serialNumber");
 			
 			//Recovering user credentials
 			httpSession.setAttribute("userName", UserName);
@@ -632,21 +569,45 @@ public class PerimetralSecurityWrapperN38Impl implements
 				userprofile.add(this.anonymousProfile.get("userProfiles"));
 				httpSession.setAttribute("position", this.anonymousProfile.get("position"));
 			} else {
-				userprofile = this.alternativeStorageUserCredentials.loadUserAuthorities(UserName, userInfo.get("SERIALNUMBER"), n38Api, xmlSesion);
-				httpSession.setAttribute("position", this.alternativeStorageUserCredentials.loadUserPosition(UserName, userInfo.get("SERIALNUMBER"), n38Api, xmlSesion));
+				userprofile = this.alternativeStorageUserCredentials.loadUserAuthorities(UserName, serialNumber, n38Api);
+				httpSession.setAttribute("position", this.alternativeStorageUserCredentials.loadUserPosition(UserName, serialNumber, n38Api));
 			}
+			
+			//Deleting the SERIALNUMBER object 
+			httpSession.removeAttribute("SERIALNUMBER");
 			
 			httpSession.setAttribute("userProfiles", userprofile);
 		}
 
-		//Deleting the xmlSession object 
-		httpSession.removeAttribute("xmlSesion");
 		return UserName;
+	}
+	
+	private synchronized void loadReloadData(HttpServletRequest httpRequest, Long currentThreadId){
+		HttpSession session = httpRequest.getSession(false);
+		
+		if(session != null && session.getAttribute("reloadData") == null){
+			session.setAttribute("reloadData",currentThreadId);
+		}
+	}
+	
+	private synchronized boolean reloadData(HttpServletRequest httpRequest){
+		HttpSession httpSession = httpRequest.getSession();
+		
+		if(httpSession.getAttribute("credentialsLoading") == null && (System.currentTimeMillis() - Long.valueOf(httpSession.getAttribute("udaTimeStamp")+"")) > xlnetCachingPeriod.longValue()){
+			
+			//Recharging  the lifetime of the cache
+			httpSession.removeAttribute("udaTimeStamp");
+			httpSession.setAttribute("udaTimeStamp", System.currentTimeMillis());
+			
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	//Getters & Setters
 	public Long getXlnetCachingPeriod() {
-		return this.xlnetCachingPeriod;
+		return TimeUnit.SECONDS.convert(this.xlnetCachingPeriod.longValue(), TimeUnit.MILLISECONDS);
 	}
 	
 	public String getUserChangeUrl() {
@@ -661,12 +622,16 @@ public class PerimetralSecurityWrapperN38Impl implements
 		return this.anonymousProfile;
 	}
 	
+	public boolean getDestroyXLNetsSession(){
+		return this.destroyXLNetsSession;
+	}
+	
 	public ExcludeFilter excludeFilter(){
 		return this.excludeFilter;
 	}
 	
 	public void setXlnetCachingPeriod(Long xlnetCachingPeriod) {
-		this.xlnetCachingPeriod = xlnetCachingPeriod;
+		this.xlnetCachingPeriod = TimeUnit.MILLISECONDS.convert(xlnetCachingPeriod.longValue(), TimeUnit.SECONDS);
 	}
 	
 	public void setUserChangeUrl(String userChangeUrl) {
@@ -686,6 +651,10 @@ public class PerimetralSecurityWrapperN38Impl implements
 	
 	public void setAnonymousCredentials(HashMap<String, String> anonymousProfile) {
 		this.anonymousProfile = anonymousProfile;
+	}
+	
+	public boolean setDestroyXLNetsSession(boolean destroyXLNetsSession){
+		return this.destroyXLNetsSession = destroyXLNetsSession;
 	}
 	
 	public void setExcludeFilter(ExcludeFilter excludeFilter){

@@ -16,7 +16,6 @@
 package com.ejie.x38;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.servlet.FilterChain;
@@ -29,7 +28,6 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.filter.DelegatingFilterProxy;
-import org.springframework.web.servlet.view.RedirectView;
 
 import com.ejie.x38.serialization.ThreadSafeCache;
 import com.ejie.x38.util.StackTraceManager;
@@ -47,7 +45,7 @@ import com.ejie.x38.util.ThreadStorageManager;
  * 
  */
 public class UdaFilter extends DelegatingFilterProxy {
-
+	
 	private static final Logger logger = LoggerFactory.getLogger(UdaFilter.class);
 
 	public void doFilter(ServletRequest request, ServletResponse response,
@@ -84,16 +82,19 @@ public class UdaFilter extends DelegatingFilterProxy {
 
 			try {
 				if (!response.isCommitted()){
-					RedirectView redirectView = new RedirectView("error");
-					Map<String, Object> model = new HashMap<String, Object>();
-					model.put("exception_name", exception.getClass().getName());
-					model.put("exception_message", exception.getMessage());
-					StringBuilder sbTrace = new StringBuilder();
+					
+					HttpServletRequest req = (HttpServletRequest) request;
+					HttpServletResponse res = (HttpServletResponse) response;
+					
+					StringBuilder error = new StringBuilder("?");
+					error.append("exception_name=").append(exception.getClass().getName());
+					error.append("&exception_message=").append(exception.getMessage());
+					error.append("&exception_trace=");
 					for (StackTraceElement trace : exception.getStackTrace()) {
-						sbTrace.append(trace.toString()).append("</br>");
+						error.append(trace.toString()).append("</br>");
 					}
-					model.put("exception_trace", sbTrace);
-					redirectView.render(model, (HttpServletRequest)request, (HttpServletResponse)response);
+					
+					res.sendRedirect(req.getContextPath() + "/error"+error);
 				}
 			} catch (Exception exc) {				
 				logger.error("Problem with sending of the response",exc);
