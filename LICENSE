@@ -1,202 +1,300 @@
-                                 Apache License
-                           Version 2.0, January 2004
-                        http://www.apache.org/licenses/
+                    Licencia Pública de la Unión Europea
+                                 Versión 1.1
+                        EUPL © Comunidad Europea 2007
+                     http://ec.europa.eu/idabc/eupl.html
 
-   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
 
-   1. Definitions.
-
-      "License" shall mean the terms and conditions for use, reproduction,
-      and distribution as defined by Sections 1 through 9 of this document.
-
-      "Licensor" shall mean the copyright owner or entity authorized by
-      the copyright owner that is granting the License.
-
-      "Legal Entity" shall mean the union of the acting entity and all
-      other entities that control, are controlled by, or are under common
-      control with that entity. For the purposes of this definition,
-      "control" means (i) the power, direct or indirect, to cause the
-      direction or management of such entity, whether by contract or
-      otherwise, or (ii) ownership of fifty percent (50%) or more of the
-      outstanding shares, or (iii) beneficial ownership of such entity.
-
-      "You" (or "Your") shall mean an individual or Legal Entity
-      exercising permissions granted by this License.
-
-      "Source" form shall mean the preferred form for making modifications,
-      including but not limited to software source code, documentation
-      source, and configuration files.
-
-      "Object" form shall mean any form resulting from mechanical
-      transformation or translation of a Source form, including but
-      not limited to compiled object code, generated documentation,
-      and conversions to other media types.
-
-      "Work" shall mean the work of authorship, whether in Source or
-      Object form, made available under the License, as indicated by a
-      copyright notice that is included in or attached to the work
-      (an example is provided in the Appendix below).
-
-      "Derivative Works" shall mean any work, whether in Source or Object
-      form, that is based on (or derived from) the Work and for which the
-      editorial revisions, annotations, elaborations, or other modifications
-      represent, as a whole, an original work of authorship. For the purposes
-      of this License, Derivative Works shall not include works that remain
-      separable from, or merely link (or bind by name) to the interfaces of,
-      the Work and Derivative Works thereof.
-
-      "Contribution" shall mean any work of authorship, including
-      the original version of the Work and any modifications or additions
-      to that Work or Derivative Works thereof, that is intentionally
-      submitted to Licensor for inclusion in the Work by the copyright owner
-      or by an individual or Legal Entity authorized to submit on behalf of
-      the copyright owner. For the purposes of this definition, "submitted"
-      means any form of electronic, verbal, or written communication sent
-      to the Licensor or its representatives, including but not limited to
-      communication on electronic mailing lists, source code control systems,
-      and issue tracking systems that are managed by, or on behalf of, the
-      Licensor for the purpose of discussing and improving the Work, but
-      excluding communication that is conspicuously marked or otherwise
-      designated in writing by the copyright owner as "Not a Contribution."
-
-      "Contributor" shall mean Licensor and any individual or Legal Entity
-      on behalf of whom a Contribution has been received by Licensor and
-      subsequently incorporated within the Work.
-
-   2. Grant of Copyright License. Subject to the terms and conditions of
-      this License, each Contributor hereby grants to You a perpetual,
-      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
-      copyright license to reproduce, prepare Derivative Works of,
-      publicly display, publicly perform, sublicense, and distribute the
-      Work and such Derivative Works in Source or Object form.
-
-   3. Grant of Patent License. Subject to the terms and conditions of
-      this License, each Contributor hereby grants to You a perpetual,
-      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
-      (except as stated in this section) patent license to make, have made,
-      use, offer to sell, sell, import, and otherwise transfer the Work,
-      where such license applies only to those patent claims licensable
-      by such Contributor that are necessarily infringed by their
-      Contribution(s) alone or by combination of their Contribution(s)
-      with the Work to which such Contribution(s) was submitted. If You
-      institute patent litigation against any entity (including a
-      cross-claim or counterclaim in a lawsuit) alleging that the Work
-      or a Contribution incorporated within the Work constitutes direct
-      or contributory patent infringement, then any patent licenses
-      granted to You under this License for that Work shall terminate
-      as of the date such litigation is filed.
-
-   4. Redistribution. You may reproduce and distribute copies of the
-      Work or Derivative Works thereof in any medium, with or without
-      modifications, and in Source or Object form, provided that You
-      meet the following conditions:
-
-      (a) You must give any other recipients of the Work or
-          Derivative Works a copy of this License; and
-
-      (b) You must cause any modified files to carry prominent notices
-          stating that You changed the files; and
-
-      (c) You must retain, in the Source form of any Derivative Works
-          that You distribute, all copyright, patent, trademark, and
-          attribution notices from the Source form of the Work,
-          excluding those notices that do not pertain to any part of
-          the Derivative Works; and
-
-      (d) If the Work includes a "NOTICE" text file as part of its
-          distribution, then any Derivative Works that You distribute must
-          include a readable copy of the attribution notices contained
-          within such NOTICE file, excluding those notices that do not
-          pertain to any part of the Derivative Works, in at least one
-          of the following places: within a NOTICE text file distributed
-          as part of the Derivative Works; within the Source form or
-          documentation, if provided along with the Derivative Works; or,
-          within a display generated by the Derivative Works, if and
-          wherever such third-party notices normally appear. The contents
-          of the NOTICE file are for informational purposes only and
-          do not modify the License. You may add Your own attribution
-          notices within Derivative Works that You distribute, alongside
-          or as an addendum to the NOTICE text from the Work, provided
-          that such additional attribution notices cannot be construed
-          as modifying the License.
-
-      You may add Your own copyright statement to Your modifications and
-      may provide additional or different license terms and conditions
-      for use, reproduction, or distribution of Your modifications, or
-      for any such Derivative Works as a whole, provided Your use,
-      reproduction, and distribution of the Work otherwise complies with
-      the conditions stated in this License.
-
-   5. Submission of Contributions. Unless You explicitly state otherwise,
-      any Contribution intentionally submitted for inclusion in the Work
-      by You to the Licensor shall be under the terms and conditions of
-      this License, without any additional terms or conditions.
-      Notwithstanding the above, nothing herein shall supersede or modify
-      the terms of any separate license agreement you may have executed
-      with Licensor regarding such Contributions.
-
-   6. Trademarks. This License does not grant permission to use the trade
-      names, trademarks, service marks, or product names of the Licensor,
-      except as required for reasonable and customary use in describing the
-      origin of the Work and reproducing the content of the NOTICE file.
-
-   7. Disclaimer of Warranty. Unless required by applicable law or
-      agreed to in writing, Licensor provides the Work (and each
-      Contributor provides its Contributions) on an "AS IS" BASIS,
-      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
-      implied, including, without limitation, any warranties or conditions
-      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
-      PARTICULAR PURPOSE. You are solely responsible for determining the
-      appropriateness of using or redistributing the Work and assume any
-      risks associated with Your exercise of permissions under this License.
-
-   8. Limitation of Liability. In no event and under no legal theory,
-      whether in tort (including negligence), contract, or otherwise,
-      unless required by applicable law (such as deliberate and grossly
-      negligent acts) or agreed to in writing, shall any Contributor be
-      liable to You for damages, including any direct, indirect, special,
-      incidental, or consequential damages of any character arising as a
-      result of this License or out of the use or inability to use the
-      Work (including but not limited to damages for loss of goodwill,
-      work stoppage, computer failure or malfunction, or any and all
-      other commercial damages or losses), even if such Contributor
-      has been advised of the possibility of such damages.
-
-   9. Accepting Warranty or Additional Liability. While redistributing
-      the Work or Derivative Works thereof, You may choose to offer,
-      and charge a fee for, acceptance of support, warranty, indemnity,
-      or other liability obligations and/or rights consistent with this
-      License. However, in accepting such obligations, You may act only
-      on Your own behalf and on Your sole responsibility, not on behalf
-      of any other Contributor, and only if You agree to indemnify,
-      defend, and hold each Contributor harmless for any liability
-      incurred by, or claims asserted against, such Contributor by reason
-      of your accepting any such warranty or additional liability.
-
-   END OF TERMS AND CONDITIONS
-
-   APPENDIX: How to apply the Apache License to your work.
-
-      To apply the Apache License to your work, attach the following
-      boilerplate notice, with the fields enclosed by brackets "{}"
-      replaced with your own identifying information. (Don't include
-      the brackets!)  The text should be enclosed in the appropriate
-      comment syntax for the file format. We also recommend that a
-      file or class name and description of purpose be included on the
-      same "printed page" as the copyright notice for easier
-      identification within third-party archives.
-
-   Copyright {yyyy} {name of copyright owner}
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
+   La presente Licencia Pública de la Unión Europea («EUPL»), se aplica a la 
+   obra o al programa de ordenador (definidos a continuación) suministrados en
+   las condiciones fijadas en la presente licencia. Queda prohibido cualquier
+   uso de la obra distinto del autorizado por la presente licencia (en la 
+   medida en que tal uso esté protegido por un derecho del titular de los 
+   derechos de autor de la obra). 
+   
+   La obra original se suministrará en las condiciones fijadas en la presente 
+   licencia cuando el licenciante (definido a continuación) haya colocado la 
+   siguiente advertencia inmediatamente después de la mención a los derechos 
+   de autor de la obra original: 
+   
+   			Licencia cedida con arreglo a la EUPL V.1.1 
+   
+   o haya expresado por otro procedimiento su voluntad de conceder una 
+   licencia con arreglo a la EUPL. 
+   
+   
+   1. Definiciones 
+      En la presente licencia, se entenderá por: 
+      – licencia: la presente licencia. 
+      – obra original o programa de ordenador: el programa de ordenador 
+        distribuido o comunicado por el licenciante con arreglo a la presente 
+        licencia en forma de código fuente o, en su caso, de código ejecutable;
+      – obras derivadas: las obras o el programa de ordenador que pudiera crear
+        el licenciatario sobre la base de la obra original o de alguna de las 
+        modificaciones de ésta. La presente licencia no define el grado de 
+        modificación o dependencia de la obra original necesario para 
+        clasificar una obra como derivada; dicho grado se determinará de 
+        acuerdo con la legislación sobre derechos de autor aplicable en el país
+        contemplado en el artículo 15;
+      – obra: la obra original o sus obras derivadas; 
+      – código fuente: la forma de la obra legible por seres humanos que pueda 
+        ser estudiada y modificada más fácilmente; 
+      – código ejecutable: cualquier código, en general compilado, destinado a 
+        ser ejecutado como programa por un ordenador; 
+      – licenciante: la persona física o jurídica que distribuye o comunica la 
+        obra con arreglo a la licencia; 
+      – colaborador: la persona física o jurídica que modifica la obra con 
+        arreglo a la licencia o contribuye de cualquier otra manera a crear una
+        obra derivada; 
+      – licenciatario: la persona física o jurídica que hace un uso cualquiera 
+        del programa de ordenador en las condiciones fijadas en la licencia; 
+      – distribución o comunicación: cualquier acto de venta, donación,
+        préstamo, alquiler, distribución, comunicación, transmisión o cualquier
+        otro acto de puesta a disposición, en línea o fuera de línea, de copias
+        de la obra o de acceso a sus funcionalidades esenciales a otra persona 
+        física o jurídica.
+   
+   2. Ámbito de los derechos otorgados por la Licencia 
+      El licenciante concede al licenciatario una licencia de ámbito mundial, a
+      título gratuito, no exclusiva y que el licenciatario puede subcontratar 
+      mientras sigan vigentes los derechos de autor sobre la obra original, y 
+      lo autoriza a: 
+      
+      – utilizar la obra en cualquier circunstancia y para cualquier uso; 
+      – reproducir la obra; 
+      – modificar la obra original y realizar obras derivadas de la misma; 
+      – comunicar al público la obra o copias de la misma, poner a su 
+        disposición o exhibir la obra o las copias y, en su caso, ejecutar 
+        públicamente la Obra; 
+      – distribuir la obra o copias de la misma; 
+      – prestar y alquilar la obra o copias de la misma; 
+      – subcontratar los derechos relativos a la obra o a las copias de la
+        misma. 
+      
+      Dichos derechos se podrán ejercer a través de cualquier medio, soporte y 
+      formato, conocido en el presente o que pueda inventarse en el futuro, en 
+      la medida en que así lo permita la legislación aplicable. 
+      
+      En los países cuyo ordenamiento contemple los derechos morales, el 
+      Licenciante renunciará al ejercicio de los mismos en la medida en que lo 
+      permita la legislación, a fin de hacer efectiva la licencia de los 
+      derechos patrimoniales anteriormente enumerados. 
+      
+      El licenciante cede al licenciatario, libre de cánones, los derechos de 
+      uso no exclusivos sobre cualquier patente de que sea titular, en la 
+      medida necesaria para que el licenciatario haga uso de los derechos sobre
+      la obra otorgados por la presente licencia. 
+   
+   3. Comunicación del Código Fuente 
+      El licenciante podrá suministrar la obra en forma de código fuente o 
+      código ejecutable. Si la suministrara en forma de código ejecutable, 
+      deberá facilitar además una copia legible automáticamente del código 
+      fuente de la obra junto con cada copia de la obra que distribuya, o bien 
+      indicar, en una advertencia inserta a continuación de la mención a los 
+      derechos de autor adjunta a la obra, un repositorio en el que se pueda 
+      acceder al código fuente fácilmente y de manera gratuita durante el 
+      período en que el licenciante siga distribuyendo o comunicando la obra. 
+   
+   4. Limitaciones a los derechos de autor 
+      En ningún caso podrá interpretarse la presente licencia de modo que prive
+      al licenciatario de los beneficios de los que pudiera disfrutar como 
+      consecuencia de las excepciones o limitaciones a los derechos exclusivos 
+      de los titulares de los derechos de la obra original o del programa de 
+      ordenador, de la extinción de dichos derechos o de cualquier otra 
+      limitación aplicable. 
+   
+   5. Obligaciones del licenciatario 
+      La cesión de los derechos en virtud de la presente licencia queda 
+      supeditada a ciertas restricciones u obligaciones que habrá de respetar 
+      el licenciatario. Dichas obligaciones son: 
+      
+      Derecho de atribución: El licenciatario deberá mantener íntegramente 
+      todas las advertencias y menciones a los derechos de autor, patentes o 
+      marcas registradas, así como las que se refieran a la licencia y a la 
+      exención de responsabilidad. El licenciatario deberá adjuntar copias de 
+      dichas advertencias y menciones y de la Licencia con cada copia de la 
+      obra que distribuya o comunique. El licenciatario se responsabilizará de 
+      que sus modificaciones u obras derivadas incluyan una advertencia bien 
+      destacada declarando que ha modificado la obra, y la fecha de 
+      modificación.
+      
+      Cláusula de «izquierdo de copia» (copyleft): Si el licenciatario 
+      distribuyera o comunicara copias de la obra original o de obras derivadas
+      basadas en la obra original, dicha distribución o comunicación deberá 
+      hacerse en las condiciones fijadas en la presente licencia o de una 
+      versión posterior de la presente licencia, salvo si la obra original se 
+      distribuye expresamente solo en la presente versión de la licencia. El 
+      licenciatario (ahora en su calidad de licenciante) no podrá ofrecer ni 
+      imponer condiciones adicionales sobre la obra o las obras derivadas que 
+      modifiquen o limiten las condiciones de la licencia. 
+      
+      Cláusula de compatibilidad: Si el licenciatario distribuyera o comunicara
+      obras derivadas o copias de estas últimas basadas a su vez en la obra 
+      original y en otra obra licenciada bajo una licencia compatible, la 
+      distribución o comunicación podrán efectuarse con arreglo a las 
+      condiciones de dicha licencia compatible. A efectos de la presente 
+      cláusula, se entenderá por «licencia compatible» cualquiera de las 
+      licencias enumeradas en el apéndice adjunto a la presente licencia. En 
+      caso de que las obligaciones del licenciatario con arreglo a la licencia 
+      compatible estén en colisión con las derivadas de la presente licencia, 
+      prevalecerán las obligaciones de la licencia compatible. 
+      
+      Suministro del código fuente: Cuando distribuya o comunique copias de la 
+      obra, el licenciatario deberá facilitar una copia del código fuente 
+      legible automáticamente o indicar un repositorio en que se pueda acceder 
+      al código fuente fácilmente y de manera gratuita durante el período en 
+      que siga distribuyendo o comunicando la obra. 
+      
+      Salvaguardia de otros derechos: La presente licencia no faculta para 
+      utilizar los nombres comerciales, marcas de producto o de servicio o 
+      nombres del licenciante, excepto cuando ello, realizado en la medida de 
+      lo razonable y conforme a los usos habituales, sea necesario para indicar
+      el origen de la obra y reproducir el contenido de la mención a los 
+      derechos de autor. 
+   
+   6. Secuencia de autoría 
+      El licenciante original garantiza ser titular originario de los derechos 
+      de autor sobre la obra original objeto de la presente licencia o haberlos
+      adquirido mediante la licencia correspondiente y estar facultado para 
+      otorgar licencias sobre tales derechos.
+      
+      Cada colaborador garantiza ser titular de los derechos de autor sobre las
+      modificaciones que aporta a la obra o haberlos adquirido mediante la 
+      correspondiente licencia y estar facultado para otorgar licencias sobre 
+      tales derechos.
+      
+      Cada vez que el licenciatario acepta la licencia, el licenciante original
+      y los colaboradores posteriores le otorgan una licencia sobre sus propias
+      contribuciones a la obra en las condiciones fijadas en la presente
+      licencia.
+   
+   7. Exclusión de garantía 
+      La obra se encuentra en proceso de elaboración, siendo objeto de 
+      continuas mejoras por parte de numerosos colaboradores. No es una obra 
+      acabada y por tanto puede contener defectos o fallos inherentes al 
+      desarrollo de este tipo de programas. 
+      
+      Por este motivo, la obra, en virtud de la licencia, se suministra «tal 
+      cual», sin garantías de ningún tipo, en particular, en una enumeración no
+      exhaustiva, en cuanto a su comercialización, adecuación a un propósito 
+      determinado, ausencia de defectos 
+      
+      o errores, exactitud y ausencia de infracción de los derechos de 
+      propiedad intelectual distintos de los derechos de autor según se afirma
+      en el artículo 6 de la presente licencia. 
+      Esta exclusión de garantía forma parte esencial de la licencia y es 
+      condición para la cesión de cualquier derecho con respecto a la obra. 
+   
+   8. Exclusión de responsabilidad 
+      Excepto en casos de dolo o de daños ocasionados directamente a personas 
+      físicas, el licenciante no será responsable de los daños y perjuicios de 
+      cualquier clase, directos o indirectos, materiales o morales, que 
+      pudieran derivarse de la licencia o del uso de la obra, en particular, en
+      una enumeración no exhaustiva, de los daños y perjuicios por pérdida de 
+      buena reputación, paro técnico, avería o mal funcionamiento de equipos 
+      informáticos, pérdida de datos o cualquier perjuicio comercial, incluso 
+      si el licenciante conocía la posibilidad de dichos daños. No obstante, el
+      licenciante será responsable, de acuerdo con las normas legales que 
+      regulen la responsabilidad por los daños causados por productos, en la 
+      medida en que dichas normas sean aplicables a la obra. 
+   
+   9. Acuerdos adicionales 
+      Al distribuir la obra original o las obras derivadas, el licenciatario 
+      podrá suscribir un acuerdo adicional, y cobrar una remuneración para 
+      ofrecer asistencia y proporcionar garantías o asumir indemnizaciones u 
+      otras obligaciones en materia de responsabilidad o proporcionar servicios
+      compatibles con la presente licencia. No obstante, al aceptar tales 
+      obligaciones, el licenciatario actuará únicamente en nombre propio y bajo
+      su exclusiva responsabilidad, y nunca en nombre del licenciante original
+      ni de ningún otro colaborador, y ello a condición de que acceda a 
+      indemnizar, defender y amparar a todo colaborador frente a cualquier 
+      responsabilidad en que éste pudiera incurrir y frente a las reclamaciones
+      que pudieran presentarse contra él por haber aceptado el licenciatario la
+      mencionada garantía o responsabilidad adicional.
+   
+   10. Aceptación de la licencia 
+      Lo dispuesto en la presente licencia puede aceptarse haciendo clic en el 
+      icono «Aceptar» situado en la parte inferior de la ventana en que aparece
+      el texto de la presente licencia o manifestando el consentimiento de 
+      cualquier otra forma similar, de conformidad con lo previsto en la 
+      legislación aplicable. Haciendo clic en dicho icono, se expresa la 
+      aceptación inequívoca e irrevocable de la presente licencia y de todo su 
+      contenido. 
+      
+      Asimismo, el licenciatario acepta irrevocablemente la presente licencia y
+      todas sus condiciones por el mero hecho de ejercer cualquiera de los 
+      derechos que le otorga el artículo 2 de la presente licencia, tales como
+      el uso de la obra, la creación de una obra derivada o la distribución o 
+      comunicación de la obra o de copias de la misma. 
+   
+   11. Información al público 
+      En caso de que el licenciatario proceda a la distribución o comunicación
+      de la obra por medios electrónicos (por ejemplo, ofreciendo la descarga 
+      de la obra a distancia), el canal o medio de distribución (por ejemplo, 
+      un sitio web) deberá facilitar al público, como mínimo, la información 
+      exigida por la legislación aplicable acerca del licenciante, la licencia 
+      y la manera en que el licenciatario puede acceder a dichos datos, 
+      aceptarlos, conservarlos y reproducirlos. 
+   
+   12. Extinción de la licencia 
+      La licencia y los derechos otorgados a su amparo se extinguirán 
+      automáticamente si el licenciatario incumple alguna de las condiciones de
+      la licencia.
+      
+      Tal extinción no supondrá, sin embargo, la de las licencias de que 
+      disfruten las personas que hayan recibido la obra del licenciatario en
+      virtud de la licencia, siempre que dichas personas sigan cumpliendo 
+      plenamente las condiciones de la licencia. 
+   
+   13. Varios 
+      No obstante lo dispuesto en el artículo 9, la licencia representará la 
+      totalidad del acuerdo entre las partes en cuanto a la obra objeto de la 
+      misma. 
+      
+      La eventual invalidez o ineficacia de alguna disposición de la presente 
+      licencia con arreglo a la legislación vigente no afectará a la validez o 
+      eficacia general de la licencia. En tales casos, la disposición se 
+      interpretará o reformulará según proceda para hacerla válida y eficaz. 
+      
+      La Comisión Europea podrá publicar otras versiones lingüísticas o nuevas 
+      versiones de la presente licencia en la medida en que resulte necesario y
+      razonable y sin reducir el ámbito de los derechos concedidos por la 
+      licencia. Las nuevas versiones de la licencia se publicarán con un número
+      de versión único. 
+      
+      Todas las versiones lingüísticas de la presente licencia aprobadas por la
+      Comisión European tienen idéntico valor. Las partes pueden utilizar la
+      versión lingüística de su preferencia. 
+   
+   14. Tribunales competentes 
+      Los litigios relativos a la interpretación de la presente licencia que se
+      planteen entre la Comisión Europea, en calidad de licenciante, y un 
+      licenciatario, se someterán a la jurisdicción del Tribunal de Justicia de
+      las Comunidades Europeas, con arreglo al artículo 238 del Tratado
+      constitutivo de la Comunidad Europea. 
+      
+      Los litigios relativos la interpretación de la presente licencia que se
+      planteen entre partes distintas de la Comisión Europea, se someterán a la
+      jurisdicción exclusiva del tribunal que sea competente en el lugar en que
+      resida o ejerza su actividad principal el licenciante. 
+   
+   15. Legislación aplicable 
+      La presente Licencia se regirá por la legislación del país de la Unión 
+      Europea en el que resida o tenga su domicilio social el licenciante. 
+      
+      La presente licencia se regirá por la legislación belga si: 
+      
+      – se planteara un litigio entre la Comisión Europea, en calidad de 
+        licenciante, y un licenciatario; 
+      – el licenciante, distinto de la Comisión Europea, no residiera o no 
+        tuviera su domicilio social en un Estado miembro de la Unión Europea. 
+   
+   Apéndice 
+   
+   Son «licencias compatibles» con la EUPL con arreglo al artículo 5: 
+   
+   – GNU General Public License (GNU GPL) v. 2 
+   – Open Software License (OSL) v. 2.1, v. 3.0 
+   – Common Public License v. 1.0 
+   – Eclipse Public License v. 1.0 
+   – Cecill v. 2.0 
+   

@@ -1,0 +1,107 @@
+NOTICE.txt - UDA copyright notices
+
+UDA is Copyright 2012 by E.J.I.E., S.A.
+	
+	* The plug-in and RUP components are licensed under the EUPL, Version 1.1 only 
+	(the "Licence");
+	* Documentation is licensed under the Creative Commons Attribution-NonCommercial-
+	ShareAlike 3.0 Unported (CC BY-NC-SA 3.0) 
+	
+THIRD PARTY COMPONENTS
+
+	The UDA plug-in includes software developed by:
+	
+		* Enterprise JavaBeans 3.0
+			http://www.oracle.com/technetwork/java/javaee/ejb/index.html
+			Sun Microsystems, Inc.
+			License: COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0
+
+		* Oracle JDBC Drivers 
+			http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html
+			Oracle Corporation
+			License: OTN (http://www.oracle.com/technetwork/licenses/standard-license-152015.html)
+
+		* The JBoss Community
+			Hibernate Tools (http://www.hibernate.org/subprojects/tools.html)
+			Copyright (c) 2010 JBoss by Red Hat and others.
+			License: FSF Lesser Gnu Public License (LGPL v2.1) (http://www.hibernate.org/license)
+
+		* Eclipse
+			Eclipse Platform (http://www.eclipse.org/platform)
+			Copyright (c) Eclipse contributors and others 2000, 2011.  All rights reserved.
+			License: Eclipse Foundation Software User Agreement
+						
+		* Oracle Enterprise Pack for Eclipse (OEPE)
+			http://www.oracle.com/technetwork/developer-tools/eclipse/overview/index.html
+			Copyright © 2008, 2011, Oracle and/or its affiliates. All rights reserved.
+			License: ORACLE ENTERPRISE PACK FOR ECLIPSE LICENSE AGREEMENT
+						
+		* PMD (http://pmd.sourceforge.net)
+			PMD plugin For Eclipse
+			Copyright (c) 1997-2009, PMD for Eclipse Development Team
+			License: "BSD-style" license (http://pmd.sourceforge.net/license.html)									
+
+		* Eclipse Checkstyle Plugin (http://eclipse-cs.sf.net/)
+			Checkstyle integration plugin for Eclipse
+			(c) Copyright David Schneider, Lars Koedderitzsch and others, 2002-2010
+			License: GNU Lesser General Public License Version 2.1 
+						
+		* FindBugs (http://findbugs.sourceforge.net)
+			FindBugs plugin for Eclipse
+			(c) Trademark and Copyright 2003-2008 by the University of Maryland.
+			License: GNU Lesser General Public License (LGPL) (http://findbugs.sourceforge.net/manual/license.html)
+			
+		* Eclipse Subversive - SVN Team Provider Project
+			The Eclipse Team Provider for the Subversion version control system.
+			Copyright (c) 2005, 2008 Polarion Software and other. All rights reserved.
+			License: Eclipse Foundation Software User Agreement 
+			
+		* Polarion Subversive SVN Connectors (http://www.polarion.org and http://www.polarion.com)
+			Set of the SVN connectors for the Eclipse Subversive - SVN Team Provider. 
+			Copyright (c) 2005, 2008 Polarion Software and other. All rights reserved.
+			License: Eclipse Foundation Software User Agreement
+			
+		* Resource Bundle Editor (http://sourceforge.net/projects/eclipse-rbe/)
+			Essiembre ResourceBundle Editor
+			Copyright (C) 2003, 2004  Pascal Essiembre, Essiembre Consultant Inc.
+			License: GNU Lesser General Public License Version 2.1
+
+		* FreeMarker IDE (http://www.jboss.org/tools)
+			FreeMarkerIDE provides editor for FreeMarker templates
+			Copyright (c) 2008-2011 Red Hat, Inc. and others.
+			License: Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)
+
+
+			
+	The RUP (Rich UDA Patterns) components includes software developed by:
+
+		* The jQuery Project
+			jQuery core (http://jquery.com/)
+			Copyright 2011, John Resig
+			License: Gnu Public License v2 (GPLv2), MIT license
+			
+		* The jQueryUI Team
+			jQueryUI (http://jqueryui.com/)
+			Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+			License: Gnu Public License v2 (GPLv2), MIT license
+
+		* The jQuery Grid Plugin
+			jQuery Grid Plugin (http://www.trirand.com/blog/)
+			Copyright (c) 2007-2011 jQuery Grid Plugin 
+			License: Gnu Public License v2 (GPLv2), MIT license
+
+		* ajaxBlender.com
+			xBreadcrumbs (Extended Breadcrums) jQuery Plugin (http://www.ajaxblender.com/xbreadcrumbs.html)
+			Copyright 2009 ajaxBlender.com 
+			
+		* form2object			
+			form2object (https://github.com/maxatwork/form2js)
+			Copyright (c) 2010 Maxim Vasiliev
+			License: (https://github.com/maxatwork/form2js/blob/master/license.txt)
+			
+		* jQuery File Upload Plugin 5.5.1			
+			jQuery File Upload (https://github.com/blueimp/jQuery-File-Upload)
+			Copyright 2010, Sebastian Tschan
+			License: MIT license (https://github.com/blueimp/jQuery-File-Upload)
+			
+			
