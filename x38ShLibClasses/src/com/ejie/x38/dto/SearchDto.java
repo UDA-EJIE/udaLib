@@ -8,45 +8,105 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
 
-
-public class SearchModel<T, U> {
+/**
+ * DTO encargado de facilitar la recogida de los parámetros de filtrado y búsqueda en la acción search del componente tabla.
+ * 
+ * @author UDA
+ *
+ * @param <T> Tipo de bean utlizado para recoger los parámetros de filtado.
+ * @param <U> Tipo de bean utilizado para recoger los parámetros de búsqueda.
+ */
+public class SearchDto<T, U> {
 	
 	private Map<String, Object> filterParams;
 	private Map<String, Object> searchParams;
-//	private Pagination pagination;
 	
-	public SearchModel(){
-		
+	/**
+	 * Constructor.
+	 */
+	public SearchDto(){
 	}
 	
-	public SearchModel(Map<String, Object> filterParams, Map<String, Object> searchParams){
+	/**
+	 * Constructor.
+	 * 
+	 * @param filterParams
+	 *            Parámetros de filtrado.
+	 * @param searchParams
+	 *            Parámetros de búsqueda.
+	 */
+	public SearchDto(Map<String, Object> filterParams, Map<String, Object> searchParams){
 		this.filterParams = filterParams;
 		this.searchParams = searchParams;
 	}	
 	
+	/**
+	 * Getter de filterParams;
+	 * 
+	 * @return filterParams.
+	 */
 	public Map<String, Object> getFilterParams() {
 		return filterParams;
 	}
+
+	/**
+	 * Setter de filterParams.
+	 * 
+	 * @param filterParams
+	 *            Parámetros de filtrado.
+	 */
 	public void setFilterParams(Map<String, Object> filterParams) {
 		this.filterParams = filterParams;
 	}
+
+	/**
+	 * Getter de searchParams;
+	 * 
+	 * @return searchParams.
+	 */
 	public Map<String, Object> getSearchParams() {
 		return this.searchParams;
 	}
+
+	/**
+	 * Setter de searchParams.
+	 * 
+	 * @param searchParams
+	 *            Parámetros de búsqueda.
+	 */
 	public void setSearchParams(Map<String, Object> searchParams) {
 		this.searchParams = searchParams;
 	}
 	
-//	public void setPagination(Pagination pagination) {
-//		this.pagination = pagination;
-//	}
-	
+	/**
+	 * Devuelve un bean del tipo indicado como parámetro, con los criterios de
+	 * filtrado.
+	 * 
+	 * @param clazz
+	 *            Tipo de bean.
+	 * @return Parámetros de filtrado.
+	 */
 	public T getFilterParams(Class<T> clazz) {
 		return this.fromMapToBean(clazz, this.filterParams);
 	}
+	
+	/**
+	 * Devuelve un bean del tipo indicado como parámetro, con los criterios de
+	 * búsqueda.
+	 * 
+	 * @param clazz
+	 *            Tipo de bean.
+	 * @return Parámetros de búsqueda.
+	 */
 	public U getSearchParams(Class<U> clazz) {
 		return this.fromMapToBean(clazz, this.searchParams);
 	}
+	
+	/**
+	 * Devuelve un bean del tipo Pagination, con los parámetros de paginación-
+	 * 
+	 * @return Parámetros de paginación.
+	 */
 	public Pagination getPagination() {
 		return this.fromMapToBean(Pagination.class, this.filterParams);
 	}

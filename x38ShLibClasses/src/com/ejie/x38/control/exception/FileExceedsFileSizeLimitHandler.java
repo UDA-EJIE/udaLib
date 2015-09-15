@@ -24,6 +24,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
@@ -43,6 +45,8 @@ import com.ejie.x38.validation.ValidationManager;
  * 
  */
 public class FileExceedsFileSizeLimitHandler implements HandlerExceptionResolver{
+	
+	private static final Logger logger = LoggerFactory.getLogger(FileExceedsFileSizeLimitHandler.class);
 	
 	@Resource
 	private ReloadableResourceBundleMessageSource messageSource;
@@ -73,7 +77,8 @@ public class FileExceedsFileSizeLimitHandler implements HandlerExceptionResolver
 				}
 				
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error(e.getMessage());
+				throw new RuntimeException(e);
 			}
 			return null;
 		}

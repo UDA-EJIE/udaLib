@@ -87,7 +87,6 @@ public class UdaMappingJacksonHttpMessageConverter extends
 					if (udaModule.getSerializationConfigFeatures().get(feature)){
 						udaObjectMapper.enable(feature);
 						this.getObjectMapper().enable(feature);
-						
 					}else{
 						udaObjectMapper.disable(feature);
 						this.getObjectMapper().disable(feature);

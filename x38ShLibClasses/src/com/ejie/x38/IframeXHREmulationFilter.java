@@ -22,19 +22,16 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 
 import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.filter.DelegatingFilterProxy;
 
-import com.ejie.x38.control.exception.IframeXHREmulationException;
 import com.ejie.x38.util.IframeXHREmulationUtils;
-import com.ejie.x38.util.StackTraceManager;
 
 /**
  * Filtro encargado de modificar la request en caso de que sea necesaria emular
@@ -45,32 +42,25 @@ import com.ejie.x38.util.StackTraceManager;
  */
 public class IframeXHREmulationFilter extends DelegatingFilterProxy  {
 
-	private static final Logger logger = LoggerFactory.getLogger(IframeXHREmulationFilter.class);
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response,
-			FilterChain filterChain) {
+			FilterChain filterChain) throws ServletException, IOException {
 		
-		try {
+		// Se comprueba si es necesario realizar la emulación.
+		if (IframeXHREmulationUtils.isIframeEmulationRequired(request)){
+				
+			HttpServletResponse httpServletResponse = (HttpServletResponse)response;
+			// Se genera un wrapper de la response para poder insertar la respuesta indicada en la response dentro de la estructura necesaria.
+			IframeXHREmulationFilter.GenericResponseWrapper wrapper = new IframeXHREmulationFilter.GenericResponseWrapper(httpServletResponse); 
+			// Se continúa con la ejecución de la petición.
+			filterChain.doFilter(request, wrapper);
+			// Se escribe la respuesta correspondiente en la response.
+			IframeXHREmulationUtils.writeIframeHttpStatus(httpServletResponse, wrapper.getData(), wrapper.getStatus());
 			
-			// Se comprueba si es necesario realizar la emulación.
-			if (IframeXHREmulationUtils.isIframeEmulationRequired(request)){
-				
-				HttpServletResponse httpServletResponse = (HttpServletResponse)response;
-				// Se genera un wrapper de la response para poder insertar la respuesta indicada en la response dentro de la estructura necesaria.
-				IframeXHREmulationFilter.GenericResponseWrapper wrapper = new IframeXHREmulationFilter.GenericResponseWrapper(httpServletResponse); 
-				// Se continúa con la ejecución de la petición.
-				filterChain.doFilter(request, wrapper);
-				// Se escribe la respuesta correspondiente en la response.
-				IframeXHREmulationUtils.writeIframeHttpStatus(httpServletResponse, wrapper.getData(), wrapper.getStatus());
-				
-			}else{
-				// En caso de no ser necesaria la emulación se continua con la ejecución.
-				filterChain.doFilter(request, response);
-			}
-		}catch (Exception ex) {
-			logger.error(StackTraceManager.getStackTrace(ex));
-			throw new IframeXHREmulationException(ex);
+		}else{
+			// En caso de no ser necesaria la emulación se continua con la ejecución.
+			filterChain.doFilter(request, response);
 		}
 	}
 	

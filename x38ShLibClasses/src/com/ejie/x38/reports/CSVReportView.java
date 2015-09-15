@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.web.servlet.view.AbstractView;
 
-import com.ejie.x38.dto.Jerarquia;
+import com.ejie.x38.dto.JerarquiaDto;
  
 public class CSVReportView extends AbstractView{
 
@@ -36,6 +36,7 @@ public class CSVReportView extends AbstractView{
 		//Datos a procesar
 		ReportData reportData = (ReportData) model.get("reportData");
 		boolean isJerarquia = reportData.isJerarquia();
+		boolean isGrouping = reportData.isGrouping();
 		
 		//Metadatos jerarquia
 		JerarquiaMetadata jmd = reportData.getJerarquiaMetadada();
@@ -46,6 +47,10 @@ public class CSVReportView extends AbstractView{
 		//Columnas
 		LinkedHashMap<String, String> dataHeader = (LinkedHashMap<String, String>) reportData.getHeaderNames();
 		if (reportData.isShowHeaders()){
+			//Columna para la agrupacion
+			if (isGrouping){
+				writer.write(token);
+			}
 			//Columna para marcar los elementos que cumplen filtro en Jerarquia
 			if (isJerarquia && jmd.isShowFiltered()){ 
 				if (!"".equals(jmd.getFilterHeaderName())){
@@ -54,6 +59,10 @@ public class CSVReportView extends AbstractView{
 				writer.write(token); 
 			}
 			for (Map.Entry<String, String> entry : dataHeader.entrySet()) {
+				//Si tiene agrupacion, no debe mostrarse la columna del grupo y es la columna del grupo comprobar => pasar al siguiente
+				if (isGrouping && !reportData.isShowGroupColumng() && entry.getKey().equals(reportData.getGroupColumnName())){
+					continue;
+				}
 			    writer.write(parseValue(entry.getValue(), token));
 				writer.write(token);
 			}
@@ -67,21 +76,37 @@ public class CSVReportView extends AbstractView{
 		} else {
 			modelData = reportData.getModelDataJerarquia();
 		}
+		String prevGroupValue="", groupValue = "";
 		for (Object object : modelData) {
 			int level = 0;
 			boolean hasChildren = false;
+			//Si tiene agrupación => comprobar el cambio de grupo
+			if (isGrouping){
+				groupValue = parseValue(BeanUtils.getProperty(((JerarquiaDto)object).getModel(), reportData.getGroupColumnName()), token);
+				if (!groupValue.equals(prevGroupValue)){
+					prevGroupValue = groupValue;
+					writer.write(groupValue);
+					writer.newLine();
+				}
+				writer.write(token); //Espacio para evitar columna agrupación
+			}
+			//Si es jerarquia => comprobar si debe mostrar filtro y obtener atributo + parsear objeto de iteracion
 			if (isJerarquia){
 				if (jmd.isShowFiltered()){//Mostrar si cumple filtro
-					if (((Jerarquia) object).isFilter()){ //Cumple filtro
+					if (((JerarquiaDto) object).isFilter()){ //Cumple filtro
 						writer.write(jmd.getFilterToken());
 					}
 					writer.write(token); 
 				}
-				level = ((Jerarquia) object).getLevel();
-				hasChildren = ((Jerarquia) object).isHasChildren();
-				object = ((Jerarquia)object).getModel(); //Obtener objeto de negocio
+				level = ((JerarquiaDto) object).getLevel();
+				hasChildren = ((JerarquiaDto) object).isHasChildren();
+				object = ((JerarquiaDto)object).getModel(); //Obtener objeto de negocio
 			}
 			for (Map.Entry<String, String> entry : dataHeader.entrySet()) {
+				//Si tiene agrupacion, no debe mostrarse la columna del grupo y es la columna del grupo comprobar => pasar al siguiente
+				if (isGrouping && !reportData.isShowGroupColumng() && entry.getKey().equals(reportData.getGroupColumnName())){
+					continue;
+				}
 				String columnValue = parseValue(BeanUtils.getProperty(object, entry.getKey()), token); 
 				//Si es Jerarquia...
 				if (isJerarquia){

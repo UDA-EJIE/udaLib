@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ejie.x38.dto.Jerarquia;
+import com.ejie.x38.dto.JerarquiaDto;
 import com.ejie.x38.json.JSONArray;
 
 public class ReportData<T> implements java.io.Serializable {
@@ -22,8 +22,31 @@ public class ReportData<T> implements java.io.Serializable {
 
 	//Jerarquia
 	boolean jerarquia;
-	private List<Jerarquia<T>> modelDataJerarquia = new ArrayList<Jerarquia<T>>();
+	private List<JerarquiaDto<T>> modelDataJerarquia = new ArrayList<JerarquiaDto<T>>();
 	private JerarquiaMetadata jerarquiaMetadada = new JerarquiaMetadata();
+	
+	
+	private boolean grouping = false;
+	private String groupColumnName;
+	private boolean showGroupColumng = false;
+	public boolean isGrouping() {
+		return grouping;
+	}
+	public void setGrouping(boolean grouping) {
+		this.grouping = grouping;
+	}
+	public String getGroupColumnName() {
+		return groupColumnName;
+	}
+	public void setGroupColumnName(String groupColumnName) {
+		this.groupColumnName = groupColumnName;
+	}
+	public boolean isShowGroupColumng() {
+		return showGroupColumng;
+	}
+	public void setShowGroupColumng(boolean showGroupColumng) {
+		this.showGroupColumng = showGroupColumng;
+	}
 	
 	/**
 	 * @return the sheetName
@@ -58,7 +81,7 @@ public class ReportData<T> implements java.io.Serializable {
 	/**
 	 * @return the modelDataJerarquia
 	 */
-	protected List<Jerarquia<T>> getModelDataJerarquia() {
+	protected List<JerarquiaDto<T>> getModelDataJerarquia() {
 		return modelDataJerarquia;
 	}
 	/**
@@ -66,8 +89,8 @@ public class ReportData<T> implements java.io.Serializable {
 	 */
 	@SuppressWarnings("unchecked")
 	public void setModelData(List<?> modelData) {
-		if (modelData.get(0) instanceof Jerarquia){
-			this.modelDataJerarquia = (List<Jerarquia<T>>) modelData;
+		if (modelData.get(0) instanceof JerarquiaDto){
+			this.modelDataJerarquia = (List<JerarquiaDto<T>>) modelData;
 			this.setJerarquia(true);
 		} else {
 			this.modelData = (List<T>) modelData;

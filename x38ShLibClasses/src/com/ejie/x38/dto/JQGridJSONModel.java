@@ -22,6 +22,7 @@ import java.util.List;
  * @author UDA
  *
  */
+@Deprecated
 public class JQGridJSONModel {
 
 	private String page = null;

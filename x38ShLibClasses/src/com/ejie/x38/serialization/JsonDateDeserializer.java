@@ -41,10 +41,10 @@ import com.ejie.x38.util.DateTimeManager;
  * 
  */
 @Component
-public class JsonDateDeserializer extends JsonDeserializer<Timestamp> {
+public class JsonDateDeserializer extends JsonDeserializer<Date> {
 
 	@Override
-	public Timestamp deserialize(JsonParser par, DeserializationContext ctx)
+	public Date deserialize(JsonParser par, DeserializationContext ctx)
 			throws IOException, JsonProcessingException {
 		try {
 			Locale locale = LocaleContextHolder.getLocale();
@@ -56,8 +56,7 @@ public class JsonDateDeserializer extends JsonDeserializer<Timestamp> {
 				return null;
 			}
 			
-			Date date = format.parse(dateText);
-			return new Timestamp(date.getTime());
+			return format.parse(dateText);
 		} catch (ParseException e) {
 			throw new JsonParseException(null, null, e);
 		}

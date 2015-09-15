@@ -16,6 +16,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.web.servlet.view.AbstractView;
 
+import com.ejie.x38.dto.JerarquiaDto;
+
 /* https://jira.springsource.org/browse/SPR-6898 */
 public abstract class AbstractPOIExcelView extends AbstractView {
 
@@ -102,6 +104,11 @@ public abstract class AbstractPOIExcelView extends AbstractView {
 		List<ReportData> reportData = (List<ReportData>) model.get("reportData");
 		for (ReportData dataSheet : reportData) {
 			
+			//Metadatos
+			boolean isJerarquia = dataSheet.isJerarquia();
+			boolean isGrouping = dataSheet.isGrouping();
+			JerarquiaMetadata jmd = dataSheet.getJerarquiaMetadada();
+			
 			//Hoja
 			Sheet sheet = workbook.createSheet(dataSheet.getSheetName());
 			
@@ -111,19 +118,95 @@ public abstract class AbstractPOIExcelView extends AbstractView {
 			int rowNum = 0;
 			LinkedHashMap<String, String> dataHeader = (LinkedHashMap<String, String>) dataSheet.getHeaderNames();
 			if (dataSheet.isShowHeaders()){
+				//Columna para la agrupacion
+				if (isGrouping){
+					row.createCell(cellNum++).setCellValue("");
+				}
+				//Columna para marcar los elementos que cumplen filtro en Jerarquia
+				if (isJerarquia && jmd.isShowFiltered()){ 
+					if (!"".equals(jmd.getFilterHeaderName())){
+						row.createCell(cellNum++).setCellValue(jmd.getFilterHeaderName());
+					} else {
+						row.createCell(cellNum++).setCellValue("");
+					}
+				}
 				for (Map.Entry<String, String> entry : dataHeader.entrySet()) {
+					//Si tiene agrupacion, no debe mostrarse la columna del grupo y es la columna del grupo comprobar => pasar al siguiente
+					if (isGrouping && !dataSheet.isShowGroupColumng() && entry.getKey().equals(dataSheet.getGroupColumnName())){
+						continue;
+					}
 					row.createCell(cellNum++).setCellValue(entry.getValue());
 				}
 				rowNum++;
 			}
 			
 			//Datos Hoja
-			List<Object> modelData = dataSheet.getModelData();
+			List<Object> modelData;
+			if (!isJerarquia){
+				modelData = dataSheet.getModelData();
+			} else {
+				modelData = dataSheet.getModelDataJerarquia();
+			}
+			String prevGroupValue="", groupValue = "";
 			for (Object object : modelData) {
+				//Gestión filas-columnas
 				row = sheet.createRow(rowNum++);
 				cellNum = 0;
+				
+				//jerarquia
+				int level = 0;
+				boolean hasChildren = false;
+				
+				//Si tiene agrupación => comprobar el cambio de grupo
+				if (isGrouping){
+					groupValue = BeanUtils.getProperty(((JerarquiaDto)object).getModel(), dataSheet.getGroupColumnName());
+					if (!groupValue.equals(prevGroupValue)){
+						prevGroupValue = groupValue;
+						row.createCell(cellNum++).setCellValue(groupValue);
+						row = sheet.createRow(rowNum++);
+						cellNum = 0;
+					}
+					row.createCell(cellNum++).setCellValue(""); //Espacio para evitar columna agrupación
+				}
+				//Si es jerarquia => comprobar si debe mostrar filtro y obtener atributo + parsear objeto de iteracion
+				if (isJerarquia){
+					if (jmd.isShowFiltered()){//Mostrar si cumple filtro
+						if (((JerarquiaDto) object).isFilter()){ //Cumple filtro
+							row.createCell(cellNum++).setCellValue(jmd.getFilterToken());
+						} else {
+							row.createCell(cellNum++).setCellValue("");
+						}
+					}
+					level = ((JerarquiaDto) object).getLevel();
+					hasChildren = ((JerarquiaDto) object).isHasChildren();
+					object = ((JerarquiaDto)object).getModel(); //Obtener objeto de negocio
+				}
 				for (Map.Entry<String, String> entry : dataHeader.entrySet()) {
-				    row.createCell(cellNum++).setCellValue(BeanUtils.getProperty(object, entry.getKey()));
+					//Si tiene agrupacion, no debe mostrarse la columna del grupo y es la columna del grupo comprobar => pasar al siguiente
+					if (isGrouping && !dataSheet.isShowGroupColumng() && entry.getKey().equals(dataSheet.getGroupColumnName())){
+						continue;
+					}
+					String columnValue = BeanUtils.getProperty(object, entry.getKey()); 
+					//Si es Jerarquia...
+					if (isJerarquia){
+						//Si está activados los iconos y la columna es la indicada => aplicar iconos
+						if (jmd.isShowIcon() && entry.getKey().equals(jmd.getIconColumnName())){  
+							if (jmd.getIconCollapsedList().contains(BeanUtils.getProperty(object, jmd.getIconBeanAtribute()))){
+								columnValue = jmd.getIconUnexpanded() + columnValue;
+							} else {
+								if (hasChildren){
+									columnValue = jmd.getIconExpanded() + columnValue;
+								} else {
+									columnValue = jmd.getIconNoChild() + columnValue;
+								}
+							}
+						}
+						//Si está activada la tabulación y la columna es la indicada => aplicar tabulación
+						if (jmd.isShowTabbed() && entry.getKey().equals(jmd.getTabColumnName())){  
+							columnValue = jmd.getTab(level) + columnValue;
+						}
+					}
+					row.createCell(cellNum++).setCellValue(columnValue);
 				}
 			}
 			

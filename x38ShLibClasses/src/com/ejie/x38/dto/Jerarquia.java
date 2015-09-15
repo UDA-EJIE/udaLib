@@ -9,6 +9,7 @@ import org.codehaus.jackson.annotate.JsonUnwrapped;
  * @author UDA
  *
  */
+@Deprecated
 public class Jerarquia<T> implements java.io.Serializable {
 	
 	private static final long serialVersionUID = 2127819481595995328L;
@@ -16,20 +17,24 @@ public class Jerarquia<T> implements java.io.Serializable {
 	@JsonUnwrapped
 	private T model;
 	private int level;
-	private boolean hasChildren;
+	private boolean isLeaf;
 	private String parentNodes;
-	private String treeNodes; 
 	private boolean filter;
+	
+	//Grid-Maint
+	private boolean hasChildren;
+	private String treeNodes;
 	
 	public Jerarquia() {
 		super();
 	}
 	
+
 	/**
 	 * @return the model
 	 */
 	public T getModel() {
-		return this.model;
+		return model;
 	}
 	/**
 	 * @param model the model to set
@@ -41,7 +46,7 @@ public class Jerarquia<T> implements java.io.Serializable {
 	 * @return the level
 	 */
 	public int getLevel() {
-		return this.level;
+		return level;
 	}
 	/**
 	 * @param level the level to set
@@ -53,13 +58,25 @@ public class Jerarquia<T> implements java.io.Serializable {
 	 * @return the hasChildren
 	 */
 	public boolean isHasChildren() {
-		return this.hasChildren;
+		return hasChildren;
 	}
 	/**
 	 * @param hasChildren the hasChildren to set
 	 */
 	public void setHasChildren(boolean hasChildren) {
 		this.hasChildren = hasChildren;
+	}
+	/**
+	 * @return the isLeaf
+	 */
+	public boolean getIsLeaf() {
+		return isLeaf;
+	}
+	/**
+	 * @param isLeaf the isLeaf to set
+	 */
+	public void setIsLeaf(boolean isLeaf) {
+		this.isLeaf = isLeaf;
 	}
 	/**
 	 * @return the parentNodes
@@ -74,18 +91,6 @@ public class Jerarquia<T> implements java.io.Serializable {
 		this.parentNodes = parentNodes;
 	}
 	/**
-	 * @return the treeNodes
-	 */
-	public String getTreeNodes() {
-		return treeNodes;
-	}
-	/**
-	 * @param treeNodes the treeNodes to set
-	 */
-	public void setTreeNodes(String treeNodes) {
-		this.treeNodes = treeNodes;
-	}
-	/**
 	 * @return the filter
 	 */
 	public boolean isFilter() {
@@ -97,10 +102,27 @@ public class Jerarquia<T> implements java.io.Serializable {
 	public void setFilter(boolean filter) {
 		this.filter = filter;
 	}
+	/**
+	 * @return the treeNodes
+	 */
+	public String getTreeNodes() {
+		return treeNodes;
+	}
+	/**
+	 * @param treeNodes the treeNodes to set
+	 */
+	public void setTreeNodes(String treeNodes) {
+		this.treeNodes = treeNodes;
+	}
 
 	@Override
 	public String toString() {
-		return "Jerarquia [model=" + model + ", level=" + level + ", hasChildren=" + hasChildren + ", parentNodes=" + parentNodes + ", treetNodes=" + treeNodes + ", filter=" + filter +"]";
+		return "Jerarquia [model=" + model + ", level=" + level
+				+ ", hasChildren=" + hasChildren + ", isLeaf=" + isLeaf
+				+ ", parentNodes=" + parentNodes + ", filter=" + filter
+				+ ", treeNodes=" + treeNodes + "]";
 	}
+	
+	
 
 }

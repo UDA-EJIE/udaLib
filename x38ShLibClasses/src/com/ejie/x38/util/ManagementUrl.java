@@ -41,7 +41,7 @@ public class ManagementUrl {
 		}
 	}
 	
-	//Método que devuelve la url real asociada a la aceleracion 
+	//Método que devuelve la url real asociada a la aceleracion  
 	public static String getUrl(HttpServletRequest request){
 		String url = request.getHeader("N38_URL");
 		if (url != null){
