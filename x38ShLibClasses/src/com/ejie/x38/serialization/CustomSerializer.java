@@ -42,17 +42,27 @@ public class CustomSerializer extends JsonSerializer<Object> {
 			SerializerProvider provider) throws IOException,
 			JsonProcessingException {
 		try {
+			logger.debug("CustomSerializer.serialize()");
 			Class<?> clazz = value.getClass();
 			jgen.writeStartObject();
 			for (Entry<?, ?> entry : ThreadSafeCache.getMap().entrySet()) {
 				try{
 					jgen.writeFieldName((String) entry.getKey());
-					jgen.writeString(clazz
-							.getDeclaredMethod(
-									"get"
-											+ StringUtils.capitalize((String) entry
-													.getValue())).invoke(value)
-							.toString());
+					
+					/*
+					 * Controlar los valores null
+					 */
+					Object invoke = clazz
+					.getDeclaredMethod(
+							"get"
+									+ StringUtils.capitalize((String) entry
+											.getValue())).invoke(value);
+					
+					if (invoke==null){
+						jgen.writeString("");
+					}else{
+						jgen.writeString(invoke.toString());
+					}
 				}catch(Exception e){
 					jgen.writeString("");
 				}

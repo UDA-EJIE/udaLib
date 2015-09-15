@@ -41,6 +41,20 @@ public class DateTimeManager {
 		}
 	}
 	
+	public static SimpleDateFormat getTimestampFormat(Locale locale){
+		if(locale.getLanguage().equals(Constants.EUSKARA)){
+			return Constants.YYYYMMDD_HHMMSS_DATE_FORMAT;
+		}else if(locale.getLanguage().equals(Constants.FRANCAIS) || locale.getLanguage().equals(Constants.CASTELLANO) || locale.getLanguage().equals(Constants.ENGLISH)){
+			return Constants.DDMMYYYY_HHMMSS_DATE_FORMAT;
+		}else{
+			return Constants.DDMMYYYY_HHMMSS_DATE_FORMAT;
+		}
+	}
+	
+	public static SimpleDateFormat getTimeFormat(Locale locale){
+		return Constants.HHMMSS_TIME_FORMAT;
+	}
+	
 	public static String getDateTime() {
         DateFormat dateFormat = new SimpleDateFormat(LogConstants.DATETIMEFORMAT);
         Date date = new Date();

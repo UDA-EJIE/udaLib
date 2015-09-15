@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <faceted-project>
-  <runtime name="Oracle WebLogic Server 11gR1"/>
+  <runtime name="Oracle WebLogic Server 11gR1 PatchSet 4"/>
   <fixed facet="java"/>
   <fixed facet="jst.utility"/>
   <installed facet="java" version="1.6"/>
