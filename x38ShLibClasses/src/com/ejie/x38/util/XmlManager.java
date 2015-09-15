@@ -18,10 +18,14 @@ package com.ejie.x38.util;
 import java.util.Vector;
 
 import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
-import org.apache.xpath.XPathAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -33,7 +37,9 @@ import org.w3c.dom.NodeList;
 public class XmlManager {
 	
 	private static final Logger logger =  LoggerFactory.getLogger(XmlManager.class);
-
+	
+	private static final XPath xPath = XPathFactory.newInstance().newXPath();
+	
 	/**
 	 * Funcion que devuelve un Nodo dado un XPath.
 	 * 
@@ -43,12 +49,19 @@ public class XmlManager {
 	 * @throws TransformerException 
 	 */
 	public static Node searchDomNode(Node docDom, String strPath) throws TransformerException {
-		if (docDom != null && docDom.getTextContent()!=null)
+		if (docDom != null && docDom.getTextContent()!=null){
 			logger.debug("Searching node "+ "["+strPath+"] in document " + docDom.getTextContent());
-		else 
+		}else{ 
 			logger.debug("Can't find node "+ "["+strPath+"] in empty document");
+		}
 			
-		return XPathAPI.selectSingleNode(docDom, strPath);
+		try {
+			return (Node)xPath.evaluate(strPath, docDom, XPathConstants.NODE);
+		} catch (XPathExpressionException e) {
+			throw new TransformerException(e);
+		} catch (DOMException e) {
+			throw new TransformerException(e);
+		}
 	}	
 
 	/**
@@ -61,17 +74,22 @@ public class XmlManager {
 	 * @throws SecurityException Excepción de seguridad
 	 */
 	public static Vector<String> searchDomVector(Node docDom, String strPath) throws TransformerException {
-		NodeList NodeLiResultado = null;
+		NodeList nodeLiResultado;
 		Vector<String> vecValores = null ;
 		
-		NodeLiResultado = XPathAPI.selectNodeList(docDom, strPath);
-		if (NodeLiResultado.getLength() != 0) {
+		try {
+			nodeLiResultado = (NodeList)xPath.evaluate(strPath, docDom, XPathConstants.NODESET);
+		} catch (XPathExpressionException e) {
+			throw new TransformerException(e);
+		}
+		
+		if (nodeLiResultado.getLength() != 0) {
 			int x = 0;
 			vecValores = new Vector<String>();
-			for (x = 0; x < NodeLiResultado.getLength(); x++) {
-				if (NodeLiResultado.item(x).hasChildNodes()) {
+			for (x = 0; x < nodeLiResultado.getLength(); x++) {
+				if (nodeLiResultado.item(x).hasChildNodes()) {
 					//arrayValores.add(NodeLiResultado.item(x).getFirstChild().getNodeValue());
-					vecValores.add(NodeLiResultado.item(x).getFirstChild().getNodeValue());
+					vecValores.add(nodeLiResultado.item(x).getFirstChild().getNodeValue());
 				} else {
 					vecValores.add("");
 				}

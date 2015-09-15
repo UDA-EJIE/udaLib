@@ -31,6 +31,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -866,6 +867,10 @@ public class JSONArray {
      */
     public Writer write(Writer writer) throws JSONException {
         return this.write(writer, 0, 0);
+    }
+    
+    public List<Object> getList(){
+    	return this.myArrayList;
     }
 
     /**

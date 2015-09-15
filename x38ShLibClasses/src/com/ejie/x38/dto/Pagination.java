@@ -29,6 +29,8 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.util.StringUtils;
 
+import com.ejie.x38.json.JSONArray;
+
 /**
  * 
  * @author UDA
@@ -49,12 +51,25 @@ public class Pagination implements java.io.Serializable{
 	private String tree;	//Nombre elementos expandidos/contraídos
 	private String mult;	//Elemento checkeado en multiselección
 
+	// Ordenacion
+	private String multiselectionIds;
+	private List<Object> multiselectionIdsArray;
+	private Boolean selectAll;
+	
 	public Pagination(){}
 	public Pagination(Long rows, Long page, String sidx, String sord){
 		this.rows = rows;
 		this.page = page;
 		this.sidx = sidx;
 		this.sord = sord;
+	}
+	public Pagination(Long rows, Long page, String sidx, String sord, String multiselectionIds, Boolean selectAll){
+		this.rows = rows;
+		this.page = page;
+		this.sidx = sidx;
+		this.sord = sord;
+		this.multiselectionIds = multiselectionIds;
+		this.selectAll = selectAll;
 	}
 	
 	public Long getRows() {
@@ -94,6 +109,21 @@ public class Pagination implements java.io.Serializable{
 	}
 	public void setMult(String mult) {
 		this.mult = mult;
+	}
+	public String getMultiselectionIds() {
+		return multiselectionIds;
+	}
+	public void setMultiselectionIds(String multiselectionIds) {
+		this.multiselectionIds = multiselectionIds;
+		
+		JSONArray jsonArray = new JSONArray(multiselectionIds);
+		this.multiselectionIdsArray = jsonArray.getList();
+	}
+	public Boolean getSelectAll() {
+		return selectAll;
+	}
+	public void setSelectAll(Boolean selectAll) {
+		this.selectAll = selectAll;
 	}
 	
 	public String toString() {
@@ -175,9 +205,6 @@ public class Pagination implements java.io.Serializable{
 	){
 		return getQueryJerarquia(query, mapaWhere, columna, columnaPadre, columnaParentNodes, tabla, aliasTabla, joins, null, null);
 	}
-	/**
-	 * NORMAL CON FILTROS DE NEGOCIO
-	 */
 	public StringBuilder getQueryJerarquia(
 			StringBuilder query, Map<String, ?> mapaWhere, 
 			String columna, String columnaPadre, String columnaParentNodes, 
@@ -229,9 +256,6 @@ public class Pagination implements java.io.Serializable{
 	){
 		return getQueryForJerarquia(query, mapaWhere, new ArrayList<Object>(), columna, columnaPadre, columnaParentNodes, tabla, aliasTabla, joins, null, null);
 	}
-	/**
-	 * COUNT CON FILTROS DE NEGOCIO
-	 */
 	public StringBuilder getQueryJerarquiaCount(
 			StringBuilder query,  Map<String, ?> mapaWhere, 
 			String columna, String columnaPadre, String columnaParentNodes, 
@@ -242,7 +266,7 @@ public class Pagination implements java.io.Serializable{
 	}
 
 	/**
-	 * GENERAL
+	 * GENERAL (privada)
 	 */
 	private StringBuilder getQueryForJerarquia(
 			StringBuilder query, Map<String, ?> mapaWhere, List<Object> queryParams,
@@ -250,10 +274,6 @@ public class Pagination implements java.io.Serializable{
 			List<String> tabla, List<String> aliasTabla, StringBuilder joins,
 			StringBuilder businessFilters, List<?> businessParams
 	){
-	
-		@SuppressWarnings("unchecked")
-		List<Object> whereParams = (List<Object>) mapaWhere.get("params");
-		
 		query.insert(0,"\n\t");
 		
 		//FROM (tabla + aliasTabla)
@@ -263,9 +283,24 @@ public class Pagination implements java.io.Serializable{
 		for (int i = 0; i < size; i++) {
 			from.append(tabla.get(i).trim()).append(" ").append(aliasTabla.get(i).trim()).append(", ");
 		}
-		query.append(StringUtils.trimTrailingCharacter(from.toString().trim(), ','));
+		query.append(StringUtils.trimTrailingCharacter(from.toString().trim(), ',')).append(", (");
 		
+		//Subqueries
+			//PADRES
+				query.append("\n\t\t").append("-- PADRES");
+				query = querySubquery(query, mapaWhere, queryParams, columna, tabla, aliasTabla, joins, businessFilters, businessParams);
+				query.append("\n\t\t").append("connect by prior ").append(columnaPadre).append(" = ").append(columna);
+		query.append("\n\t\t").append("union");
+			//HIJOS
+				query.append("\n\t\t").append("-- HIJOS");
+				query = querySubquery(query, mapaWhere, queryParams, columna, tabla, aliasTabla, joins, businessFilters, businessParams);
+				query.append("\n\t\t").append("connect by prior ").append(columna).append(" = ").append(columnaPadre);
+		query.append("\n\t").append(") jerarquia");	
+		
+		//CONDICIONES
 		query.append("\n\t").append("where 1=1 ");
+		query.append("\n\t").append("-- JOIN JERARQUIA");
+		query.append("\n\t").append("and ").append(aliasTabla.get(0)).append(".").append(columna).append("=jerarquia.PK_JERARQUIA");
 		if (!"".equals(joins.toString())){
 			query.append("\n\t").append("-- JOINS");
 			query.append("\n\t").append(joins);
@@ -275,12 +310,6 @@ public class Pagination implements java.io.Serializable{
 			query.append("\n\t").append(businessFilters.toString().trim());
 			queryParams.addAll(businessParams);
 		}
-		
-		//Subquery para filtrado (criterios de búsqueda)
-		StringBuffer whereConditions = (StringBuffer) mapaWhere.get("query");
-		if (whereConditions.length()!=0){
-			query = queryFiltered(query, whereConditions, whereParams, queryParams, columna, columnaPadre, tabla, aliasTabla, joins, businessFilters, businessParams);
-		} 
 		
 		//Gestionar selección múltiple 
 		query.append("\n\t").append("-- Relacion JERARQUIA");
@@ -295,6 +324,8 @@ public class Pagination implements java.io.Serializable{
 		query = queryUnexpanded(query, queryParams, columnaPadre);
 		
 		//Modificar parámetros
+		@SuppressWarnings("unchecked")
+		List<Object> whereParams = (List<Object>) mapaWhere.get("params");
 		whereParams.clear();
 		whereParams.addAll(queryParams);
 		return query;
@@ -320,9 +351,6 @@ public class Pagination implements java.io.Serializable{
 	){
 		return getQuerySelectedGrid(query, mapaWhere, bean, columna, columnaPadre, tabla, aliasTabla, joins, null, null, new ArrayList<String>());
 	}
-	/**
-	 * SELECTED CON FILTROS DE NEGOCIO
-	 */
 	public StringBuilder getQuerySelectedGrid(
 			StringBuilder query,  Map<String, ?> mapaWhere,
 			Object bean, 
@@ -370,27 +398,33 @@ public class Pagination implements java.io.Serializable{
 		query.append("\n\t\t").append("start with ").append(columnaPadre).append(" is null "); 
 		query.append("\n\t\t").append("connect by prior ").append(columna).append(" = ").append(columnaPadre).append(" ");
 		query.append("\n\t\t").append("order siblings by ").append(this.getSidx()).append(" ").append(this.getSord());
-		query.append("\n\t").append(") ").append(aliasTabla.get(0));
+		query.append("\n\t").append(") ").append(aliasTabla.get(0)).append(", (");
 		
+		//Subqueries
+			//PADRES
+				query.append("\n\t\t").append("-- PADRES");
+				query = querySubquery(query, mapaWhere, queryParams, columna, tabla, aliasTabla, joins, businessFilters, businessParams);
+				query.append("\n\t\t").append("connect by prior ").append(columnaPadre).append(" = ").append(columna);
+		query.append("\n\t\t").append("union");
+			//HIJOS
+				query.append("\n\t\t").append("-- HIJOS");
+				query = querySubquery(query, mapaWhere, queryParams, columna, tabla, aliasTabla, joins, businessFilters, businessParams);
+				query.append("\n\t\t").append("connect by prior ").append(columna).append(" = ").append(columnaPadre);
+		query.append("\n\t").append(") jerarquia");	
+		
+		//CONDICIONES
 		query.append("\n\t").append("where 1=1 ");
+		query.append("\n\t").append("-- JOIN JERARQUIA");
+		query.append("\n\t").append("and ").append(aliasTabla.get(0)).append(".").append(columna).append("=jerarquia.PK_JERARQUIA");
 		if (!"".equals(joins.toString())){
 			query.append("\n\t").append("-- JOINS");
 			query.append("\n\t").append(joins);
 		}
-		
 		if (businessFilters!=null){
 			query.append("\n\t").append("-- Condiciones NEGOCIO");
 			query.append("\n\t").append(businessFilters.toString().trim());
 			queryParams.addAll(businessParams);
 		}
-		
-		//Subquery para filtrado (criterios de búsqueda)
-		StringBuffer whereConditions = (StringBuffer) mapaWhere.get("query");
-		@SuppressWarnings("unchecked")
-		List<Object> whereParams = (List<Object>) mapaWhere.get("params");
-		if (whereConditions.length()!=0){
-			query = queryFiltered(query, whereConditions, whereParams, queryParams, columna, columnaPadre, tabla, aliasTabla, joins, businessFilters, businessParams);
-		} 
 		
 		query.append("\n\t").append("-- Relacion JERARQUIA");
 		query.append("\n\t").append("start with ").append(columnaPadre).append(" is null "); 
@@ -421,6 +455,8 @@ public class Pagination implements java.io.Serializable{
 		}
 		
 		//Modificar parámetros
+		@SuppressWarnings("unchecked")
+		List<Object> whereParams = (List<Object>) mapaWhere.get("params");
 		whereParams.clear();
 		whereParams.addAll(queryParams);
 		return query;
@@ -447,115 +483,59 @@ public class Pagination implements java.io.Serializable{
 		}
 	};
 
-	private StringBuilder queryFiltered(
-			StringBuilder query,
-			StringBuffer whereConditions, List<Object> whereParams, List<Object> queryParams,
-			String columna, String columnaPadre, 
+	private StringBuilder querySubquery(
+			StringBuilder query, Map<String, ?> mapaWhere, List<Object> queryParams,
+			String columna, 
 			List<String> tabla, List<String> aliasTabla, StringBuilder joins,
 			StringBuilder businessFilters, List<?> businessParams){
 		
-		String filtroConditions = whereConditions.toString();
-		String businessConditions = (businessFilters!=null) ? businessFilters.toString() : "";
+		@SuppressWarnings("unchecked")
+		List<Object> whereParams = (List<Object>) mapaWhere.get("params");
+		StringBuffer whereConditions = (StringBuffer) mapaWhere.get("query");
+		
+		//Condiciones
+		String filterSubquery = whereConditions.toString();
+		String businessSubquery = (businessFilters!=null) ? businessFilters.toString() : "";
+		String joinsSubquery = joins.toString();
 		for (String aliasTablaStr : aliasTabla) {
-			filtroConditions = filtroConditions.replaceAll("(?i)"+aliasTablaStr+"\\.", "").trim();
-			businessConditions = businessConditions.replaceAll("(?i)"+aliasTablaStr+"\\.", "").trim();
-			joins = new StringBuilder(joins.toString().replaceAll("(?i)"+aliasTablaStr+"\\.", "").trim());
+			filterSubquery = filterSubquery.replaceAll("(?i)"+aliasTablaStr+"\\.", "").trim();
+			businessSubquery = businessSubquery.replaceAll("(?i)"+aliasTablaStr+"\\.", "").trim();
+			joinsSubquery = joinsSubquery.toString().replaceAll("(?i)"+aliasTablaStr+"\\.", "").trim();
 		}
 		
-		query.append("\n\t").append("-- Condiciones FILTRO");
-		query.append("\n\t").append(whereConditions.toString().trim());
-		queryParams.addAll(whereParams);
-		
-		/* SUB-QUERIES */
-		query.append("\n\t").append("-- Subqueries FILTRADO");
-		
-			/* Obtener PADRES de los que cumplen filtro */
-			query.append("\n\t\t").append("-- Subquery PADRES");
-			query.append("\n\t\t").append("or (");
-			query.append("\n\t\t\t").append("1=1");
-			if (!"".equals(joins.toString())){
-				query.append("\n\t\t\t").append("-- JOINS");
-				query.append("\n\t\t\t").append(joins);
+		query.append("\n\t\t").append("select distinct substr(sys_connect_by_path(").append(columna).append(", ").append(tokn).append("),"); 
+		query.append("\n\t\t").append("instr(sys_connect_by_path(").append(columna).append(", ").append(tokn).append("), ").append(tokn).append(", -1)+").append(tokn.substring(1, tokn.length()-1).length()).append(") PK_JERARQUIA");
+		query.append("\n\t\t").append("from ").append(StringUtils.collectionToCommaDelimitedString(tabla));
+		query.append("\n\t\t").append("where 1=1 ");
+			if (!"".equals(joinsSubquery)){
+				query.append("\n\t\t").append("-- JOINS");
+				query.append("\n\t\t").append(joinsSubquery);
 			}
-//			query.append("\n\t\t\t").append("-- Condiciones FILTRO");
-//			query.append("\n\t\t\t").append(filtroConditions);
-//			queryParams.addAll(whereParams);
-			if (businessFilters!=null){
-				query.append("\n\t\t\t").append("-- Condiciones NEGOCIO");
-				query.append("\n\t\t\t").append(businessConditions);
+			if (!"".equals(businessSubquery)){
+				query.append("\n\t\t").append("-- Condiciones NEGOCIO");
+				query.append("\n\t\t").append(businessSubquery);
 				queryParams.addAll(businessParams);
 			}
-			query.append("\n\t\t\t").append("and (");
-				query.append("\n\t\t\t\t").append("select count(1) ");
-				query.append("\n\t\t\t\t").append("from ").append(StringUtils.collectionToCommaDelimitedString(tabla));
-				query.append("\n\t\t\t\t").append("where 1=1");
-				if (!"".equals(joins.toString())){
-					query.append("\n\t\t\t\t").append("-- JOINS");
-					query.append("\n\t\t\t\t").append(joins);
-				}
-				query.append("\n\t\t\t\t").append("-- Condiciones FILTRO");
-				query.append("\n\t\t\t\t").append(filtroConditions);
+		//Jerarquia
+		query.append("\n\t\t").append("start with ").append(columna).append(" in ( "); 
+			query.append("\n\t\t\t").append("select ").append(columna);
+			query.append("\n\t\t\t").append("from ").append(StringUtils.collectionToCommaDelimitedString(tabla));
+			query.append("\n\t\t\t").append("where 1=1 ");
+			if (!"".equals(joinsSubquery)){
+				query.append("\n\t\t\t").append("-- JOINS");
+				query.append("\n\t\t\t").append(joinsSubquery);
+			}
+			if (!"".equals(businessSubquery)){
+				query.append("\n\t\t\t").append("-- Condiciones NEGOCIO");
+				query.append("\n\t\t\t").append(businessSubquery);
+				queryParams.addAll(businessParams);
+			}
+			if (!"".equals(filterSubquery)){
+				query.append("\n\t\t\t").append("-- Condiciones FILTRO");
+				query.append("\n\t\t\t").append(filterSubquery);
 				queryParams.addAll(whereParams);
-				query.append("\n\t\t\t\t").append("start with ").append(columna).append("=").append(aliasTabla.get(0)).append(".").append(columna);
-				if (businessFilters!=null){
-					query.append("\n\t\t\t\t").append("-- Condiciones NEGOCIO");
-					query.append("\n\t\t\t\t").append(businessConditions);
-					queryParams.addAll(businessParams);
-				}
-				query.append("\n\t\t\t\t").append("connect by prior ").append(columna).append("=").append(columnaPadre);
-				query.append("\n\t\t\t").append(") > 0 ");
-			query.append("\n\t\t").append(")");
-			
-			/* Obtener HIJOS de los que cumplen filtro */
-			query.append("\n\t\t").append("-- Subquery HIJOS");
-			query.append("\n\t\t").append("or (");
-			query.append("\n\t\t\t").append("1=1");
-			if (!"".equals(joins.toString())){
-				query.append("\n\t\t\t").append("-- JOINS");
-				query.append("\n\t\t\t").append(joins);
 			}
-//			query.append("\n\t\t\t").append("-- Condiciones FILTRO");
-//			query.append("\n\t\t\t").append(filtroConditions);
-//			queryParams.addAll(whereParams);
-			if (businessFilters!=null){
-				query.append("\n\t\t\t").append("-- Condiciones NEGOCIO");
-				query.append("\n\t\t\t").append(businessConditions);
-				queryParams.addAll(businessParams);
-			}
-			query.append("\n\t\t\t").append("and ").append(columna).append(" in ( ");
-			query.append("\n\t\t\t\t").append("select substr(sys_connect_by_path(").append(columna).append(", ").append(tokn).append("), INSTR(sys_connect_by_path(").append(columna).append(", ").append(tokn).append("),").append(tokn).append(",-1)+").append(tokn.substring(1, tokn.length()-1).length()).append(")");
-			query.append("\n\t\t\t\t").append("from ").append(StringUtils.collectionToCommaDelimitedString(tabla));
-			query.append("\n\t\t\t\t").append("where 1=1");
-			if (!"".equals(joins.toString())){
-				query.append("\n\t\t\t\t").append("-- JOINS");
-				query.append("\n\t\t\t\t").append(joins);
-			}
-			if (businessFilters!=null){
-				query.append("\n\t\t\t\t").append("-- Condiciones NEGOCIO");
-				query.append("\n\t\t\t\t").append(businessConditions);
-				queryParams.addAll(businessParams);
-			}
-			query.append("\n\t\t\t\t").append("start with ").append(columna).append(" in (");
-			query.append("\n\t\t\t\t\t").append("select ").append(columna);
-			query.append("\n\t\t\t\t\t").append("from ").append(StringUtils.collectionToCommaDelimitedString(tabla));
-			query.append("\n\t\t\t\t\t").append("where 1=1");
-			if (!"".equals(joins.toString())){
-				query.append("\n\t\t\t\t\t").append("-- JOINS");
-				query.append("\n\t\t\t\t\t").append(joins);
-			}
-			if (businessFilters!=null){
-				query.append("\n\t\t\t").append("-- Condiciones NEGOCIO");
-				query.append("\n\t\t\t").append(businessConditions);
-				queryParams.addAll(businessParams);
-			}
-			query.append("\n\t\t\t\t\t").append("-- Condiciones FILTRO");
-			query.append("\n\t\t\t\t\t").append(filtroConditions);
-			queryParams.addAll(whereParams);
-			query.append("\n\t\t\t\t").append(")");
-			query.append("\n\t\t\t\t").append("connect by prior ").append(columna).append("=").append(columnaPadre);
-			query.append("\n\t\t\t").append(")");
-			query.append("\n\t\t").append(")");
-		
+		query.append("\n\t\t").append(")");
 		return query;
 	}
 	
@@ -574,6 +554,9 @@ public class Pagination implements java.io.Serializable{
 		}
 		return query;
 	}
+
+	
+	
 	
 	
 	public List<?> getPaginationList(List<?> list){
@@ -593,6 +576,42 @@ public class Pagination implements java.io.Serializable{
 		}
 		return returnList;
 	}
+	
+	/*
+	 * REORDENACION
+	 */
+	
+	public StringBuilder getReorderQuery(StringBuilder query, String... pkCols){
+		//Order
+		StringBuilder reorderQuery = new StringBuilder();
+		if (this.getSidx() != null) {
+			reorderQuery.append(" ORDER BY ");
+			reorderQuery.append(this.getSidx());
+			reorderQuery.append(" ");
+			reorderQuery.append(this.getSord());
+			query.append(reorderQuery);
+		}
+		
+		reorderQuery = new StringBuilder();
+		//Limits
+//		Long rows = this.getRows();	
+//		Long page = this.getPage();
+//		if (page!=null && rows!=null){
+//		SELECT rownum rnum, a.*  FROM (
+		reorderQuery.append("SELECT ");
+		for (String pkCol : pkCols) {
+			reorderQuery.append(pkCol).append(",");
+		}
+		reorderQuery.deleteCharAt(reorderQuery.length()-1);
+		reorderQuery.append(" FROM (SELECT rownum rnum, a.*  FROM (" + query + ")a) ");
+//		}else if (rows!=null) {
+//			paginationQuery.append("SELECT * FROM (SELECT rownum rnum, a.*  FROM (" + query + ")a) where rnum > 0 and rnum < " + (rows+1));
+//		}else{
+//			return query;
+//		}
+		return reorderQuery;
+    }
+
 	
 	//Retrocompatibilidad
 	public String getSort() {

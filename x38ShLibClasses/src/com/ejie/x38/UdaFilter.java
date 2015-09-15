@@ -105,14 +105,13 @@ public class UdaFilter extends DelegatingFilterProxy {
 					
 					for (StackTraceElement trace : exception.getStackTrace()) {
 						outLength = outLength + 5 /* </br> */ + trace.toString().length();
-						if (outLength <= 2044 /* IE Query String limit */){
+						if (outLength <= 2043 /* IE Query String limit */){
 							error.append(trace.toString()).append("</br>");
 						} else {
 							break;
 						}
 					}
 					
-//					res.sendRedirect(req.getContextPath() + "/error"+error);
 					res.sendRedirect(error.toString());
 				}
 			} catch (Exception exc) {				

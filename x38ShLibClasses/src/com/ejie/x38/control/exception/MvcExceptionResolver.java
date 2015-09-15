@@ -20,13 +20,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHan
  */
 public class MvcExceptionResolver extends ExceptionHandlerExceptionResolver {
 
-//	private Object handler;
-//	private ExceptionHandlerMethodResolver methodResolver;
-//	public void setExceptionHandler(Object handler) {
-//		this.handler = handler;
-//		this.methodResolver = new ExceptionHandlerMethodResolver(handler.getClass());
-//	}
-	
 	private List<Object> handlers;
 	private List<ExceptionHandlerMethodResolver> methodResolvers;
 
@@ -53,9 +46,6 @@ public class MvcExceptionResolver extends ExceptionHandlerExceptionResolver {
 		if (result != null) {
 			return result;
 		}
-		
-//		Method method = this.methodResolver.resolveMethod(exception);
-//		return (method != null) ? new ServletInvocableHandlerMethod(this.handler, method) : null;
 		int index = 0;
 		for (ExceptionHandlerMethodResolver exceptionHandlerMethodResolver : this.methodResolvers){
 			Method method = exceptionHandlerMethodResolver.resolveMethod(exception);

@@ -508,16 +508,10 @@ public class PerimetralSecurityWrapperN38Impl implements
 		
 		if (n38UidSesion != null && n38UidSistemasXLNetS != null){
 			udaXLNetsSessionId.append(n38UidSistemasXLNetS.getValue()).append("-").append(n38UidSesion.getValue());
-			logger.debug( "getXlnetsUserId: cookie - n38UidSistemasXLNetS => " + n38UidSistemasXLNetS.getValue());
-		} else if (n38UidSesion != null){
-			udaXLNetsSessionId.append(n38UidSesion.getValue());
-			logger.debug( "getXlnetsUserId: cookie - n38UidSesion => " + n38UidSesion.getValue());
+			return (udaXLNetsSessionId.toString());
 		} else {
-			logger.debug( "getXlnetsUserId: null");
 			return null;
 		}
-		logger.debug( "getXlnetsUserId: udaXlnetsSession value => " + udaXLNetsSessionId.toString());
-		return udaXLNetsSessionId.toString();
 	}
 	
 	//Recovery and storage of the Credential info of XLNets    

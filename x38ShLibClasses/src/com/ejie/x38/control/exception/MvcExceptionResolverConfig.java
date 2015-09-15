@@ -14,6 +14,9 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
+import com.ejie.x38.control.exception.handler.MvcAccessDeniedExceptionHandler;
+import com.ejie.x38.control.exception.handler.MvcExceptionHandler;
+import com.ejie.x38.control.exception.handler.MvcValidationExceptionHandler;
 import com.ejie.x38.validation.ValidationManager;
 
 /**
@@ -30,6 +33,34 @@ public class MvcExceptionResolverConfig extends WebMvcConfigurationSupport {
 	@Autowired
 	private WebApplicationContext webApplicationContext;
 	
+	/**
+	 * Lista de handlers definida por la aplicación
+	 */
+	 private List<Object> handlers = new ArrayList<Object>();
+	 public void setHandlers(List<Object> handlers) {
+		 this.handlers = handlers;
+	 }
+	 
+	 /**
+	  * Determina si debe aplicarse MvcAccessDeniedExceptionHandler
+	  */
+	private boolean disable_accessDenied;
+	public void setDisable_accessDenied(boolean disable_accessDenied) {
+		this.disable_accessDenied = disable_accessDenied;
+	}
+
+
+	/**
+	 * Determina si debe aplicarse MvcValidationExceptionHandler 
+	 */
+	private boolean disable_validation;
+	public void setDisable_validation(boolean disable_validation) {
+		this.disable_validation = disable_validation;
+	}
+	
+
+	 
+	 
 	/**
 	 * Comprobar que se han definido correctamente las variables necesarias para el resolver:
 	 */
@@ -53,17 +84,8 @@ public class MvcExceptionResolverConfig extends WebMvcConfigurationSupport {
 		}
 	}
 	
-	
 	/**
-	 * Lista de handlers definida por la aplicación
-	 */
-	 private List<Object> handlers = new ArrayList<Object>();
-	 public void setHandlers(List<Object> handlers) {
-		 this.handlers = handlers;
-	 }
-	 
-	/**
-	 * Se recuperan los messageConverteres definidos para la aplicación y se asocian al MvcExceptionResolver
+	 * Se recuperan los messageConverters definidos para la aplicación y se asocian al MvcExceptionResolver
 	 */
 	 @Override
 	 public void configureMessageConverters (List<HttpMessageConverter<?>> converters){
@@ -79,11 +101,19 @@ public class MvcExceptionResolverConfig extends WebMvcConfigurationSupport {
 	@Override
 	public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> exceptionResolvers) {
 		MvcExceptionResolver customResolver = new MvcExceptionResolver();
-
 		List<Object> exceptionHandlers = this.handlers;
+		
+		//Handlers de UDA
+		if (!disable_validation){
+			ValidationManager validationManager = (ValidationManager)webApplicationContext.getBean("validationManager");
+			exceptionHandlers.add(0, new MvcValidationExceptionHandler(validationManager));
+		}
 		ReloadableResourceBundleMessageSource messageSource = (ReloadableResourceBundleMessageSource)webApplicationContext.getBean("messageSource");
-		ValidationManager validationManager = (ValidationManager)webApplicationContext.getBean("validationManager");
-		exceptionHandlers.add(new MvcExceptionHandler(messageSource, validationManager));
+		if (!disable_accessDenied){
+			exceptionHandlers.add(0, new MvcAccessDeniedExceptionHandler(messageSource));
+		}
+		exceptionHandlers.add(new MvcExceptionHandler(messageSource));
+		
 		customResolver.setExceptionHandlers(exceptionHandlers);
 		customResolver.setMessageConverters(getMessageConverters());
 		customResolver.afterPropertiesSet();

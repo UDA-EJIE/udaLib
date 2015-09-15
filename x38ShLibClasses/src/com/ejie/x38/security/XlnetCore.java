@@ -173,6 +173,7 @@ public class XlnetCore {
 	public static HashMap<String, String> getN38SubjectCert(Document xmlSesion) {
 		
 		String[] n38SubjectCert = new String[2];
+		String[] n38SubjectCertAux = new String[2];
 		String[] n38MultiSubjectCert;
 		HashMap<String, String> certinfo = null; 
 		
@@ -185,17 +186,25 @@ public class XlnetCore {
 
 		try {
 			n38MultiSubjectCert = (XmlManager.searchDomNode(xmlSesion, PATH_SUBTIPO_N38SUBJECTCERT)).getFirstChild().getNodeValue().split(", ");
-			certinfo = new HashMap<String, String>(n38MultiSubjectCert.length);
+			certinfo = new HashMap<String, String>();
 			
 			for(int i =0; i < n38MultiSubjectCert.length; i++){
 				n38SubjectCert = n38MultiSubjectCert[i].split("=");
-				certinfo.put(n38SubjectCert[0], n38SubjectCert[1]);
+				if (n38SubjectCert.length > 1){
+					n38SubjectCertAux = n38SubjectCert;
+					certinfo.put(n38SubjectCert[0], n38SubjectCert[1]);
+				} else {
+					certinfo.put(n38SubjectCertAux[0], certinfo.get(n38SubjectCertAux[0]) + n38SubjectCert[0]);
+				}
 			}
 			
 			return certinfo;
 			
 		} catch (TransformerException e) {
-			logger.error("isXlnetSessionContainingErrors(): XML searching error: "+ StackTraceManager.getStackTrace(e));
+			logger.error("getN38SubjectCert(): XML searching error: "+ StackTraceManager.getStackTrace(e));
+			return null; 
+		} catch (Exception e) {
+			logger.error("getN38SubjectCert(): XML Read and Parser error: "+ StackTraceManager.getStackTrace(e));
 			return null; 
 		}
 	}

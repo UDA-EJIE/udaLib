@@ -368,6 +368,5 @@ public class PerimetralSecurityWrapperMockImpl implements
 	}
 	
 	public void setDestroySessionSecuritySystem(boolean destroySessionSecuritySystem){
-		this.destroySessionSecuritySystem = destroySessionSecuritySystem;
 	}
 }

@@ -26,6 +26,7 @@ import com.ejie.x38.validation.ValidationManager;
  * @author UDA
  *
  */
+@Deprecated
 public class MvcExceptionHandler {
 
 	private ReloadableResourceBundleMessageSource messageSource;
