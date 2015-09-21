@@ -58,6 +58,7 @@ public class PerimetralSecurityWrapperN38Impl implements
 	private String userChangeUrl = null;
 	private ExcludeFilter excludeFilter = null;
 	private UdaCustomJdbcDaoImpl alternativeStorageUserCredentials = null;
+	private boolean useXlnetProfiles = false;
 	private HashMap<String, String> anonymousProfile = new HashMap<String, String>();
 	private AlternativeOriginCredentialsApp alternativeOriginCredentialsApp = null;
 	private String specificCredentialsName = null;
@@ -576,6 +577,9 @@ public class PerimetralSecurityWrapperN38Impl implements
 
 			xmlSecurityData = XlnetCore.getN38ItemSeguridad(n38Api, StaticsContainer.webAppName);
 			if (xmlSecurityData != null) {
+				if (this.useXlnetProfiles){
+					userProfiles.addAll(XlnetCore.searchParameterIntoXlnetSesion(XlnetCore.getN38ItemSesion(n38Api), XlnetCore.PATH_XMLSESION_N38PERFILES));
+				}
 				userProfiles.addAll(XlnetCore.searchParameterIntoXlnetSesion(xmlSecurityData, XlnetCore.PATH_SUBTIPO_N38INSTANCIA));
 			}
 			// Set obtain user's profiles
@@ -711,6 +715,14 @@ public class PerimetralSecurityWrapperN38Impl implements
 
 	public void setExcludeFilter(ExcludeFilter excludeFilter) {
 		this.excludeFilter = excludeFilter;
+	}
+	
+	public boolean isUseXlnetProfiles() {
+		return useXlnetProfiles;
+	}
+
+	public void setUseXlnetProfiles(boolean useXlnetProfiles) {
+		this.useXlnetProfiles = useXlnetProfiles;
 	}
 
 	@SuppressWarnings("unchecked")

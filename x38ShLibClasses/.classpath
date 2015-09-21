@@ -49,18 +49,18 @@
 	<classpathentry kind="lib" path="lib/mongo-java-driver-2.6.3.jar"/>
 	<classpathentry kind="lib" path="lib/y31bIfaz-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/y31cImpl-1.1.jar"/>
-	<classpathentry kind="lib" path="lib/jdom-1.0.jar"/>
-	<classpathentry kind="lib" path="lib/rome-1.0.0.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/UDAWLS11Classpath"/>
 	<classpathentry kind="con" path="oracle.eclipse.tools.weblogic.lib.system">
 		<attributes>
 			<attribute name="owner.project.facets" value="jst.utility"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/Oracle WebLogic Server 11gR1 (10.3.5) JRE">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/Oracle WebLogic Server 11gR1 PatchSet 4 JRE JRE">
 		<attributes>
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/jdom-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/rome-1.0.0.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/UDAWLS11Classpath"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

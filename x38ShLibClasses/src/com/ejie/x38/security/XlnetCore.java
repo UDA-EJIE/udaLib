@@ -55,6 +55,7 @@ public class XlnetCore {
 	public static final String PATH_PUESTOUID_SUBTIPO_SN = "/n38/elementos/elemento[@subtipo='n38persona']/parametro[@id='sn']/valor";
 	public static final String PATH_PUESTOUID_SUBTIPO_CN = "/n38/elementos/elemento[@subtipo='n38persona']/parametro[@id='cn']/valor";
 	public static final String PATH_PUESTOUID_SUBTIPO_GIVENNAME = "/n38/elementos/elemento[@subtipo='n38persona']/parametro[@id='givenname']/valor";
+	public static final String PATH_XMLSESION_N38PERFILES = "/n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='n38perfiles']/valor";
 
 	/**
 	 * Devuelve un objeto N38API a partir del contexto de una petición Request.
