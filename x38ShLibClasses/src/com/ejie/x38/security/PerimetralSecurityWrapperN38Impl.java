@@ -581,6 +581,11 @@ public class PerimetralSecurityWrapperN38Impl implements
 					userProfiles.addAll(XlnetCore.searchParameterIntoXlnetSesion(XlnetCore.getN38ItemSesion(n38Api), XlnetCore.PATH_XMLSESION_N38PERFILES));
 				}
 				userProfiles.addAll(XlnetCore.searchParameterIntoXlnetSesion(xmlSecurityData, XlnetCore.PATH_SUBTIPO_N38INSTANCIA));
+				
+				if (this.alternativeStorageUserCredentials != null) {
+					userProfiles.addAll(this.alternativeStorageUserCredentials.loadUserAuthorities(UserName,  XlnetCore.getParameterSession(n38Api, N38API.NOMBRE_DNI), n38Api));
+				}
+				
 			}
 			// Set obtain user's profiles
 			httpSession.setAttribute("userProfiles", userProfiles);
