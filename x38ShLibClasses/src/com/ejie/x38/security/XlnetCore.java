@@ -21,11 +21,6 @@ import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.TransformerException;
 
-import n38c.exe.N38API;
-import n38i.exe.N38DocumentPrinter;
-import n38i.exe.N38Excepcion;
-import n38i.exe.N38ParameterException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -33,6 +28,11 @@ import org.w3c.dom.Node;
 
 import com.ejie.x38.util.StackTraceManager;
 import com.ejie.x38.util.XmlManager;
+
+import n38c.exe.N38API;
+import n38i.exe.N38DocumentPrinter;
+import n38i.exe.N38Excepcion;
+import n38i.exe.N38ParameterException;
 
 /**
  * 
@@ -47,13 +47,16 @@ public class XlnetCore {
 	public static final String PATH_SUBTIPO_N38SESION = "/n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='?']/valor";
 	public static final String PATH_SUBTIPO_n38DOMINIOCOMUNCOOKIE = "/n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='n38dominiocomuncookie']/valor";
 	public static final String PATH_SUBTIPO_N38SUBJECTCERT = "/n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='n38subjectcert']/valor";
+	public static final String PATH_SUBTIPO_DNI = "/n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='dni']/valor";
+	public static final String PATH_SUBTIPO_N38PERSONAUID = "n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='n38personauid']/valor";
 	public static final String PATH_SUBTIPO_ORGANIZATIONALUNIT = "/n38/elementos/elemento[@subtipo='OrganizationalUnit']/parametro[@id='ou']/valor[text()='?']/../../elemento[@subtipo=\"n38itemSeguridad\"]/parametro[@id=\"n38uidobjseguridad\"]/valor";
 	public static final String PATH_CHECK_ERROR = "/n38/error";
 	public static final String PATH_CHECK_WARNING = "/n38/warning";
-	public static final String FILTRO_LDAP_PUESTOUID = "n38puestouid=";
+	public static final String FILTRO_LDAP_UID = "uid=";
 	public static final String PATH_PUESTOUID_SUBTIPO_SN = "/n38/elementos/elemento[@subtipo='n38persona']/parametro[@id='sn']/valor";
 	public static final String PATH_PUESTOUID_SUBTIPO_CN = "/n38/elementos/elemento[@subtipo='n38persona']/parametro[@id='cn']/valor";
 	public static final String PATH_PUESTOUID_SUBTIPO_GIVENNAME = "/n38/elementos/elemento[@subtipo='n38persona']/parametro[@id='givenname']/valor";
+	public static final String PATH_XMLSESION_N38PERFILES = "/n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='n38perfiles']/valor";
 
 	/**
 	 * Devuelve un objeto N38API a partir del contexto de una petición Request.
@@ -257,31 +260,36 @@ public class XlnetCore {
 	public static HashMap<String, String> getUserDataInfo(N38API n38Api){
 		HashMap<String, String> result = new HashMap<String, String>();
 		
-		String[] n38puestouidString;
-		Document xmlPuesto;
+		String n38personauidString;
+		Document xmlPersona;
+		Document n38ItemSesion;
 		
 		if (n38Api == null)
 			throw new IllegalArgumentException(
 					"getN38ItemSeguridad(): The N38API input parameter can't be NULL.");
 		
+		n38ItemSesion = n38Api.n38ItemSesion();
+		
 		try {
-			n38puestouidString = n38Api.n38ItemSesion(N38API.NOMBRE_N38PUESTOUID);
-			xmlPuesto = n38Api.n38ItemObtenerPersonas(FILTRO_LDAP_PUESTOUID+n38puestouidString[0]);
+			n38personauidString = XmlManager.searchDomNode(n38ItemSesion, XlnetCore.PATH_SUBTIPO_N38PERSONAUID).getFirstChild().getNodeValue();
 			
-			try {
-				result.put("name",XmlManager.searchDomNode(xmlPuesto, PATH_PUESTOUID_SUBTIPO_GIVENNAME).getFirstChild().getNodeValue());
-				result.put("surname",XmlManager.searchDomNode(xmlPuesto, PATH_PUESTOUID_SUBTIPO_SN).getFirstChild().getNodeValue());
-				result.put("fullName", XmlManager.searchDomNode(xmlPuesto, PATH_PUESTOUID_SUBTIPO_CN).getFirstChild().getNodeValue()); 
-				
-			} catch (TransformerException e) {
-				logger.error("isXlnetSessionContainingErrors(): XML searching error: "+ StackTraceManager.getStackTrace(e));
-				return null; 
-			}			
-		} catch (N38ParameterException e) {
-			logger.error(StackTraceManager.getStackTrace(e));
-		} catch (N38Excepcion e) {
-			logger.error(StackTraceManager.getStackTrace(e));
+		} catch (TransformerException e) {
+			logger.error("isXlnetSessionContainingErrors(): XML searching error: "+ StackTraceManager.getStackTrace(e));
+			return null; 
 		}	
+		
+		xmlPersona = n38Api.n38ItemObtenerPersonas(FILTRO_LDAP_UID+n38personauidString);
+		
+		try {
+			result.put("name",XmlManager.searchDomNode(xmlPersona, PATH_PUESTOUID_SUBTIPO_GIVENNAME).getFirstChild().getNodeValue());
+			result.put("surname",XmlManager.searchDomNode(xmlPersona, PATH_PUESTOUID_SUBTIPO_SN).getFirstChild().getNodeValue());
+			result.put("fullName", XmlManager.searchDomNode(xmlPersona, PATH_PUESTOUID_SUBTIPO_CN).getFirstChild().getNodeValue()); 
+			
+		} catch (TransformerException e) {
+			logger.error("isXlnetSessionContainingErrors(): XML searching error: "+ StackTraceManager.getStackTrace(e));
+			return null; 
+		}			
+
 		return result;
 	}
 	
