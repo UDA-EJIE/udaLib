@@ -21,14 +21,16 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.DeserializationContext;
-import org.codehaus.jackson.map.JsonDeserializer;
-import org.codehaus.jackson.map.MappingJsonFactory;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.MappingJsonFactory;
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,7 +104,7 @@ public class MultiModelDeserializer extends
 		// Recuperamos el objeto rupMultiModelMappings que define el mapeo de las entidades del json
 		JsonNode rupMultiModelMappingsNode = jsonNodeTree.get("rupEntityMapping");
 		// Recorremos todas las propiedades del json
-		Iterator<Entry<String, JsonNode>> fields = jsonNodeTree.getFields();
+		Iterator<Entry<String, JsonNode>> fields = jsonNodeTree.fields();
 		while(fields.hasNext()){
 			// Procesamos cada propiedad del json
 			Entry<String, JsonNode> next = fields.next();
@@ -113,7 +115,7 @@ public class MultiModelDeserializer extends
 				// Obtenemos el nombre de la clase Java a la que se debe de mapear la propiedad
 				String beanType = rupMultiModelMappingsNode.get(propertyName).asText();
 				// Creamos un nuevo jsonParser para procesar el json correspondiente a la entidad que se debe mapear
-				JsonParser entityJsonParser = jsonFactory.createJsonParser(next.getValue().toString());
+				JsonParser entityJsonParser = jsonFactory.createParser(next.getValue().toString());
 				try {
 					// Se procesa el objeto json y se obtiene la instancia de la entidad correspondiente.
 					Object	obj = entityJsonParser.readValueAs(Class.forName(beanType));

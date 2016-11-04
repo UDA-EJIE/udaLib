@@ -23,13 +23,15 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
-import org.codehaus.jackson.Version;
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.JsonDeserializer;
-import org.codehaus.jackson.map.JsonSerializer;
-import org.codehaus.jackson.map.SerializationConfig;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.codehaus.jackson.map.module.SimpleModule;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule; 
+
 
 /**
  * Modulo de Jackson para extender las funcionalidades que proporciona por defecto.
@@ -62,17 +64,23 @@ public class UdaModule extends SimpleModule {
 	/**
 	 * Propiedades de configuracion de la serializacion
 	 */
-	private Map<SerializationConfig.Feature,Boolean> serializationConfigFeatures;
+	private Map<SerializationFeature,Boolean> serializationFeature;
 	
 	/**
 	 * Propiedades de configuracion de la deserializacion
 	 */
-	private Map<DeserializationConfig.Feature,Boolean> deserializationConfigFeatures;
+	private Map<DeserializationFeature,Boolean> deserializationFeature;
+	
+	
+	/***
+	Propiedades de configuracion de los maps para deseralizar y seralizar
+	**/
+	private Map<MapperFeature, Boolean> mapperFeature;
 	
 	/**
 	 * Propiedades de inclusion de la serializacion.
 	 */
-	private List<JsonSerialize.Inclusion> serializationInclusions;
+	private List< JsonInclude.Include> serializationInclusions;
 	
 	/**
 	 * Constructor por defecto.
@@ -118,6 +126,7 @@ public class UdaModule extends SimpleModule {
 		// permite la deserializacion de multiples entidades no anidadas en la
 		// misma peticion.
 		this.addDeserializer(Map.class, new MultiModelDeserializer());
+		
 	}
 	
 	/**
@@ -144,8 +153,8 @@ public class UdaModule extends SimpleModule {
 	 * @return Map<SerializationConfig.Feature, Boolean> Mapa de propiedades de
 	 *         configuracion y su estado.
 	 */
-	public Map<SerializationConfig.Feature, Boolean> getSerializationConfigFeatures() {
-		return serializationConfigFeatures;
+	public Map<SerializationFeature, Boolean> getSerializationFeature() {
+		return serializationFeature;
 	}
 
 	/**
@@ -154,9 +163,9 @@ public class UdaModule extends SimpleModule {
 	 * @param serializationConfigFeatures Mapa de propiedades de
 	 *         configuracion y su estado.
 	 */
-	public void setSerializationConfigFeatures(
-			Map<SerializationConfig.Feature, Boolean> serializationConfigFeatures) {
-		this.serializationConfigFeatures = serializationConfigFeatures;
+	public void setSerializationFeature(
+			Map<SerializationFeature, Boolean> serializationFeature) {
+		this.serializationFeature = serializationFeature;
 	}
 
 	/**
@@ -166,8 +175,8 @@ public class UdaModule extends SimpleModule {
 	 * @return Map<SerializationConfig.Feature, Boolean> Mapa de propiedades de
 	 *         configuracio su estado.
 	 */
-	public Map<DeserializationConfig.Feature, Boolean> getDeserializationConfigFeatures() {
-		return deserializationConfigFeatures;
+	public Map<DeserializationFeature, Boolean> getDeserializationFeature() {
+		return deserializationFeature;
 	}
 
 	/**
@@ -177,30 +186,40 @@ public class UdaModule extends SimpleModule {
 	 * @param deserializationConfigFeatures
 	 *            Mapa de propiedades de configuracion y su estado.
 	 */
-	public void setDeserializationConfigFeatures(
-			Map<DeserializationConfig.Feature, Boolean> deserializationConfigFeatures) {
-		this.deserializationConfigFeatures = deserializationConfigFeatures;
+	public void setDeserializationFeature(
+			Map<DeserializationFeature, Boolean> deserializationFeature) {
+		this.deserializationFeature = deserializationFeature;
 	}
 
 	/**
-	 * Getter para obtener las inclusiones de serialización de Jackson.
+	 * Getter para obtener las inclusiones de serializaciÃ³n de Jackson.
 	 * 
-	 * @return List<JsonSerialize.Inclusion> Inclusiones de serialización de
+	 * @return List<JsonSerialize.Inclusion> Inclusiones de serializaciÃ³n de
 	 *         Jackson.
 	 */
-	public List<JsonSerialize.Inclusion> getSerializationInclusions() {
+	
+	public List< JsonInclude.Include> getSerializationInclusions() {
 		return serializationInclusions;
 	}
 
 	/**
-	 * Getter para asignar las inclusiones de serialización de Jackson.
+	 * Getter para asignar las inclusiones de serializaciÃ³n de Jackson.
 	 * 
 	 * @param serializationInclusions
-	 *            Inclusiones de serialización de Jackson.
+	 *            Inclusiones de serializaciÃ³n de Jackson.
 	 */
 	public void setSerializationInclusions(
-			List<JsonSerialize.Inclusion> serializationInclusions) {
+			List< JsonInclude.Include> serializationInclusions) {
 		this.serializationInclusions = serializationInclusions;
+	}
+
+	public Map<MapperFeature, Boolean> getMapperFeature() {
+		return mapperFeature;
+	}
+
+	public void setMapperFeature(
+			Map<MapperFeature, Boolean> mapperFeature) {
+		this.mapperFeature = mapperFeature;
 	}
 	
 	

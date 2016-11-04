@@ -26,9 +26,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.map.MappingJsonFactory;
-import org.codehaus.jackson.map.ObjectMapper;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.MappingJsonFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -231,7 +234,7 @@ public class PerimetralSecurityWrapperMockImpl implements
 		}
 		
 		try {
-			jsonGenerator = jsonFactory.createJsonGenerator(sw);
+			jsonGenerator = jsonFactory.createGenerator(sw);
 			mapper.writeValue(jsonGenerator, usersNames);
 			sw.close();
 			dataUsers = sw.getBuffer().toString();

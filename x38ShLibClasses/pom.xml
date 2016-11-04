@@ -4,16 +4,17 @@
   <groupId>com.ejie.x38</groupId>
   <artifactId>x38ShLibClasses</artifactId>
   <packaging>jar</packaging>
-  <version>2.4.6</version>
+  <version>3.0.0</version>
   <name>x38ShLibClasses</name>
   <url>http://maven.apache.org</url>
 	<properties>
-		<org.springframework.version>3.1.1.RELEASE</org.springframework.version>
-		<org.springframework.security.version>3.1.0.RELEASE</org.springframework.security.version>
-		<org.logback.version>1.0.6</org.logback.version>
-		<org.slf4j.version>1.6.1</org.slf4j.version>
+		<org.springframework.version>3.2.17.RELEASE</org.springframework.version>
+		<org.springframework.security.version>3.2.9.RELEASE</org.springframework.security.version>
+		<org.logback.version>1.1.7</org.logback.version>
+		<org.slf4j.version>1.7.21</org.slf4j.version>
 		<eclipselink.version>2.3.0</eclipselink.version>
 		<javax.persistence.version>2.0.1</javax.persistence.version>
+		<org.jackson.version>2.6.5</org.jackson.version>
 	</properties>
 	<dependencies>
 		<!--  Spring -->
@@ -32,6 +33,11 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
 			<version>${org.springframework.version}</version>
 		</dependency>
 		<dependency>
@@ -116,13 +122,7 @@
 			<artifactId>hibernate-validator</artifactId>
 			<version>4.2.0.Final</version>
 		</dependency>
-		
-		<!-- Jackson JSON Mapper -->
-		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-mapper-asl</artifactId>
-			<version>1.9.7</version>
-		</dependency>
+
 
 		<!-- AspectJ-->
 		<dependency>
@@ -135,7 +135,7 @@
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
-			<version>1.2.1</version>
+			<version>1.3.2</version>
 		</dependency>
 		
 		<dependency>
@@ -181,11 +181,16 @@
 		</dependency>
 		<!-- Jackson JSON Mapper -->
 		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-mapper-asl</artifactId>
-			<version>1.9.7</version>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${org.jackson.version}</version>
 		</dependency>
-		<!--  JSR 303 with Hibernate Validator -->
+	<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>${org.jackson.version}</version>
+		</dependency>
+		<!-- JSR 303 with Hibernate Validator -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
