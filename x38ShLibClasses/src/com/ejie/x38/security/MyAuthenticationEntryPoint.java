@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
@@ -44,6 +45,10 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint,
 	private int order = Integer.MAX_VALUE;
 
 	private PerimetralSecurityWrapper perimetralSecurityWrapper;
+	
+	private String xhrUnauthorizedPage;
+	
+	private Boolean xhrRedirectOnError = false;
 
 	@Override
 	public void commence(HttpServletRequest request,
@@ -86,14 +91,25 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint,
 		}
 		
 		logger.info("XLNET Session isn't valid or not created!");
-		if (!(isAjax && isPortal)){
-			url = getPerimetralSecurityWrapper().getURLLogin(originalURL , isAjax);
-		} else {
-			url = getPerimetralSecurityWrapper().getURLLogin(originalURL , isAjax)+"&R01HNoPortal=true";
-		}
 		
-		logger.info("Redirecting to next URL:" + url);
-		httpResponse.sendRedirect(url);
+		
+		
+		if (isAjax && xhrRedirectOnError ){
+			
+			url = this.getUrl(xhrUnauthorizedPage != null ? xhrUnauthorizedPage : getPerimetralSecurityWrapper().getURLLogin(originalURL , isAjax), isPortal);
+			
+			// Se detecta si es una petición AJAX
+			httpResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+			httpResponse.setHeader("LOCATION", url);
+			
+		}else{
+		
+			url = this.getUrl(getPerimetralSecurityWrapper().getURLLogin(originalURL , isAjax), isPortal);
+			
+			logger.info("Redirecting to next URL:" + url);
+			httpResponse.sendRedirect(url);
+			
+		}	
 	}
 
 	@Override
@@ -101,6 +117,11 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint,
 		return order;
 	}
 
+	// Private 
+	private String getUrl(String url, boolean isPortal){
+		return isPortal ? url.concat("&R01HNoPortal=true") : url;
+	}
+	
 	// Getters & Setters
 	public PerimetralSecurityWrapper getPerimetralSecurityWrapper() {
 		return perimetralSecurityWrapper;
@@ -110,4 +131,15 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint,
 			PerimetralSecurityWrapper perimetralSecurityWrapper) {
 		this.perimetralSecurityWrapper = perimetralSecurityWrapper;
 	}
+
+	public void setXhrUnauthorizedPage(String xhrUnauthorizedPage) {
+		this.xhrUnauthorizedPage = xhrUnauthorizedPage;
+	}
+
+	public void setXhrRedirectOnError(Boolean xhrRedirectOnError) {
+		this.xhrRedirectOnError = xhrRedirectOnError;
+	}
+
+	
+	
 }
