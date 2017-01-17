@@ -72,7 +72,9 @@ public class MyAccessDeniedHandler implements AccessDeniedHandler {
 			} else {
 				String message = messageSource.getMessage("security.ajaxAccesError", null, LocaleContextHolder.getLocale());
 				ServletOutputStream servletOutputStream = httpServletResponse.getOutputStream();
-
+				httpServletResponse.setHeader("LOCATION", this.errorPage);
+				
+				
 				httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
 				servletOutputStream.print(message);
 				httpServletResponse.flushBuffer();		
