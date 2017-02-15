@@ -1,16 +1,16 @@
 /*
  * Copyright 2011 E.J.I.E., S.A.
  *
- * Licencia con arreglo a la EUPL, Versión 1.1 exclusivamente (la «Licencia»);
- * Solo podrá usarse esta obra si se respeta la Licencia.
+ * Licencia con arreglo a la EUPL, VersiÃ³n 1.1 exclusivamente (la Â«LicenciaÂ»);
+ * Solo podrÃ¡ usarse esta obra si se respeta la Licencia.
  * Puede obtenerse una copia de la Licencia en
  *
  * http://ec.europa.eu/idabc/eupl.html
  *
- * Salvo cuando lo exija la legislación aplicable o se acuerde por escrito,
- * el programa distribuido con arreglo a la Licencia se distribuye «TAL CUAL»,
- * SIN GARANTÍAS NI CONDICIONES DE NINGÚN TIPO, ni expresas ni implícitas.
- * Véase la Licencia en el idioma concreto que rige los permisos y limitaciones
+ * Salvo cuando lo exija la legislaciÃ³n aplicable o se acuerde por escrito,
+ * el programa distribuido con arreglo a la Licencia se distribuye Â«TAL CUALÂ»,
+ * SIN GARANTÃ�AS NI CONDICIONES DE NINGÃšN TIPO, ni expresas ni implÃ­citas.
+ * VÃ©ase la Licencia en el idioma concreto que rige los permisos y limitaciones
  * que establece la Licencia.
  */
 package com.ejie.x38.serialization;
@@ -20,12 +20,7 @@ import java.nio.charset.Charset;
 
 import javax.annotation.PostConstruct;
 
-import org.codehaus.jackson.JsonEncoding;
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
+	
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpInputMessage;
@@ -33,9 +28,15 @@ import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
-import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 import com.ejie.x38.util.StackTraceManager;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonEncoding;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
  * 
@@ -56,11 +57,11 @@ import com.ejie.x38.util.StackTraceManager;
  * @author UDA
  * 
  */
-public class UdaMappingJacksonHttpMessageConverter extends
-		MappingJacksonHttpMessageConverter {
+public class UdaMappingJackson2HttpMessageConverter extends
+		MappingJackson2HttpMessageConverter {
 
 	protected final Logger logger = LoggerFactory
-			.getLogger(UdaMappingJacksonHttpMessageConverter.class);
+			.getLogger(UdaMappingJackson2HttpMessageConverter.class);
 
 	/**
 	 * ObjectMapper personalizado de UDA.
@@ -82,11 +83,12 @@ public class UdaMappingJacksonHttpMessageConverter extends
 			udaObjectMapper.registerModule(udaModule);
 		
 			// Se realiza la configuracion del serializador
-			if (udaModule.getSerializationConfigFeatures()!=null){
-				for (SerializationConfig.Feature feature : udaModule.getSerializationConfigFeatures().keySet()) {
-					if (udaModule.getSerializationConfigFeatures().get(feature)){
+			if (udaModule.getSerializationFeature()!=null){
+				for (SerializationFeature feature : udaModule.getSerializationFeature().keySet()) {
+					if (udaModule.getSerializationFeature().get(feature)){
 						udaObjectMapper.enable(feature);
 						this.getObjectMapper().enable(feature);
+					
 					}else{
 						udaObjectMapper.disable(feature);
 						this.getObjectMapper().disable(feature);
@@ -95,9 +97,9 @@ public class UdaMappingJacksonHttpMessageConverter extends
 			}
 			
 			// Se realiza la configuracion del deserializador
-			if (udaModule.getDeserializationConfigFeatures()!=null){
-				for (DeserializationConfig.Feature feature : udaModule.getDeserializationConfigFeatures().keySet()) {
-					if (this.udaModule.getDeserializationConfigFeatures().get(feature)){
+			if (udaModule.getDeserializationFeature()!=null){
+				for (DeserializationFeature feature : udaModule.getDeserializationFeature().keySet()) {
+					if (this.udaModule.getDeserializationFeature().get(feature)){
 						udaObjectMapper.enable(feature);
 						this.getObjectMapper().enable(feature);
 						
@@ -110,7 +112,7 @@ public class UdaMappingJacksonHttpMessageConverter extends
 			
 			// Se realiza la configuracion de las inclusion
 			if (udaModule.getSerializationInclusions()!=null){
-				for (JsonSerialize.Inclusion inclusion : udaModule.getSerializationInclusions()) {
+				for (Include inclusion : udaModule.getSerializationInclusions()) {
 					udaObjectMapper.setSerializationInclusion(inclusion);
 					this.getObjectMapper().setSerializationInclusion(inclusion);
 				}

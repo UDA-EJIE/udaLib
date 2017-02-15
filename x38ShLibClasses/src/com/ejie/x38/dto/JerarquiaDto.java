@@ -1,6 +1,7 @@
 package com.ejie.x38.dto;
 
-import org.codehaus.jackson.annotate.JsonUnwrapped;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+
 
 
 /**

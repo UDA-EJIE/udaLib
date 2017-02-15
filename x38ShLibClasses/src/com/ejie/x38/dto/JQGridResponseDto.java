@@ -19,11 +19,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.codehaus.jackson.annotate.JsonAnyGetter;
-import org.codehaus.jackson.annotate.JsonAnySetter;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
  * Bean contenedor de las propiedades que utiliza el componente jqGrid.
@@ -32,8 +32,8 @@ import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
  *
  * @param <T> Tipo de bean que se va a representar en el grid.
  */
-@JsonSerialize(include=Inclusion.NON_NULL)
-public class JQGridResponseDto<T> {
+@JsonInclude(Include.NON_NULL)
+		public class JQGridResponseDto<T> {
 
 	//Página actual
 	private String page = null;

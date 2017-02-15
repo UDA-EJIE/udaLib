@@ -4,13 +4,16 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
-import org.codehaus.jackson.JsonNode;
+
+
+import com.fasterxml.jackson.databind.JsonNode;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Conventions;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
@@ -22,12 +25,12 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor;
 
 import com.ejie.x38.control.bind.annotation.RequestJsonBody;
-import com.ejie.x38.serialization.UdaMappingJacksonHttpMessageConverter;
+import com.ejie.x38.serialization.UdaMappingJackson2HttpMessageConverter;
 
 public class RequestJsonBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
 
 	@Autowired
-	private UdaMappingJacksonHttpMessageConverter udaMappingJacksonHttpMessageConverter;
+	private UdaMappingJackson2HttpMessageConverter udaMappingJackson2HttpMessageConverter;
 	
 	public RequestJsonBodyMethodProcessor(
 			List<HttpMessageConverter<?>> messageConverters) {
@@ -45,11 +48,11 @@ public class RequestJsonBodyMethodProcessor extends RequestResponseBodyMethodPro
 		return false;
 	}
 
-	private MappingJacksonHttpMessageConverter getMappingJacksonHttpMessageConverter(){
-		
+//	private MappingJacksonHttpMessageConverter getMappingJacksonHttpMessageConverter(){
+		private MappingJackson2HttpMessageConverter getMappingJackson2HttpMessageConverter(){	
 		for (HttpMessageConverter httpMessageConverter :this.messageConverters){
-			if (httpMessageConverter instanceof MappingJacksonHttpMessageConverter){
-				return (MappingJacksonHttpMessageConverter)httpMessageConverter;
+			if (httpMessageConverter instanceof MappingJackson2HttpMessageConverter){
+				return (MappingJackson2HttpMessageConverter)httpMessageConverter;
 			}
 		}
 		
@@ -67,7 +70,7 @@ public class RequestJsonBodyMethodProcessor extends RequestResponseBodyMethodPro
 		
 		JsonNode readTree;
 		if (createInputMessage.getServletRequest().getAttribute("readTree")==null){
-			readTree = this.getMappingJacksonHttpMessageConverter().getObjectMapper().readTree(createInputMessage.getBody());
+			readTree = this.getMappingJackson2HttpMessageConverter().getObjectMapper().readTree(createInputMessage.getBody());
 			createInputMessage.getServletRequest().setAttribute("readTree", readTree);
 		}else{
 			readTree = (JsonNode)createInputMessage.getServletRequest().getAttribute("readTree");
@@ -81,7 +84,10 @@ public class RequestJsonBodyMethodProcessor extends RequestResponseBodyMethodPro
 			return null;
 		}
 		
-		Object arg = this.getMappingJacksonHttpMessageConverter().getObjectMapper().readValue(baseNode, parameter.getParameterType());
+
+		Object arg = this.getMappingJackson2HttpMessageConverter().getObjectMapper().readValue(baseNode.traverse(), parameter.getParameterType());
+
+		
 		
         Annotation annotations[] = parameter.getParameterAnnotations();
         Annotation aannotation[];

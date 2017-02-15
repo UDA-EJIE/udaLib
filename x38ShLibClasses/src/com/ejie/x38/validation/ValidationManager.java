@@ -36,9 +36,11 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import javax.validation.groups.Default;
 
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.map.MappingJsonFactory;
-import org.codehaus.jackson.map.ObjectMapper;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.MappingJsonFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.hibernate.validator.HibernateValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -475,7 +477,7 @@ public class ValidationManager {
 		ObjectMapper mapper = new ObjectMapper();
 		MappingJsonFactory jsonFactory = new MappingJsonFactory();
 		try {
-			JsonGenerator jsonGenerator = jsonFactory.createJsonGenerator(sw);
+			JsonGenerator jsonGenerator = jsonFactory.createGenerator(sw);
 			mapper.writeValue(jsonGenerator, obj);
 			sw.close();
 

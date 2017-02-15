@@ -3,37 +3,11 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="lib/aopalliance-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/aspectjweaver-1.6.9.jar"/>
-	<classpathentry kind="lib" path="lib/commons-fileupload-1.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/eclipselink-2.3.0.jar"/>
 	<classpathentry kind="lib" path="lib/hibernate-validator-4.2.0.Final.jar"/>
-	<classpathentry kind="lib" path="lib/jackson-core-asl-1.9.7.jar"/>
-	<classpathentry kind="lib" path="lib/jackson-mapper-asl-1.9.7.jar"/>
 	<classpathentry kind="lib" path="lib/javax.persistence-2.0.1.jar"/>
-	<classpathentry kind="lib" path="lib/jcl-over-slf4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/jdbcdslog-1.0.5.jar"/>
-	<classpathentry kind="lib" path="lib/slf4j-api-1.6.1.jar"/>
-	<classpathentry kind="lib" path="lib/slf4j-ext-1.6.1.jar"/>
-	<classpathentry kind="lib" path="lib/spring-aop-3.1.1.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/spring-asm-3.1.1.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/spring-beans-3.1.1.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/spring-context-3.1.1.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/spring-context-support-3.1.1.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/spring-core-3.1.1.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/spring-expression-3.1.1.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/spring-jdbc-3.1.1.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/spring-orm-3.1.1.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/spring-security-acl-3.1.0.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/spring-security-config-3.1.0.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/spring-security-core-3.1.0.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/spring-security-crypto-3.1.0.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/spring-security-taglibs-3.1.0.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/spring-security-web-3.1.0.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/spring-tx-3.1.1.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/spring-web-3.1.1.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/spring-webmvc-3.1.1.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/validation-api-1.0.0.GA.jar"/>
-	<classpathentry kind="lib" path="lib/logback-classic-1.0.6.jar"/>
-	<classpathentry kind="lib" path="lib/logback-core-1.0.6.jar"/>
 	<classpathentry kind="lib" path="lib/commons-beanutils-1.8.0.jar"/>
 	<classpathentry kind="lib" path="lib/itext-2.1.7.jar"/>
 	<classpathentry kind="lib" path="lib/odfdom-java-0.8.7.jar"/>
@@ -56,10 +30,61 @@
 			<attribute name="owner.project.facets" value="jst.utility"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jrockit-jdk1.6.0_45-R28.2.7-4.1.0">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/Oracle WebLogic Server 11gR1 (10.3.6) JDK">
 		<attributes>
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/avro-1.7.7.jar"/>
+	<classpathentry kind="lib" path="lib/commons-codec-1.6.jar"/>
+	<classpathentry kind="lib" path="lib/commons-collections-3.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/commons-compress-1.4.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-fileupload-1.3.2.jar"/>
+	<classpathentry kind="lib" path="lib/commons-io-2.2.jar"/>
+	<classpathentry kind="lib" path="lib/commons-lang-2.4.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/ezmorph-1.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/hadoop-core-without-webhdfs-1.0.3.jar"/>
+	<classpathentry kind="lib" path="lib/httpclient-4.3.3.jar"/>
+	<classpathentry kind="lib" path="lib/httpcore-4.3.3.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-annotations-2.6.5.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-core-2.6.5.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-core-asl-1.9.13.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-databind-2.6.5.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-mapper-asl-1.9.13.jar"/>
+	<classpathentry kind="lib" path="lib/javax.ws.rs-api-2.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/jcl-over-slf4j-1.7.21.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-util-6.1.26.jar"/>
+	<classpathentry kind="lib" path="lib/json-lib-2.3-jdk15.jar"/>
+	<classpathentry kind="lib" path="lib/logback-classic-1.1.7.jar"/>
+	<classpathentry kind="lib" path="lib/logback-core-1.1.7.jar"/>
+	<classpathentry kind="lib" path="lib/metrics-core-3.1.2.jar"/>
+	<classpathentry kind="lib" path="lib/n38a-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/n38c-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/n38i-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/paranamer-2.3.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-api-1.7.21.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-ext-1.7.21.jar"/>
+	<classpathentry kind="lib" path="lib/snappy-java-1.0.5.jar"/>
+	<classpathentry kind="lib" path="lib/spring-aop-3.2.17.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring-beans-3.2.17.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring-context-3.2.17.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring-core-3.2.17.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring-expression-3.2.17.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring-jdbc-3.2.17.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring-orm-3.2.17.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring-security-acl-3.2.9.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring-security-config-3.2.9.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring-security-core-3.2.9.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring-security-taglibs-3.2.9.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring-security-web-3.2.9.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring-tx-3.2.17.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring-web-3.2.17.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring-webmvc-3.2.17.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/w43ta-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/xz-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/y31b-1.4-ifaz.jar"/>
+	<classpathentry kind="lib" path="lib/y31c-1.4-impl.jar"/>
+	<classpathentry kind="lib" path="lib/spring-context-support-3.2.17.RELEASE.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
