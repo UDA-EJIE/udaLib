@@ -23,10 +23,12 @@ import java.util.Map;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
-import org.codehaus.jackson.JsonEncoding;
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.ObjectMapper;
+
+import com.fasterxml.jackson.core.JsonEncoding;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -91,11 +93,13 @@ public class JsonMethodReturnValueHandler implements HandlerMethodReturnValueHan
     		HttpOutputMessage httpRequest = this.getResponse(nativeWebRequest);
     		
     		ObjectMapper objectMapper = new ObjectMapper();
-    		objectMapper.getSerializationConfig().setMixInAnnotations(getMixins(methodParameter.getMethod().getAnnotation(Json.class)));
+    		
+    	
+    		objectMapper.setMixIns(getMixins(methodParameter.getMethod().getAnnotation(Json.class)));
     		ServletOutputStream outputStream = ((ServletServerHttpResponse)httpRequest).getServletResponse().getOutputStream();
     		
     		 JsonGenerator jsonGenerator =
-             objectMapper.getJsonFactory().createJsonGenerator(outputStream, JsonEncoding.UTF8);
+             objectMapper.getFactory().createGenerator(outputStream, JsonEncoding.UTF8);
 
            if (this.prefixJson) {
                jsonGenerator.writeRaw("{} && ");
@@ -111,7 +115,7 @@ public class JsonMethodReturnValueHandler implements HandlerMethodReturnValueHan
     
     private void writeInternal(ObjectMapper objectMapper, Object object, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException{
         JsonEncoding encoding = getJsonEncoding(outputMessage.getHeaders().getContentType());
-        JsonGenerator jsonGenerator = objectMapper.getJsonFactory().createJsonGenerator(outputMessage.getBody(), encoding);
+        JsonGenerator jsonGenerator = objectMapper.getFactory().createGenerator(outputMessage.getBody(), encoding);
         try
         {
             if(prefixJson)
