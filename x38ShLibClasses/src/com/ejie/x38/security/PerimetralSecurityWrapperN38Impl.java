@@ -26,9 +26,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import n38a.exe.N38APISesion;
-import n38c.exe.N38API;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -40,6 +37,9 @@ import org.w3c.dom.Document;
 import com.ejie.x38.log.LogConstants;
 import com.ejie.x38.util.StaticsContainer;
 import com.ejie.x38.util.ThreadStorageManager;
+
+import n38a.exe.N38APISesion;
+import n38c.exe.N38API;
 
 /**
  * 
@@ -349,7 +349,8 @@ public class PerimetralSecurityWrapperN38Impl implements
 		StringBuilder resultURL = new StringBuilder(StaticsContainer.loginUrl);
 
 		if (originalURL != null && !"".equals(originalURL)) {
-			resultURL.append("?N38API=");
+			resultURL.append(resultURL.indexOf("?")!=-1?"&":"?");
+			resultURL.append("N38API=");
 			resultURL.append(originalURL);
 		}
 		logger.debug("URLLogin is: " + resultURL);
