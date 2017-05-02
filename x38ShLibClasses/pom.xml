@@ -196,11 +196,7 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>${org.jackson.version}</version>
 		</dependency>
-	<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-annotations</artifactId>
-			<version>${org.jackson.version}</version>
-		</dependency>
+
 		<!-- JSR 303 with Hibernate Validator -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
