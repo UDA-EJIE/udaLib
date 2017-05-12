@@ -45,18 +45,23 @@ public class JQGridRequestDto implements java.io.Serializable{
 	//Ordenacion
 	private JQGridRequestDto.Multiselection multiselection = new JQGridRequestDto.Multiselection();
 	
+	
+	public static final String SORT_ASC = "ASC";
+	public static final String SORT_DESC = "DESC";
+	
+	
 	public JQGridRequestDto(){}
 	public JQGridRequestDto(Long rows, Long page, String sidx, String sord){
 		this.rows = rows;
 		this.page = page;
 		this.sidx = sidx;
-		this.sord = sord;
+		this.setSord(sord);
 	}
 	public JQGridRequestDto(Long rows, Long page, String sidx, String sord, String multiselectionIds, Boolean selectAll){
 		this.rows = rows;
 		this.page = page;
 		this.sidx = sidx;
-		this.sord = sord;
+		this.setSord(sord);
 //		this.multiselectionIds = multiselectionIds;
 //		this.selectedAll = selectAll;
 	}
@@ -85,7 +90,7 @@ public class JQGridRequestDto implements java.io.Serializable{
 		return sord;
 	}
 	public void setSord (String sord) {
-		this.sord = sord;
+		this.sord = JQGridRequestDto.SORT_DESC.equals(sord.trim().toUpperCase())?JQGridRequestDto.SORT_DESC:JQGridRequestDto.SORT_ASC;
 	}
 	
 	
