@@ -85,8 +85,13 @@ public class JQGridManagerJerarquia implements java.io.Serializable{
 	/**
 	 * PAGINACIÓN
 	 */
+	
 	public static <T> StringBuilder getPaginationQuery(JQGridRequestDto jqGridRequestDto, StringBuilder query){
-		return JQGridManager.getQueryForPagination(jqGridRequestDto, query, true);
+		return JQGridManager.getPaginationQuery(jqGridRequestDto, query, true, null);
+	}
+	
+	public static <T> StringBuilder getPaginationQuery(JQGridRequestDto jqGridRequestDto, StringBuilder query, String[] orderByWhiteList){
+		return JQGridManager.getPaginationQuery(jqGridRequestDto, query, true, orderByWhiteList);
 	}
 	
 	/**
@@ -283,7 +288,7 @@ public class JQGridManagerJerarquia implements java.io.Serializable{
 			String columna, String columnaPadre,
 			List<String> tabla, List<String> aliasTabla
 	){
-		return getQueryChildren(jqGridRequestDto, mapaWhere, columna, columnaPadre, tabla, aliasTabla, new StringBuilder(""), null, null);
+		return getQueryChildren(jqGridRequestDto, mapaWhere, columna, columnaPadre, tabla, aliasTabla, new StringBuilder(""), null, null, null);
 	}
 	public static <T> StringBuilder getQueryChildren(
 				JQGridRequestDto jqGridRequestDto,
@@ -291,14 +296,15 @@ public class JQGridManagerJerarquia implements java.io.Serializable{
 				String columna, String columnaPadre,
 				List<String> tabla, List<String> aliasTabla, StringBuilder joins
 	){
-		return getQueryChildren(jqGridRequestDto, mapaWhere, columna, columnaPadre, tabla, aliasTabla, joins, null, null);
+		return getQueryChildren(jqGridRequestDto, mapaWhere, columna, columnaPadre, tabla, aliasTabla, joins, null, null, null);
 	}
 	public static <T> StringBuilder getQueryChildren(
 			JQGridRequestDto jqGridRequestDto,
 			Map<String, ?> mapaWhere, 
 			String columna, String columnaPadre,
 			List<String> tabla, List<String> aliasTabla, StringBuilder joins,
-			StringBuilder businessFilters, List<?> businessParams
+			StringBuilder businessFilters, List<?> businessParams,
+			String[] orderByWhiteList
 	){
 
 		//Jerarquia (filtro -> hijos del padre)
@@ -314,7 +320,7 @@ public class JQGridManagerJerarquia implements java.io.Serializable{
 		//Jerarquia (all -> metadatos de todos)
 		StringBuilder sqlJerarquia = getJerarquiaQuery(jqGridRequestDto, new StringBuilder(), mapaWhere, new ArrayList<Object>(), columna, columnaPadre, tabla, aliasTabla, joins, businessFilters, businessParams);
 		//Ordenar según tabla
-		sqlJerarquia.append(JQGridManager.getOrderBy(jqGridRequestDto, true));
+		sqlJerarquia.append(JQGridManager.getOrderBy(jqGridRequestDto, true, orderByWhiteList));
 		
 		//Query propia
 		StringBuilder sbSQL = new StringBuilder();

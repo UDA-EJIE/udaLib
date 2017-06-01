@@ -20,6 +20,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
+
+import com.ejie.x38.dao.sql.OracleEncoder;
+import com.ejie.x38.dao.sql.error.SqlInjectionException;
 
 /**
  * 
@@ -30,15 +36,67 @@ public class JQGridManager implements java.io.Serializable{
 
 	private static final long serialVersionUID = 2127819481595995328L;
 	
+	
+	
 	/**
 	 * PAGINACIÓN
 	 */
 	public static <T> StringBuilder getPaginationQuery(JQGridRequestDto pagination, StringBuilder query){
-		return getQueryForPagination(pagination, query, false);
+		return getQueryForPagination(pagination, query, false, null);
     }
-	protected static <T> StringBuilder getQueryForPagination(JQGridRequestDto pagination, StringBuilder query, boolean isJerarquia){
+	
+	public static <T> StringBuilder getPaginationQuery(JQGridRequestDto pagination, StringBuilder query,  boolean isJerarquia){
+		return getQueryForPagination(pagination, query, isJerarquia, null);
+    }
+	
+	public static <T> StringBuilder getPaginationQuery(JQGridRequestDto pagination, StringBuilder query,  String[] orderByWhiteList){
+		return getQueryForPagination(pagination, query, false, orderByWhiteList);
+    }
+	
+	public static <T> StringBuilder getPaginationQuery(JQGridRequestDto pagination, StringBuilder query,  boolean isJerarquia, String[] orderByWhiteList){
+		return getQueryForPagination(pagination, query, isJerarquia, orderByWhiteList);
+    }
+	
+	private static boolean isInWhiteList(String[] whiteList, String text){
+		
+		// Comprobamos si la cadena de ordenación contiene varios campos
+					
+		
+		if (StringUtils.isBlank(text)){
+			return false;
+		}
+		
+		for (String string : whiteList) {
+			if (text.trim().toUpperCase().equals(string.trim().toUpperCase())){
+				return true;
+			}
+		}
+		
+		return false;
+		
+	}
+	
+	private static boolean validateOrderByFields (String[] orderByWhiteList, String text){
+		
+		boolean result = true;
+		
+		String[] fields = text.indexOf(",")!=-1?text.split(","):new String[]{text};
+		
+		for (String field : fields) {
+			
+			result = result && JQGridManager.isInWhiteList(orderByWhiteList, field);
+			
+		}
+		
+		return result;
+		
+		
+	}
+	
+	protected static <T> StringBuilder getQueryForPagination(JQGridRequestDto pagination, StringBuilder query, boolean isJerarquia, String[] orderByWhiteList){
 		//Order
-		query.append(getOrderBy(pagination, isJerarquia));
+		query.append(getOrderBy(pagination, isJerarquia, orderByWhiteList));
+			
 		
 		//Limits
 		StringBuilder paginationQuery = new StringBuilder();
@@ -54,21 +112,31 @@ public class JQGridManager implements java.io.Serializable{
 		return paginationQuery;
     }
 	
+	protected static <T> StringBuilder getOrderBy (JQGridRequestDto pagination, boolean isJerarquia){
+		return JQGridManager.getOrderBy(pagination, isJerarquia, null);
+	
+	}
+	
 	/**
 	 * ORDER BY (interno)
 	 */
-	protected static <T> StringBuilder getOrderBy (JQGridRequestDto pagination, boolean isJerarquia){
+	protected static <T> StringBuilder getOrderBy (JQGridRequestDto pagination, boolean isJerarquia, String[] orderByWhiteList){
 		//Order
 		StringBuilder orderBy = new StringBuilder();
 		if (pagination.getSidx() != null) {
+						
+			if (orderByWhiteList != null && !JQGridManager.validateOrderByFields(orderByWhiteList, pagination.getSidx())){
+				throw new SqlInjectionException("Campo no permitido");
+			}
+			
 			if (!isJerarquia){
 				orderBy.append(" ORDER BY ");
 			} else {
 				orderBy.append("\n\t").append("order siblings by ");
 			}
-			orderBy.append(pagination.getSidx());
+			orderBy.append(OracleEncoder.getInstance().encode(pagination.getSidx()));
 			orderBy.append(" ");
-			orderBy.append(pagination.getSord());
+			orderBy.append(OracleEncoder.getInstance().encode(pagination.getSord()));
 			if (isJerarquia){
 				orderBy.append("\n");
 			}

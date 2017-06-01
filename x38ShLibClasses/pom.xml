@@ -4,7 +4,7 @@
   <groupId>com.ejie.x38</groupId>
   <artifactId>x38ShLibClasses</artifactId>
   <packaging>jar</packaging>
-  <version>3.0.0-RELEASE</version>
+  <version>3.1.0-RELEASE</version>
   <name>x38ShLibClasses</name>
   <url>http://maven.apache.org</url>
 	<properties>
@@ -196,11 +196,7 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>${org.jackson.version}</version>
 		</dependency>
-	<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-annotations</artifactId>
-			<version>${org.jackson.version}</version>
-		</dependency>
+
 		<!-- JSR 303 with Hibernate Validator -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
