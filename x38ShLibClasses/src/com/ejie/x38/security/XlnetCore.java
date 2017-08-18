@@ -18,6 +18,9 @@ package com.ejie.x38.security;
 import java.util.HashMap;
 import java.util.Vector;
 
+import javax.naming.InvalidNameException;
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.TransformerException;
 
@@ -173,55 +176,56 @@ public class XlnetCore {
 		}
 	}
 	
+	/**
+	 * Método para tratar el atributo n38SubjectCert del xml de sesión
+	 * Cuando la autenticación se hace con certificado el atributo se informa con el subject del mismo
+	 * Si la autenticación se hace con juego de barcos de izenpe -no hay certificado- 
+	 * el atributo tiene un literal informativo   
+	 * 
+	 *  @return Mapa de los atributos del certificado. Si no hay, el CN se informa con DNI de sesión o literal informativo
+	 *  
+	 * */
 	public static HashMap<String, String> getN38SubjectCert(Document xmlSesion) {
-		
-		String[] n38SubjectCert = new String[2];
-		String[] n38SubjectCertAux = new String[2];
-		String[] n38MultiSubjectCert;
-		HashMap<String, String> certinfo = null; 
-		
-		if (xmlSesion != null){
-			logger.trace("XmlSesion is: "+xmlSesion.getTextContent());
+
+		HashMap<String, String> certinfo = null;
+		String n38SubjectCert;
+		String dni;
+
+		if (xmlSesion != null) {
+			logger.trace("XmlSesion is: " + xmlSesion.getTextContent());
 		} else {
 			throw new IllegalArgumentException(
-			"isXlnetSessionContainingErrors(): The Document input parameter can't be NULL.");
+					"isXlnetSessionContainingErrors(): The Document input parameter can't be NULL.");
+		}
+
+		certinfo = new HashMap<String, String>();
+		try {
+			n38SubjectCert = (XmlManager.searchDomNode(xmlSesion, PATH_SUBTIPO_N38SUBJECTCERT)).getFirstChild()
+					.getNodeValue();
+			dni = (XmlManager.searchDomNode(xmlSesion, XlnetCore.PATH_SUBTIPO_DNI)).getFirstChild().getNodeValue();
+		} catch (TransformerException transfEx) {
+			logger.error("getN38SubjectCert(): XML searching error: " + StackTraceManager.getStackTrace(transfEx));
+			return null;
 		}
 
 		try {
-			n38MultiSubjectCert = (XmlManager.searchDomNode(xmlSesion, PATH_SUBTIPO_N38SUBJECTCERT)).getFirstChild().getNodeValue().split(", ");
-			
-			// Comprobamos si el certificado es un único String
-			certinfo = new HashMap<String, String>();
-			if (n38MultiSubjectCert.length>1){
-				
-				for(int i =0; i < n38MultiSubjectCert.length; i++){
-					n38SubjectCert = n38MultiSubjectCert[i].split("=");
-					if (n38SubjectCert.length > 1){
-						n38SubjectCertAux = n38SubjectCert;
-						certinfo.put(n38SubjectCert[0], n38SubjectCert[1]);
-					} else {
-						certinfo.put(n38SubjectCertAux[0], certinfo.get(n38SubjectCertAux[0]) + n38SubjectCert[0]);
-					}
-				}
-			}else{
-				Node searchDomNode = XmlManager.searchDomNode(xmlSesion, XlnetCore.PATH_SUBTIPO_DNI);
-				if (searchDomNode !=null){
-					String dni =  searchDomNode.getFirstChild().getNodeValue();
-					certinfo.put("CN",dni);
-				}else if (n38MultiSubjectCert.length == 1){
-					certinfo.put("CN", n38MultiSubjectCert[0]);
-				}
+			LdapName ln;
+			ln = new LdapName(n38SubjectCert);
+			for (Rdn rdn : ln.getRdns()) {
+				certinfo.put(rdn.getType(), rdn.getValue().toString());
 			}
-			
-			return certinfo;
-			
-		} catch (TransformerException e) {
-			logger.error("getN38SubjectCert(): XML searching error: "+ StackTraceManager.getStackTrace(e));
-			return null; 
+		} catch (InvalidNameException e) {
+			if (dni != null) {
+				certinfo.put("CN", dni);
+			} else {
+				certinfo.put("CN", n38SubjectCert);
+			}
+
 		} catch (Exception e) {
-			logger.error("getN38SubjectCert(): XML Read and Parser error: "+ StackTraceManager.getStackTrace(e));
-			return null; 
+			logger.error("getN38SubjectCert(): XML Read and Parser error: " + StackTraceManager.getStackTrace(e));
+			return null;
 		}
+		return certinfo;
 	}
 
 	public static Vector<String> searchParameterIntoXlnetSesion(Document xmlSesion, String searchUrl) {
