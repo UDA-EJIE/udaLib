@@ -2,8 +2,8 @@ package com.ejie.x38.serialization;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.NumberFormat;
-
 
 import org.springframework.context.i18n.LocaleContextHolder;
 
