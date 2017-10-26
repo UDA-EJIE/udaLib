@@ -230,12 +230,12 @@ public class PerimetralSecurityWrapperN38Impl implements
 				httpSession.setAttribute("fullName", userInfo.get("fullName"));
 
 			} else {
-				// User isn't in the XLNets's LDap
+				// User isn't in the XLNets's LDap: certificado o juego de barcos
 				userData.put("name", userData.get("GIVENNAME"));
 				userData.put("surname", userData.get("SURNAME"));
-				// En caso de autentificarse mediante juego de barcos el campo
-				// CN tendrá el valor de la propiedad dni del xml de sesión de
-				// XLNets.
+				// En caso de autenticación mediante juego de barcos el campo CN tendrá 
+				// el valor de la propiedad dni del xml de sesión de XLNetS
+				// o, si estuviera vacio el dni, el valor del n38SubjectCert  
 				userData.put("fullName", userData.get("CN"));
 				httpSession.setAttribute("fullName", userData.get("CN"));
 			}

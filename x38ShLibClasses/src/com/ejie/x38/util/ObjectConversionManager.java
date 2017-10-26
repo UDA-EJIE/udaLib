@@ -17,8 +17,14 @@ package com.ejie.x38.util;
 
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.ParseException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+
+import org.springframework.context.i18n.LocaleContextHolder;
 
 /**
  * Generic object converter.
@@ -222,7 +228,57 @@ public final class ObjectConversionManager {
     public static String bigDecimalToString(BigDecimal value) {
         return value.toString();
     }
-
+    
+    /**
+     * Converts BigDecimal to String.
+     * @param value The Integer to be converted.
+     * @param numDecimales Number of decimals
+     * @return The converted String value.
+     */
+    public static String bigDecimalToString(BigDecimal number, int numDecimales) {
+		return ObjectConversionManager.bigDecimalToString(number, numDecimales, LocaleContextHolder.getLocale());
+	}
+    
+    /**
+     * Converts BigDecimal to String.
+     * @param value The Integer to be converted.
+     * @param numDecimales Number of decimals
+     * @param locale Locale to use in the conversion.
+     * @return The converted String value.
+     */
+    public static String bigDecimalToString(BigDecimal number, int numDecimales, Locale locale) {
+		String res = "";
+		try {
+			if (number != null) {
+				DecimalFormat df = new DecimalFormat("#,##0.00", new DecimalFormatSymbols(locale));
+				df.setMinimumFractionDigits(numDecimales);
+				df.setMaximumFractionDigits(numDecimales);
+				res = df.format(number);
+			}
+		} catch (IllegalArgumentException e) {
+			res = "";
+		}
+		return res;
+	}
+    
+    
+    public static BigDecimal stringToBigDecimal(String strNumber, Locale locale) {
+		BigDecimal res = null;
+		try {
+			if (strNumber != null) {
+				DecimalFormat df = new DecimalFormat("#,##0.00", new DecimalFormatSymbols(locale));
+				df.setParseBigDecimal(true);
+				res = new BigDecimal(df.parse(strNumber).toString());
+			}
+		} catch (IllegalArgumentException e) {
+			res = null;
+		} catch (ParseException e) {
+			res = null;
+		}
+		return res;
+	}
+    
+   
     /**
      * Converts String to BigDecimal.
      * @param value The String to be converted.
