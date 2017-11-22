@@ -1,7 +1,6 @@
 package com.ejie.x38.control.exception.handler;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
@@ -48,23 +47,27 @@ public class MvcValidationExceptionHandler {
 	public ModelAndView handleMethodArgumentNotValidException (MethodArgumentNotValidException methodArgumentNotValidException, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		return this.processBindingResult(methodArgumentNotValidException, methodArgumentNotValidException.getBindingResult(), request, response);
 	}
+	
 	@ExceptionHandler(value={BindException.class})
 	public ModelAndView handleBindException (BindException bindException, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		return this.processBindingResult(bindException, bindException.getBindingResult(), request, response);
 	}
-	private ModelAndView processBindingResult (Exception exception, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) throws IOException {
-		if (request.getHeaders("X-Requested-With").hasMoreElements() && bindingResult.hasFieldErrors()) {
-			//AJAX request;
-			Map<String, List<String>> errorMap = validationManager.getErrorsAsMap(bindingResult);
-			String content = validationManager.getMessageJSON(errorMap).toString();
-			response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-			response.setContentLength(content.getBytes(Charset.forName(response.getCharacterEncoding())).length);
-			response.getWriter().print(content);
-			response.flushBuffer();
-			return null;
-		}else{
-			//Non-AJAX request
-			return MvcExceptionHandler.handle(exception, request, response);
-		}
+	
+	private ModelAndView processBindingResult (Exception exception, final BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) throws IOException {
+		
+		Map<String, List<String>> errorMap = validationManager.getErrorsAsMap(bindingResult);
+		String content = validationManager.getMessageJSON(errorMap).toString();
+		
+		
+		return new MvcExceptionHandlerHelper(){
+
+			@Override
+			protected boolean isAjax(HttpServletRequest request) {
+				// TODO Auto-generated method stub
+				return super.isAjax(request) && bindingResult.hasFieldErrors();
+			}
+			
+		}.processException(exception, request, response, content, HttpServletResponse.SC_NOT_ACCEPTABLE);
+
 	}
 }
