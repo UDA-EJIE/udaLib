@@ -1,7 +1,6 @@
 package com.ejie.x38.control.exception.handler;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
@@ -45,17 +44,10 @@ public class MvcAccessDeniedExceptionHandler {
 	public ModelAndView handleAccessDeniedException (AccessDeniedException accessDeniedException, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		Locale locale = LocaleContextHolder.getLocale();
 		String exceptionClassName = accessDeniedException.getClass().getSimpleName();
-		if (request.getHeaders("X-Requested-With").hasMoreElements()) {
-			//AJAX request;
-			String content = messageSource.getMessage(exceptionClassName, null, accessDeniedException.getMessage(), locale);
-			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			response.setContentLength(content.getBytes(Charset.forName(response.getCharacterEncoding())).length);
-			response.getWriter().print(content);
-			response.flushBuffer();
-			return null;
-		} else {
-			//Non-AJAX request
-			return MvcExceptionHandler.handle(accessDeniedException, request, response);
-		}
+		
+		String content = messageSource.getMessage(exceptionClassName, null, accessDeniedException.getMessage(), locale);
+		
+		return new MvcExceptionHandlerHelper().processException(accessDeniedException, request, response, content, HttpServletResponse.SC_UNAUTHORIZED);
+		
 	}
 }

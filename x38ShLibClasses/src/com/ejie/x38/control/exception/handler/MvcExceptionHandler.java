@@ -1,7 +1,6 @@
 package com.ejie.x38.control.exception.handler;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
@@ -43,18 +42,10 @@ public class MvcExceptionHandler {
 	public ModelAndView handleException (Exception exception, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		Locale locale = LocaleContextHolder.getLocale();
 		String exceptionClassName = exception.getClass().getSimpleName();
-		if (request.getHeaders("X-Requested-With").hasMoreElements()) {
-			//AJAX request;
-			String content = messageSource.getMessage(exceptionClassName, null, exception.getMessage(), locale);
-			response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-			response.setContentLength(content.getBytes(Charset.forName(response.getCharacterEncoding())).length);
-			response.getWriter().print(content);
-			response.flushBuffer();
-			return null;
-		} else {
-			//Non-AJAX request
-			return MvcExceptionHandler.handle(exception, request, response);
-		}
+		String content = messageSource.getMessage(exceptionClassName, null, exception.getMessage(), locale);
+		
+		return new MvcExceptionHandlerHelper().processException(exception, request, response, content, HttpServletResponse.SC_NOT_ACCEPTABLE);
+
 	}
 	
 	

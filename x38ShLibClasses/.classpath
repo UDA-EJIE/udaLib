@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="test-unit"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/UDAWLS11Classpath"/>
 	<classpathentry kind="con" path="oracle.eclipse.tools.weblogic.lib.system">
 		<attributes>
@@ -91,5 +90,11 @@
 	<classpathentry kind="lib" path="lib/y31bIfaz-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/y31c-1.4-impl.jar"/>
 	<classpathentry kind="lib" path="lib/y31cImpl-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/spring-test-3.2.17.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/tiles-api-2.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/tiles-core-2.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/tiles-jsp-2.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/tiles-servlet-2.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/tiles-template-2.2.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
