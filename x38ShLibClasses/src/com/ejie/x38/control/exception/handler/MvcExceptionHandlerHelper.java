@@ -17,8 +17,8 @@ public class MvcExceptionHandlerHelper {
 			String content, int statusCode) throws IOException {
 
 		if (this.isIframeEmulated(request)){
-			response.setContentType("text/plain");
-			response.setCharacterEncoding("UTF-8");
+//			response.setContentType("text/html");
+//			response.setCharacterEncoding("UTF-8");
 			this.writeToResponse(response, content, statusCode);
 			
 			return null;

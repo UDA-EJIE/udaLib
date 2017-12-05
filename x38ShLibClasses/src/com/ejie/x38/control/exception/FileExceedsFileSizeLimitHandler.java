@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
@@ -56,6 +57,8 @@ public class FileExceedsFileSizeLimitHandler implements HandlerExceptionResolver
 	
 	
 	@Override
+	
+	@ExceptionHandler(value=MaxUploadSizeExceededException.class)
 	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response,
 			Object handler, Exception ex) {
 		if ( ex instanceof MaxUploadSizeExceededException ) {

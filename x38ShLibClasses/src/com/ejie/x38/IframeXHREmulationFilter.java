@@ -40,7 +40,7 @@ public class IframeXHREmulationFilter extends DelegatingFilterProxy {
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 
-
+		
 		// Se comprueba si es necesario realizar la emulación.
 		if (IframeXHREmulationUtils.isIframeEmulationRequired(request)) {
 			// Se genera un wrapper de la response para poder insertar la
@@ -48,6 +48,7 @@ public class IframeXHREmulationFilter extends DelegatingFilterProxy {
 			// necesaria.
 			
 			HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+			
 			HtmlResponseWrapper capturingResponseWrapper = new HtmlResponseWrapper((HttpServletResponse) response);
 			
 			try {

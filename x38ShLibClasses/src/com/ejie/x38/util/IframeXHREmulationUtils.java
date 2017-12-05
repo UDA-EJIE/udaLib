@@ -91,9 +91,9 @@ public class IframeXHREmulationUtils {
 	public static void writeIframeHttpStatus(HttpServletResponse response, String data, int httpStatusCode, String httpStatusCodeText) throws IOException{
 		
 
-		response.setStatus(HttpServletResponse.SC_OK);
-		response.setContentType("text/plain");
-        response.setCharacterEncoding("UTF-8");
+//		response.setStatus(HttpServletResponse.SC_OK);
+//		response.setContentType("text/html");
+//        response.setCharacterEncoding("UTF-8");
 
         HttpStatus httpStatus = HttpStatus.valueOf(httpStatusCode);
         
@@ -101,7 +101,7 @@ public class IframeXHREmulationUtils {
 		
 		StringBuilder sb = new StringBuilder();
 		
-		sb.append("\"<textarea ");
+		sb.append("<textarea ");
 		sb.append("status=\"");
 		sb.append(httpStatus.value());
 		sb.append("\" ");
@@ -113,15 +113,18 @@ public class IframeXHREmulationUtils {
 		}
 		sb.append("\">");
 		sb.append(data);
-		sb.append("</textarea>\"");
+		sb.append("</textarea>");
 
 		
-		response.setStatus(HttpServletResponse.SC_OK);
-		response.setContentType("text/plain");
-		response.setCharacterEncoding("UTF-8");
+		
 		
 		response.getWriter().write(sb.toString());
-
+		
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.setContentType("text/html; charset=UTF-8");
+//		response.setCharacterEncoding("UTF-8");
+		response.setHeader("Content-Type", "text/html; charset=UTF-8");
+		response.getWriter().flush();
 		
 	}
 }
