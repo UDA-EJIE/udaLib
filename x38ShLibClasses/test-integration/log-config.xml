@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xsi:schemaLocation="
+            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+	<bean id="udaFilter" class="com.ejie.x38.UdaFilter" />
+	
+	<bean id="webContextParameterManager" class="com.ejie.x38.util.WebContextParameterManager" />
+	
+	<bean id="webLoggingManager" class="com.ejie.x38.log.LoggingManagerImpl" />
+	
+	<bean id="filterLoggingAdvice" class="com.ejie.x38.log.FilterLoggingAdviceImpl">
+		<property name="loggingManager" ref="webLoggingManager"/>
+	</bean>
+	
+	<bean id="webMainAdvice" class="com.ejie.x38.aop.MainAdvice">
+		<property name="filterLoggingAdvice" ref="filterLoggingAdvice" />
+	</bean>
+
+
+</beans>

@@ -21,6 +21,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.http.HttpStatus;
+
 /**
  * Clase de utilidades para realizar la emulación de llamadas XHR utilizando iframes.
  * 
@@ -55,9 +57,10 @@ public class IframeXHREmulationUtils {
 	/**
 	 * @see IframeXHREmulationUtils.writeIframeHttpStatus
 	 */
-	public static void writeIframeHttpStatus(HttpServletResponse response, byte[] data, int httpStatusCode) throws IOException{
+	public static void writeIframeHttpStatus(HttpServletResponse response, String data, int httpStatusCode) throws IOException{
 		IframeXHREmulationUtils.writeIframeHttpStatus(response, data, httpStatusCode, null);
 	}
+		
 	
 	/**
 	 * Escribe en la respuesta de la petición el mensaje correspondiente al
@@ -85,28 +88,43 @@ public class IframeXHREmulationUtils {
 	 * @throws IOException
 	 *             Excepción producida en operaciones I/O.
 	 */
-	public static void writeIframeHttpStatus(HttpServletResponse response, byte[] data, int httpStatusCode, String httpStatusCodeText) throws IOException{
+	public static void writeIframeHttpStatus(HttpServletResponse response, String data, int httpStatusCode, String httpStatusCodeText) throws IOException{
 		
-		ServletOutputStream outputStream = response.getOutputStream();
 
-		response.setStatus(HttpServletResponse.SC_OK);
-		response.setContentType("text/plain");
-        response.setCharacterEncoding("UTF-8");
-       
-		outputStream.write("<textarea ".getBytes());
-		outputStream.write("status=\"".getBytes());
-		outputStream.write(String.valueOf(httpStatusCode).getBytes());
-		outputStream.write("\" ".getBytes());
-		outputStream.write("statusText=\"".getBytes());
-		if (httpStatusCodeText!=null){
-			outputStream.write(httpStatusCodeText.getBytes());
-		}
-		outputStream.write("\">".getBytes());
-		outputStream.write(data);
-		outputStream.write("</textarea>".getBytes());
-		outputStream.flush();
-		outputStream.close();
+//		response.setStatus(HttpServletResponse.SC_OK);
+//		response.setContentType("text/html");
+//        response.setCharacterEncoding("UTF-8");
+
+        HttpStatus httpStatus = HttpStatus.valueOf(httpStatusCode);
+        
+        
 		
-		response.flushBuffer();
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append("<textarea ");
+		sb.append("status=\"");
+		sb.append(httpStatus.value());
+		sb.append("\" ");
+		sb.append("statusText=\"");
+		if (httpStatusCodeText!=null){
+			
+		}else{
+			sb.append(httpStatus.getReasonPhrase());
+		}
+		sb.append("\">");
+		sb.append(data);
+		sb.append("</textarea>");
+
+		
+		
+		
+		response.getWriter().write(sb.toString());
+		
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.setContentType("text/html; charset=UTF-8");
+//		response.setCharacterEncoding("UTF-8");
+		response.setHeader("Content-Type", "text/html; charset=UTF-8");
+		response.getWriter().flush();
+		
 	}
 }

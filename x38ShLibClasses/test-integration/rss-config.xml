@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:security="http://www.springframework.org/schema/security"
+xmlns:util="http://www.springframework.org/schema/util"
+xsi:schemaLocation="http://www.springframework.org/schema/security
+		http://www.springframework.org/schema/security/spring-security-3.2.xsd
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/util
+		http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<!-- Map returned view name "rssViewer" to bean id "rssViewer" -->
+	<bean class="org.springframework.web.servlet.view.BeanNameViewResolver" />
+ 
+	<bean id="rssViewer" class="com.ejie.x38.rss.RssFeedView" >
+		<property name="title" value="X21A - UDA" />
+		<property name="descripcion" value="Ejemplo de uso de rss" />
+		<property name="link" value="http://desarrollo.jakina.ejiedes.net:7001/x21aPilotoPatronesWar/" />
+	</bean>
+	
+	<bean id="rssAuthDetailsSource"
+		class="com.ejie.x38.rss.security.RssAuthenticationDetailsSource" />
+
+
+<!-- 	<security:authentication-manager id="authenticationManagerRss"> -->
+<!-- 		<security:authentication-provider -->
+<!-- 			ref="rssAuthenticationProvider" /> -->
+<!-- 	</security:authentication-manager> -->
+
+	<bean id="rssAuthenticationProvider"
+		class="com.ejie.x38.rss.security.RssAuthenticationProvider" >
+		<property name="myAuthenticatedUserDetailsService" ref="myAuthenticatedUserDetailsService" />
+	</bean>
+
+	<bean id="rssBasicAuthenticationFilter"
+		class="org.springframework.security.web.authentication.www.BasicAuthenticationFilter">
+		<property name="authenticationManager" ref="authenticationManager" />
+		<property name="authenticationEntryPoint" ref="rssAuthenticationEntryPoint" />
+		<property name="authenticationDetailsSource" ref="rssAuthDetailsSource" />
+	</bean>
+
+	<bean id="rssAuthenticationEntryPoint"
+		class="org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint">
+		<property name="realmName" value="UDA Rss Feed" />
+	</bean>
+	
+	<bean id="rssExceptionTranslationFilter" class="org.springframework.security.web.access.ExceptionTranslationFilter">
+	  <property name="authenticationEntryPoint" ref="rssAuthenticationEntryPoint"/>
+	</bean>
+	
+</beans>
