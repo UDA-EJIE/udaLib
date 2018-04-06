@@ -606,9 +606,9 @@
         <put-attribute name="content" value="/WEB-INF/views/bootstrap/exampleForm.jsp"/>
     </definition>
 
-	<definition extends="template" name="dataTable">
-        <put-attribute name="content" value="/WEB-INF/views/datatable/dataTable.jsp"/>
-        <put-attribute name="includes" value="/WEB-INF/views/datatable/dataTable-includes.jsp"/>
+	<definition extends="template" name="datatable">
+        <put-attribute name="content" value="/WEB-INF/views/datatable/datatable.jsp"/>
+        <put-attribute name="includes" value="/WEB-INF/views/datatable/datatable-includes.jsp"/>
     </definition> 
 
 	<definition name="y52bdocumentos" extends="template">
