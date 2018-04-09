@@ -409,4 +409,45 @@ public class JQGridManager implements java.io.Serializable{
 		
 	}
 	
+	/*
+	 * SELECCION MULTIPLE
+	 */
+	public static <T> StringBuilder getSelectMultipleQuery(JQGridRequestDto jqGridRequestDto, Class<T> clazz, List<Object> paramList, String... pkCols){
+		
+		String pkStr = JQGridManager.strArrayToCommaSeparatedStr(pkCols);
+		
+		StringBuilder selectQuery = new StringBuilder();
+		
+		selectQuery.append("SELECT * FROM USUARIO");
+		selectQuery.append(" WHERE (").append(pkStr).append(") ").append(jqGridRequestDto.getMultiselection().getSelectedAll()?" NOT ":"").append(" IN (");
+		for (T selectedBean : jqGridRequestDto.getMultiselection().getSelected(clazz)) {
+			selectQuery.append("(");
+			for (int i = 0; i < pkCols.length; i++) {
+				String prop = jqGridRequestDto.getCore().getPkNames().get(i);
+				selectQuery.append("?").append(",");
+				try {
+					paramList.add(BeanUtils.getProperty(selectedBean, prop));
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (NoSuchMethodException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+			selectQuery.deleteCharAt(selectQuery.length()-1);
+			selectQuery.append("),");
+		}
+		
+		selectQuery.deleteCharAt(selectQuery.length()-1);
+		selectQuery.append(")");
+		
+		return selectQuery;
+		
+	}
+	
 }
