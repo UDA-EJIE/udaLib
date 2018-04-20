@@ -26,11 +26,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * Bean contenedor de las propiedades que utiliza el componente jqGrid.
+ * Bean contenedor de las propiedades que utiliza el componente table.
  * 
  * @author UDA
  *
- * @param <T> Tipo de bean que se va a representar en el grid.
+ * @param <T> Tipo de bean que se va a representar en el table.
  */
 @JsonInclude(Include.NON_NULL)
 		public class TableResponseDto<T> {
@@ -66,8 +66,8 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 	 * @param rows
 	 *            Lista contenedora de los registros.
 	 */
-	public <U> TableResponseDto(JQGridRequestDto jqGridRequestDto, Long recordNum, List<T> rows) {
-		this(jqGridRequestDto, recordNum, null, rows);
+	public <U> TableResponseDto(TableRequestDto tableRequestDto, Long recordNum, List<T> rows) {
+		this(tableRequestDto, recordNum, null, rows);
 	}
 	
 	/**
@@ -82,8 +82,8 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 	 * @param rows
 	 *            Lista contenedora de los registros.
 	 */
-	public <U> TableResponseDto(JQGridRequestDto jqGridRequestDto, Long recordNum, Long total, List<T> rows) {
-		this(jqGridRequestDto, recordNum, total, rows, null);
+	public <U> TableResponseDto(TableRequestDto tableRequestDto, Long recordNum, Long total, List<T> rows) {
+		this(tableRequestDto, recordNum, total, rows, null);
 	}
 	
 	/**
@@ -98,8 +98,8 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 	 * @param reorderedSelection
 	 *            Lista con la reordenación de los registros.
 	 */
-	public <U> TableResponseDto(JQGridRequestDto jqGridRequestDto, Long recordNum, List<T> rows, List<TableRowDto<T>> reorderedSelection) {
-		this(jqGridRequestDto, recordNum, null, rows, reorderedSelection);
+	public <U> TableResponseDto(TableRequestDto tableRequestDto, Long recordNum, List<T> rows, List<TableRowDto<T>> reorderedSelection) {
+		this(tableRequestDto, recordNum, null, rows, reorderedSelection);
 	}
 
 	/**
@@ -116,14 +116,14 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 	 * @param reorderedSelection
 	 *            Lista con la reordenación de los registros.
 	 */
-	public <U> TableResponseDto(JQGridRequestDto jqGridRequestDto, Long recordNum, Long total, List<T> rows, List<TableRowDto<T>> reorderedSelection) {
+	public <U> TableResponseDto(TableRequestDto tableRequestDto, Long recordNum, Long total, List<T> rows, List<TableRowDto<T>> reorderedSelection) {
 		super();
-		this.page = (jqGridRequestDto.getPage()!=null)?jqGridRequestDto.getPage().toString():"";
+		this.page = (tableRequestDto.getPage()!=null)?tableRequestDto.getPage().toString():"";
 		this.rows = rows;
-		this.setTotal(recordNum, (jqGridRequestDto.getRows()!=null)?jqGridRequestDto.getRows():0);
+		this.setTotal(recordNum, (tableRequestDto.getRows()!=null)?tableRequestDto.getRows():0);
 		this.records = total!=null?total.intValue():recordNum.intValue();
 		this.addAdditionalParam("reorderedSelection", reorderedSelection);
-		this.addAdditionalParam("selectedAll", jqGridRequestDto.getMultiselection().getSelectedAll());
+		this.addAdditionalParam("selectedAll", tableRequestDto.getMultiselection().getSelectedAll());
 	}
 	
 	

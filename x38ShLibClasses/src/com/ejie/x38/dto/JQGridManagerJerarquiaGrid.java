@@ -33,6 +33,7 @@ import org.springframework.util.StringUtils;
  * @author UDA
  *
  */
+@Deprecated
 public class JQGridManagerJerarquiaGrid implements java.io.Serializable{
 
 	private static final long serialVersionUID = 2127819481595995328L;

@@ -1,22 +1,22 @@
 package com.ejie.x38.log;
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
-import com.ejie.x38.dto.JQGridResponseDto;
-import com.ejie.x38.log.model.LogModel;
-
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.Appender;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import com.ejie.x38.dto.TableResponseDto;
+import com.ejie.x38.log.model.LogModel;
+
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.Appender;
 
 /**
  * Gestion del cambio de logs en runtime 
@@ -176,12 +176,12 @@ public  class LoggingEditor
 	}
 
 	
-	public static  JQGridResponseDto<LogModel>  getLoggersFiltered(LogModel filterLogModel
+	public static  TableResponseDto<LogModel>  getLoggersFiltered(LogModel filterLogModel
 			) {
 		
 		
 		
-		JQGridResponseDto<LogModel> resultado= new JQGridResponseDto<LogModel>();
+		TableResponseDto<LogModel> resultado= new TableResponseDto<LogModel>();
 		
 		List<LogModel> listalogs=getLoggers((LoggerContext) LoggerFactory.getILoggerFactory() ,false);
 		

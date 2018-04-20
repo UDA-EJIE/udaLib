@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.ejie.x38.dao.sql.OracleEncoder;
@@ -41,19 +39,19 @@ public class TableManager implements java.io.Serializable{
 	/**
 	 * PAGINACIÓN
 	 */
-	public static <T> StringBuilder getPaginationQuery(JQGridRequestDto pagination, StringBuilder query){
+	public static <T> StringBuilder getPaginationQuery(TableRequestDto pagination, StringBuilder query){
 		return getQueryForPagination(pagination, query, false, null);
     }
 	
-	public static <T> StringBuilder getPaginationQuery(JQGridRequestDto pagination, StringBuilder query,  boolean isJerarquia){
+	public static <T> StringBuilder getPaginationQuery(TableRequestDto pagination, StringBuilder query,  boolean isJerarquia){
 		return getQueryForPagination(pagination, query, isJerarquia, null);
     }
 	
-	public static <T> StringBuilder getPaginationQuery(JQGridRequestDto pagination, StringBuilder query,  String[] orderByWhiteList){
+	public static <T> StringBuilder getPaginationQuery(TableRequestDto pagination, StringBuilder query,  String[] orderByWhiteList){
 		return getQueryForPagination(pagination, query, false, orderByWhiteList);
     }
 	
-	public static <T> StringBuilder getPaginationQuery(JQGridRequestDto pagination, StringBuilder query,  boolean isJerarquia, String[] orderByWhiteList){
+	public static <T> StringBuilder getPaginationQuery(TableRequestDto pagination, StringBuilder query,  boolean isJerarquia, String[] orderByWhiteList){
 		return getQueryForPagination(pagination, query, isJerarquia, orderByWhiteList);
     }
 	
@@ -93,7 +91,7 @@ public class TableManager implements java.io.Serializable{
 		
 	}
 	
-	protected static <T> StringBuilder getQueryForPagination(JQGridRequestDto pagination, StringBuilder query, boolean isJerarquia, String[] orderByWhiteList){
+	protected static <T> StringBuilder getQueryForPagination(TableRequestDto pagination, StringBuilder query, boolean isJerarquia, String[] orderByWhiteList){
 		//Order
 		query.append(getOrderBy(pagination, isJerarquia, orderByWhiteList));
 			
@@ -112,7 +110,7 @@ public class TableManager implements java.io.Serializable{
 		return paginationQuery;
     }
 	
-	protected static <T> StringBuilder getOrderBy (JQGridRequestDto pagination, boolean isJerarquia){
+	protected static <T> StringBuilder getOrderBy (TableRequestDto pagination, boolean isJerarquia){
 		return TableManager.getOrderBy(pagination, isJerarquia, null);
 	
 	}
@@ -120,7 +118,7 @@ public class TableManager implements java.io.Serializable{
 	/**
 	 * ORDER BY (interno)
 	 */
-	protected static <T> StringBuilder getOrderBy (JQGridRequestDto pagination, boolean isJerarquia, String[] orderByWhiteList){
+	protected static <T> StringBuilder getOrderBy (TableRequestDto pagination, boolean isJerarquia, String[] orderByWhiteList){
 		//Order
 		StringBuilder orderBy = new StringBuilder();
 		if (pagination.getSidx() != null) {
@@ -149,10 +147,10 @@ public class TableManager implements java.io.Serializable{
 	/**
 	 * MULTISELECCION (utilidades internas)
 	 */
-	protected static <T> StringBuilder getMultiselectionSelectOutter(JQGridRequestDto pagination){
+	protected static <T> StringBuilder getMultiselectionSelectOutter(TableRequestDto pagination){
 		return new StringBuilder().append(" , page, pageLine, tableLine "); 
 	}
-	protected static <T> StringBuilder getMultiselectionSelectInner(JQGridRequestDto pagination){
+	protected static <T> StringBuilder getMultiselectionSelectInner(TableRequestDto pagination){
 		return new StringBuilder().append(" , ceil(rownum/").append(pagination.getRows()).append(") page, case when (mod(rownum,").append(pagination.getRows()).append(")=0) then '").append(pagination.getRows()).append("' else TO_CHAR(mod(rownum,").append(pagination.getRows()).append(")) end as pageLine, rownum as tableLine "); 
 	}
 	
@@ -184,11 +182,11 @@ public class TableManager implements java.io.Serializable{
 //		return sbSQL;
 //	}
 	
-	public static <T> StringBuilder getSearchQuery(StringBuilder query, JQGridRequestDto pagination, Class<T> clazz, List<Object> paramList, String searchSQL, List<Object> searchParamList, String... pkList){
+	public static <T> StringBuilder getSearchQuery(StringBuilder query, TableRequestDto pagination, Class<T> clazz, List<Object> paramList, String searchSQL, List<Object> searchParamList, String... pkList){
 		return TableManager.getSearchQuery(query, pagination, clazz, paramList, searchSQL, searchParamList, null, pkList);
 	}
 	
-	public static <T> StringBuilder getSearchQuery(StringBuilder query, JQGridRequestDto pagination, Class<T> clazz, List<Object> paramList, String searchSQL, List<Object> searchParamList, List<String> tableAliases, String... pkList){	
+	public static <T> StringBuilder getSearchQuery(StringBuilder query, TableRequestDto pagination, Class<T> clazz, List<Object> paramList, String searchSQL, List<Object> searchParamList, List<String> tableAliases, String... pkList){	
 		
 		String pkStr = TableManager.strArrayToCommaSeparatedStr(pkList);
 		
@@ -239,25 +237,25 @@ public class TableManager implements java.io.Serializable{
 		return sbSQL;
 	}
 	
-	public static <T extends Object> StringBuilder getReorderQuery(StringBuilder query, JQGridRequestDto jqGridRequestDto, Class<T> clazz, List<Object> paramList, String... pkList){	
+	public static <T extends Object> StringBuilder getReorderQuery(StringBuilder query, TableRequestDto tableRequestDto, Class<T> clazz, List<Object> paramList, String... pkList){	
 		
 		String pkStr = TableManager.strArrayToCommaSeparatedStr(pkList);
 		
 		StringBuilder sbSQL = new StringBuilder();
 		
-		sbSQL.append("\n").append("select ").append(pkStr).append(TableManager.getMultiselectionSelectOutter(jqGridRequestDto)).append("from ( ");      
-		sbSQL.append("\n\t").append("select ").append(pkStr).append(TableManager.getMultiselectionSelectInner(jqGridRequestDto)); 
+		sbSQL.append("\n").append("select ").append(pkStr).append(TableManager.getMultiselectionSelectOutter(tableRequestDto)).append("from ( ");      
+		sbSQL.append("\n\t").append("select ").append(pkStr).append(TableManager.getMultiselectionSelectInner(tableRequestDto)); 
 		sbSQL.append("\n\t").append("from (").append(query);
-			sbSQL.append("\n\t").append(TableManager.getOrderBy(jqGridRequestDto, false)).append(") ");
+			sbSQL.append("\n\t").append(TableManager.getOrderBy(tableRequestDto, false)).append(") ");
 		sbSQL.append("\n").append(") ");
 		sbSQL.append("\n").append("where ");
 		
 		sbSQL.append("(").append(pkStr).append(") IN (");
-//		sbSQL.append(jqGridRequestDto.getMultiselection().getSelectedAll()?" NOT IN (":" IN (");
-		for (T selectedBean : jqGridRequestDto.getMultiselection().getSelected(clazz)) {
+//		sbSQL.append(tableRequestDto.getMultiselection().getSelectedAll()?" NOT IN (":" IN (");
+		for (T selectedBean : tableRequestDto.getMultiselection().getSelected(clazz)) {
 			sbSQL.append("(");
 			for (int i = 0; i < pkList.length; i++) {
-				String prop = jqGridRequestDto.getCore().getPkNames().get(i);
+				String prop = tableRequestDto.getCore().getPkNames().get(i);
 				sbSQL.append("?").append(",");
 				try {
 					paramList.add(BeanUtils.getProperty(selectedBean, prop));
@@ -293,7 +291,7 @@ public class TableManager implements java.io.Serializable{
 		return retStr.toString();
 	}
 	
-	public static <T> List<?> getPaginationList(JQGridRequestDto pagination, List<?> list){
+	public static <T> List<?> getPaginationList(TableRequestDto pagination, List<?> list){
 		List <Object> returnList = new ArrayList<Object>();
 		Long rows = pagination.getRows();	
 		Long page = pagination.getPage();
@@ -315,7 +313,7 @@ public class TableManager implements java.io.Serializable{
 	 * REORDENACION
 	 */
 	
-	public static <T> StringBuilder getReorderQuery(JQGridRequestDto pagination, StringBuilder query, String... pkCols){
+	public static <T> StringBuilder getReorderQuery(TableRequestDto pagination, StringBuilder query, String... pkCols){
 		//Order
 		StringBuilder reorderQuery = new StringBuilder();
 		if (pagination.getSidx() != null) {
@@ -353,36 +351,22 @@ public class TableManager implements java.io.Serializable{
 		return reorderQuery;
     }
 
-//	
-//	String pkStr = JQGridManager.strArrayToCommaSeparatedStr(pkList);
-//	
-//	StringBuilder sbSQL = new StringBuilder();
-//	
-//	sbSQL.append("\n").append("select ").append(pkStr).append(JQGridManager.getMultiselectionSelectOutter(jqGridRequestDto)).append("from ( ");      
-//	sbSQL.append("\n\t").append("select ").append(pkStr).append(JQGridManager.getMultiselectionSelectInner(jqGridRequestDto)); 
-//	sbSQL.append("\n\t").append("from (").append(query);
-//		sbSQL.append("\n\t").append(JQGridManager.getOrderBy(jqGridRequestDto, false)).append(") ");
-//	sbSQL.append("\n").append(") ");
-//	sbSQL.append("\n").append("where ");
-//	
-//	sbSQL.append("(").append(pkStr).append(") IN (");
-	
 	/*
 	 * BORRADO MULTIPLE
 	 */
-	public static <T> StringBuilder getRemoveMultipleQuery(JQGridRequestDto jqGridRequestDto, Class<T> clazz, StringBuilder query, List<Object> paramList, String... pkCols){
+	public static <T> StringBuilder getRemoveMultipleQuery(TableRequestDto tableRequestDto, Class<T> clazz, StringBuilder query, List<Object> paramList, String... pkCols){
 		
 		String pkStr = TableManager.strArrayToCommaSeparatedStr(pkCols);
 		
 		StringBuilder removeQuery = new StringBuilder();
 		
 		removeQuery.append("DELETE FROM (").append(query).append(") ");
-		removeQuery.append(" WHERE (").append(pkStr).append(") ").append(jqGridRequestDto.getMultiselection().getSelectedAll()?" NOT ":"").append(" IN (");
-//		sbSQL.append(jqGridRequestDto.getMultiselection().getSelectedAll()?" NOT IN (":" IN (");
-		for (T selectedBean : jqGridRequestDto.getMultiselection().getSelected(clazz)) {
+		removeQuery.append(" WHERE (").append(pkStr).append(") ").append(tableRequestDto.getMultiselection().getSelectedAll()?" NOT ":"").append(" IN (");
+//		sbSQL.append(tableRequestDto.getMultiselection().getSelectedAll()?" NOT IN (":" IN (");
+		for (T selectedBean : tableRequestDto.getMultiselection().getSelected(clazz)) {
 			removeQuery.append("(");
 			for (int i = 0; i < pkCols.length; i++) {
-				String prop = jqGridRequestDto.getCore().getPkNames().get(i);
+				String prop = tableRequestDto.getCore().getPkNames().get(i);
 				removeQuery.append("?").append(",");
 				try {
 					paramList.add(BeanUtils.getProperty(selectedBean, prop));
@@ -412,18 +396,18 @@ public class TableManager implements java.io.Serializable{
 	/*
 	 * SELECCION MULTIPLE
 	 */
-	public static <T> StringBuilder getSelectMultipleQuery(JQGridRequestDto jqGridRequestDto, Class<T> clazz, List<Object> paramList, String... pkCols){
+	public static <T> StringBuilder getSelectMultipleQuery(TableRequestDto tableRequestDto, Class<T> clazz, List<Object> paramList, String... pkCols){
 		
 		String pkStr = TableManager.strArrayToCommaSeparatedStr(pkCols);
 		
 		StringBuilder selectQuery = new StringBuilder();
 		
 		selectQuery.append("SELECT * FROM USUARIO");
-		selectQuery.append(" WHERE (").append(pkStr).append(") ").append(jqGridRequestDto.getMultiselection().getSelectedAll()?" NOT ":"").append(" IN (");
-		for (T selectedBean : jqGridRequestDto.getMultiselection().getSelected(clazz)) {
+		selectQuery.append(" WHERE (").append(pkStr).append(") ").append(tableRequestDto.getMultiselection().getSelectedAll()?" NOT ":"").append(" IN (");
+		for (T selectedBean : tableRequestDto.getMultiselection().getSelected(clazz)) {
 			selectQuery.append("(");
 			for (int i = 0; i < pkCols.length; i++) {
-				String prop = jqGridRequestDto.getCore().getPkNames().get(i);
+				String prop = tableRequestDto.getCore().getPkNames().get(i);
 				selectQuery.append("?").append(",");
 				try {
 					paramList.add(BeanUtils.getProperty(selectedBean, prop));
