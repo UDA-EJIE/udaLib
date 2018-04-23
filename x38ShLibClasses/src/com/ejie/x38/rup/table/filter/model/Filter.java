@@ -1,4 +1,4 @@
-package com.ejie.x38.rup.jqgrid.filter.model;
+package com.ejie.x38.rup.table.filter.model;
 
 
 public class Filter implements java.io.Serializable{

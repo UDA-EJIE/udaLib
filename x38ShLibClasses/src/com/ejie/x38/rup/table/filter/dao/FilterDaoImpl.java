@@ -1,4 +1,4 @@
-package com.ejie.x38.rup.jqgrid.filter.dao;
+package com.ejie.x38.rup.table.filter.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,7 +18,7 @@ import org.springframework.jdbc.support.lob.DefaultLobHandler;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ejie.x38.rup.jqgrid.filter.model.Filter;
+import com.ejie.x38.rup.table.filter.model.Filter;
 
 
 @Repository
