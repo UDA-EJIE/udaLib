@@ -32,6 +32,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
  *
  * @param <T> Tipo de bean que se va a representar en el grid.
  */
+@Deprecated
 @JsonInclude(Include.NON_NULL)
 		public class JQGridResponseDto<T> {
 

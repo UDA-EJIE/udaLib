@@ -1,11 +1,11 @@
-package com.ejie.x38.rup.jqgrid.filter.service;
+package com.ejie.x38.rup.table.filter.service;
 
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.ejie.x38.rup.jqgrid.filter.dao.FilterDao;
-import com.ejie.x38.rup.jqgrid.filter.model.Filter;
+import com.ejie.x38.rup.table.filter.dao.FilterDao;
+import com.ejie.x38.rup.table.filter.model.Filter;
 
 
 @Service(value = "filterService")

@@ -1,9 +1,9 @@
-package com.ejie.x38.rup.jqgrid.filter.dao;
+package com.ejie.x38.rup.table.filter.dao;
 
 
 import java.util.List;
 
-import com.ejie.x38.rup.jqgrid.filter.model.Filter;
+import com.ejie.x38.rup.table.filter.model.Filter;
 
 
 public interface FilterDao {

@@ -26,39 +26,38 @@ import org.springframework.beans.BeanWrapperImpl;
  * @author UDA
  *
  */
-@Deprecated
-public class JQGridRequestDto implements java.io.Serializable{
+public class TableRequestDto implements java.io.Serializable{
 
 	private static final long serialVersionUID = 2127819481595995328L;
 	
-	//jqGrid
+	//jqGrid -> Table
 	private Long rows;
 	private Long page;
 	private String sidx;
 	private String sord;
 	
 	// Core
-	private JQGridRequestDto.Core core = new JQGridRequestDto.Core();
+	private TableRequestDto.Core core = new TableRequestDto.Core();
 	
 	//Jerarquia
-	private JQGridRequestDto.Jerarquia jerarquia = new JQGridRequestDto.Jerarquia();
+	private TableRequestDto.Jerarquia jerarquia = new TableRequestDto.Jerarquia();
 	
 	//Ordenacion
-	private JQGridRequestDto.Multiselection multiselection = new JQGridRequestDto.Multiselection();
+	private TableRequestDto.Multiselection multiselection = new TableRequestDto.Multiselection();
 	
 	
 	public static final String SORT_ASC = "ASC";
 	public static final String SORT_DESC = "DESC";
 	
 	
-	public JQGridRequestDto(){}
-	public JQGridRequestDto(Long rows, Long page, String sidx, String sord){
+	public TableRequestDto(){}
+	public TableRequestDto(Long rows, Long page, String sidx, String sord){
 		this.rows = rows;
 		this.page = page;
 		this.sidx = sidx;
 		this.setSord(sord);
 	}
-	public JQGridRequestDto(Long rows, Long page, String sidx, String sord, String multiselectionIds, Boolean selectAll){
+	public TableRequestDto(Long rows, Long page, String sidx, String sord, String multiselectionIds, Boolean selectAll){
 		this.rows = rows;
 		this.page = page;
 		this.sidx = sidx;
@@ -91,28 +90,28 @@ public class JQGridRequestDto implements java.io.Serializable{
 		return sord;
 	}
 	public void setSord (String sord) {
-		this.sord = JQGridRequestDto.SORT_DESC.equals(sord.trim().toUpperCase())?JQGridRequestDto.SORT_DESC:JQGridRequestDto.SORT_ASC;
+		this.sord = TableRequestDto.SORT_DESC.equals(sord.trim().toUpperCase())?TableRequestDto.SORT_DESC:TableRequestDto.SORT_ASC;
 	}
 	
 	
-	public JQGridRequestDto.Core getCore() {
+	public TableRequestDto.Core getCore() {
 		return core;
 	}
-	public void setCore(JQGridRequestDto.Core core) {
+	public void setCore(TableRequestDto.Core core) {
 		this.core = core;
 	}
 	
-	public JQGridRequestDto.Multiselection getMultiselection() {
+	public TableRequestDto.Multiselection getMultiselection() {
 		return multiselection;
 	}
-	public void setMultiselection(JQGridRequestDto.Multiselection multiselection) {
+	public void setMultiselection(TableRequestDto.Multiselection multiselection) {
 		this.multiselection = multiselection;
 	}
 	
-	public JQGridRequestDto.Jerarquia getJerarquia() {
+	public TableRequestDto.Jerarquia getJerarquia() {
 		return jerarquia;
 	}
-	public void setJerarquia(JQGridRequestDto.Jerarquia jerarquia) {
+	public void setJerarquia(TableRequestDto.Jerarquia jerarquia) {
 		this.jerarquia = jerarquia;
 	}
 	
@@ -171,8 +170,8 @@ public class JQGridRequestDto implements java.io.Serializable{
 		
 		@SuppressWarnings("unchecked")
 		public <T extends Object> List<T> getSelected(Class<T> clazz){
-			String pkToken = JQGridRequestDto.this.getCore().getPkToken();
-			List<String> pkNames = JQGridRequestDto.this.getCore().getPkNames();
+			String pkToken = TableRequestDto.this.getCore().getPkToken();
+			List<String> pkNames = TableRequestDto.this.getCore().getPkNames();
 			
 			List<T> selectedIdsList = new ArrayList<T>();
 			

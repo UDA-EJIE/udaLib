@@ -1,21 +1,20 @@
 /*
 * Copyright 2011 E.J.I.E., S.A.
 *
-* Licencia con arreglo a la EUPL, VersiÃ³n 1.1 exclusivamente (la Â«LicenciaÂ»);
-* Solo podrÃ¡ usarse esta obra si se respeta la Licencia.
+* Licencia con arreglo a la EUPL, Versión 1.1 exclusivamente (la «Licencia»);
+* Solo podrá usarse esta obra si se respeta la Licencia.
 * Puede obtenerse una copia de la Licencia en
 *
 * http://ec.europa.eu/idabc/eupl.html
 *
-* Salvo cuando lo exija la legislaciÃ³n aplicable o se acuerde por escrito,
-* el programa distribuido con arreglo a la Licencia se distribuye Â«TAL CUALÂ»,
-* SIN GARANTÃ�AS NI CONDICIONES DE NINGÃšN TIPO, ni expresas ni implÃ­citas.
-* VÃ©ase la Licencia en el idioma concreto que rige los permisos y limitaciones
+* Salvo cuando lo exija la legislación aplicable o se acuerde por escrito,
+* el programa distribuido con arreglo a la Licencia se distribuye «TAL CUAL»,
+* SIN GARANTÍAS NI CONDICIONES DE NINGÚN TIPO, ni expresas ni implícitas.
+* Véase la Licencia en el idioma concreto que rige los permisos y limitaciones
 * que establece la Licencia.
 */
 package com.ejie.x38.dto;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,39 +24,35 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize.Inclusion;
 
 /**
- * Bean contenedor de las propiedades que utiliza el componente jqGrid.
+ * Bean contenedor de las propiedades que utiliza el componente table.
  * 
  * @author UDA
  *
- * @param <T> Tipo de bean que se va a representar en el grid.
+ * @param <T> Tipo de bean que se va a representar en el table.
  */
-
-@Deprecated
 @JsonInclude(Include.NON_NULL)
-public class JQGridDto<T> {
+		public class TableResponseDto<T> {
 
-	//PÃ¡gina actuals
+	//Página actual
 	private String page = null;
-	//Datos de la pÃ¡gina
+	//Datos de la página
 	private List<T> rows = null;
-	//NÃºmero total de pÃ¡ginas	
+	//Número total de páginas	
 	private String total = null;
-	//NÃºmero total de registros
+	//Número total de registros
 	private Integer records = null;
-	// ParÃ¡metros adicionales
+	// Parámetros adicionales
 	private Map<String,Object> additionalParams = new HashMap<String, Object>();
 	
-	//Constantes para parÃ¡metros adicionales
+	//Constantes para parámetros adicionales
 	public static final String CHILDREN = "children";
 	
 	/**
 	 * Constructor.
 	 */
-	public JQGridDto() {
+	public TableResponseDto() {
 		super();
 	}
 
@@ -65,21 +60,21 @@ public class JQGridDto<T> {
 	 * Contructor.
 	 * 
 	 * @param pagination
-	 *            Objeto paginaciÃ³n.
+	 *            Objeto paginación.
 	 * @param recordNum
 	 *            Numero de registros.
 	 * @param rows
 	 *            Lista contenedora de los registros.
 	 */
-	public JQGridDto(Pagination pagination, Long recordNum, List<T> rows) {
-		this(pagination, recordNum, null, rows);
+	public <U> TableResponseDto(TableRequestDto tableRequestDto, Long recordNum, List<T> rows) {
+		this(tableRequestDto, recordNum, null, rows);
 	}
 	
 	/**
 	 * Contructor.
 	 * 
 	 * @param pagination
-	 *            Objeto paginaciÃ³n.
+	 *            Objeto paginación.
 	 * @param recordNum
 	 *            Numero de registros.
 	 * @param total
@@ -87,31 +82,31 @@ public class JQGridDto<T> {
 	 * @param rows
 	 *            Lista contenedora de los registros.
 	 */
-	public JQGridDto(Pagination pagination, Long recordNum, Long total, List<T> rows) {
-		this(pagination, recordNum, total, rows, null);
+	public <U> TableResponseDto(TableRequestDto tableRequestDto, Long recordNum, Long total, List<T> rows) {
+		this(tableRequestDto, recordNum, total, rows, null);
 	}
 	
 	/**
 	 * Contructor.
 	 * 
 	 * @param pagination
-	 *            Objeto paginaciÃ³n.
+	 *            Objeto paginación.
 	 * @param recordNum
 	 *            Numero de registros.
 	 * @param rows
 	 *            Lista contenedora de los registros.
 	 * @param reorderedSelection
-	 *            Lista con la reordenaciÃ³n de los registros.
+	 *            Lista con la reordenación de los registros.
 	 */
-	public JQGridDto(Pagination pagination, Long recordNum, List<T> rows, List<TableRowDto<T>> reorderedSelection) {
-		this(pagination, recordNum, null, rows, reorderedSelection);
+	public <U> TableResponseDto(TableRequestDto tableRequestDto, Long recordNum, List<T> rows, List<TableRowDto<T>> reorderedSelection) {
+		this(tableRequestDto, recordNum, null, rows, reorderedSelection);
 	}
 
 	/**
 	 * Contructor.
 	 * 
 	 * @param pagination
-	 *            Objeto paginaciÃ³n.
+	 *            Objeto paginación.
 	 * @param recordNum
 	 *            Numero de registros.
 	 * @param total
@@ -119,16 +114,16 @@ public class JQGridDto<T> {
 	 * @param rows
 	 *            Lista contenedora de los registros.
 	 * @param reorderedSelection
-	 *            Lista con la reordenaciÃ³n de los registros.
+	 *            Lista con la reordenación de los registros.
 	 */
-	public JQGridDto(Pagination pagination, Long recordNum, Long total, List<T> rows, List<TableRowDto<T>> reorderedSelection) {
+	public <U> TableResponseDto(TableRequestDto tableRequestDto, Long recordNum, Long total, List<T> rows, List<TableRowDto<T>> reorderedSelection) {
 		super();
-		this.page = (pagination.getPage()!=null)?pagination.getPage().toString():"";
+		this.page = (tableRequestDto.getPage()!=null)?tableRequestDto.getPage().toString():"";
 		this.rows = rows;
-		this.setTotal(recordNum, (pagination.getRows()!=null)?pagination.getRows():0);
+		this.setTotal(recordNum, (tableRequestDto.getRows()!=null)?tableRequestDto.getRows():0);
 		this.records = total!=null?total.intValue():recordNum.intValue();
 		this.addAdditionalParam("reorderedSelection", reorderedSelection);
-		this.addAdditionalParam("selectedAll", pagination.getMultiselection().getSelectedAll());
+		this.addAdditionalParam("selectedAll", tableRequestDto.getMultiselection().getSelectedAll());
 	}
 	
 	
@@ -164,10 +159,10 @@ public class JQGridDto<T> {
 	}
 
 	/**
-	 * Calcula el numero total de paginas, segun los registros totales y el numero de regitros pro pÃ¡gina
+	 * Calcula el numero total de paginas, segun los registros totales y el numero de regitros pro página
 	 * 
-	 * @param total el nÃºmero de registros totales
-	 * @param rows el nÃºmero de filas por pagina
+	 * @param total el número de registros totales
+	 * @param rows el número de filas por pagina
 	 */
 	public void setTotal(Long total, Long rows) {
 		double dTotal = total.doubleValue();
@@ -190,13 +185,13 @@ public class JQGridDto<T> {
 	}
 	
 	/*
-	 * Funciones asociadas a la gestiÃ³n de parÃ¡metros adicionales
+	 * Funciones asociadas a la gestión de parámetros adicionales
 	 */
 	/**
-	 * AÃ±ade un parÃ¡metro adicional.
+	 * Añade un parámetro adicional.
 	 * 
 	 * @param key
-	 *            Nombre del parÃ¡metro.
+	 *            Nombre del parámetro.
 	 * @param param
 	 *            Objeto a admacenar.
 	 */
@@ -205,28 +200,28 @@ public class JQGridDto<T> {
 	}
 	
 	/**
-	 * Recupera un parÃ¡metro adicional.
+	 * Recupera un parámetro adicional.
 	 * 
 	 * @param key
-	 *            Nombre del parÃ¡metro.
-	 * @return ParÃ¡metro almacenado.
+	 *            Nombre del parámetro.
+	 * @return Parámetro almacenado.
 	 */
 	public Object getAdditionalParam(String name) {
 		return this.additionalParams.get(name);
 	}
 	
 	/**
-	 * Elimina un parÃ¡metro adicional de estructura.
+	 * Elimina un parámetro adicional de estructura.
 	 * 
 	 * @param key
-	 *            Nombre del parÃ¡metro.
+	 *            Nombre del parámetro.
 	 */
 	public void removeAdditionalParam(String name) {
 		this.additionalParams.remove(name);
 	}
 	
 	/**
-	 * Devuelve el mapa que almacena los parÃ¡metros adicionales.
+	 * Devuelve el mapa que almacena los parámetros adicionales.
 	 * 
 	 * @param name
 	 * @return
@@ -237,10 +232,10 @@ public class JQGridDto<T> {
 	}
 
 	/**
-	 * MÃ©todo "any getter" necesario para la serializaciÃ³n del contenido del
+	 * Método "any getter" necesario para la serialización del contenido del
 	 * mapa.
 	 * 
-	 * @return Mapa que contiene los parÃ¡metros adicionales.
+	 * @return Mapa que contiene los parámetros adicionales.
 	 */
     @JsonAnyGetter
     public Map<String,Object> anyAdditionalParams() {
@@ -248,9 +243,9 @@ public class JQGridDto<T> {
     }
 
     /**
-	 * MÃ©todo "any setter" necesario para la deserializaciÃ³n del parÃ¡metros al mapa
+	 * Método "any setter" necesario para la deserialización del parámetros al mapa
 	 * 
-	 * @return Mapa que contiene los parÃ¡metros adicionales.
+	 * @return Mapa que contiene los parámetros adicionales.
 	 */
     @JsonAnySetter
     public void set(String name, Object value) {
@@ -277,12 +272,12 @@ public class JQGridDto<T> {
 	
 //	/**
 //	 * Procesa la estructura reorderedSelection para completar los datos a
-//	 * partir de la informaciÃ³n de la paginaciÃ³n.
+//	 * partir de la información de la paginación.
 //	 * 
 //	 * @param reorderedSelection
 //	 *            Lista de registros reordenados.
 //	 * @param pagination
-//	 *            Objeto paginaciÃ³n.
+//	 *            Objeto paginación.
 //	 * @return Lista procesada de elementos reordenados.
 //	 */
 //	private List<TableRowDto<T>> processReorderedSelection(List<TableRowDto<T>> reorderedSelection, Pagination pagination){

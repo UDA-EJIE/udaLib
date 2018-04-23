@@ -15,7 +15,6 @@
 */
 package com.ejie.x38.dto;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,20 +24,17 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize.Inclusion;
 
 /**
- * Bean contenedor de las propiedades que utiliza el componente jqGrid.
+ * Bean contenedor de las propiedades que utiliza el componente table.
  * 
  * @author UDA
  *
  * @param <T> Tipo de bean que se va a representar en el grid.
  */
 
-@Deprecated
 @JsonInclude(Include.NON_NULL)
-public class JQGridDto<T> {
+public class TableDto<T> {
 
 	//PÃ¡gina actuals
 	private String page = null;
@@ -57,7 +53,7 @@ public class JQGridDto<T> {
 	/**
 	 * Constructor.
 	 */
-	public JQGridDto() {
+	public TableDto() {
 		super();
 	}
 
@@ -71,7 +67,7 @@ public class JQGridDto<T> {
 	 * @param rows
 	 *            Lista contenedora de los registros.
 	 */
-	public JQGridDto(Pagination pagination, Long recordNum, List<T> rows) {
+	public TableDto(Pagination pagination, Long recordNum, List<T> rows) {
 		this(pagination, recordNum, null, rows);
 	}
 	
@@ -87,7 +83,7 @@ public class JQGridDto<T> {
 	 * @param rows
 	 *            Lista contenedora de los registros.
 	 */
-	public JQGridDto(Pagination pagination, Long recordNum, Long total, List<T> rows) {
+	public TableDto(Pagination pagination, Long recordNum, Long total, List<T> rows) {
 		this(pagination, recordNum, total, rows, null);
 	}
 	
@@ -103,7 +99,7 @@ public class JQGridDto<T> {
 	 * @param reorderedSelection
 	 *            Lista con la reordenaciÃ³n de los registros.
 	 */
-	public JQGridDto(Pagination pagination, Long recordNum, List<T> rows, List<TableRowDto<T>> reorderedSelection) {
+	public TableDto(Pagination pagination, Long recordNum, List<T> rows, List<TableRowDto<T>> reorderedSelection) {
 		this(pagination, recordNum, null, rows, reorderedSelection);
 	}
 
@@ -121,7 +117,7 @@ public class JQGridDto<T> {
 	 * @param reorderedSelection
 	 *            Lista con la reordenaciÃ³n de los registros.
 	 */
-	public JQGridDto(Pagination pagination, Long recordNum, Long total, List<T> rows, List<TableRowDto<T>> reorderedSelection) {
+	public TableDto(Pagination pagination, Long recordNum, Long total, List<T> rows, List<TableRowDto<T>> reorderedSelection) {
 		super();
 		this.page = (pagination.getPage()!=null)?pagination.getPage().toString():"";
 		this.rows = rows;

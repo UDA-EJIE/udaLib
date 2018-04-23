@@ -28,8 +28,7 @@ import org.springframework.util.StringUtils;
  * @author UDA
  *
  */
-@Deprecated
-public class JQGridManagerJerarquia implements java.io.Serializable{
+public class TableManagerJerarquia implements java.io.Serializable{
 
 	private static final long serialVersionUID = 2127819481595995328L;
 	
@@ -37,23 +36,23 @@ public class JQGridManagerJerarquia implements java.io.Serializable{
 	 * NORMAL
 	 */
 	public static <T> StringBuilder getQuery(
-			JQGridRequestDto jqGridRequestDto,
+			TableRequestDto tableRequestDto,
 			StringBuilder query, Map<String, ?> mapaWhere, 
 			String columna, String columnaPadre, String columnaParentNodes, 
 			List<String> tabla, List<String> aliasTabla
 	){
-		return getQuery(jqGridRequestDto, query, mapaWhere, columna, columnaPadre, columnaParentNodes, tabla, aliasTabla, new StringBuilder(""), null, null);
+		return getQuery(tableRequestDto, query, mapaWhere, columna, columnaPadre, columnaParentNodes, tabla, aliasTabla, new StringBuilder(""), null, null);
 	}
 	public static <T> StringBuilder getQuery(
-			JQGridRequestDto jqGridRequestDto,
+			TableRequestDto tableRequestDto,
 			StringBuilder query, Map<String, ?> mapaWhere, 
 			String columna, String columnaPadre, String columnaParentNodes, 
 			List<String> tabla, List<String> aliasTabla, StringBuilder joins
 	){
-		return getQuery(jqGridRequestDto, query, mapaWhere, columna, columnaPadre, columnaParentNodes, tabla, aliasTabla, joins, null, null);
+		return getQuery(tableRequestDto, query, mapaWhere, columna, columnaPadre, columnaParentNodes, tabla, aliasTabla, joins, null, null);
 	}
 	public static <T> StringBuilder getQuery(
-			JQGridRequestDto jqGridRequestDto,
+			TableRequestDto tableRequestDto,
 			StringBuilder query, Map<String, ?> mapaWhere, 
 			String columna, String columnaPadre, String columnaParentNodes, 
 			List<String> tabla, List<String> aliasTabla, StringBuilder joins,
@@ -64,7 +63,7 @@ public class JQGridManagerJerarquia implements java.io.Serializable{
 		//Campos específicos de Jerarquía
 		query.append("\n\t").append("-- Campos JERARQUIA");
 		query.append("\n\t").append(", LEVEL");
-		query.append("\n\t").append(", sys_connect_by_path(").append(columnaParentNodes).append(", '").append(jqGridRequestDto.getJerarquia().getToken()).append("') as PARENTNODES ");
+		query.append("\n\t").append(", sys_connect_by_path(").append(columnaParentNodes).append(", '").append(tableRequestDto.getJerarquia().getToken()).append("') as PARENTNODES ");
 		query.append("\n\t").append(", decode(connect_by_isleaf, 0, 'false', 'true') as ISLEAF ");
 		
 		//Decodes para destacar filtrados
@@ -80,55 +79,55 @@ public class JQGridManagerJerarquia implements java.io.Serializable{
 			queryParams.addAll(params);
 		}
 		
-		return getJerarquiaQuery(jqGridRequestDto, query, mapaWhere, queryParams, columna, columnaPadre, tabla, aliasTabla, joins, businessFilters, businessParams);
+		return getJerarquiaQuery(tableRequestDto, query, mapaWhere, queryParams, columna, columnaPadre, tabla, aliasTabla, joins, businessFilters, businessParams);
 	}
 
 	/**
 	 * PAGINACIÓN
 	 */
 	
-	public static <T> StringBuilder getPaginationQuery(JQGridRequestDto jqGridRequestDto, StringBuilder query){
-		return JQGridManager.getPaginationQuery(jqGridRequestDto, query, true, null);
+	public static <T> StringBuilder getPaginationQuery(TableRequestDto tableRequestDto, StringBuilder query){
+		return TableManager.getPaginationQuery(tableRequestDto, query, true, null);
 	}
 	
-	public static <T> StringBuilder getPaginationQuery(JQGridRequestDto jqGridRequestDto, StringBuilder query, String[] orderByWhiteList){
-		return JQGridManager.getPaginationQuery(jqGridRequestDto, query, true, orderByWhiteList);
+	public static <T> StringBuilder getPaginationQuery(TableRequestDto tableRequestDto, StringBuilder query, String[] orderByWhiteList){
+		return TableManager.getPaginationQuery(tableRequestDto, query, true, orderByWhiteList);
 	}
 	
 	/**
 	 * COUNT
 	 */
 	public static <T> StringBuilder getQueryCount(
-			JQGridRequestDto jqGridRequestDto,
+			TableRequestDto tableRequestDto,
 			Map<String, ?> mapaWhere, 
 			String columna, String columnaPadre,
 			List<String> tabla, List<String> aliasTabla
 	){
-		return getJerarquiaQuery(jqGridRequestDto, new StringBuilder("SELECT COUNT(1) "), mapaWhere, new ArrayList<Object>(), columna, columnaPadre, tabla, aliasTabla, new StringBuilder(""), null, null);
+		return getJerarquiaQuery(tableRequestDto, new StringBuilder("SELECT COUNT(1) "), mapaWhere, new ArrayList<Object>(), columna, columnaPadre, tabla, aliasTabla, new StringBuilder(""), null, null);
 	}
 	public static <T> StringBuilder getQueryCount(
-			JQGridRequestDto jqGridRequestDto,
+			TableRequestDto tableRequestDto,
 			Map<String, ?> mapaWhere, 
 			String columna, String columnaPadre, String columnaParentNodes,
 			List<String> tabla, List<String> aliasTabla, StringBuilder joins
 	){
-		return getJerarquiaQuery(jqGridRequestDto, new StringBuilder("SELECT COUNT(1) "), mapaWhere,  new ArrayList<Object>(), columna, columnaPadre, tabla, aliasTabla, joins, null, null);
+		return getJerarquiaQuery(tableRequestDto, new StringBuilder("SELECT COUNT(1) "), mapaWhere,  new ArrayList<Object>(), columna, columnaPadre, tabla, aliasTabla, joins, null, null);
 	}
 	public static <T> StringBuilder getQueryCount(
-			JQGridRequestDto jqGridRequestDto,
+			TableRequestDto tableRequestDto,
 			Map<String, ?> mapaWhere, 
 			String columna, String columnaPadre, String columnaParentNodes, 
 			List<String> tabla, List<String> aliasTabla, StringBuilder joins,
 			StringBuilder businessFilters, List<?> businessParams
 	){
-		return getJerarquiaQuery(jqGridRequestDto, new StringBuilder("SELECT COUNT(1) "), mapaWhere,  new ArrayList<Object>(), columna, columnaPadre, tabla, aliasTabla, joins, businessFilters, businessParams);
+		return getJerarquiaQuery(tableRequestDto, new StringBuilder("SELECT COUNT(1) "), mapaWhere,  new ArrayList<Object>(), columna, columnaPadre, tabla, aliasTabla, joins, businessFilters, businessParams);
 	}
 
 	/**
 	 * GENERAL (interna)
 	 */
 	protected static <T> StringBuilder getJerarquiaQuery(
-			JQGridRequestDto jqGridRequestDto,
+			TableRequestDto tableRequestDto,
 			StringBuilder query, Map<String, ?> mapaWhere, List<Object> queryParams,
 			String columna, String columnaPadre, 
 			List<String> tabla, List<String> aliasTabla, StringBuilder joins,
@@ -152,12 +151,12 @@ public class JQGridManagerJerarquia implements java.io.Serializable{
 			//Subqueries
 				//PADRES
 					query.append("\n\t\t").append("-- PADRES");
-					query = querySubquery(jqGridRequestDto, query, mapaWhere, queryParams, columna, tabla, aliasTabla, joins, businessFilters, businessParams);
+					query = querySubquery(tableRequestDto, query, mapaWhere, queryParams, columna, tabla, aliasTabla, joins, businessFilters, businessParams);
 					query.append("\n\t\t").append("connect by prior ").append(columnaPadre).append(" = ").append(columna);
 			query.append("\n\t\t").append("union");
 				//HIJOS
 					query.append("\n\t\t").append("-- HIJOS");
-					query = querySubquery(jqGridRequestDto, query, mapaWhere, queryParams, columna, tabla, aliasTabla, joins, businessFilters, businessParams);
+					query = querySubquery(tableRequestDto, query, mapaWhere, queryParams, columna, tabla, aliasTabla, joins, businessFilters, businessParams);
 					query.append("\n\t\t").append("connect by prior ").append(columna).append(" = ").append(columnaPadre);
 			query.append("\n\t").append(") jerarquia");	
 		}
@@ -181,15 +180,15 @@ public class JQGridManagerJerarquia implements java.io.Serializable{
 		
 		//Gestionar selección múltiple 
 		query.append("\n\t").append("-- Relacion JERARQUIA");
-		if (jqGridRequestDto.getJerarquia().getParentId()==null || jqGridRequestDto.getJerarquia().getParentId().equals("")){
+		if (tableRequestDto.getJerarquia().getParentId()==null || tableRequestDto.getJerarquia().getParentId().equals("")){
 			query.append("\n\t").append("start with ").append(columnaPadre).append(" is null");
 		} else {
-			query.append("\n\t").append("start with ").append(columnaPadre).append(" = ").append(jqGridRequestDto.getJerarquia().getParentId());
+			query.append("\n\t").append("start with ").append(columnaPadre).append(" = ").append(tableRequestDto.getJerarquia().getParentId());
 		}
 		query.append("\n\t").append("connect by prior ").append(columna).append(" = ").append(columnaPadre);
 		
 		//Nodos contraídos
-		query = filterUnexpanded(jqGridRequestDto, query, queryParams, columnaPadre);
+		query = filterUnexpanded(tableRequestDto, query, queryParams, columnaPadre);
 		
 		//Modificar parámetros
 		@SuppressWarnings("unchecked")
@@ -203,7 +202,7 @@ public class JQGridManagerJerarquia implements java.io.Serializable{
 	 * Subquery PADRES o HIJOS (interna)
 	 */
 	protected static <T> StringBuilder querySubquery(
-			JQGridRequestDto jqGridRequestDto,
+			TableRequestDto tableRequestDto,
 			StringBuilder query, Map<String, ?> mapaWhere, List<Object> queryParams,
 			String columna, 
 			List<String> tabla, List<String> aliasTabla, StringBuilder joins,
@@ -223,7 +222,7 @@ public class JQGridManagerJerarquia implements java.io.Serializable{
 			joinsSubquery = joinsSubquery.toString().replaceAll("(?i)"+aliasTablaStr+"\\.", "").trim();
 		}
 		
-		String token = jqGridRequestDto.getJerarquia().getToken();
+		String token = tableRequestDto.getJerarquia().getToken();
 		query.append("\n\t\t").append("select distinct substr(sys_connect_by_path(").append(columna).append(", '").append(token).append("'),"); 
 		query.append("\n\t\t").append("instr(sys_connect_by_path(").append(columna).append(", '").append(token).append("'), '").append(token).append("', -1)+").append(token.length()).append(") PK_JERARQUIA");
 		query.append("\n\t\t").append("from ").append(StringUtils.collectionToCommaDelimitedString(tabla));
@@ -263,10 +262,10 @@ public class JQGridManagerJerarquia implements java.io.Serializable{
 	/**
 	 * Filtrar elementos contraidos en la query (interna
 	 */
-	protected static <T> StringBuilder filterUnexpanded(JQGridRequestDto jqGridRequestDto, StringBuilder query, List<Object> params, String columnaPadre){
-		if (jqGridRequestDto.getJerarquia().getTree()!=null && !jqGridRequestDto.getJerarquia().getTree().equals("")) {
+	protected static <T> StringBuilder filterUnexpanded(TableRequestDto tableRequestDto, StringBuilder query, List<Object> params, String columnaPadre){
+		if (tableRequestDto.getJerarquia().getTree()!=null && !tableRequestDto.getJerarquia().getTree().equals("")) {
 			StringBuilder elems = new StringBuilder();
-			String[] arrTree = jqGridRequestDto.getJerarquia().getTree().split(",");
+			String[] arrTree = tableRequestDto.getJerarquia().getTree().split(",");
 			for (int i = 0; i < arrTree.length; i++) {
 				elems.append("?,");
 			}
@@ -274,7 +273,7 @@ public class JQGridManagerJerarquia implements java.io.Serializable{
 			
 			query.append("\n\t").append("-- Registros CONTRAIDOS");
 			query.append("\n\t").append("and ").append("").append(columnaPadre).append("").append(" not in (").append(elems).append(")");
-			params.addAll(Arrays.asList(jqGridRequestDto.getJerarquia().getTree().split(",")));
+			params.addAll(Arrays.asList(tableRequestDto.getJerarquia().getTree().split(",")));
 		}
 		return query;
 	}
@@ -284,23 +283,23 @@ public class JQGridManagerJerarquia implements java.io.Serializable{
 	 * HIJOS
 	 */
 	public static <T> StringBuilder getQueryChildren(
-			JQGridRequestDto jqGridRequestDto,
+			TableRequestDto tableRequestDto,
 			Map<String, ?> mapaWhere, 
 			String columna, String columnaPadre,
 			List<String> tabla, List<String> aliasTabla
 	){
-		return getQueryChildren(jqGridRequestDto, mapaWhere, columna, columnaPadre, tabla, aliasTabla, new StringBuilder(""), null, null, null);
+		return getQueryChildren(tableRequestDto, mapaWhere, columna, columnaPadre, tabla, aliasTabla, new StringBuilder(""), null, null, null);
 	}
 	public static <T> StringBuilder getQueryChildren(
-				JQGridRequestDto jqGridRequestDto,
+				TableRequestDto tableRequestDto,
 				Map<String, ?> mapaWhere, 
 				String columna, String columnaPadre,
 				List<String> tabla, List<String> aliasTabla, StringBuilder joins
 	){
-		return getQueryChildren(jqGridRequestDto, mapaWhere, columna, columnaPadre, tabla, aliasTabla, joins, null, null, null);
+		return getQueryChildren(tableRequestDto, mapaWhere, columna, columnaPadre, tabla, aliasTabla, joins, null, null, null);
 	}
 	public static <T> StringBuilder getQueryChildren(
-			JQGridRequestDto jqGridRequestDto,
+			TableRequestDto tableRequestDto,
 			Map<String, ?> mapaWhere, 
 			String columna, String columnaPadre,
 			List<String> tabla, List<String> aliasTabla, StringBuilder joins,
@@ -312,29 +311,29 @@ public class JQGridManagerJerarquia implements java.io.Serializable{
 			//Quitar buscar hijos/descendientes
 			Map<String,Object> mapaWhereTMP = new HashMap<String, Object>();
 			mapaWhereTMP.put("params", new ArrayList<Object>());
-		StringBuilder sqlJerarquiaHijos = getJerarquiaQuery(jqGridRequestDto, new StringBuilder(), mapaWhereTMP, new ArrayList<Object>(), columna, columnaPadre, tabla, aliasTabla, joins, businessFilters, businessParams);
+		StringBuilder sqlJerarquiaHijos = getJerarquiaQuery(tableRequestDto, new StringBuilder(), mapaWhereTMP, new ArrayList<Object>(), columna, columnaPadre, tabla, aliasTabla, joins, businessFilters, businessParams);
 		//No requiere ordenación ya que es para obetner las PKs de los descendientes
 
 		//Quitar filtrado del padre (obtener todos los elementos para saber su página, línea en página y línea en tabla)
-		jqGridRequestDto.getJerarquia().setParentId(null);
+		tableRequestDto.getJerarquia().setParentId(null);
 		
 		//Jerarquia (all -> metadatos de todos)
-		StringBuilder sqlJerarquia = getJerarquiaQuery(jqGridRequestDto, new StringBuilder(), mapaWhere, new ArrayList<Object>(), columna, columnaPadre, tabla, aliasTabla, joins, businessFilters, businessParams);
+		StringBuilder sqlJerarquia = getJerarquiaQuery(tableRequestDto, new StringBuilder(), mapaWhere, new ArrayList<Object>(), columna, columnaPadre, tabla, aliasTabla, joins, businessFilters, businessParams);
 		//Ordenar según tabla
-		sqlJerarquia.append(JQGridManager.getOrderBy(jqGridRequestDto, true, orderByWhiteList));
+		sqlJerarquia.append(TableManager.getOrderBy(tableRequestDto, true, orderByWhiteList));
 		
 		//Query propia
 		StringBuilder sbSQL = new StringBuilder();
-		sbSQL.append("\n").append("select ").append(columna).append(JQGridManager.getMultiselectionSelectOutter(jqGridRequestDto));
+		sbSQL.append("\n").append("select ").append(columna).append(TableManager.getMultiselectionSelectOutter(tableRequestDto));
 		sbSQL.append("\n").append("from ( ");
 		sbSQL.append("\n\t").append("-- Query Jerarquia");
-		sbSQL.append("\n\t").append("select ").append(columna).append(JQGridManager.getMultiselectionSelectInner(jqGridRequestDto));
+		sbSQL.append("\n\t").append("select ").append(columna).append(TableManager.getMultiselectionSelectInner(tableRequestDto));
 		sbSQL.append("\n\t").append(sqlJerarquia.substring(sqlJerarquia.indexOf("from")));
 		sbSQL.append(") ");
 		sbSQL.append("\n").append("where ").append(columna).append(" in ( ");
 		sbSQL.append("\n\t").append("-- Query JerarquiaFiltro");
 		sbSQL.append("\n\t").append("select ").append(columna).append(" ");
-		if (jqGridRequestDto.getJerarquia().isChild()){
+		if (tableRequestDto.getJerarquia().isChild()){
 			//Solo hijos directos
 			sbSQL.append("\n\t").append(sqlJerarquiaHijos.substring(sqlJerarquiaHijos.indexOf("from")).replaceAll("1=1", "LEVEL=1"));
 		} else {

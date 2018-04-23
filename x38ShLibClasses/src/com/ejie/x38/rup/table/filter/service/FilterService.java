@@ -1,8 +1,8 @@
-package com.ejie.x38.rup.jqgrid.filter.service;
+package com.ejie.x38.rup.table.filter.service;
 
 import java.util.List;
 
-import com.ejie.x38.rup.jqgrid.filter.model.Filter;
+import com.ejie.x38.rup.table.filter.model.Filter;
 
 public interface FilterService {
 

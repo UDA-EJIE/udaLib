@@ -30,7 +30,7 @@ public class Pagination<T> implements java.io.Serializable{
 
 	private static final long serialVersionUID = 2127819481595995328L;
 	
-	//jqGrid
+	//jqGrid -> Table
 	private Long rows;
 	private Long page;
 	private String sidx;
