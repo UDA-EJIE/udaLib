@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import com.ejie.x38.dto.JQGridRequestDto;
 import com.ejie.x38.dto.Pagination;
+import com.ejie.x38.dto.TableRequestDto;
 import com.ejie.x38.dto.TableRowDto;
 
 public class RowNumResultSetExtractor<T> implements ResultSetExtractor<List<TableRowDto<T>>> {
@@ -60,9 +61,15 @@ public class RowNumResultSetExtractor<T> implements ResultSetExtractor<List<Tabl
 		this.pkColums = pagination.getMultiselection().getPkNames();
 	}
 	
+	@Deprecated
 	public RowNumResultSetExtractor(RowMapper<T> rowMapper, JQGridRequestDto jqGridRequestDto){
 		this.rowMapper = rowMapper;
 		this.pkColums = jqGridRequestDto.getCore().getPkNames();
+	}
+	
+	public RowNumResultSetExtractor(RowMapper<T> rowMapper, TableRequestDto tableRequestDto){
+		this.rowMapper = rowMapper;
+		this.pkColums = tableRequestDto.getCore().getPkNames();
 	}
 	
 }
