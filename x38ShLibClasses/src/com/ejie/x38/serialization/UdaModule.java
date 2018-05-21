@@ -192,9 +192,9 @@ public class UdaModule extends SimpleModule {
 	}
 
 	/**
-	 * Getter para obtener las inclusiones de serializaciÃ³n de Jackson.
+	 * Getter para obtener las inclusiones de serialización de Jackson.
 	 * 
-	 * @return List<JsonSerialize.Inclusion> Inclusiones de serializaciÃ³n de
+	 * @return List<JsonSerialize.Inclusion> Inclusiones de serialización de
 	 *         Jackson.
 	 */
 	
@@ -203,10 +203,10 @@ public class UdaModule extends SimpleModule {
 	}
 
 	/**
-	 * Getter para asignar las inclusiones de serializaciÃ³n de Jackson.
+	 * Getter para asignar las inclusiones de serialización de Jackson.
 	 * 
 	 * @param serializationInclusions
-	 *            Inclusiones de serializaciÃ³n de Jackson.
+	 *            Inclusiones de serialización de Jackson.
 	 */
 	public void setSerializationInclusions(
 			List< JsonInclude.Include> serializationInclusions) {

@@ -1,16 +1,16 @@
 /*
 * Copyright 2011 E.J.I.E., S.A.
 *
-* Licencia con arreglo a la EUPL, VersiÃ³n 1.1 exclusivamente (la Â«LicenciaÂ»);
-* Solo podrÃ¡ usarse esta obra si se respeta la Licencia.
+* Licencia con arreglo a la EUPL, Versión 1.1 exclusivamente (la «Licencia»);
+* Solo podrá usarse esta obra si se respeta la Licencia.
 * Puede obtenerse una copia de la Licencia en
 *
 * http://ec.europa.eu/idabc/eupl.html
 *
-* Salvo cuando lo exija la legislaciÃ³n aplicable o se acuerde por escrito,
-* el programa distribuido con arreglo a la Licencia se distribuye Â«TAL CUALÂ»,
-* SIN GARANTÃ�AS NI CONDICIONES DE NINGÃšN TIPO, ni expresas ni implÃ­citas.
-* VÃ©ase la Licencia en el idioma concreto que rige los permisos y limitaciones
+* Salvo cuando lo exija la legislación aplicable o se acuerde por escrito,
+* el programa distribuido con arreglo a la Licencia se distribuye «TAL CUAL»,
+* SIN GARANTÍAS NI CONDICIONES DE NINGÚN TIPO, ni expresas ni implícitas.
+* Véase la Licencia en el idioma concreto que rige los permisos y limitaciones
 * que establece la Licencia.
 */
 package com.ejie.x38.serialization;
