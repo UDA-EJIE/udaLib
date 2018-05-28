@@ -259,6 +259,10 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
     	
     }
     
+    public void setReorderedSeeker(List<TableRowDto<T>> reorderedSeeker){
+    	
+    }
+    
 	public String toString() {
 		StringBuilder result = new StringBuilder();
 		result.append(this.getClass().getName()).append(" Object {");

@@ -45,6 +45,9 @@ public class TableRequestDto implements java.io.Serializable{
 	//Ordenacion
 	private TableRequestDto.Multiselection multiselection = new TableRequestDto.Multiselection();
 	
+	//Ordenacion
+	private TableRequestDto.Multiselection seeker= new TableRequestDto.Multiselection();
+	
 	
 	public static final String SORT_ASC = "ASC";
 	public static final String SORT_DESC = "DESC";
@@ -108,6 +111,12 @@ public class TableRequestDto implements java.io.Serializable{
 		this.multiselection = multiselection;
 	}
 	
+	public TableRequestDto.Multiselection getSeeker() {
+		return seeker;
+	}
+	public void setSeeker(TableRequestDto.Multiselection seeker) {
+		this.seeker = seeker;
+	}
 	public TableRequestDto.Jerarquia getJerarquia() {
 		return jerarquia;
 	}
