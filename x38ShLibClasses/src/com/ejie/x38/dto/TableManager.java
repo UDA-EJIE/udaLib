@@ -254,7 +254,7 @@ public class TableManager implements java.io.Serializable{
 //		sbSQL.append(tableRequestDto.getMultiselection().getSelectedAll()?" NOT IN (":" IN (");
 		for (T selectedBean : tableRequestDto.getMultiselection().getSelected(clazz)) {
 			sbSQL.append("(");
-			for (int i = 0; i < pkList.length; i++) {
+			for (int i = 0; i < tableRequestDto.getCore().getPkNames().size(); i++) {
 				String prop = tableRequestDto.getCore().getPkNames().get(i);
 				sbSQL.append("?").append(",");
 				try {
