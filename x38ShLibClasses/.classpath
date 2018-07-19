@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test-unit"/>
+	<classpathentry kind="src" path="test-integration"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/UDAWLS11Classpath"/>
 	<classpathentry kind="con" path="oracle.eclipse.tools.weblogic.lib.system">
 		<attributes>
@@ -88,5 +90,6 @@
 	<classpathentry kind="lib" path="lib/xz-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/y31b-1.4-ifaz.jar"/>
 	<classpathentry kind="lib" path="lib/y31c-1.4-impl.jar"/>
+	<classpathentry kind="lib" path="lib/spring-test-3.2.17.RELEASE.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
