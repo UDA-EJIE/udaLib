@@ -18,11 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -34,14 +30,12 @@ import com.ejie.x38.serialization.UdaMappingJackson2HttpMessageConverter;
 import com.ejie.x38.test.bean.Alumno;
 import com.ejie.x38.test.bean.Comarca;
 import com.ejie.x38.test.bean.Departamento;
-import com.ejie.x38.test.control.FormController;
 import com.ejie.x38.test.utils.TestMessages;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(loader = WebContextLoader.class, classes = {ExampleApplicationContext.class})
-//@ContextConfiguration(loader = WebContextLoader.class)
 //@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
 //    DirtiesContextTestExecutionListener.class,
 //    TransactionalTestExecutionListener.class})
@@ -62,9 +56,6 @@ public class FormUploadControllerTest {
     @Autowired
     private UdaMappingJackson2HttpMessageConverter udaMappingJackson2HttpMessageConverter;
     
-	@Autowired
-    private FormController formController;
-	
 	private ObjectMapper objectMapper;
 	
 	@Before

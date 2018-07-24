@@ -16,6 +16,7 @@
 package com.ejie.x38.test.control;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -31,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -49,7 +49,6 @@ import com.ejie.x38.test.bean.Alumno;
 import com.ejie.x38.test.bean.Comarca;
 import com.ejie.x38.test.bean.Departamento;
 import com.ejie.x38.test.bean.UploadBean;
-import com.ejie.x38.test.utils.TestMessages;
 
 /**
  * PatronesController
@@ -166,7 +165,7 @@ public class FormController {
 				@ModelAttribute UploadBean uploadBean,
 				@RequestParam(value="fotoPadre", required=false) MultipartFile fotoPadre,
 				@RequestParam(value="fotoMadre", required=false) MultipartFile fotoMadre,
-				HttpServletResponse response) throws IOException {
+				HttpServletResponse response, Principal principal) throws IOException {
 			
 //			if(fotoPadre!=null && !fotoPadre.isEmpty()){
 //				uploadService.saveToDisk(fotoPadre, appConfiguration.getProperty("fileUpload.path"));
