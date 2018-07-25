@@ -167,6 +167,8 @@ public class FormController {
 				@RequestParam(value="fotoMadre", required=false) MultipartFile fotoMadre,
 				HttpServletResponse response, Principal principal) throws IOException {
 			
+			FormController.logger.info("[POST][/form/subidaArchivos]addFormSimple");
+			
 //			if(fotoPadre!=null && !fotoPadre.isEmpty()){
 //				uploadService.saveToDisk(fotoPadre, appConfiguration.getProperty("fileUpload.path"));
 //			}
