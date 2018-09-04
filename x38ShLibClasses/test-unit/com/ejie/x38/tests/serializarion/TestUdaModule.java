@@ -5,8 +5,19 @@ package com.ejie.x38.tests.serializarion;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.ejie.x38.serialization.UdaModule;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
  * @author llaparra
@@ -14,43 +25,25 @@ import org.junit.Test;
  */
 public class TestUdaModule {
 
+	private static UdaModule udaModule = null;
+	private static Map<SerializationFeature, Boolean> serializationMap = null;
+	private static Map<DeserializationFeature, Boolean> deserializationMap = null;
+	private static Map<MapperFeature, Boolean> mapperMap = null;
+	private static List<Include> aList = null;
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-	}
-
-	/**
-	 * Test method for {@link com.ejie.x38.serialization.UdaModule#UdaModule()}.
-	 */
-	@Test
-	public final void testUdaModule() {
-		fail("Not yet implemented"); // TODO
-	}
-
-	/**
-	 * Test method for {@link com.ejie.x38.serialization.UdaModule#initialize()}.
-	 */
-	@Test
-	public final void testInitialize() {
-		fail("Not yet implemented"); // TODO
-	}
-
-	/**
-	 * Test method for {@link com.ejie.x38.serialization.UdaModule#setSerializers(java.util.Map)}.
-	 */
-	@Test
-	public final void testSetSerializersMapOfClassOfQextendsObjectJsonSerializerOfObject() {
-		fail("Not yet implemented"); // TODO
-	}
-
-	/**
-	 * Test method for {@link com.ejie.x38.serialization.UdaModule#setDeserializers(java.util.Map)}.
-	 */
-	@Test
-	public final void testSetDeserializersMapOfClassOfObjectJsonDeserializerOfQextendsObject() {
-		fail("Not yet implemented"); // TODO
+		udaModule = new UdaModule();
+		serializationMap = new HashMap<SerializationFeature, Boolean>();
+		serializationMap.put(SerializationFeature.INDENT_OUTPUT, true);
+		deserializationMap = new HashMap<DeserializationFeature, Boolean>();
+		deserializationMap.put(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT, true);
+		mapperMap = new HashMap<MapperFeature, Boolean>();
+		mapperMap.put(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+		aList = new ArrayList<Include>();
+		aList.add(Include.ALWAYS);
 	}
 
 	/**
@@ -58,7 +51,8 @@ public class TestUdaModule {
 	 */
 	@Test
 	public final void testGetSerializationFeature() {
-		fail("Not yet implemented"); // TODO
+		udaModule.setSerializationFeature(serializationMap);
+		assertTrue("El get debe reflejar el set", udaModule.getSerializationFeature().equals(serializationMap));
 	}
 
 	/**
@@ -66,7 +60,8 @@ public class TestUdaModule {
 	 */
 	@Test
 	public final void testSetSerializationFeature() {
-		fail("Not yet implemented"); // TODO
+		udaModule.setSerializationFeature(serializationMap);
+		assertTrue("El get debe reflejar el set", udaModule.getSerializationFeature().equals(serializationMap));
 	}
 
 	/**
@@ -74,7 +69,8 @@ public class TestUdaModule {
 	 */
 	@Test
 	public final void testGetDeserializationFeature() {
-		fail("Not yet implemented"); // TODO
+		udaModule.setDeserializationFeature(deserializationMap);
+		assertTrue("El get debe reflejar el set", udaModule.getDeserializationFeature().equals(deserializationMap));
 	}
 
 	/**
@@ -82,7 +78,8 @@ public class TestUdaModule {
 	 */
 	@Test
 	public final void testSetDeserializationFeature() {
-		fail("Not yet implemented"); // TODO
+		udaModule.setDeserializationFeature(deserializationMap);
+		assertTrue("El get debe reflejar el set", udaModule.getDeserializationFeature().equals(deserializationMap));
 	}
 
 	/**
@@ -90,7 +87,8 @@ public class TestUdaModule {
 	 */
 	@Test
 	public final void testGetSerializationInclusions() {
-		fail("Not yet implemented"); // TODO
+		udaModule.setSerializationInclusions(aList);
+		assertTrue("El get debe reflejar el set", udaModule.getSerializationInclusions().equals(aList));
 	}
 
 	/**
@@ -98,7 +96,8 @@ public class TestUdaModule {
 	 */
 	@Test
 	public final void testSetSerializationInclusions() {
-		fail("Not yet implemented"); // TODO
+		udaModule.setSerializationInclusions(aList);
+		assertTrue("El get debe reflejar el set", udaModule.getSerializationInclusions().equals(aList));
 	}
 
 	/**
@@ -106,7 +105,8 @@ public class TestUdaModule {
 	 */
 	@Test
 	public final void testGetMapperFeature() {
-		fail("Not yet implemented"); // TODO
+		udaModule.setMapperFeature(mapperMap);
+		assertTrue("El get debe reflejar el set", udaModule.getMapperFeature().equals(mapperMap));
 	}
 
 	/**
@@ -114,7 +114,8 @@ public class TestUdaModule {
 	 */
 	@Test
 	public final void testSetMapperFeature() {
-		fail("Not yet implemented"); // TODO
+		udaModule.setMapperFeature(mapperMap);
+		assertTrue("El get debe reflejar el set", udaModule.getMapperFeature().equals(mapperMap));
 	}
 
 }
