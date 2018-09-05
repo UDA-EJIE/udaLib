@@ -5,6 +5,7 @@ package com.ejie.x38.tests.serializarion;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -64,7 +65,7 @@ public class TestCustomSerializer {
 		try {
 			jsonModelo = testSerializeDo(TestCustomSerializer.crx5);
 		} catch (IOException e) {
-			e.printStackTrace();
+			fail("IOException serializando con el CustomSerializer de un objeto con propiedad simple");
 		} finally {
 			assertTrue("No se ha realizado la serialización del objeto con propiedad simple",
 					StringUtils.isNotEmpty(jsonModelo));
@@ -84,7 +85,7 @@ public class TestCustomSerializer {
 		try {
 			jsonMarca = testSerializeDo(TestCustomSerializer.crx5);
 		} catch (IOException e) {
-			e.printStackTrace();
+			fail("IOException serializando con el CustomSerializer de un objeto con propiedad compleja");
 		} finally {
 			assertTrue("No se ha realizado la serialización del objeto con propiedad compleja",
 					StringUtils.isNotEmpty(jsonMarca));
@@ -113,7 +114,7 @@ public class TestCustomSerializer {
 			jsonGenerator = new JsonFactory().createGenerator(jsonWriter);
 			new CustomSerializer().serialize(crx5, jsonGenerator, serializerProvider);
 		} catch (Exception e) {
-			e.printStackTrace();
+			fail("Exception serializando con el CustomSerializer");
 		} finally {
 			if (jsonGenerator != null) {
 				jsonGenerator.close();

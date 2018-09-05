@@ -37,10 +37,10 @@ public class TestJsonNumberSerializer {
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() {
-		TestJsonNumberSerializer.bigDecimal1 = new BigDecimal("123.1234567890123456789");
+		TestJsonNumberSerializer.bigDecimal1 = new BigDecimal("123.000000");
 		TestJsonNumberSerializer.bigDecimal2 = new BigDecimal("123.9876543210987654321");
-		TestJsonNumberSerializer.strBigDecimal1 = "\"123,123\"";
-		TestJsonNumberSerializer.strBigDecimal2 = "\"123,988\"";
+		TestJsonNumberSerializer.strBigDecimal1 = "\"123\"";
+		TestJsonNumberSerializer.strBigDecimal2 = "\"123,9876543210987654321\"";
 	}
 
 	/**
@@ -53,24 +53,23 @@ public class TestJsonNumberSerializer {
 		try {
 			resultBigDecimal1 = this.serializeDo(TestJsonNumberSerializer.bigDecimal1);
 		} catch (IOException e) {
-			e.printStackTrace();
+			fail("IOException realizando la serialización del BigDecimal quitando ceros a la derecha");
 		} finally {
-			assertTrue("No se ha realizado la serialización del BigDecimal de dedondeo hacia abajo",
+			assertTrue("No se ha realizado la serialización del BigDecimal quitando ceros a la derecha",
 					StringUtils.isNotEmpty(resultBigDecimal1));
-			assertEquals("La serialización del BigDecimal de dedondeo hacia abajo no es correcta", resultBigDecimal1,
-					TestJsonNumberSerializer.strBigDecimal1);
+			assertEquals("La serialización del BigDecimal quitando ceros a la derecha no es correcta",
+					TestJsonNumberSerializer.strBigDecimal1, resultBigDecimal1);
 		}
 
 		String resultBigDecimal2 = null;
 		try {
-			resultBigDecimal1 = this.serializeDo(TestJsonNumberSerializer.bigDecimal2);
+			resultBigDecimal2 = this.serializeDo(TestJsonNumberSerializer.bigDecimal2);
 		} catch (IOException e) {
-			e.printStackTrace();
+			fail("IOException realizando la serialización del BigDecimal");
 		} finally {
-			assertTrue("No se ha realizado la serialización del BigDecimal de dedondeo hacia arriba",
-					StringUtils.isNotEmpty(resultBigDecimal2));
-			assertEquals("La serialización del BigDecimal de dedondeo hacia arriba no es correcta", resultBigDecimal2,
-					TestJsonNumberSerializer.strBigDecimal2);
+			assertTrue("No se ha realizado la serialización del BigDecimal", StringUtils.isNotEmpty(resultBigDecimal2));
+			assertEquals("La serialización del BigDecimal no es correcta", TestJsonNumberSerializer.strBigDecimal2,
+					resultBigDecimal2);
 		}
 	}
 
@@ -89,7 +88,7 @@ public class TestJsonNumberSerializer {
 			jsonGenerator = new JsonFactory().createGenerator(jsonWriter);
 			new JsonBigDecimalSerializer().serialize(bigDecimal, jsonGenerator, serializerProvider);
 		} catch (Exception e) {
-			e.printStackTrace();
+			fail("Exception en la serialización");
 		} finally {
 			if (jsonGenerator != null) {
 				jsonGenerator.close();

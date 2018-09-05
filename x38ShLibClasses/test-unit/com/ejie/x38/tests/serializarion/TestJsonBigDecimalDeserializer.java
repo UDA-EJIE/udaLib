@@ -5,6 +5,7 @@ package com.ejie.x38.tests.serializarion;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -45,7 +46,7 @@ public class TestJsonBigDecimalDeserializer {
 		try {
 			resultBigDecimal = deserializeBigDecimal(TestJsonBigDecimalDeserializer.strBigDecimal, factory, jsonParser);
 		} catch (IOException e) {
-			e.printStackTrace();
+			fail("IOException deserializando el BigDecimal");
 		}
 
 		// Ejecución de los métodos de prueba
@@ -64,7 +65,7 @@ public class TestJsonBigDecimalDeserializer {
 			bd = new JsonBigDecimalDeserializer().deserialize(jsonParser, null);
 			jsonParser.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			fail("Exception deserializando el BigDecimal");
 		} finally {
 			if (jsonParser != null) {
 				jsonParser.close();

@@ -5,6 +5,7 @@ package com.ejie.x38.tests.serializarion;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -48,7 +49,7 @@ public class TestJsonBigDecimalSerializer {
 		try {
 			resultBigDecimal = this.serializeBigDecimalDo(TestJsonBigDecimalSerializer.bigDecimal);
 		} catch (IOException e) {
-			e.printStackTrace();
+			fail("IOException serializando el BigDecimal");
 		} finally {
 			assertTrue("No se ha realizado la serialización del BigDecimal", StringUtils.isNotEmpty(resultBigDecimal));
 			assertEquals("La serialización del BigDecimal no es correcta", resultBigDecimal,
@@ -71,7 +72,7 @@ public class TestJsonBigDecimalSerializer {
 			jsonGenerator = new JsonFactory().createGenerator(jsonWriter);
 			new JsonBigDecimalSerializer().serialize(bigDecimal, jsonGenerator, serializerProvider);
 		} catch (Exception e) {
-			e.printStackTrace();
+			fail("Exception serializando el BigDecimal");
 		} finally {
 			if (jsonGenerator != null) {
 				jsonGenerator.close();

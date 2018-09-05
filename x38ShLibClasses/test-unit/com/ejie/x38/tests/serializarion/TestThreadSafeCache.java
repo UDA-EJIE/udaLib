@@ -3,12 +3,11 @@
  */
 package com.ejie.x38.tests.serializarion;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.ejie.x38.serialization.ThreadSafeCache;
@@ -18,18 +17,11 @@ import com.ejie.x38.serialization.ThreadSafeCache;
  *
  */
 public class TestThreadSafeCache {
-	
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-	}
 
 	/**
-	 * Test method for {@link com.ejie.x38.serialization.ThreadSafeCache#addValue(java.lang.String, java.lang.String)}.
+	 * Test method for
+	 * {@link com.ejie.x38.serialization.ThreadSafeCache#addValue(java.lang.String, java.lang.String)}.
 	 */
-	@SuppressWarnings("static-access")
 	@Test
 	public final void testAddValue() {
 		String val = "1";
@@ -42,22 +34,23 @@ public class TestThreadSafeCache {
 	 */
 	@Test
 	public final void testGetMap() {
-		Map expected = new HashMap();
+		Map<String,String> expected = new HashMap<String,String>();
 		expected.put("val1", "1");
-		Map obj = ThreadSafeCache.getMap();
-		
+		Map<?,?> obj = ThreadSafeCache.getMap();
+
 		assertTrue("Debe devolver el mismo objeto", expected.equals(obj));
 	}
 
 	/**
-	 * Test method for {@link com.ejie.x38.serialization.ThreadSafeCache#clearCurrentThreadCache()}.
+	 * Test method for
+	 * {@link com.ejie.x38.serialization.ThreadSafeCache#clearCurrentThreadCache()}.
 	 */
 	@Test
 	public final void testClearCurrentThreadCache() {
-		Map expected = new HashMap();
+		Map<?,?> expected = new HashMap<Object,Object>();
 		ThreadSafeCache.clearCurrentThreadCache();
-		Map obj = ThreadSafeCache.getMap();
-		
+		Map<?,?> obj = ThreadSafeCache.getMap();
+
 		assertTrue("Debe devolver el mismo objeto", expected.equals(obj));
 	}
 

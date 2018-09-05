@@ -3,10 +3,11 @@
  */
 package com.ejie.x38.tests.serializarion;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -25,28 +26,31 @@ public class TestJsonTimeDeserializer {
 
 	private static Timestamp timestamp;
 	private static String strTimestamp;
+
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
+	public static void setUpBeforeClass() throws ParseException {
 		String strTime = "12:30:00";
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 		Date date = sdf.parse(strTime);
 		timestamp = new Timestamp(date.getTime());
-		strTimestamp = strTime;                                                                                                                                                        
+		strTimestamp = strTime;
 	}
 
 	/**
-	 * Test method for {@link com.ejie.x38.serialization.JsonTimeDeserializer#deserialize(com.fasterxml.jackson.core.JsonParser, com.fasterxml.jackson.databind.DeserializationContext)}.
-	 * @throws IOException 
+	 * Test method for
+	 * {@link com.ejie.x38.serialization.JsonTimeDeserializer#deserialize(com.fasterxml.jackson.core.JsonParser, com.fasterxml.jackson.databind.DeserializationContext)}.
+	 * 
+	 * @throws IOException
 	 */
 	@Test
 	public final void testDeserializeJsonParserDeserializationContext() throws IOException {
 		Timestamp resTime = deserializeTime(strTimestamp, new JsonFactory());
 		assertTrue("Debe devolver el Timestamp correcto", timestamp.equals(resTime));
 	}
-	
+
 	private Timestamp deserializeTime(String strTime, JsonFactory factory) throws IOException {
 		Timestamp ret = null;
 		JsonParser jsonParser = null;
