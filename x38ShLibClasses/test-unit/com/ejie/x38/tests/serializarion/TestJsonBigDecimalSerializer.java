@@ -11,10 +11,12 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.math.BigDecimal;
+import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 import com.ejie.x38.serialization.JsonBigDecimalSerializer;
 import com.fasterxml.jackson.core.JsonFactory;
@@ -28,15 +30,17 @@ import com.fasterxml.jackson.databind.SerializerProvider;
  */
 public class TestJsonBigDecimalSerializer {
 	private static BigDecimal bigDecimal;
-	private static String strBigDecimal;
+	private static String strBigDecimalEs;
+	private static String strBigDecimalEu;
 
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() {
-		TestJsonBigDecimalSerializer.bigDecimal = new BigDecimal("123.1234567890123456789");
-		TestJsonBigDecimalSerializer.strBigDecimal = "\"123,1234567890123456789\"";
+		TestJsonBigDecimalSerializer.bigDecimal = new BigDecimal("9123000.1234567890123456789");
+		TestJsonBigDecimalSerializer.strBigDecimalEs = "\"9.123.000,1234567890123456789\"";
+		TestJsonBigDecimalSerializer.strBigDecimalEu = "\"9.123.000,1234567890123456789\"";
 	}
 
 	/**
@@ -47,13 +51,27 @@ public class TestJsonBigDecimalSerializer {
 	public final void serializeBigDecimal() {
 		String resultBigDecimal = null;
 		try {
+			LocaleContextHolder.setLocale(new Locale("es"));
 			resultBigDecimal = this.serializeBigDecimalDo(TestJsonBigDecimalSerializer.bigDecimal);
 		} catch (IOException e) {
-			fail("IOException serializando el BigDecimal");
+			fail("IOException serializando el BigDecimal en castellano");
 		} finally {
-			assertTrue("No se ha realizado la serialización del BigDecimal", StringUtils.isNotEmpty(resultBigDecimal));
-			assertEquals("La serialización del BigDecimal no es correcta", resultBigDecimal,
-					TestJsonBigDecimalSerializer.strBigDecimal);
+			assertTrue("No se ha realizado la serialización del BigDecimal en castellano",
+					StringUtils.isNotEmpty(resultBigDecimal));
+			assertEquals("La serialización del BigDecimal en castellano no es correcta",
+					TestJsonBigDecimalSerializer.strBigDecimalEs, resultBigDecimal);
+		}
+
+		try {
+			LocaleContextHolder.setLocale(new Locale("eu"));
+			resultBigDecimal = this.serializeBigDecimalDo(TestJsonBigDecimalSerializer.bigDecimal);
+		} catch (IOException e) {
+			fail("IOException serializando el BigDecimal en euskera");
+		} finally {
+			assertTrue("No se ha realizado la serialización del BigDecimal en euskera",
+					StringUtils.isNotEmpty(resultBigDecimal));
+			assertEquals("La serialización del BigDecimal en euskera no es correcta",
+					TestJsonBigDecimalSerializer.strBigDecimalEu, resultBigDecimal);
 		}
 	}
 

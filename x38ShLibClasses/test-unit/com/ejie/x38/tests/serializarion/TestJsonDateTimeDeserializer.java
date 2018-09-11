@@ -3,25 +3,25 @@
  */
 package com.ejie.x38.tests.serializarion;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.context.i18n.LocaleContextHolder;
 
-import com.ejie.x38.serialization.JsonDateTimeSerializer;
+import com.ejie.x38.serialization.JsonDateTimeDeserializer;
+import com.ejie.x38.util.DateTimeManager;
 import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.core.JsonParser;
 
 /**
  * @author llaparra
@@ -29,64 +29,82 @@ import com.fasterxml.jackson.databind.SerializerProvider;
  */
 public class TestJsonDateTimeDeserializer {
 
-	private static Timestamp dateTime;
-	private static String strDateTime;
+	private static Timestamp dateTimeEs;
+	private static String strDateTimeEs;
+	private static Locale localeEs = new Locale("es");
+
+	private static Timestamp dateTimeEu;
+	private static String strDateTimeEu;
+	private static Locale localeEu = new Locale("eu");
 
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() {
-		Date date;
-		String strDate;
-		strDate = "02/06/1995 00:00:00";
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+		strDateTimeEs = "02/06/1995 13:45:11";
+		SimpleDateFormat sdfEs = DateTimeManager.getTimestampFormat(localeEs);
 		try {
-			date = sdf.parse(strDate);
-			dateTime = new Timestamp(date.getTime());
+			dateTimeEs = new Timestamp(sdfEs.parse(strDateTimeEs).getTime());
 		} catch (ParseException e) {
 			fail("ParseException inicializando el caso de prueba");
 		}
-		strDateTime = "02/06/1995 00:00:00";
+
+		strDateTimeEu = "1995/06/02 13:45:11";
+		SimpleDateFormat sdfEu = DateTimeManager.getTimestampFormat(localeEu);
+		try {
+			dateTimeEu = new Timestamp(sdfEu.parse(strDateTimeEu).getTime());
+		} catch (ParseException e) {
+			fail("ParseException inicializando el caso de prueba");
+		}
 	}
 
 	/**
 	 * Test method for
-	 * {@link com.ejie.x38.serialization.JsonDateSerializer#serialize(java.util.Date, com.fasterxml.jackson.core.JsonGenerator, com.fasterxml.jackson.databind.SerializerProvider)}.
+	 * {@link com.ejie.x38.serialization.JsonDateTimeSerializer#serialize(java.util.Date, com.fasterxml.jackson.core.JsonGenerator, com.fasterxml.jackson.databind.SerializerProvider)}.
 	 * 
 	 * @throws IOException
 	 */
 	@Test
-	public final void testSerialize() throws IOException {
-		String parsed = dateTimeSerialize();
-		String expected = "\"" + strDateTime + "\"";
-		assertTrue("Debe devolver la fecha (entrecomillada) en string", parsed.equals(expected));
-	}
-
-	private String dateTimeSerialize() throws IOException {
-		String ret = "";
-		Writer jsonWriter = new StringWriter();
-		SerializerProvider serializerProvider = new ObjectMapper().getSerializerProvider();
-		JsonGenerator jsonGenerator = null;
+	public final void testDeserialize() throws IOException {
+		JsonFactory factory = new JsonFactory();
 
 		try {
-			jsonGenerator = new JsonFactory().createGenerator(jsonWriter);
-			new JsonDateTimeSerializer().serialize(dateTime, jsonGenerator, serializerProvider);
+			LocaleContextHolder.setLocale(localeEs);
+			Date deserializedEs = deserializeDateTime(strDateTimeEs, factory);
+			assertNotNull("El resultado no debe ser nulo", deserializedEs);
+
+			if (deserializedEs != null) {
+				assertTrue("Debe devolver levolver la fecha con la hora en español", deserializedEs.equals(dateTimeEs));
+			}
+
+			LocaleContextHolder.setLocale(localeEu);
+			Date deserializedEu = deserializeDateTime(strDateTimeEu, factory);
+			assertNotNull("El resultado no debe ser nulo", deserializedEu);
+
+			if (deserializedEu != null) {
+				assertTrue("Debe devolver levolver la fecha con la hora en euskera", deserializedEu.equals(dateTimeEu));
+			}
+		} catch (IOException e) {
+			fail("IOException al deserializar el DateTime");
+		}
+	}
+
+	private Date deserializeDateTime(String datetime, JsonFactory factory) throws IOException {
+		Date ret = null;
+		JsonParser jsonParser = null;
+		try {
+			jsonParser = factory.createParser("\"" + datetime + "\"");
+			jsonParser.nextToken();
+			ret = new JsonDateTimeDeserializer().deserialize(jsonParser, null);
+			jsonParser.close();
 		} catch (Exception e) {
 			fail("Exception deserializando la fecha");
 		} finally {
-			if (jsonGenerator != null) {
-				jsonGenerator.close();
-				jsonGenerator.flush();
-
-				ret = String.valueOf(jsonWriter);
-
-				jsonWriter.close();
-				jsonWriter.flush();
+			if (jsonParser != null) {
+				jsonParser.close();
 			}
 		}
-
 		return ret;
 	}
-
 }

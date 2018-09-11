@@ -3,7 +3,7 @@
  */
 package com.ejie.x38.tests.serializarion;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
@@ -12,9 +12,11 @@ import java.io.Writer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 import com.ejie.x38.serialization.JsonDateSerializer;
 import com.fasterxml.jackson.core.JsonFactory;
@@ -29,17 +31,19 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 public class TestJsonDateSerializer {
 
 	private static Date date;
-	private static String strDate;
+	private static String strDateEs;
+	private static String strDateEu;
 
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() {
-		strDate = "02/06/1995";
+		strDateEs = "02/06/1995";
+		strDateEu = "1995/06/02";
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		try {
-			date = sdf.parse(strDate);
+			date = sdf.parse(strDateEs);
 		} catch (ParseException e) {
 			fail("ParseException inicializando el caso de prueba");
 		}
@@ -53,9 +57,15 @@ public class TestJsonDateSerializer {
 	 */
 	@Test
 	public final void testSerialize() throws IOException {
-		String parsed = dateSerialize();
-		String expected = "\"" + strDate + "\"";
-		assertTrue("Debe devolver la fecha (entrecomillada) en string", parsed.equals(expected));
+		LocaleContextHolder.setLocale(new Locale("es"));
+		String parsedEs = dateSerialize();
+		String expectedEs = "\"" + strDateEs + "\"";
+		assertEquals("Debe devolver la fecha (entrecomillada) en español en string", expectedEs, parsedEs);
+
+		LocaleContextHolder.setLocale(new Locale("eu"));
+		String parsedEu = dateSerialize();
+		String expectedEu = "\"" + strDateEu + "\"";
+		assertEquals("Debe devolver la fecha (entrecomillada) en euskera en string", expectedEu, parsedEu);
 	}
 
 	private String dateSerialize() throws IOException {

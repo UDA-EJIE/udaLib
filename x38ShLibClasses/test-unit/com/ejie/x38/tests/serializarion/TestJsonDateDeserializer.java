@@ -3,15 +3,19 @@
  */
 package com.ejie.x38.tests.serializarion;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 import com.ejie.x38.serialization.JsonDateDeserializer;
 import com.fasterxml.jackson.core.JsonFactory;
@@ -24,17 +28,19 @@ import com.fasterxml.jackson.core.JsonParser;
 public class TestJsonDateDeserializer {
 
 	private static Date date;
-	private static String strDate;
+	private static String strDateEs;
+	private static String strDateEu;
 
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() {
-		strDate = "02/06/1995";
+		strDateEs = "02/06/1995";
+		strDateEu = "1995/06/02";
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		try {
-			date = sdf.parse(strDate);
+			date = sdf.parse(strDateEs);
 		} catch (ParseException e) {
 			fail("ParseException inicializando el caso de prueba");
 		}
@@ -51,11 +57,18 @@ public class TestJsonDateDeserializer {
 		Date resDate;
 		JsonFactory factory = new JsonFactory();
 
-		resDate = dateDeserialize(strDate, factory);
-
-		assertNotNull("El resultado de la deserialización no debe ser nulo", resDate);
+		LocaleContextHolder.setLocale(new Locale("es"));
+		resDate = dateDeserialize(strDateEs, factory);
+		assertNotNull("El resultado de la deserialización en español no debe ser nulo", resDate);
 		if (resDate != null) {
-			assertTrue("Debe devolver la fecha", resDate.equals(date));
+			assertEquals("Debe devolver la fecha en español", date, resDate);
+		}
+
+		LocaleContextHolder.setLocale(new Locale("eu"));
+		resDate = dateDeserialize(strDateEu, factory);
+		assertNotNull("El resultado de la deserialización en euskera no debe ser nulo", resDate);
+		if (resDate != null) {
+			assertEquals("Debe devolver la fecha en euskera", date, resDate);
 		}
 	}
 
