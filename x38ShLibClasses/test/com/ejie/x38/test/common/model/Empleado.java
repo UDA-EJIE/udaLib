@@ -4,6 +4,12 @@
 package com.ejie.x38.test.common.model;
 
 import java.io.Serializable;
+import java.util.Date;
+
+import com.ejie.x38.serialization.JsonDateDeserializer;
+import com.ejie.x38.serialization.JsonDateSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * @author llaparra
@@ -18,6 +24,7 @@ public class Empleado implements Serializable {
 	private String nombre;
 	private String apellido1;
 	private String apellido2;
+	private Date fechaNacimiento;
 
 	public Empleado() {
 	}
@@ -27,11 +34,9 @@ public class Empleado implements Serializable {
 	 * @param apellido1
 	 * @param apellido2
 	 */
-	public Empleado(String nombre, String apellido1, String apellido2) {
+	public Empleado(String nombre) {
 		super();
 		this.nombre = nombre;
-		this.apellido1 = apellido1;
-		this.apellido2 = apellido2;
 	}
 
 	/**
@@ -76,6 +81,22 @@ public class Empleado implements Serializable {
 		this.apellido2 = apellido2;
 	}
 
+	/**
+	 * @return the fechaNacimiento
+	 */
+	@JsonSerialize(using = JsonDateSerializer.class)
+	public Date getFechaNacimiento() {
+		return fechaNacimiento;
+	}
+
+	/**
+	 * @param fechaNacimiento the fechaNacimiento to set
+	 */
+	@JsonDeserialize(using = JsonDateDeserializer.class)
+	public void setFechaNacimiento(Date fechaNacimiento) {
+		this.fechaNacimiento = fechaNacimiento;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -85,7 +106,9 @@ public class Empleado implements Serializable {
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Empleado [nombre=").append(nombre).append(", apellido1=").append(apellido1)
-				.append(", apellido2=").append(apellido2).append("]");
+				.append(", apellido2=").append(apellido2).append(", fechaNacimiento=").append(fechaNacimiento)
+				.append("]");
 		return builder.toString();
 	}
+
 }

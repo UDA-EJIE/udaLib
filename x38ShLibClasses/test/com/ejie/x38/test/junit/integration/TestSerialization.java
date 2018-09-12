@@ -11,6 +11,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Locale;
 
 import javax.annotation.Resource;
@@ -19,7 +20,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -98,53 +98,74 @@ public class TestSerialization {
 		Locale localeEs = new Locale("es");
 		Locale localeEu = new Locale("eu");
 
-		Empleado eneko = new Empleado("Eneko", null, null);
-		Empleado laura = new Empleado("Laura", null, null);
+		Empleado eneko = new Empleado("Eneko");
+		Empleado laura = new Empleado("Laura");
 		Marca foo = new Marca("Foo", null, Arrays.asList(eneko, laura));
 		Coche crx5 = new Coche("CRX-5", foo);
 		crx5.setCoste(BigDecimal.valueOf(9123000.0123456789));
 
-		String strDateTime = "02/06/1995 13:45:11";
-		SimpleDateFormat sdf = DateTimeManager.getTimestampFormat(localeEs);
+		String strFechaConstruccion = "02/06/1995 13:45:11";
+		String strFecNacEneko = "01/01/1981";
+		String strFecNacLaura = "12/12/1992";
+		SimpleDateFormat sdtf = DateTimeManager.getTimestampFormat(localeEs);
+		SimpleDateFormat sdf = DateTimeManager.getDateTimeFormat(localeEs);
 
 		try {
-			crx5.setFechaConstruccion(new Timestamp(sdf.parse(strDateTime).getTime()));
+			crx5.setFechaConstruccion(new Timestamp(sdtf.parse(strFechaConstruccion).getTime()));
+			eneko.setFechaNacimiento(new Date(sdf.parse(strFecNacEneko).getTime()));
+			laura.setFechaNacimiento(new Date(sdf.parse(strFecNacLaura).getTime()));
 		} catch (ParseException e) {
 			fail("ParseException inicializando el objeto para el caso de prueba");
 		}
 
-		String jsonRes = "";
+		String jsonResEs = "";
+		String jsonResEu = "";
 		try {
-			jsonRes = this.serialize(crx5);
+			String modelo = crx5.getModelo();
+			crx5.setModelo(modelo + "_ES");
+			jsonResEs = this.serialize(crx5);
+			crx5.setModelo(modelo + "_EU");
+			jsonResEu = this.serialize(crx5);
 		} catch (JsonProcessingException e1) {
 			fail("Exception serializando el objeto que se va a comprobar en la prueba");
 		}
 
-		String jsonReqEs = "{\"modelo\":\"CRX-5\",\"marca\":{\"nombre\":\"Foo\",\"empleados\":[{\"nombre\":\"Eneko\"},{\"nombre\":\"Laura\"}]},\"fechaConstruccion\":\"02/06/1995 13:45:11\",\"coste\":\"9.123.000,01234568\"}";
-		String jsonReqEu = "{\"modelo\":\"CRX-5\",\"marca\":{\"nombre\":\"Foo\",\"empleados\":[{\"nombre\":\"Eneko\"},{\"nombre\":\"Laura\"}]},\"fechaConstruccion\":\"1995/06/02 13:45:11\",\"coste\":\"9.123.000,01234568\"}";
-
-		LocaleContextHolder.setLocale(localeEs);
+		String jsonReqEs = "{\"modelo\":\"CRX-5_ES\",\"marca\":{\"nombre\":\"Foo\",\"empleados\":[{\"nombre\":\"Eneko\",\"fechaNacimiento\":\"01/01/1981\"},{\"nombre\":\"Laura\",\"fechaNacimiento\":\"12/12/1992\"}]},\"fechaConstruccion\":\"02/06/1995 13:45:11\",\"coste\":\"9.123.000,01234568\"}";
+		String jsonReqEu = "{\"modelo\":\"CRX-5_EU\",\"marca\":{\"nombre\":\"Foo\",\"empleados\":[{\"nombre\":\"Eneko\",\"fechaNacimiento\":\"1981/01/01\"},{\"nombre\":\"Laura\",\"fechaNacimiento\":\"1992/12/12\"}]},\"fechaConstruccion\":\"1995/06/02 13:45:11\",\"coste\":\"9.123.000,01234568\"}";
 
 		try {
-			mockMvc.perform(post("/serialization/serialize").contentType(MediaType.APPLICATION_JSON)
-					.accept(MediaType.ALL).content(jsonReqEs))
+
+			mockMvc.perform(post("/serialization/serialize")
+
+					.contentType(MediaType.APPLICATION_JSON)
+
+					.accept(MediaType.ALL)
+
+					.locale(localeEs)
+
+					.content(jsonReqEs))
 
 					.andExpect(status().is(200))
 
-					.andExpect(content().string(jsonRes));
+					.andExpect(content().string(jsonResEs));
 		} catch (Exception e) {
 			fail("Exception al realizar la petición POST con el controller de prueba de serialización en castellano [/serialization/serialize]");
 		}
 
-		LocaleContextHolder.setLocale(localeEu);
-
 		try {
-			mockMvc.perform(post("/serialization/serialize").contentType(MediaType.APPLICATION_JSON)
-					.accept(MediaType.ALL).content(jsonReqEu))
+			mockMvc.perform(post("/serialization/serialize")
+
+					.contentType(MediaType.APPLICATION_JSON)
+
+					.accept(MediaType.ALL)
+
+					.locale(localeEu)
+
+					.content(jsonReqEu))
 
 					.andExpect(status().is(200))
 
-					.andExpect(content().string(jsonRes));
+					.andExpect(content().string(jsonResEu));
 		} catch (Exception e) {
 			fail("Exception al realizar la petición POST con el controller de prueba de serialización en euskera [/serialization/serialize]");
 		}

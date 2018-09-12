@@ -7,6 +7,13 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.ejie.x38.serialization.JsonBigDecimalDeserializer;
+import com.ejie.x38.serialization.JsonBigDecimalSerializer;
+import com.ejie.x38.serialization.JsonDateTimeDeserializer;
+import com.ejie.x38.serialization.JsonDateTimeSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 /**
  * @author llaparra
  *
@@ -94,6 +101,7 @@ public class Coche implements Serializable {
 	/**
 	 * @return the fechaConstruccion
 	 */
+	@JsonSerialize(using = JsonDateTimeSerializer.class)
 	public Date getFechaConstruccion() {
 		return fechaConstruccion;
 	}
@@ -101,6 +109,7 @@ public class Coche implements Serializable {
 	/**
 	 * @param fechaConstruccion the fechaConstruccion to set
 	 */
+	@JsonDeserialize(using = JsonDateTimeDeserializer.class)
 	public void setFechaConstruccion(Date fechaConstruccion) {
 		this.fechaConstruccion = fechaConstruccion;
 	}
@@ -108,6 +117,7 @@ public class Coche implements Serializable {
 	/**
 	 * @return the coste
 	 */
+	@JsonSerialize(using = JsonBigDecimalSerializer.class)
 	public BigDecimal getCoste() {
 		return coste;
 	}
@@ -115,6 +125,7 @@ public class Coche implements Serializable {
 	/**
 	 * @param coste the coste to set
 	 */
+	@JsonDeserialize(using = JsonBigDecimalDeserializer.class)
 	public void setCoste(BigDecimal coste) {
 		this.coste = coste;
 	}

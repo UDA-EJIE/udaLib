@@ -16,6 +16,7 @@
 package com.ejie.x38.test.control;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
@@ -73,9 +74,8 @@ public class SerializationController {
 	}
 
 	@RequestMapping(value = "serialize", method = RequestMethod.POST)
-	public @ResponseBody Object serialize(@RequestBody Coche coche) {
-		SerializationController.logger.info("[POST][/serialization/serialize]serialize");
-
+	public @ResponseBody Object serialize(@RequestBody String json, @RequestBody Coche coche, Locale locale) {
+		SerializationController.logger.info("[POST][/serialization/serialize]serialize("+json+")");
 		return coche;
 	}
 
