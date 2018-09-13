@@ -41,7 +41,8 @@ public class TestCustomSerializer {
 	public static void setUpBeforeClass() {
 		Empleado eneko = new Empleado("Eneko");
 		Empleado laura = new Empleado("Laura");
-		Marca foo = new Marca("Foo", null, Arrays.asList(eneko, laura));
+		Marca foo = new Marca("Foo");
+		foo.setEmpleados(Arrays.asList(eneko, laura));
 		TestCustomSerializer.crx5 = new Coche("CRX-5", foo);
 	}
 

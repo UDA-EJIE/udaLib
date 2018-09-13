@@ -5,12 +5,17 @@ package com.ejie.x38.test.common.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Date;
 
 import com.ejie.x38.serialization.JsonBigDecimalDeserializer;
 import com.ejie.x38.serialization.JsonBigDecimalSerializer;
 import com.ejie.x38.serialization.JsonDateTimeDeserializer;
 import com.ejie.x38.serialization.JsonDateTimeSerializer;
+import com.ejie.x38.serialization.JsonNumberDeserializer;
+import com.ejie.x38.serialization.JsonNumberSerializer;
+import com.ejie.x38.serialization.JsonTimeDeserializer;
+import com.ejie.x38.serialization.JsonTimeSerializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -25,7 +30,9 @@ public class Coche implements Serializable {
 	private Integer numPuertas;
 	private String tipoMotor;
 	private Date fechaConstruccion;
+	private Timestamp tiempoConstruccion;
 	private BigDecimal coste;
+	private BigDecimal precio;
 
 	public Coche() {
 	}
@@ -128,6 +135,38 @@ public class Coche implements Serializable {
 	@JsonDeserialize(using = JsonBigDecimalDeserializer.class)
 	public void setCoste(BigDecimal coste) {
 		this.coste = coste;
+	}
+
+	/**
+	 * @return the tiempoConstruccion
+	 */
+	@JsonSerialize(using = JsonTimeSerializer.class)
+	public Timestamp getTiempoConstruccion() {
+		return tiempoConstruccion;
+	}
+
+	/**
+	 * @param tiempoConstruccion the tiempoConstruccion to set
+	 */
+	@JsonDeserialize(using = JsonTimeDeserializer.class)
+	public void setTiempoConstruccion(Timestamp tiempoConstruccion) {
+		this.tiempoConstruccion = tiempoConstruccion;
+	}
+
+	/**
+	 * @return the precio
+	 */
+	@JsonSerialize(using = JsonNumberSerializer.class)
+	public BigDecimal getPrecio() {
+		return precio;
+	}
+
+	/**
+	 * @param precio the precio to set
+	 */
+	@JsonDeserialize(using = JsonNumberDeserializer.class)
+	public void setPrecio(BigDecimal precio) {
+		this.precio = precio;
 	}
 
 	/*

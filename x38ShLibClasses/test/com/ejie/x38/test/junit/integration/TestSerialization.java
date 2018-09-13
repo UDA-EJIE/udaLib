@@ -30,10 +30,12 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.ejie.x38.IframeXHREmulationFilter;
 import com.ejie.x38.UdaFilter;
+import com.ejie.x38.serialization.ThreadSafeCache;
 import com.ejie.x38.serialization.UdaMappingJackson2HttpMessageConverter;
 import com.ejie.x38.test.common.model.Coche;
 import com.ejie.x38.test.common.model.Empleado;
 import com.ejie.x38.test.common.model.Marca;
+import com.ejie.x38.test.common.model.NoraPais;
 import com.ejie.x38.test.control.SerializationController;
 import com.ejie.x38.util.DateTimeManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -100,18 +102,28 @@ public class TestSerialization {
 
 		Empleado eneko = new Empleado("Eneko");
 		Empleado laura = new Empleado("Laura");
-		Marca foo = new Marca("Foo", null, Arrays.asList(eneko, laura));
+		Marca foo = new Marca("Foo");
+		foo.setEmpleados(Arrays.asList(eneko, laura));
+		foo.setPais(new NoraPais("108", "España"));
 		Coche crx5 = new Coche("CRX-5", foo);
 		crx5.setCoste(BigDecimal.valueOf(9123000.0123456789));
+		crx5.setPrecio(BigDecimal.valueOf(9123230.3456789));
+
+		// ThreadSafeCache para el CustomSerializer de marca.pais
+		ThreadSafeCache.clearCurrentThreadCache();
+		ThreadSafeCache.addValue("dsO", "dsO");
 
 		String strFechaConstruccion = "02/06/1995 13:45:11";
+		String strTiempoConstruccion = "12:30:22";
 		String strFecNacEneko = "01/01/1981";
 		String strFecNacLaura = "12/12/1992";
 		SimpleDateFormat sdtf = DateTimeManager.getTimestampFormat(localeEs);
+		SimpleDateFormat stf = new SimpleDateFormat("HH:mm:ss");
 		SimpleDateFormat sdf = DateTimeManager.getDateTimeFormat(localeEs);
 
 		try {
 			crx5.setFechaConstruccion(new Timestamp(sdtf.parse(strFechaConstruccion).getTime()));
+			crx5.setTiempoConstruccion(new Timestamp(stf.parse(strTiempoConstruccion).getTime()));
 			eneko.setFechaNacimiento(new Date(sdf.parse(strFecNacEneko).getTime()));
 			laura.setFechaNacimiento(new Date(sdf.parse(strFecNacLaura).getTime()));
 		} catch (ParseException e) {
@@ -130,8 +142,8 @@ public class TestSerialization {
 			fail("Exception serializando el objeto que se va a comprobar en la prueba");
 		}
 
-		String jsonReqEs = "{\"modelo\":\"CRX-5_ES\",\"marca\":{\"nombre\":\"Foo\",\"empleados\":[{\"nombre\":\"Eneko\",\"fechaNacimiento\":\"01/01/1981\"},{\"nombre\":\"Laura\",\"fechaNacimiento\":\"12/12/1992\"}]},\"fechaConstruccion\":\"02/06/1995 13:45:11\",\"coste\":\"9.123.000,01234568\"}";
-		String jsonReqEu = "{\"modelo\":\"CRX-5_EU\",\"marca\":{\"nombre\":\"Foo\",\"empleados\":[{\"nombre\":\"Eneko\",\"fechaNacimiento\":\"1981/01/01\"},{\"nombre\":\"Laura\",\"fechaNacimiento\":\"1992/12/12\"}]},\"fechaConstruccion\":\"1995/06/02 13:45:11\",\"coste\":\"9.123.000,01234568\"}";
+		String jsonReqEs = "{\"modelo\":\"CRX-5_ES\",\"tiempoConstruccion\":\"12:30:22\",\"precio\":\"9.123.230,3456789\",\"marca\":{\"nombre\":\"Foo\",\"pais\":{\"dsO\":\"España\"},\"empleados\":[{\"nombre\":\"Eneko\",\"fechaNacimiento\":\"01/01/1981\"},{\"nombre\":\"Laura\",\"fechaNacimiento\":\"12/12/1992\"}]},\"fechaConstruccion\":\"02/06/1995 13:45:11\",\"coste\":\"9.123.000,01234568\"}";
+		String jsonReqEu = "{\"modelo\":\"CRX-5_EU\",\"tiempoConstruccion\":\"12:30:22\",\"precio\":\"9.123.230,3456789\",\"marca\":{\"nombre\":\"Foo\",\"pais\":{\"dsO\":\"España\"},\"empleados\":[{\"nombre\":\"Eneko\",\"fechaNacimiento\":\"1981/01/01\"},{\"nombre\":\"Laura\",\"fechaNacimiento\":\"1992/12/12\"}]},\"fechaConstruccion\":\"1995/06/02 13:45:11\",\"coste\":\"9.123.000,01234568\"}";
 
 		try {
 

@@ -6,6 +6,9 @@ package com.ejie.x38.test.common.model;
 import java.io.Serializable;
 import java.util.List;
 
+import com.ejie.x38.serialization.CustomSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 /**
  * @author llaparra
  *
@@ -16,7 +19,7 @@ public class Marca implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private String nombre;
-	private String pais;
+	private NoraPais pais;
 	private List<Empleado> empleados;
 
 	public Marca() {
@@ -27,11 +30,9 @@ public class Marca implements Serializable {
 	 * @param pais
 	 * @param empleados
 	 */
-	public Marca(String nombre, String pais, List<Empleado> empleados) {
+	public Marca(String nombre) {
 		super();
 		this.nombre = nombre;
-		this.pais = pais;
-		this.empleados = empleados;
 	}
 
 	/**
@@ -51,14 +52,15 @@ public class Marca implements Serializable {
 	/**
 	 * @return the pais
 	 */
-	public String getPais() {
+	@JsonSerialize(using = CustomSerializer.class)
+	public NoraPais getPais() {
 		return pais;
 	}
 
 	/**
 	 * @param pais the pais to set
 	 */
-	public void setPais(String pais) {
+	public void setPais(NoraPais pais) {
 		this.pais = pais;
 	}
 
