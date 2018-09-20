@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import javax.annotation.Resource;
+import javax.servlet.Filter;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -44,13 +46,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Eurohelp S.L.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(loader = X38TestingContextLoader.class, classes = { X38TestingApplicationContext.class })
+@WebAppConfiguration
+@ContextConfiguration(loader = X38TestingContextLoader.class, classes = X38TestingApplicationContext.class)
 public class TestSerialization {
 
 	@Resource
 	private WebApplicationContext webApplicationContext;
 
 	private MockMvc mockMvc;
+
+	@Autowired
+	private Filter springSecurityFilterChain;
 
 	@Autowired
 	private UdaFilter udaFilter;
@@ -66,7 +72,7 @@ public class TestSerialization {
 
 				.webAppContextSetup(webApplicationContext)
 
-				.addFilters(udaFilter)
+				.addFilters(udaFilter, springSecurityFilterChain)
 
 				.build();
 
