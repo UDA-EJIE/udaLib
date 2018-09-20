@@ -31,11 +31,13 @@ import com.ejie.x38.test.common.model.Alumno;
 import com.ejie.x38.test.common.model.Comarca;
 import com.ejie.x38.test.common.model.Departamento;
 import com.ejie.x38.test.common.utils.TestMessages;
+import com.ejie.x38.test.junit.integration.config.X38TestingApplicationContext;
+import com.ejie.x38.test.junit.integration.config.X38TestingContextLoader;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(loader = WebContextLoader.class, classes = {ExampleApplicationContext.class})
+@ContextConfiguration(loader = X38TestingContextLoader.class, classes = {X38TestingApplicationContext.class})
 //@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
 //    DirtiesContextTestExecutionListener.class,
 //    TransactionalTestExecutionListener.class})

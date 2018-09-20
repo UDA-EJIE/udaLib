@@ -93,5 +93,10 @@
 	<classpathentry kind="lib" path="lib/n38i.jar"/>
 	<classpathentry kind="lib" path="lib/y31bIfaz-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/y31cImpl-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/tiles-api-2.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/tiles-core-2.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/tiles-jsp-2.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/tiles-servlet-2.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/tiles-template-2.2.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

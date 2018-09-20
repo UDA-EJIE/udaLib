@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.ejie.x38.test.junit.unit.serializarion;
 
 import static org.junit.Assert.assertTrue;
@@ -20,8 +17,7 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
- * @author llaparra
- *
+ * @author Eurohelp S.L.
  */
 public class TestUdaModule {
 

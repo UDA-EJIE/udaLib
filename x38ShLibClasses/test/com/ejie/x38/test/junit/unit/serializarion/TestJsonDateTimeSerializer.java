@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.ejie.x38.test.junit.unit.serializarion;
 
 import static org.junit.Assert.assertTrue;
@@ -26,8 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
 /**
- * @author llaparra
- *
+ * @author Eurohelp S.L.
  */
 public class TestJsonDateTimeSerializer {
 

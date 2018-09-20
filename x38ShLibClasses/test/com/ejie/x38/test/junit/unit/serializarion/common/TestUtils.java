@@ -1,11 +1,7 @@
-/**
- * 
- */
 package com.ejie.x38.test.junit.unit.serializarion.common;
 
 /**
- * @author llaparra
- *
+ * @author Eurohelp S.L.
  */
 public abstract class TestUtils {
 

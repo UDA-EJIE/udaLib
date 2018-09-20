@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.ejie.x38.test.junit.unit.serializarion;
 
 import static org.junit.Assert.assertTrue;
@@ -19,8 +16,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 
 /**
- * @author llaparra
- *
+ * @author Eurohelp S.L.
  */
 public class TestJsonTimeDeserializer {
 

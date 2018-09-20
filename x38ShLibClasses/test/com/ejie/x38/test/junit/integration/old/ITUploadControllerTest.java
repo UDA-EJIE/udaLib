@@ -29,9 +29,11 @@ import org.springframework.web.context.WebApplicationContext;
 import com.ejie.x38.IframeXHREmulationFilter;
 import com.ejie.x38.UdaFilter;
 import com.ejie.x38.test.control.UploadController;
+import com.ejie.x38.test.junit.integration.config.X38TestingApplicationContext;
+import com.ejie.x38.test.junit.integration.config.X38TestingContextLoader;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(loader = WebContextLoader.class, classes = {ExampleApplicationContext.class})
+@ContextConfiguration(loader = X38TestingContextLoader.class, classes = {X38TestingApplicationContext.class})
 //@ContextConfiguration(loader = WebContextLoader.class)
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
     DirtiesContextTestExecutionListener.class,

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.ejie.x38.test.junit.unit.serializarion;
 
 import static org.junit.Assert.assertTrue;
@@ -13,8 +10,7 @@ import org.junit.Test;
 import com.ejie.x38.serialization.ThreadSafeCache;
 
 /**
- * @author llaparra
- *
+ * @author Eurohelp S.L.
  */
 public class TestThreadSafeCache {
 
@@ -34,9 +30,9 @@ public class TestThreadSafeCache {
 	 */
 	@Test
 	public final void testGetMap() {
-		Map<String,String> expected = new HashMap<String,String>();
+		Map<String, String> expected = new HashMap<String, String>();
 		expected.put("val1", "1");
-		Map<?,?> obj = ThreadSafeCache.getMap();
+		Map<?, ?> obj = ThreadSafeCache.getMap();
 
 		assertTrue("Debe devolver el mismo objeto", expected.equals(obj));
 	}
@@ -47,9 +43,9 @@ public class TestThreadSafeCache {
 	 */
 	@Test
 	public final void testClearCurrentThreadCache() {
-		Map<?,?> expected = new HashMap<Object,Object>();
+		Map<?, ?> expected = new HashMap<Object, Object>();
 		ThreadSafeCache.clearCurrentThreadCache();
-		Map<?,?> obj = ThreadSafeCache.getMap();
+		Map<?, ?> obj = ThreadSafeCache.getMap();
 
 		assertTrue("Debe devolver el mismo objeto", expected.equals(obj));
 	}

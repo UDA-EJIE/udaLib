@@ -23,12 +23,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.ejie.x38.IframeXHREmulationFilter;
 import com.ejie.x38.UdaFilter;
 import com.ejie.x38.serialization.ThreadSafeCache;
 import com.ejie.x38.serialization.UdaMappingJackson2HttpMessageConverter;
@@ -36,15 +34,17 @@ import com.ejie.x38.test.common.model.Coche;
 import com.ejie.x38.test.common.model.Empleado;
 import com.ejie.x38.test.common.model.Marca;
 import com.ejie.x38.test.common.model.NoraPais;
-import com.ejie.x38.test.control.SerializationController;
+import com.ejie.x38.test.junit.integration.config.X38TestingApplicationContext;
+import com.ejie.x38.test.junit.integration.config.X38TestingContextLoader;
 import com.ejie.x38.util.DateTimeManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@WebAppConfiguration
-@ContextConfiguration(classes = { TestConfig.class })
-
+/**
+ * @author Eurohelp S.L.
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(loader = X38TestingContextLoader.class, classes = { X38TestingApplicationContext.class })
 public class TestSerialization {
 
 	@Resource
@@ -53,13 +53,7 @@ public class TestSerialization {
 	private MockMvc mockMvc;
 
 	@Autowired
-	private IframeXHREmulationFilter iframeXHREmulationFilter;
-
-	@Autowired
 	private UdaFilter udaFilter;
-
-	@Autowired
-	private SerializationController serializationController;
 
 	@Autowired
 	private UdaMappingJackson2HttpMessageConverter udaMappingJackson2HttpMessageConverter;
@@ -68,8 +62,14 @@ public class TestSerialization {
 
 	@Before
 	public void setUp() {
-		mockMvc = MockMvcBuilders.standaloneSetup(serializationController).addFilter(udaFilter, "/*")
-				.addFilter(iframeXHREmulationFilter, "/*").build();
+		mockMvc = MockMvcBuilders
+
+				.webAppContextSetup(webApplicationContext)
+
+				.addFilters(udaFilter)
+
+				.build();
+
 		this.objectMapper = udaMappingJackson2HttpMessageConverter.getObjectMapper();
 	}
 
@@ -147,15 +147,17 @@ public class TestSerialization {
 
 		try {
 
-			mockMvc.perform(post("/serialization/serialize")
+			mockMvc.perform(
 
-					.contentType(MediaType.APPLICATION_JSON)
+					post("/serialization/serialize")
 
-					.accept(MediaType.ALL)
+							.contentType(MediaType.APPLICATION_JSON)
 
-					.locale(localeEs)
+							.accept(MediaType.ALL)
 
-					.content(jsonReqEs))
+							.locale(localeEs)
+
+							.content(jsonReqEs))
 
 					.andExpect(status().is(200))
 
@@ -165,15 +167,17 @@ public class TestSerialization {
 		}
 
 		try {
-			mockMvc.perform(post("/serialization/serialize")
+			mockMvc.perform(
 
-					.contentType(MediaType.APPLICATION_JSON)
+					post("/serialization/serialize")
 
-					.accept(MediaType.ALL)
+							.contentType(MediaType.APPLICATION_JSON)
 
-					.locale(localeEu)
+							.accept(MediaType.ALL)
 
-					.content(jsonReqEu))
+							.locale(localeEu)
+
+							.content(jsonReqEu))
 
 					.andExpect(status().is(200))
 
