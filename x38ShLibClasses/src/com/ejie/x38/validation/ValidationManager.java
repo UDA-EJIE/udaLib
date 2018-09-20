@@ -126,7 +126,7 @@ public class ValidationManager {
 			}
 			String constraintName = v.getConstraintDescriptor().getAnnotation()
 					.annotationType().getSimpleName();
-			if (propertyName == null || "".equals(propertyName)) {
+			if (propertyName == null || "".equals(propertyName) || "null".equals(propertyName)) {
 				errors.reject(constraintName, v.getMessage());
 			} else {
 				errors.rejectValue(propertyName, constraintName, v.getMessage());
