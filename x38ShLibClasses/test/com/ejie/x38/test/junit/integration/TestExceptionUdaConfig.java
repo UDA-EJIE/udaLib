@@ -2,6 +2,7 @@ package com.ejie.x38.test.junit.integration;
 
 import javax.annotation.Resource;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -24,7 +25,8 @@ public class TestExceptionUdaConfig {
 	@Resource
 	private WebApplicationContext webApplicationContext;
 
-	@Test
+	
+	@Test(expected = Throwable.class)
 	public void test() throws Exception {
 
 		MockMvcBuilders

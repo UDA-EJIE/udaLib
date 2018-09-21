@@ -5,9 +5,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Locale;
 import java.util.Map;
 
@@ -31,6 +34,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.ejie.x38.UdaFilter;
 import com.ejie.x38.serialization.UdaMappingJackson2HttpMessageConverter;
 import com.ejie.x38.test.common.model.Alumno;
+import com.ejie.x38.test.common.model.Coche;
 import com.ejie.x38.test.junit.integration.config.X38TestingApplicationContext;
 import com.ejie.x38.test.junit.integration.config.X38TestingContextLoader;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -105,6 +109,44 @@ public class TestValidation {
 		};
 	}
 
+	private static ResultMatcher errorAjax(final String exceptionName, final String exceptionMessage,
+			final String responseMessage) {
+		return new ResultMatcher() {
+			public void match(MvcResult result) {
+				assertNotNull("Debe resolverse una excepción", result.getResolvedException());
+				assertEquals("Debe coincidir el tipo de la excepción", exceptionName,
+						result.getResolvedException().getClass().getName());
+				assertTrue("Debe coincidir el mensaje de la excepción",
+						result.getResolvedException().getMessage().indexOf(exceptionMessage) >= 0);
+
+				assertNotNull("Debe resolverse la respuesta", result.getResponse());
+
+				if (result.getResponse() != null) {
+					try {
+						assertEquals("El mensaje de la excepción será el contenido de la respuesta", responseMessage,
+								result.getResponse().getContentAsString());
+					} catch (UnsupportedEncodingException e) {
+						fail("Error procesando el contenido de la response");
+					}
+				}
+			}
+		};
+	}
+
+	private static ResultMatcher errorMessage(final String errorMessage) {
+		return new ResultMatcher() {
+			public void match(MvcResult result) {
+				assertNotNull("Debe resolverse la respuesta", result.getResponse());
+
+				if (result.getResponse() != null) {
+					assertNotNull("Debe existir mensaje de error", result.getResponse().getErrorMessage());
+					assertEquals("El mensaje de error debe coincidir", errorMessage,
+							result.getResponse().getErrorMessage());
+				}
+			}
+		};
+	}
+
 	@Test
 	public void test() {
 		try {
@@ -119,9 +161,8 @@ public class TestValidation {
 	 * @throws Exception
 	 */
 	@Test
-	public void testGet() {
+	public void testHibernateValidationGet() {
 		Locale localeEs = new Locale("es");
-		Locale localeEu = new Locale("eu");
 
 		Alumno alumno = new Alumno();
 
@@ -136,7 +177,7 @@ public class TestValidation {
 
 			mockMvc.perform(
 
-					get("/validation/get")
+					get("/validation/hibernate/get")
 
 							.contentType(MediaType.APPLICATION_JSON)
 
@@ -149,26 +190,271 @@ public class TestValidation {
 					.andExpect(errorModel("org.springframework.web.bind.MethodArgumentNotValidException",
 							"Validation failed"));
 		} catch (Exception e) {
-			fail("Exception al realizar la petición GET con el controller de prueba de validaciones en castellano [/validation/get]");
+			fail("Exception al realizar la petición GET con el controller de prueba de validaciones de hibernate [/validation/hibernate/get]");
 		}
 
 		try {
 			mockMvc.perform(
 
-					get("/validation/get")
+					get("/validation/hibernate/get")
+
+							.contentType(MediaType.APPLICATION_JSON)
+
+							.header("X-Requested-With", "XMLHttpRequest")
+
+							.accept(MediaType.ALL)
+
+							.locale(localeEs)
+
+							.content(jsonReq))
+
+					.andExpect(errorAjax("org.springframework.web.bind.MethodArgumentNotValidException",
+							"Validation failed",
+							"{\"rupErrorFields\":{\"nombre\":[\"validacion.required\"],\"usuario\":[\"validacion.required\"]}}"));
+		} catch (Exception e) {
+			fail("Exception al realizar la petición GET con el controller de prueba de validaciones de hibernate por AJAX [/validation/hibernate/get]");
+		}
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	@Test
+	public void testHibernateValidationPost() {
+		Locale localeEs = new Locale("es");
+
+		Alumno alumno = new Alumno();
+
+		String jsonReq = "";
+		try {
+			jsonReq = this.serialize(alumno);
+		} catch (JsonProcessingException e1) {
+			fail("Exception serializando el objeto que se va a emplear en la prueba");
+		}
+
+		try {
+
+			mockMvc.perform(
+
+					post("/validation/hibernate/post")
 
 							.contentType(MediaType.APPLICATION_JSON)
 
 							.accept(MediaType.ALL)
 
-							.locale(localeEu)
+							.locale(localeEs)
 
 							.content(jsonReq))
 
 					.andExpect(errorModel("org.springframework.web.bind.MethodArgumentNotValidException",
 							"Validation failed"));
 		} catch (Exception e) {
-			fail("Exception al realizar la petición GET con el controller de prueba de validaciones en euskera [/validation/get]");
+			fail("Exception al realizar la petición POST con el controller de prueba de validaciones de hibernate [/validation/hibernate/post]");
+		}
+
+		try {
+			mockMvc.perform(
+
+					post("/validation/hibernate/post")
+
+							.contentType(MediaType.APPLICATION_JSON)
+
+							.header("X-Requested-With", "XMLHttpRequest")
+
+							.accept(MediaType.ALL)
+
+							.locale(localeEs)
+
+							.content(jsonReq))
+
+					.andExpect(errorAjax("org.springframework.web.bind.MethodArgumentNotValidException",
+							"Validation failed",
+							"{\"rupErrorFields\":{\"nombre\":[\"validacion.required\"],\"usuario\":[\"validacion.required\"]}}"));
+		} catch (Exception e) {
+			fail("Exception al realizar la petición POST con el controller de prueba de validaciones de hibernate por AJAX [/validation/hibernate/post]");
+		}
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	@Test
+	public void testHibernateValidationPut() {
+		Locale localeEs = new Locale("es");
+
+		Alumno alumno = new Alumno();
+
+		String jsonReq = "";
+		try {
+			jsonReq = this.serialize(alumno);
+		} catch (JsonProcessingException e1) {
+			fail("Exception serializando el objeto que se va a emplear en la prueba");
+		}
+
+		try {
+
+			mockMvc.perform(
+
+					put("/validation/hibernate/put")
+
+							.contentType(MediaType.APPLICATION_JSON)
+
+							.accept(MediaType.ALL)
+
+							.locale(localeEs)
+
+							.content(jsonReq))
+
+					.andExpect(errorModel("org.springframework.web.bind.MethodArgumentNotValidException",
+							"Validation failed"));
+		} catch (Exception e) {
+			fail("Exception al realizar la petición PUT con el controller de prueba de validaciones de hibernate [/validation/hibernate/put]");
+		}
+
+		try {
+			mockMvc.perform(
+
+					put("/validation/hibernate/put")
+
+							.contentType(MediaType.APPLICATION_JSON)
+
+							.header("X-Requested-With", "XMLHttpRequest")
+
+							.accept(MediaType.ALL)
+
+							.locale(localeEs)
+
+							.content(jsonReq))
+
+					.andExpect(errorAjax("org.springframework.web.bind.MethodArgumentNotValidException",
+							"Validation failed",
+							"{\"rupErrorFields\":{\"nombre\":[\"validacion.required\"],\"usuario\":[\"validacion.required\"]}}"));
+		} catch (Exception e) {
+			fail("Exception al realizar la petición PUT con el controller de prueba de validaciones de hibernate por AJAX [/validation/hibernate/put]");
+		}
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	@Test
+	public void testCustomValidationGet() {
+		Locale localeEs = new Locale("es");
+
+		Coche coche = new Coche();
+
+		String jsonReq = "";
+		try {
+			jsonReq = this.serialize(coche);
+		} catch (JsonProcessingException e1) {
+			fail("Exception serializando el objeto que se va a emplear en la prueba");
+		}
+
+		try {
+
+			mockMvc.perform(
+
+					get("/validation/custom/get")
+
+							.contentType(MediaType.APPLICATION_JSON)
+
+							.accept(MediaType.ALL)
+
+							.locale(localeEs)
+
+							.content(jsonReq))
+
+					.andExpect(status().isNotAcceptable())
+
+					.andExpect(errorMessage(
+							"{\"rupErrorFields\":{\"modelo\":[\"base.rup_validate.messages.required\"]}}"));
+		} catch (Exception e) {
+			fail("Exception al realizar la petición GET con el controller de prueba de validaciones personalizadas [/validation/custom/get]");
+		}
+
+		try {
+			mockMvc.perform(
+
+					get("/validation/custom/get")
+
+							.contentType(MediaType.APPLICATION_JSON)
+
+							.header("X-Requested-With", "XMLHttpRequest")
+
+							.accept(MediaType.ALL)
+
+							.locale(localeEs)
+
+							.content(jsonReq))
+
+					.andExpect(status().isNotAcceptable())
+
+					.andExpect(errorMessage(
+							"{\"rupErrorFields\":{\"modelo\":[\"base.rup_validate.messages.required\"]}}"));
+		} catch (Exception e) {
+			fail("Exception al realizar la petición GET con el controller de prueba de validaciones personalizadas por AJAX [/validation/custom/get]");
+		}
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	@Test
+	public void testCustomValidationPost() {
+		Locale localeEs = new Locale("es");
+
+		Coche coche = new Coche();
+
+		String jsonReq = "";
+		try {
+			jsonReq = this.serialize(coche);
+		} catch (JsonProcessingException e1) {
+			fail("Exception serializando el objeto que se va a emplear en la prueba");
+		}
+
+		try {
+
+			mockMvc.perform(
+
+					post("/validation/custom/post")
+
+							.contentType(MediaType.APPLICATION_JSON)
+
+							.accept(MediaType.ALL)
+
+							.locale(localeEs)
+
+							.content(jsonReq))
+
+					.andExpect(status().isNotAcceptable())
+
+					.andExpect(errorMessage(
+							"{\"rupErrorFields\":{\"modelo\":[\"base.rup_validate.messages.required\"]}}"));
+		} catch (Exception e) {
+			fail("Exception al realizar la petición POST con el controller de prueba de validaciones personalizadas [/validation/custom/post]");
+		}
+
+		try {
+			mockMvc.perform(
+
+					post("/validation/custom/post")
+
+							.contentType(MediaType.APPLICATION_JSON)
+
+							.header("X-Requested-With", "XMLHttpRequest")
+
+							.accept(MediaType.ALL)
+
+							.locale(localeEs)
+
+							.content(jsonReq))
+
+					.andExpect(status().isNotAcceptable())
+
+					.andExpect(errorMessage(
+							"{\"rupErrorFields\":{\"modelo\":[\"base.rup_validate.messages.required\"]}}"));
+		} catch (Exception e) {
+			fail("Exception al realizar la petición POST con el controller de prueba de validaciones personalizadas por AJAX [/validation/custom/post]");
 		}
 	}
 
