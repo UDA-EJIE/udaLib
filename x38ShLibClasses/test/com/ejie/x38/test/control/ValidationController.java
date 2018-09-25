@@ -38,13 +38,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ejie.x38.json.MessageWriter;
 import com.ejie.x38.test.common.model.Alumno;
 import com.ejie.x38.test.common.model.Coche;
 import com.ejie.x38.test.common.model.validation.customvalidator.CocheValidator;
+import com.ejie.x38.test.common.model.validation.group.AlumnoEditValidation;
 import com.ejie.x38.validation.ValidationManager;
 
 /**
- * SerializationController
+ * ValidationController
  * 
  * @author Eurohelp S.L.
  */
@@ -71,32 +73,108 @@ public class ValidationController {
 	}
 
 	/****************************************************************************
-	 * /** INICIO - VALIDACIONES HIBERNATE /
+	 * INICIO - VALIDACIONES HIBERNATE
 	 ****************************************************************************/
 	@RequestMapping(value = "hibernate/get", method = RequestMethod.GET)
-	public @ResponseBody Object hibernateGet(@Validated @RequestBody Alumno alumno, Locale locale) {
+	public @ResponseBody Object hibernateGet(@RequestBody Alumno alumno, Locale locale, HttpServletResponse response) {
 		ValidationController.logger.info("[GET][/validation/hibernate/get]hibernateGet()");
-		return alumno;
+		Errors errors = new BeanPropertyBindingResult(alumno, "alumno");
+		validationManager.validate(errors, alumno, AlumnoEditValidation.class);
+
+		if (errors.hasErrors()) {
+			Map<String, List<String>> fieldErrors = validationManager.getErrorsAsMap(errors);
+			try {
+				response.sendError(406, validationManager.getMessageJSON(fieldErrors).toString());
+			} catch (IOException e) {
+				return null;
+			}
+			return null;
+		}
+
+		MessageWriter messageWriter = new MessageWriter();
+		messageWriter.startMessageList();
+		messageWriter.addMessage("OK");
+		messageWriter.endMessageList();
+		return messageWriter.toString();
 	}
 
 	@RequestMapping(value = "hibernate/post", method = RequestMethod.POST)
-	public @ResponseBody Object hibernatePost(@Validated @RequestBody Alumno alumno, Locale locale) {
+	public @ResponseBody Object hibernatePost(@RequestBody Alumno alumno, Locale locale, HttpServletResponse response) {
 		ValidationController.logger.info("[POST][/validation/hibernate/post]hibernatePost()");
-		return alumno;
+		Errors errors = new BeanPropertyBindingResult(alumno, "alumno");
+		validationManager.validate(errors, alumno, AlumnoEditValidation.class);
+
+		if (errors.hasErrors()) {
+			Map<String, List<String>> fieldErrors = validationManager.getErrorsAsMap(errors);
+			try {
+				response.sendError(406, validationManager.getMessageJSON(fieldErrors).toString());
+			} catch (IOException e) {
+				return null;
+			}
+			return null;
+		}
+
+		MessageWriter messageWriter = new MessageWriter();
+		messageWriter.startMessageList();
+		messageWriter.addMessage("OK");
+		messageWriter.endMessageList();
+		return messageWriter.toString();
 	}
 
 	@RequestMapping(value = "hibernate/put", method = RequestMethod.PUT)
-	public @ResponseBody Object hibernatePut(@Validated @RequestBody Alumno alumno, Locale locale) {
+	public @ResponseBody Object hibernatePut(@RequestBody Alumno alumno, Locale locale, HttpServletResponse response) {
 		ValidationController.logger.info("[PUT][/validation/hibernate/put]hibernatePut()");
+		Errors errors = new BeanPropertyBindingResult(alumno, "alumno");
+		validationManager.validate(errors, alumno, AlumnoEditValidation.class);
+
+		if (errors.hasErrors()) {
+			Map<String, List<String>> fieldErrors = validationManager.getErrorsAsMap(errors);
+			try {
+				response.sendError(406, validationManager.getMessageJSON(fieldErrors).toString());
+			} catch (IOException e) {
+				return null;
+			}
+			return null;
+		}
+
+		MessageWriter messageWriter = new MessageWriter();
+		messageWriter.startMessageList();
+		messageWriter.addMessage("OK");
+		messageWriter.endMessageList();
+		return messageWriter.toString();
+	}
+
+	/****************************************************************************
+	 * FIN - VALIDACIONES HIBERNATE
+	 ****************************************************************************/
+
+	/****************************************************************************
+	 * INICIO - VALIDACIONES SPRING + HIBERNATE
+	 ****************************************************************************/
+	@RequestMapping(value = "springHibernate/get", method = RequestMethod.GET)
+	public @ResponseBody Object springHibernateGet(@Validated @RequestBody Alumno alumno, Locale locale) {
+		ValidationController.logger.info("[GET][/validation/springHibernate/get]springHibernateGet()");
+		return alumno;
+	}
+
+	@RequestMapping(value = "springHibernate/post", method = RequestMethod.POST)
+	public @ResponseBody Object springHibernatePost(@Validated @RequestBody Alumno alumno, Locale locale) {
+		ValidationController.logger.info("[POST][/validation/springHibernate/post]springHibernatePost()");
+		return alumno;
+	}
+
+	@RequestMapping(value = "springHibernate/put", method = RequestMethod.PUT)
+	public @ResponseBody Object springHibernatePut(@Validated @RequestBody Alumno alumno, Locale locale) {
+		ValidationController.logger.info("[PUT][/validation/springHibernate/put]springHibernatePut()");
 		return alumno;
 	}
 
 	/****************************************************************************
-	 * /** FIN - VALIDACIONES HIBERNATE /
+	 * FIN - VALIDACIONES SPRING + HIBERNATE
 	 ****************************************************************************/
 
 	/****************************************************************************
-	 * /** INICIO - VALIDACIONES PROPIAS /
+	 * INICIO - VALIDACIONES PROPIAS
 	 ****************************************************************************/
 	private Object customValidation(Coche coche, HttpServletResponse response) {
 		Errors errors = new BeanPropertyBindingResult(coche, "coche");
@@ -117,22 +195,22 @@ public class ValidationController {
 
 	@RequestMapping(value = "custom/get", method = RequestMethod.GET)
 	public @ResponseBody Object customGet(@RequestBody Coche coche, HttpServletResponse response) {
-		ValidationController.logger.info("[GET][/validation/custom/get]hibernateGet()");
+		ValidationController.logger.info("[GET][/validation/custom/get]customGet()");
 		return customValidation(coche, response);
 	}
 
 	@RequestMapping(value = "custom/post", method = RequestMethod.POST)
 	public @ResponseBody Object customPost(@RequestBody Coche coche, HttpServletResponse response) {
-		ValidationController.logger.info("[POST][/validation/custom/post]hibernatePost()");
+		ValidationController.logger.info("[POST][/validation/custom/post]customPost()");
 		return customValidation(coche, response);
 	}
 
 	@RequestMapping(value = "custom/put", method = RequestMethod.PUT)
 	public @ResponseBody Object customPut(@RequestBody Coche coche, HttpServletResponse response) {
-		ValidationController.logger.info("[PUT][/validation/custom/put]hibernatePut()");
+		ValidationController.logger.info("[PUT][/validation/custom/put]customPut()");
 		return customValidation(coche, response);
 	}
 	/****************************************************************************
-	 * /** FIN - VALIDACIONES PROPIAS /
+	 * FIN - VALIDACIONES PROPIAS
 	 ****************************************************************************/
 }

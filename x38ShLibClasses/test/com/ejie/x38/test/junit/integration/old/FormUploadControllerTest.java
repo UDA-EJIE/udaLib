@@ -36,7 +36,7 @@ import com.ejie.x38.test.junit.integration.config.X38TestingContextLoader;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+//@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(loader = X38TestingContextLoader.class, classes = {X38TestingApplicationContext.class})
 //@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
 //    DirtiesContextTestExecutionListener.class,
@@ -60,7 +60,7 @@ public class FormUploadControllerTest {
     
 	private ObjectMapper objectMapper;
 	
-	@Before
+//	@Before
     public void setUp() {
 		
 		this.objectMapper = udaMappingJackson2HttpMessageConverter.getObjectMapper();
@@ -75,7 +75,7 @@ public class FormUploadControllerTest {
 	
 	
 	
-	@Test
+//	@Test
     public void test() throws Exception {
     	
     	
@@ -89,7 +89,7 @@ public class FormUploadControllerTest {
                     ;
     }
 	
-	@Test
+//	@Test
     public void simple() throws Exception {
     	
     	
@@ -109,7 +109,7 @@ public class FormUploadControllerTest {
                     ;
     }
 	
-	@Test
+//	@Test
     public void multientidad() throws Exception {
     	
         String json = this.getAsJsonString(this.getMultientidadTestObject());
@@ -127,7 +127,7 @@ public class FormUploadControllerTest {
     }
 	
 	
-	@Test
+//	@Test
     public void multientidadesMismoTipo() throws Exception {
     	
 		 
@@ -148,7 +148,7 @@ public class FormUploadControllerTest {
   
     }
 	
-	@Test
+//	@Test
     public void testSubidaFicheros() throws Exception {
     	
 		 

@@ -25,29 +25,25 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.support.ByteArrayMultipartFileEditor;
 
-import com.ejie.x38.test.common.model.Coche;
-
 /**
- * SerializationController
+ * I18nController
  * 
  * @author Eurohelp S.L.
  */
 @Controller
-@RequestMapping(value = "/serialization")
-public class SerializationController {
+@RequestMapping(value = "/i18n")
+public class I18nController {
 
-	private static final Logger logger = LoggerFactory.getLogger(SerializationController.class);
+	private static final Logger logger = LoggerFactory.getLogger(I18nController.class);
 
 	@Resource
 	private ReloadableResourceBundleMessageSource messageSource;
@@ -59,7 +55,7 @@ public class SerializationController {
 
 	@RequestMapping(value = "test", method = RequestMethod.GET)
 	public @ResponseBody Object getTest() {
-		SerializationController.logger.info("[GET][/serialization/test]test");
+		I18nController.logger.info("[GET][/i18n/test]test");
 
 		Map<String, String> mapa = new HashMap<String, String>();
 		mapa.put("respuesta", "ok");
@@ -67,10 +63,12 @@ public class SerializationController {
 		return mapa;
 	}
 
-	@RequestMapping(value = "serialize", method = RequestMethod.POST)
-	public @ResponseBody Object serialize(@RequestBody Coche coche, Locale locale) {
-		SerializationController.logger.info("[POST][/serialization/serialize]serialize()");
-		LocaleContextHolder.setLocale(locale);
-		return coche;
+	@RequestMapping(value = "localeChange", method = RequestMethod.POST)
+	public @ResponseBody Object localeChange(Locale locale) {
+		I18nController.logger.info("[POST][/i18n/localeChange]localeChange()");
+		Map<String, String> mapa = new HashMap<String, String>();
+		mapa.put("respuesta", "ok");
+
+		return mapa;
 	}
 }

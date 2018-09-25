@@ -63,7 +63,7 @@
 		<property name="defaultLanguage" value="es" />
 		<property name="defaultLayout" value="horizontal" />
 		<property name="availableLangs" value="es,eu,en,fr" />
-<!-- 		<property name="portalCookie" value="r01euskadiCookie" /> -->
+		<property name="portalCookie" value="r01euskadiCookie" />
 	</bean>
 
 	<!-- Declaración del interceptor (Gestión idomática) -->

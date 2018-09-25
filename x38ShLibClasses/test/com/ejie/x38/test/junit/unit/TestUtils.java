@@ -1,4 +1,4 @@
-package com.ejie.x38.test.junit.unit.serializarion.common;
+package com.ejie.x38.test.junit.unit;
 
 /**
  * @author Eurohelp S.L.

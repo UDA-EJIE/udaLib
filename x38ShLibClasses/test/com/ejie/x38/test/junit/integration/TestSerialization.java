@@ -1,11 +1,14 @@
 package com.ejie.x38.test.junit.integration;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -21,11 +24,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultHandler;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -80,6 +87,62 @@ public class TestSerialization {
 	}
 
 	/**
+	 * @param validationMsg String
+	 * @param expected      String
+	 * @return ResultMatcher
+	 */
+	private static ResultMatcher contentMatch(final String validationMsg, final String expected) {
+		return new ResultMatcher() {
+			public void match(MvcResult result) {
+				assertNotNull("Debe resolverse la respuesta", result.getResponse());
+
+				if (result.getResponse() != null) {
+					try {
+						assertEquals(validationMsg, expected, result.getResponse().getContentAsString());
+					} catch (UnsupportedEncodingException e) {
+						fail("Error procesando el contenido de la response");
+					}
+				}
+			}
+		};
+	}
+
+	/**
+	 * @param validationMsg String
+	 * @param expected      String
+	 * @return ResultMatcher
+	 */
+	private static ResultHandler postSerialize(final MockMvc mockMvc, final Locale localeEs, final String jsonResEs,
+			final String jsonReqEs) {
+		return new ResultHandler() {
+
+			@Override
+			public void handle(MvcResult arg0) throws Exception {
+				customSerializerParams();
+
+				mockMvc.perform(
+
+						post("/serialization/serialize")
+
+								.contentType(MediaType.APPLICATION_JSON)
+
+								.accept(MediaType.ALL)
+
+								.locale(localeEs)
+								
+								.cookie(arg0.getResponse().getCookies())
+
+								.content(jsonReqEs))
+
+						.andExpect(status().is(200))
+
+						.andExpect(contentMatch("La respuesta no es correcta", jsonResEs));
+
+			}
+		};
+	};
+
+	/**
 	 * @param object
 	 * @return
 	 * @throws JsonProcessingException
@@ -115,10 +178,6 @@ public class TestSerialization {
 		crx5.setCoste(BigDecimal.valueOf(9123000.0123456789));
 		crx5.setPrecio(BigDecimal.valueOf(9123230.3456789));
 
-		// ThreadSafeCache para el CustomSerializer de marca.pais
-		ThreadSafeCache.clearCurrentThreadCache();
-		ThreadSafeCache.addValue("dsO", "dsO");
-
 		String strFechaConstruccion = "02/06/1995 13:45:11";
 		String strTiempoConstruccion = "12:30:22";
 		String strFecNacEneko = "01/01/1981";
@@ -139,10 +198,14 @@ public class TestSerialization {
 		String jsonResEs = "";
 		String jsonResEu = "";
 		try {
+			LocaleContextHolder.setLocale(localeEs);
 			String modelo = crx5.getModelo();
 			crx5.setModelo(modelo + "_ES");
+			customSerializerParams();
 			jsonResEs = this.serialize(crx5);
+			LocaleContextHolder.setLocale(localeEu);
 			crx5.setModelo(modelo + "_EU");
+			customSerializerParams();
 			jsonResEu = this.serialize(crx5);
 		} catch (JsonProcessingException e1) {
 			fail("Exception serializando el objeto que se va a comprobar en la prueba");
@@ -152,45 +215,30 @@ public class TestSerialization {
 		String jsonReqEu = "{\"modelo\":\"CRX-5_EU\",\"tiempoConstruccion\":\"12:30:22\",\"precio\":\"9.123.230,3456789\",\"marca\":{\"nombre\":\"Foo\",\"pais\":{\"dsO\":\"España\"},\"empleados\":[{\"nombre\":\"Eneko\",\"fechaNacimiento\":\"1981/01/01\"},{\"nombre\":\"Laura\",\"fechaNacimiento\":\"1992/12/12\"}]},\"fechaConstruccion\":\"1995/06/02 13:45:11\",\"coste\":\"9.123.000,01234568\"}";
 
 		try {
+			mockMvc.perform(get("/serialization/test?locale=es"))
 
-			mockMvc.perform(
+					.andDo(postSerialize(mockMvc, localeEs, jsonResEs, jsonReqEs));
 
-					post("/serialization/serialize")
-
-							.contentType(MediaType.APPLICATION_JSON)
-
-							.accept(MediaType.ALL)
-
-							.locale(localeEs)
-
-							.content(jsonReqEs))
-
-					.andExpect(status().is(200))
-
-					.andExpect(content().string(jsonResEs));
 		} catch (Exception e) {
 			fail("Exception al realizar la petición POST con el controller de prueba de serialización en castellano [/serialization/serialize]");
 		}
 
 		try {
-			mockMvc.perform(
+			mockMvc.perform(get("/serialization/test?locale=eu"))
 
-					post("/serialization/serialize")
+					.andDo(postSerialize(mockMvc, localeEu, jsonResEu, jsonReqEu));
 
-							.contentType(MediaType.APPLICATION_JSON)
-
-							.accept(MediaType.ALL)
-
-							.locale(localeEu)
-
-							.content(jsonReqEu))
-
-					.andExpect(status().is(200))
-
-					.andExpect(content().string(jsonResEu));
 		} catch (Exception e) {
 			fail("Exception al realizar la petición POST con el controller de prueba de serialización en euskera [/serialization/serialize]");
 		}
+	}
+
+	/**
+	 * ThreadSafeCache para el CustomSerializer de marca.pais
+	 */
+	private static void customSerializerParams() {
+		ThreadSafeCache.clearCurrentThreadCache();
+		ThreadSafeCache.addValue("dsO", "dsO");
 	}
 
 }
