@@ -15,6 +15,9 @@
 */
 package com.ejie.x38.util;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -46,11 +49,17 @@ public class ManagementUrl {
 		String url = request.getHeader("N38_URL");
 		if (url != null){
 			logger.info("N38_URL header: " + url);
-			return url;
 		} else {
 			url = request.getRequestURL().toString();
 			logger.info("Request header: " + url);
-			return url;
 		}
+		if(request.getQueryString() != null){
+			try {
+				url = url+"?"+URLEncoder.encode(request.getQueryString(), "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				logger.error("getUrl(): Error Url encoder.", e);
+			}
+		}
+		return url;
 	}
 }
