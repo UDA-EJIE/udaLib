@@ -1,5 +1,9 @@
 package com.ejie.x38.test.junit.integration.config.wrong;
 
+import java.io.File;
+import java.util.Properties;
+
+import org.apache.commons.io.FileUtils;
 import org.junit.internal.runners.model.EachTestNotifier;
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
@@ -11,18 +15,24 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 /**
  * @author Eurohelp S.L.
  */
-public class X38testingWrongSpringJUnit4ClassRunner extends SpringJUnit4ClassRunner {
+public class X38TestingWrongSpringJUnit4ClassRunner extends SpringJUnit4ClassRunner {
 
 	/**
 	 * @param clazz
 	 * @throws InitializationError
 	 */
-	public X38testingWrongSpringJUnit4ClassRunner(Class<?> clazz) throws InitializationError {
+	public X38TestingWrongSpringJUnit4ClassRunner(Class<?> clazz) throws InitializationError {
 		super(clazz);
 	}
 
 	@Override
 	protected Object createTest() throws Exception {
+		Properties props = new Properties();
+		props.load(this.getClass().getClassLoader().getResourceAsStream("x38/x38.properties"));
+
+		File logFolder = new File(props.getProperty("log.path") + "/wrong");
+		FileUtils.deleteDirectory(logFolder);
+
 		try {
 			super.createTest();
 		} catch (Exception e) {

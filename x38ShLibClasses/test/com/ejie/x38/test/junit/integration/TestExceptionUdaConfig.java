@@ -12,12 +12,12 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.ejie.x38.test.junit.integration.config.wrong.X38TestingWrongApplicationContext;
 import com.ejie.x38.test.junit.integration.config.wrong.X38TestingWrongContextLoader;
-import com.ejie.x38.test.junit.integration.config.wrong.X38testingWrongSpringJUnit4ClassRunner;
+import com.ejie.x38.test.junit.integration.config.wrong.X38TestingWrongSpringJUnit4ClassRunner;
 
 /**
  * @author Eurohelp S.L.
  */
-@RunWith(X38testingWrongSpringJUnit4ClassRunner.class)
+@RunWith(X38TestingWrongSpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(loader = X38TestingWrongContextLoader.class, classes = {
 		X38TestingWrongApplicationContext.class })

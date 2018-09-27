@@ -68,18 +68,21 @@ public class ExceptionController {
 	@RequestMapping(value = "get", method = RequestMethod.GET)
 	public @ResponseBody Object get() throws Exception {
 		ExceptionController.logger.info("[GET][/exception/get]get");
+		logger.error("Excepción lanzada en el GET");
 		throw new Exception("Excepción lanzada en el GET");
 	}
 
 	@RequestMapping(value = "post", method = RequestMethod.POST)
 	public @ResponseBody Object post(Locale locale) throws Exception {
 		ExceptionController.logger.info("[POST][/exception/post]post()");
+		logger.error("Excepción lanzada en el POST");
 		throw new Exception("Excepción lanzada en el POST");
 	}
 
 	@RequestMapping(value = "put", method = RequestMethod.PUT)
 	public @ResponseBody Object put(Locale locale) throws Exception {
 		ExceptionController.logger.info("[PUT][/exception/put]put()");
+		logger.error("Excepción lanzada en el PUT");
 		throw new Exception("Excepción lanzada en el PUT");
 	}
 
