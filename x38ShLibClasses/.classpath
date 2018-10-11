@@ -98,5 +98,6 @@
 	<classpathentry kind="lib" path="lib/tiles-jsp-2.2.2.jar"/>
 	<classpathentry kind="lib" path="lib/tiles-servlet-2.2.2.jar"/>
 	<classpathentry kind="lib" path="lib/tiles-template-2.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-1.2.16.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

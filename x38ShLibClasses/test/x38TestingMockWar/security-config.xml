@@ -13,19 +13,44 @@
 
 	<!-- Definicion del Wrapper de seguridad utilizado -->
 	<bean id="perimetralSecurityWrapper"
-		class="com.ejie.x38.security.PerimetralSecurityWrapperN38Impl">
-		<property name="xlnetCachingPeriod" value="0" />
-		<property name="userChangeUrl"
-			value="/x21aPilotoPatronesWar/" />
-		<property name="useXlnetProfiles" value="true" />
-		<property name="anonymousCredentials">
-			<map>
-				<entry key="userProfiles" value="UDA" />
-				<!-- entry key="userProfiles" value="udaAnonymousProfile" / -->
-				<entry key="position" value="udaAnonymousPosition" />
-			</map>
+		class="com.ejie.x38.security.PerimetralSecurityWrapperMockImpl">
+		<property name="principal">
+			<list>
+				<map>
+					<entry key="userName" value="FOO" />
+					<entry key="name" value="Foo" />
+					<entry key="surname" value="Foo" />
+					<entry key="fullName" value="Foo Foo" />
+					<entry key="nif" value="11111111A" />
+					<entry key="policy" value="1" />
+					<entry key="position" value="01" />
+					<entry key="isCertificate" value="no" />
+					<entry key="roles">
+						<list>
+							<value>X38-IN-FOO</value>
+						</list>
+					</entry>
+				</map>
+				<map>
+					<entry key="userName" value="DUMMY" />
+					<entry key="name" value="Dummy" />
+					<entry key="surname" value="Dummy" />
+					<entry key="fullName" value="Dummy Dummy" />
+					<entry key="nif" value="22222222B" />
+					<entry key="policy" value="1" />
+					<entry key="position" value="01" />
+					<entry key="isCertificate" value="no" />
+					<entry key="roles">
+						<list>
+							<value>X38-IN-FOO</value>
+							<value>X38-IN-DUMMY</value>
+						</list>
+					</entry>
+				</map>
+			</list>
 		</property>
 	</bean>
+
 
 	<bean id="filterSecurityInterceptor"
 		class="org.springframework.security.web.access.intercept.FilterSecurityInterceptor">
@@ -36,9 +61,9 @@
 			<security:filter-security-metadata-source
 				use-expressions="true" request-matcher="regex">
 				<security:intercept-url
-					pattern="/security/security" access="hasRole('ROLE_X21A-PF-0001')" />
+					pattern="/security/security" access="hasRole('ROLE_X38-IN-DUMMY')" />
 				<security:intercept-url
-					pattern="/security/.*" access="isAuthenticated()" />
+					pattern="/security/.*" access="hasRole('ROLE_X38-IN-FOO')" />
 				<security:intercept-url pattern="/**"
 					access="" />
 			</security:filter-security-metadata-source>

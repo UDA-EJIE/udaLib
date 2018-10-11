@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.UnsupportedEncodingException;
@@ -36,7 +35,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.ejie.x38.UdaFilter;
 import com.ejie.x38.test.junit.integration.config.X38TestingApplicationContext;
 import com.ejie.x38.test.junit.integration.config.X38TestingContextLoader;
-import com.sun.security.auth.UserPrincipal;
 
 /**
  * @author Eurohelp S.L.
@@ -306,61 +304,6 @@ public class TestException {
 					.andExpect(errorAjax("java.lang.Exception", "Excepción lanzada en el PUT"));
 		} catch (Exception e) {
 			fail("Exception al realizar la petición PUT con el controller de prueba de gestión de excepciones AJAX [/exception/put]");
-		}
-	}
-
-	/**
-	 * @throws Exception
-	 */
-	@Test
-	public void testSecurity() {
-		try {
-
-			mockMvc.perform(
-
-					get("/exception/security")
-
-							.contentType(MediaType.APPLICATION_JSON)
-
-							.accept(MediaType.ALL)
-
-							.principal(new UserPrincipal("USER_FOO"))
-
-							.locale(localeEs)
-
-							.content(""))
-
-					.andExpect(status().is(302))
-
-					.andExpect(redirectedUrl(
-							"http://xlnets.servicios.jakina.ejiedes.net/n38a/N38LoginInicioServlet?N38API=http://localhost:80/exception/security"));
-		} catch (Exception e) {
-			fail("Exception al realizar la petición PUT con el controller de prueba de gestión de excepciones de seguridad [/exception/security]");
-		}
-
-		try {
-			mockMvc.perform(
-
-					get("/exception/security")
-
-							.contentType(MediaType.APPLICATION_JSON)
-
-							.header("X-Requested-With", "XMLHttpRequest")
-
-							.accept(MediaType.ALL)
-
-							.principal(new UserPrincipal("USER_FOO"))
-
-							.locale(localeEs)
-
-							.content(""))
-
-					.andExpect(status().is(302))
-
-					.andExpect(redirectedUrl(
-							"http://xlnets.servicios.jakina.ejiedes.net/n38a/N38LoginInicioServlet?N38API=http://localhost:80/exception/security"));
-		} catch (Exception e) {
-			fail("Exception al realizar la petición PUT con el controller de prueba de gestión de excepciones de seguridad AJAX [/exception/security]");
 		}
 	}
 

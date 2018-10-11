@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletException;
@@ -62,7 +61,7 @@ public class FormController {
 	private static final Logger logger = LoggerFactory.getLogger(FormController.class);
 
 	@Autowired
-	private Properties appConfiguration;
+//	private Properties appConfiguration;
 
 	@Resource
 	private ReloadableResourceBundleMessageSource messageSource;

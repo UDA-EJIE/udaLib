@@ -4,20 +4,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.io.File;
-import java.io.FileInputStream;
-
 import javax.annotation.Resource;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
@@ -28,7 +21,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.ejie.x38.IframeXHREmulationFilter;
 import com.ejie.x38.UdaFilter;
-import com.ejie.x38.test.control.old.UploadController;
 import com.ejie.x38.test.junit.integration.config.X38TestingApplicationContext;
 import com.ejie.x38.test.junit.integration.config.X38TestingContextLoader;
 
@@ -52,8 +44,8 @@ public class ITUploadControllerTest {
     @Autowired
     private UdaFilter udaFilter;
 	
-	@Autowired
-    private UploadController uploadController;
+//	@Autowired
+//  private UploadController uploadController;
 	
 //	@Before
     public void setUp() {
