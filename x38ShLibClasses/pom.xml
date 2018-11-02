@@ -226,6 +226,11 @@
 			<artifactId>n38i</artifactId>
 			<version>1.0</version>
 		</dependency>
+		<dependency>
+	      <groupId>com.ejie</groupId>
+	      <artifactId>n38n</artifactId>
+	      <version>1.0</version>
+	    </dependency>
 		
 		<!--  EclipseLink -->
 		<dependency>
@@ -556,7 +561,32 @@
                   <version>3.2.2</version>
                 </dependency>
 	<!-- FIN  PIF 1.4 -->
-		
+	
+	<!-- CRYPTIX -->
+	<dependency>
+	    <groupId>cryptix</groupId>
+	    <artifactId>cryptix</artifactId>
+	    <version>3.2.0</version>
+	</dependency>
+	
+	<!-- IWS -->
+	<dependency>
+	    <groupId>iws</groupId>
+	    <artifactId>iws</artifactId>
+	    <version>1.0</version>
+	</dependency>
+	
+	<dependency>
+      <groupId>logging-selenium</groupId>
+      <artifactId>logging-selenium</artifactId>
+      <version>1.2</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>selenium-java-client-driver</groupId>
+      <artifactId>selenium-java-client-driver</artifactId>
+      <version>1.0</version>
+    </dependency>
 		
 	</dependencies>
 	<repositories>

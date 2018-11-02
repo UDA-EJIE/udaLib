@@ -3,7 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test-integration"/>
 	<classpathentry kind="src" path="test-unit"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/UDAWLS11Classpath"/>
 	<classpathentry kind="con" path="oracle.eclipse.tools.weblogic.lib.system">
 		<attributes>
 			<attribute name="owner.project.facets" value="jst.utility"/>
@@ -101,5 +100,10 @@
 	<classpathentry kind="lib" path="lib/commons-digester-2.0.jar"/>
 	<classpathentry kind="lib" path="lib/hibernate-validator-4.3.2.Final.jar"/>
 	<classpathentry kind="lib" path="lib/hadoop-core-1.0.3.jar"/>
+	<classpathentry kind="lib" path="lib/cryptix-3.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/iws-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/logging-selenium-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/n38n-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/selenium-java-client-driver-1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
