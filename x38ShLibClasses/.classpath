@@ -80,7 +80,6 @@
 	<classpathentry kind="lib" path="lib/spring-web-3.2.17.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/spring-webmvc-3.2.17.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/validation-api-1.0.0.GA.jar"/>
-	<classpathentry kind="lib" path="lib/w43ta-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/xz-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/y31b-1.4-ifaz.jar"/>
 	<classpathentry kind="lib" path="lib/y31c-1.4-impl.jar"/>
@@ -92,18 +91,13 @@
 	<classpathentry kind="lib" path="lib/tiles-jsp-2.2.2.jar"/>
 	<classpathentry kind="lib" path="lib/tiles-servlet-2.2.2.jar"/>
 	<classpathentry kind="lib" path="lib/tiles-template-2.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/commons-digester-2.1.jar"/>
+	<classpathentry kind="lib" path="lib/hibernate-validator-4.2.0.Final.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.16.jar"/>
-	<classpathentry kind="lib" path="lib/n38a-1.0.jar"/>
-	<classpathentry kind="lib" path="lib/n38c-1.0.jar"/>
-	<classpathentry kind="lib" path="lib/n38i-1.0.jar"/>
-	<classpathentry kind="lib" path="lib/spring-test-3.2.1.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/commons-digester-2.0.jar"/>
-	<classpathentry kind="lib" path="lib/hibernate-validator-4.3.2.Final.jar"/>
-	<classpathentry kind="lib" path="lib/hadoop-core-1.0.3.jar"/>
-	<classpathentry kind="lib" path="lib/cryptix-3.2.0.jar"/>
-	<classpathentry kind="lib" path="lib/iws-1.0.jar"/>
-	<classpathentry kind="lib" path="lib/logging-selenium-1.2.jar"/>
-	<classpathentry kind="lib" path="lib/n38n-1.0.jar"/>
-	<classpathentry kind="lib" path="lib/selenium-java-client-driver-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/n38a.jar"/>
+	<classpathentry kind="lib" path="lib/n38c.jar"/>
+	<classpathentry kind="lib" path="lib/n38i.jar"/>
+	<classpathentry kind="lib" path="lib/spring-test-3.2.17.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/w43ta-1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
