@@ -29,9 +29,12 @@ public class Constants {
 	public static final String CASTELLANO = "es";
 	public static final String ENGLISH = "en";
 	
+	public static final String X38_VERSION = "3.6.0-RELEASE";
+	
 	public static final String PROPS_MOMO_SERVICIO = "momo.servicio";
 	public static final String PROPS_MOMO_SALIDA_ESTANDAR = "momo.doMomo.salidaEstandar";
 	public static final String PROPS_MOMO_PUERTO_ENDPOINT = "momo.w43taEndpointPort";
+	public static final String PROPS_MOMO_URI_ENDPOINT ="momo.w43taEndpointUri";
 	
 	public static final String MOMO_APP = "x38";
 	public static final String MOMO_SEC_TOKEN = "PIB-3123456786-0";
@@ -42,6 +45,7 @@ public class Constants {
 	public static final String MOMO_LABEL_COMPONENTE = "nombreComponente_lt";
 	public static final String MOMO_LABEL_AUDITING = "auditing_lt";
 	public static final String MOMO_LABEL_TIMESTAMP = "timestamp_ts";
+	public static final String MOMO_LABEL_SERVICIO = "servicio_lt";
 	
 	public static final SimpleDateFormat DDMMYYYY_DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	public static final SimpleDateFormat YYYYMMDD_DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd");
