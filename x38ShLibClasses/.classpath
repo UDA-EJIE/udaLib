@@ -3,7 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test-integration"/>
 	<classpathentry kind="src" path="test-unit"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/UDAWLS11Classpath"/>
 	<classpathentry kind="con" path="oracle.eclipse.tools.weblogic.lib.system">
 		<attributes>
 			<attribute name="owner.project.facets" value="jst.utility"/>
@@ -22,7 +21,6 @@
 	<classpathentry kind="lib" path="lib/commons-codec-1.6.jar"/>
 	<classpathentry kind="lib" path="lib/commons-collections-3.2.2.jar"/>
 	<classpathentry kind="lib" path="lib/commons-compress-1.4.1.jar"/>
-	<classpathentry kind="lib" path="lib/commons-digester-2.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-fileupload-1.3.2.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io-2.2.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang-2.4.jar"/>
@@ -32,7 +30,6 @@
 	<classpathentry kind="lib" path="lib/flexjson-2.1.jar"/>
 	<classpathentry kind="lib" path="lib/hadoop-client-1.0.3.jar"/>
 	<classpathentry kind="lib" path="lib/hadoop-core-without-webhdfs-1.0.3.jar"/>
-	<classpathentry kind="lib" path="lib/hibernate-validator-4.2.0.Final.jar"/>
 	<classpathentry kind="lib" path="lib/httpclient-4.3.3.jar"/>
 	<classpathentry kind="lib" path="lib/httpcore-4.3.3.jar"/>
 	<classpathentry kind="lib" path="lib/itext-2.1.7.jar"/>
@@ -86,11 +83,7 @@
 	<classpathentry kind="lib" path="lib/xz-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/y31b-1.4-ifaz.jar"/>
 	<classpathentry kind="lib" path="lib/y31c-1.4-impl.jar"/>
-	<classpathentry kind="lib" path="lib/spring-test-3.2.17.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/junit-4.8.2.jar"/>
-	<classpathentry kind="lib" path="lib/n38a.jar"/>
-	<classpathentry kind="lib" path="lib/n38c.jar"/>
-	<classpathentry kind="lib" path="lib/n38i.jar"/>
 	<classpathentry kind="lib" path="lib/y31bIfaz-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/y31cImpl-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/tiles-api-2.2.2.jar"/>
@@ -99,5 +92,18 @@
 	<classpathentry kind="lib" path="lib/tiles-servlet-2.2.2.jar"/>
 	<classpathentry kind="lib" path="lib/tiles-template-2.2.2.jar"/>
 	<classpathentry kind="lib" path="lib/w43ta-2.4.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-1.2.16.jar"/>
+	<classpathentry kind="lib" path="lib/n38a-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/n38c-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/n38i-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/spring-test-3.2.1.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/commons-digester-2.0.jar"/>
+	<classpathentry kind="lib" path="lib/hibernate-validator-4.3.2.Final.jar"/>
+	<classpathentry kind="lib" path="lib/hadoop-core-1.0.3.jar"/>
+	<classpathentry kind="lib" path="lib/cryptix-3.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/iws-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/logging-selenium-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/n38n-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/selenium-java-client-driver-1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
