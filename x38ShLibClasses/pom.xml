@@ -4,7 +4,7 @@
   <groupId>com.ejie.x38</groupId>
   <artifactId>x38ShLibClasses</artifactId>
   <packaging>jar</packaging>
-  <version>3.6.0-RELEASE</version>
+  <version>3.7.0-RELEASE</version>
   <name>x38ShLibClasses</name>
   <url>http://maven.apache.org</url>
 	<properties>
