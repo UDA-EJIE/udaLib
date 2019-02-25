@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+xmlns:jee="http://www.springframework.org/schema/jee" xmlns:context="http://www.springframework.org/schema/context"
+xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.2.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+
+	<!-- Gestión de los filtros mediante base de datos -->
+<!-- 	<bean id="x21aFilterDao" class="com.ejie.x38.rup.jqgrid.filter.dao.FilterDaoImpl"> -->
+<!-- 		<property name="filterDataSource" ref="dataSource" />  -->
+<!-- 		<property name="db_filterTableName" value="FILTER_TABLE" /> -->
+<!-- 		<property name="col_filterId" value="FILTER_ID" /> -->
+<!-- 		<property name="col_filterSelector" value="FILTER_SELECTOR" /> -->
+<!-- 		<property name="col_filterName" value="FILTER_NAME"  /> -->
+<!-- 		<property name="col_filterUser" value="FILTER_USER" /> -->
+<!-- 		<property name="col_filterValue" value="FILTER_VALUE" /> -->
+<!-- 		<property name="col_filterDefault" value="FILTER_DEFAULT" /> -->
+<!-- 		<property name="filterSeq" value="FILTER_SEQ" /> -->
+		
+<!-- 	</bean> -->
+
+	
+<!-- 	<bean id="x21aFilterService" class="com.ejie.x38.rup.jqgrid.filter.service.FilterServiceImpl"> -->
+<!-- 		<property name="filterDao" ref="x21aFilterDao" />  -->
+<!-- 	</bean> -->
+<!-- 	<bean id="jQGridUsuarioController" class="com.ejie.x21a.control.JQGridUsuarioController"> -->
+<!-- 			<property name="filterService" ref="x21aFilterService" />  -->
+			
+<!-- 		</bean> -->
+	
+	
+</beans>
