@@ -16,14 +16,19 @@
 package com.ejie.x38.validation;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -55,7 +60,11 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
+import com.ejie.w43ta.clients.W43taMomoCustomMap;
+import com.ejie.w43ta.clients.W43taMomoTraceClient;
 import com.ejie.x38.json.JSONObject;
+import com.ejie.x38.log.LogbackConfigurer;
+import com.ejie.x38.util.Constants;
 import com.ejie.x38.util.DateTimeManager;
 import com.ejie.x38.util.StackTraceManager;
 import com.ejie.x38.util.StaticsContainer;
@@ -84,6 +93,47 @@ public class ValidationManager {
 			ValidatorFactory validatorFactory = Validation.byProvider(HibernateValidator.class).configure().buildValidatorFactory();
 			this.validator = validatorFactory.getValidator();
 		}
+		//Sends traces to w43a
+				Properties props = new Properties();
+				InputStream in = null;
+				try {
+					logger.debug("Loading properties from: "+StaticsContainer.webAppName+"/"+StaticsContainer.webAppName+".properties");
+					in = LogbackConfigurer.class.getClassLoader().getResourceAsStream(StaticsContainer.webAppName+"/"+StaticsContainer.webAppName+".properties");
+					props.load(in);
+					
+					//Creamos el traceClient
+					W43taMomoTraceClient mtc = W43taMomoTraceClient.getInstance(
+							props.getProperty(Constants.PROPS_MOMO_SERVICIO),
+							Constants.MOMO_APP,
+							Constants.MOMO_SEC_TOKEN,
+							props.getProperty(Constants.PROPS_MOMO_URI_ENDPOINT),
+							Integer.parseInt(props.getProperty(Constants.PROPS_MOMO_PUERTO_ENDPOINT)),
+							false);
+					
+					//Obtenemos la versión desde el manifest
+					String implementationVersion = Constants.X38_VERSION;
+					//Añaidmos las trazas
+					W43taMomoCustomMap customData = mtc.getNewCustomDataMap();
+					
+					customData.add(Constants.MOMO_LABEL_SERVICIO, Constants.PROPS_MOMO_SERVICIO);
+					customData.add(Constants.MOMO_LABEL_COD_APP, StaticsContainer.webAppName);
+					
+					String now = new java.util.Date().toString();
+					String msgTraza = "##|AUDIT ~~ "+Constants.MOMO_APP+" ~~ "+now+" ~~ x38-INIT"+implementationVersion+"|##";
+					//Escribimos los datos en PIB
+					mtc.info(msgTraza, customData);
+				} catch(Exception e){
+					logger.error(StackTraceManager.getStackTrace(e));
+				}
+				finally {
+					try {
+						if(in != null) {
+							in.close();
+						}
+					} catch (IOException e) {
+						logger.error("ERROR al cerrar el inputStream en AuditController:",e);
+					}
+				}
 	}
 
 	/**

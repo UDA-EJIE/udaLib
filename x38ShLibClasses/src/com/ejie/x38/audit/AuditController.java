@@ -53,8 +53,8 @@ public class AuditController {
 					props.getProperty(Constants.PROPS_MOMO_SERVICIO),
 					Constants.MOMO_APP,
 					Constants.MOMO_SEC_TOKEN,
-					props.getProperty(Constants.PROPS_MOMO_SALIDA_ESTANDAR),
-					Integer.parseInt(Constants.PROPS_MOMO_PUERTO_ENDPOINT),
+					props.getProperty(Constants.PROPS_MOMO_URI_ENDPOINT),
+					Integer.parseInt(props.getProperty(Constants.PROPS_MOMO_PUERTO_ENDPOINT)),
 					false);
 			
 			//Obtenemos el timestamp y lo convertimos a tiempo utc
@@ -70,9 +70,10 @@ public class AuditController {
 			customData.add(Constants.MOMO_LABEL_COMPONENTE, data.getNombreComponente());
 			customData.add(Constants.MOMO_LABEL_AUDITING, data.getAuditing());
 			customData.add(Constants.MOMO_LABEL_TIMESTAMP, dataDate);
-			
+			String now = new java.util.Date().toString();
+			String msgTraza = "##|AUDIT ~~ "+Constants.MOMO_APP+" ~~ "+now+" ~~ "+data.getNombreComponente()+" ~~ "+data.getAuditing()+"|##";
 			//Escribimos los datos en PIB
-			mtc.info("trazaUDA", customData);
+			mtc.info(msgTraza, customData);
 			
 		}catch(Exception e){
 			logger.error(StackTraceManager.getStackTrace(e));
