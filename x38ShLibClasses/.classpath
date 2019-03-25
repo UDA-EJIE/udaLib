@@ -71,7 +71,6 @@
 	<classpathentry kind="lib" path="lib/spring-expression-3.2.17.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/spring-jdbc-3.2.17.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/spring-orm-3.2.17.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/spring-security-acl-3.2.9.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/spring-security-config-3.2.9.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/spring-security-core-3.2.9.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/spring-security-taglibs-3.2.9.RELEASE.jar"/>
@@ -105,5 +104,8 @@
 	<classpathentry kind="lib" path="lib/logging-selenium-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/n38n-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/selenium-java-client-driver-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/commons-digester-2.1.jar"/>
+	<classpathentry kind="lib" path="lib/hibernate-validator-4.2.0.Final.jar"/>
+	<classpathentry kind="lib" path="lib/spring-test-3.2.17.RELEASE.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
