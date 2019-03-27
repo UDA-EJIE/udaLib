@@ -90,8 +90,6 @@
 		id="authenticationManager" alias="authenticationManager">
 		<security:authentication-provider
 			ref="udaAuthenticationProvider" />
-		<security:authentication-provider
-			ref="rssAuthenticationProvider" />
 	</security:authentication-manager>
 
 	<!-- El bean "udaAuthenticationProvider" es el "authentication-provider" 

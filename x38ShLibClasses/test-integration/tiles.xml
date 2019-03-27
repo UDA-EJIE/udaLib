@@ -581,11 +581,6 @@
 <!--         <put-attribute name="includes" value="/WEB-INF/views/table/tablealumno-includes.jsp"/> -->
 <!--     </definition> -->
     
-<!--     <definition extends="template" name="tableRssDetail"> -->
-<!--         <put-attribute name="content" value="/WEB-INF/views/table/tableRssDetail.jsp"/> -->
-<!--         <put-attribute name="includes" value=""/> -->
-<!--     </definition> -->
-
 	<!-- TABLE -->
     <definition extends="templateDashboard" name="dashboardSimple">
         <put-attribute name="content" value="/WEB-INF/views/dashboard/dashboard.jsp"/>

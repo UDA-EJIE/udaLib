@@ -35,9 +35,7 @@
 	<classpathentry kind="lib" path="lib/itext-2.1.7.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-annotations-2.6.0.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-core-2.6.5.jar"/>
-	<classpathentry kind="lib" path="lib/jackson-core-asl-1.9.13.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-databind-2.6.5.jar"/>
-	<classpathentry kind="lib" path="lib/jackson-mapper-asl-1.9.13.jar"/>
 	<classpathentry kind="lib" path="lib/jasperreports-4.7.1.jar"/>
 	<classpathentry kind="lib" path="lib/javax.persistence-2.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/javax.ws.rs-api-2.0.1.jar"/>
@@ -107,5 +105,8 @@
 	<classpathentry kind="lib" path="lib/commons-digester-2.1.jar"/>
 	<classpathentry kind="lib" path="lib/hibernate-validator-4.2.0.Final.jar"/>
 	<classpathentry kind="lib" path="lib/spring-test-3.2.17.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-core-asl-1.9.13.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-mapper-asl-1.9.13.jar"/>
+	<classpathentry kind="lib" path="lib/spring-security-acl-3.2.9.RELEASE.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

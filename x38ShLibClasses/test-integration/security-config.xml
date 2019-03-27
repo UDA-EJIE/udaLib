@@ -57,7 +57,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/security
         <property name="accessDecisionManager" ref="affirmativeBased" />
         <property name="securityMetadataSource" >
             <security:filter-security-metadata-source use-expressions="true" request-matcher="regex">
-            	<security:intercept-url pattern="/rssfeed/.*" access="isAuthenticated()" />
            		<security:intercept-url pattern="/webdavServlet/.*" access="isAuthenticated()" />
            			<security:intercept-url pattern="/iberdok/.*" access="isAuthenticated()" />
 <!--                 <security:intercept-url pattern="/experimental/.*" access="hasRole('ROLE_X21A-IN-0003')" /> -->

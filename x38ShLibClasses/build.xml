@@ -6,7 +6,7 @@
 	<property name="srcDir" value="./src"/>
 	<property name="destDir" value="./target"/>
 	<property name="buildDir" value="./bin"/>
-	<property name="version" value="3.7.0-RELEASE"/>
+	<property name="version" value="4.0.0-RELEASE"/>
 	
 	<target name="mavenRunDependencies" description="Resuelve las dependencias del proyecto desde Maven">
 		<echo>${ant.home}</echo>
@@ -25,13 +25,12 @@
 		<delete file="${destDir}/x38ShLibClasses-${version}.jar" />
 		<delete file="${destDir}/x38ShLibClasses-dav-${version}.jar" />
 		<delete file="${destDir}/x38ShLibClasses-pif-${version}.jar" />
-		<delete file="${destDir}/x38ShLibClasses-rss-${version}.jar" />
 		<delete file="${destDir}/x38ShLibClasses-rup-${version}.jar" />
 		<delete file="${destDir}/x38ShLibClasses-cache-${version}.jar" />
 		
 		<echo>Generando ${destDir}/x38ShLibClasses-${version}.jar ...</echo>
 		<jar destfile="${destDir}/x38ShLibClasses-${version}.jar">
-			<fileset dir="${buildDir}" includes="com/ejie/x38/** LICENSE.txt NOTICE.txt" excludes="com/ejie/x38/webdav/**, com/ejie/x38/pif/**, com/ejie/x38/rss/**, com/ejie/x38/rup/**,  com/ejie/x38/cache/**" />
+			<fileset dir="${buildDir}" includes="com/ejie/x38/** LICENSE.txt NOTICE.txt" excludes="com/ejie/x38/webdav/**, com/ejie/x38/pif/**, com/ejie/x38/rup/**,  com/ejie/x38/cache/**" />
 			<fileset dir="${baseDir}" includes="build.xml pom.xml" />
 			<manifest>
 		      	<attribute name="Main-Class" value=""/>
@@ -54,17 +53,6 @@
 		<echo>Generando ${destDir}/x38ShLibClasses-pif-${version}.jar ...</echo>
 		<jar destfile="${destDir}/x38ShLibClasses-pif-${version}.jar">
 			<fileset dir="${buildDir}" includes="com/ejie/x38/pif/** LICENSE.txt NOTICE.txt" />
-			<fileset dir="${baseDir}" includes="build.xml pom.xml" />
-			<manifest>
-		      	<attribute name="Main-Class" value=""/>
-		     	<attribute name="Manifest-Version" value="${version}"/>
-		     	<attribute name="Created-By" value="UDA"/>
-		     </manifest>
-		</jar>
-		
-		<echo>Generando ${destDir}/x38ShLibClasses-rss-${version}.jar ...</echo>
-		<jar destfile="${destDir}/x38ShLibClasses-rss-${version}.jar">
-			<fileset dir="${buildDir}" includes="com/ejie/x38/rss/** LICENSE.txt NOTICE.txt" />
 			<fileset dir="${baseDir}" includes="build.xml pom.xml" />
 			<manifest>
 		      	<attribute name="Main-Class" value=""/>

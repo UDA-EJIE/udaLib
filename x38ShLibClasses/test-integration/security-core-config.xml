@@ -15,10 +15,6 @@
 <!-- 	  	<security:filter-chain pattern="/experimental/.*" filters="none"/> -->
 	  	<security:filter-chain pattern="/error.*" filters="none"/>
 		<security:filter-chain pattern="/accessDenied.*" filters="none"/>
-		<security:filter-chain pattern="/rssfeed" filters=" 
-			rssBasicAuthenticationFilter,
-			rssExceptionTranslationFilter,
-			filterSecurityInterceptor" />
 		<security:filter-chain pattern="/webdavServlet/.*" filters=" 
 			webDAVXLNetsAuthenticationFilter,	    	
 	    	exceptionTranslationFilter,
@@ -74,8 +70,6 @@
 	<security:authentication-manager id="authenticationManager" alias="authenticationManager">
 		<security:authentication-provider
 			ref="udaAuthenticationProvider" />
-		<security:authentication-provider
-			ref="rssAuthenticationProvider" />
 	</security:authentication-manager>
 	
 	<!-- El bean "udaAuthenticationProvider" es el "authentication-provider" del sistema de login -->
