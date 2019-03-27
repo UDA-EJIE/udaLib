@@ -43,21 +43,20 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 public class JsonDateDeserializer extends JsonDeserializer<Date> {
 
 	@Override
-	public Date deserialize(JsonParser par, DeserializationContext ctx)
-			throws IOException, JsonProcessingException {
+	public Date deserialize(JsonParser par, DeserializationContext ctx) throws IOException, JsonProcessingException {
 		try {
 			Locale locale = LocaleContextHolder.getLocale();
 			SimpleDateFormat format = DateTimeManager.getDateTimeFormat(locale);
-			
+
 			String dateText = par.getText();
-			
-			if (dateText == null || "".equals(dateText)){
+
+			if (dateText == null || "".equals(dateText)) {
 				return null;
 			}
-			
+
 			return format.parse(dateText);
 		} catch (ParseException e) {
-			throw new JsonParseException(null, null, e);
+			throw new JsonParseException(par, "JsonDateDeserializer.deserialize", e);
 		}
 	}
 }

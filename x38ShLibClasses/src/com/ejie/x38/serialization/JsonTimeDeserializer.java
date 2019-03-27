@@ -22,10 +22,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-
-
-
-
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -35,7 +31,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-
 
 /**
  * 
@@ -50,21 +45,21 @@ public class JsonTimeDeserializer extends JsonDeserializer<Timestamp> {
 
 	@Override
 	public Timestamp deserialize(JsonParser par, DeserializationContext ctx)
-			throws IOException, JsonProcessingException {
+	        throws IOException, JsonProcessingException {
 		try {
 			Locale locale = LocaleContextHolder.getLocale();
 			SimpleDateFormat format = DateTimeManager.getTimeFormat(locale);
-			
+
 			String dateText = par.getText();
-			
-			if (dateText == null || "".equals(dateText)){
+
+			if (dateText == null || "".equals(dateText)) {
 				return null;
 			}
-			
+
 			Date date = format.parse(dateText);
 			return new Timestamp(date.getTime());
 		} catch (ParseException e) {
-			throw new JsonParseException(null, null, e);
+			throw new JsonParseException(par, "JsonTimeDeserializer.deserialize", e);
 		}
 	}
 }
