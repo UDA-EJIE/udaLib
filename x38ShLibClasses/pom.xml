@@ -16,7 +16,8 @@
 		<org.slf4j.version>1.7.25</org.slf4j.version>
 		<eclipselink.version>2.3.0</eclipselink.version>
 		<javax.persistence.version>2.0.1</javax.persistence.version>
-		<org.jackson.version>2.8.11.3</org.jackson.version>
+<!-- 		<org.jackson.version>2.8.11.3</org.jackson.version> -->
+		<org.jackson.version>2.7.9.5</org.jackson.version>
 		<org.apache.tiles.version>3.0.8</org.apache.tiles.version>
 	</properties>
 
@@ -537,16 +538,16 @@
 			<groupId>org.apache.avro</groupId>
 			<artifactId>avro</artifactId>
 			<version>1.7.7</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.codehaus.jackson</groupId>
-					<artifactId>jackson-core-asl</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.codehaus.jackson</groupId>
-					<artifactId>jackson-mapper-asl</artifactId>
-				</exclusion>
-			</exclusions>
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.codehaus.jackson</groupId> -->
+<!-- 					<artifactId>jackson-core-asl</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.codehaus.jackson</groupId> -->
+<!-- 					<artifactId>jackson-mapper-asl</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 			</exclusions> -->
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
@@ -616,6 +617,13 @@
 			<artifactId>javax.mail</artifactId>
 			<version>1.1.0.0</version>
 			<systemPath>c:/bea/weblogic1036/modules/javax.mail_1.1.0.0_1-4-1.jar</systemPath>
+			<scope>system</scope>
+		</dependency>
+		<dependency>
+			<groupId>weblogic</groupId>
+			<artifactId>glassfish</artifactId>
+			<version>1.2.0.1</version>
+			<systemPath>c:/bea/weblogic1036/modules/glassfish.jstl_1.2.0.1.jar</systemPath>
 			<scope>system</scope>
 		</dependency>
 		<dependency>

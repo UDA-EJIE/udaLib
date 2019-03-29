@@ -277,7 +277,8 @@ public class TestMock {
 					.andExpect(status().isMovedTemporarily())
 
 					.andExpect(redirectedUrl(
-							"/x38TestingMockWar/mockLoginPage?mockUrl=http://localhost:80/security/security&userNames=[{\"value\":\"FOO\",\"i18nCaption\":\"Foo Foo\"},{\"value\":\"DUMMY\",\"i18nCaption\":\"Dummy Dummy\"},{\"value\":\"udaAnonymousUser\",\"i18nCaption\":\"Uda Anonymous User\"}]"));
+							"/x38TestingMockWar/mockLoginPage?mockUrl=http://localhost/security/security&userNames=[{\"i18nCaption\":\"Foo Foo\",\"value\":\"FOO\"},{\"i18nCaption\":\"Dummy Dummy\",\"value\":\"DUMMY\"},{\"i18nCaption\":\"Uda Anonymous User\",\"value\":\"udaAnonymousUser\"}]"));
+			
 		} catch (Exception e) {
 			fail("Exception al realizar la petición SIN AUTENTICARSE [/security/security]");
 		}
@@ -299,7 +300,7 @@ public class TestMock {
 					.andExpect(status().isMovedTemporarily())
 
 					.andExpect(redirectedUrl(
-							"/x38TestingMockWar/mockLoginAjaxPage?mockUrl=http://localhost:80/security/security&userNames=[{\"value\":\"FOO\",\"i18nCaption\":\"Foo Foo\"},{\"value\":\"DUMMY\",\"i18nCaption\":\"Dummy Dummy\"},{\"value\":\"udaAnonymousUser\",\"i18nCaption\":\"Uda Anonymous User\"}]"));
+							"/x38TestingMockWar/mockLoginAjaxPage?mockUrl=http://localhost/security/security&userNames=[{\"i18nCaption\":\"Foo Foo\",\"value\":\"FOO\"},{\"i18nCaption\":\"Dummy Dummy\",\"value\":\"DUMMY\"},{\"i18nCaption\":\"Uda Anonymous User\",\"value\":\"udaAnonymousUser\"}]"));
 		} catch (Exception e) {
 			fail("Exception al realizar la petición SIN AUTENTICARSE por ajax [/security/security]");
 		}

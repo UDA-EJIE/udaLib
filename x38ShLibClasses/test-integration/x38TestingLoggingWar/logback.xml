@@ -18,7 +18,8 @@
 	<!-- appender name="traceSystem" class="ch.qos.logback.core.ConsoleAppender" -->
 	<appender name="salidaEstandarAppender"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<File>${log.path}/logging/salidaEstandar_${CONTEXT_NAME}_WLTEST.log</File>
+		<File>${log.path}/logging/salidaEstandar_${CONTEXT_NAME}_WLTEST.log
+		</File>
 		<encoder
 			class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
 			<layout class="com.ejie.x38.log.LogLayout">
@@ -42,7 +43,8 @@
 
 	<appender name="incidenciasAppender"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<File>${log.path}/logging/incidencias_${CONTEXT_NAME}_WLTEST.log</File>
+		<File>${log.path}/logging/incidencias_${CONTEXT_NAME}_WLTEST.log
+		</File>
 		<filter class="com.ejie.x38.log.UdaLogFilter">
 			<logIncidences>true</logIncidences>
 		</filter>
@@ -120,7 +122,8 @@
 
 	<appender name="auditoriaBBDDAppender"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<File>${log.path}/logging/auditoriaBBDD_${CONTEXT_NAME}_WLTEST.log</File>
+		<File>${log.path}/logging/auditoriaBBDD_${CONTEXT_NAME}_WLTEST.log
+		</File>
 		<filter class="com.ejie.x38.log.UdaLogFilter" />
 		<encoder
 			class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
@@ -145,7 +148,8 @@
 
 	<appender name="auditoriaAccesosAppender"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<File>${log.path}/logging/auditoriaAccesos_${CONTEXT_NAME}_WLTEST.log</File>
+		<File>${log.path}/logging/auditoriaAccesos_${CONTEXT_NAME}_WLTEST.log
+		</File>
 		<filter class="com.ejie.x38.log.UdaLogFilter" />
 		<encoder
 			class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
