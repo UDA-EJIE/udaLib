@@ -6,10 +6,11 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.method.support.CompositeUriComponentsContributor;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
@@ -27,7 +28,7 @@ import com.ejie.x38.validation.ValidationManager;
  * @author UDA
  *
  */
-@Component
+@Configuration
 public class MvcExceptionResolverConfig extends WebMvcConfigurationSupport { 
 
 	@Autowired
@@ -119,7 +120,5 @@ public class MvcExceptionResolverConfig extends WebMvcConfigurationSupport {
 		customResolver.afterPropertiesSet();
 		exceptionResolvers.add(customResolver);
 	}
-
-	
 
 }

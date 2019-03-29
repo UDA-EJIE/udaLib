@@ -85,11 +85,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.0.1</version>
-            <scope>test</scope>
-       </dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.0.1</version>
+			<scope>test</scope>
+		</dependency>
 
 		<!-- JUNIT -->
 		<dependency>
@@ -127,6 +127,11 @@
 		</dependency>
 
 		<!-- Logging -->
+		<dependency>
+			<groupId>org.jboss.logging</groupId>
+			<artifactId>jboss-logging</artifactId>
+			<version>3.3.0.Final</version>
+		</dependency>
 		<!-- LOG4J -->
 		<dependency>
 			<groupId>log4j</groupId>
