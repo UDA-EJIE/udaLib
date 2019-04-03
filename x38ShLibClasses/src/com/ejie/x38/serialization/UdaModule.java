@@ -25,11 +25,11 @@ import javax.annotation.PostConstruct;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.Version;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule; 
 
 
@@ -40,6 +40,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
  *
  */
 public class UdaModule extends SimpleModule {
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Nombre identificador del modulo.
@@ -49,7 +50,7 @@ public class UdaModule extends SimpleModule {
 	/**
 	 * Version del modulo.
 	 */
-	private static final Version VERSION = new Version(1, 0, 0, null);
+	private static final Version VERSION = new Version(1, 0, 0, null, null, null);
 	
 	/**
 	 * Conjunto de serializadores a aplicar.

@@ -68,6 +68,7 @@ import com.ejie.x38.util.Constants;
 import com.ejie.x38.util.DateTimeManager;
 import com.ejie.x38.util.StackTraceManager;
 import com.ejie.x38.util.StaticsContainer;
+import com.ejie.x38.util.WebContextParameterManager;
 
 /**
  * Proporciona el API de validación de UDA. 
@@ -80,6 +81,9 @@ public class ValidationManager {
 	private static final long serialVersionUID = 1L;
 	
 	private final static Logger logger =  LoggerFactory.getLogger(ValidationManager.class);
+	
+	@Autowired
+	WebContextParameterManager webContextParameterManager;
 	
 	@Resource
 	private ReloadableResourceBundleMessageSource messageSource;
@@ -159,8 +163,7 @@ public class ValidationManager {
 		}
 		
 		// Se realiza la validacion de la instancia
-		Set<ConstraintViolation<Object>> violations = validator.validate(obj,
-				groups);
+		Set<ConstraintViolation<Object>> violations = validator.validate(obj, groups);
 	    
 		// A partir de las violaciones obtenidas a partir de la validacion
 		// realizada, se añaden en la propiedad Errors
