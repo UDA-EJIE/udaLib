@@ -16,12 +16,10 @@
 package com.ejie.x38.serialization;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 
 import javax.annotation.PostConstruct;
 
-	
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpInputMessage;
@@ -123,23 +121,8 @@ public class UdaMappingJackson2HttpMessageConverter extends
 	}
 
 	@Override
-	protected void writeInternal(Object object, Type type, HttpOutputMessage outputMessage)
-	        throws IOException, HttpMessageNotWritableException {
-		udaWriteInternal(object, outputMessage);
-	}
-
-	@Override
 	protected void writeInternal(Object object, HttpOutputMessage outputMessage)
-	        throws IOException, HttpMessageNotWritableException {
-
-		udaWriteInternal(object, outputMessage);
-	}
-
-	/**
-	 * @param outputMessage
-	 * @throws IOException
-	 */
-	private void udaWriteInternal(Object object, HttpOutputMessage outputMessage) throws IOException {
+			throws IOException, HttpMessageNotWritableException {
 		JsonEncoding encoding = getEncoding(outputMessage.getHeaders().getContentType());
 		JsonGenerator jsonGenerator = udaObjectMapper.getFactory().createGenerator(outputMessage.getBody(), encoding);
 		try {
