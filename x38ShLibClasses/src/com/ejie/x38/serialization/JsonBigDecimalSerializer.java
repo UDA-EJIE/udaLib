@@ -32,6 +32,12 @@ public class JsonBigDecimalSerializer extends JsonSerializer<BigDecimal> {
 	@Override
 	public void serialize(BigDecimal number, JsonGenerator jsonGenerator, SerializerProvider paramSerializerProvider)
 			throws IOException, JsonProcessingException {
-		jsonGenerator.writeString(ObjectConversionManager.bigDecimalToString(number, number.stripTrailingZeros().scale(), LocaleContextHolder.getLocale()));
+		if(LocaleContextHolder.getLocale().getLanguage() == "eu") {
+			String numberStr = ObjectConversionManager.bigDecimalToString(number, number.stripTrailingZeros().scale(), LocaleContextHolder.getLocale());
+			numberStr = numberStr.replace(",", "&PUNTO&").replace(".",",").replace("&PUNTO&",".");
+			jsonGenerator.writeString(numberStr);			
+		} else {
+			jsonGenerator.writeString(ObjectConversionManager.bigDecimalToString(number, number.stripTrailingZeros().scale(), LocaleContextHolder.getLocale()));
+		}
 	}
 }

@@ -21,6 +21,13 @@ public class JsonNumberSerializer extends JsonSerializer<BigDecimal> {
 			JsonProcessingException {
 		
 		NumberFormat numberFormatter = NumberFormat.getInstance(LocaleContextHolder.getLocale());
-		jsonGenerator.writeString(numberFormatter.format(number));
+		
+		String formatted = numberFormatter.format(number);
+		
+		if(LocaleContextHolder.getLocale().getLanguage() == "eu") {
+			formatted = formatted.replace(",", "&PUNTO&").replace(".", ",").replace("&PUNTO&", ".");
+		}
+		
+		jsonGenerator.writeString(formatted);
 	}
 }

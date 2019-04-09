@@ -17,8 +17,13 @@ public class JsonBigDecimalDeserializer extends JsonDeserializer<BigDecimal>{
 	public BigDecimal deserialize(JsonParser jsonParser, DeserializationContext ctx)
 			throws IOException, JsonProcessingException {
 				
+			String formatted = jsonParser.getText();
 			
-			return ObjectConversionManager.stringToBigDecimal(jsonParser.getText(), LocaleContextHolder.getLocale());
+			if(LocaleContextHolder.getLocale().getLanguage() == "eu") {
+				formatted = formatted.replace(",", "&PUNTO&").replace(".", ",").replace("&PUNTO&", ".");
+			}
+			
+			return ObjectConversionManager.stringToBigDecimal(formatted, LocaleContextHolder.getLocale());
 		
 	}
 	

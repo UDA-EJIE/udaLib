@@ -25,6 +25,10 @@ public class JsonNumberDeserializer extends JsonDeserializer<BigDecimal> {
 			if (numberText == null || "".equals(numberText)) {
 				return null;
 			}
+			
+			if(LocaleContextHolder.getLocale().getLanguage() == "eu") {
+				numberText = numberText.replace(",", "&PUNTO&").replace(".", ",").replace("&PUNTO&", ".");
+			}
 
 			return new BigDecimal(numberFormatter.parse(numberText).doubleValue());
 		} catch (ParseException e) {
