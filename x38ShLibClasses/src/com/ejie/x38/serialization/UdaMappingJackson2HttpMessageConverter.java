@@ -16,6 +16,7 @@
 package com.ejie.x38.serialization;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 
 import javax.annotation.PostConstruct;
@@ -120,6 +121,17 @@ public class UdaMappingJackson2HttpMessageConverter extends
 		
 	}
 
+	@Override
+	protected void writeInternal(Object object, Type type, HttpOutputMessage outputMessage)
+			throws IOException, HttpMessageNotWritableException {
+		if (!ThreadSafeCache.getMap().isEmpty() && ThreadSafeCache.getMap().keySet().contains("RUP")) {
+			this.writeInternal(object, outputMessage);
+		} else {
+			super.writeInternal(object, type, outputMessage);
+		}
+		
+	}
+	
 	@Override
 	protected void writeInternal(Object object, HttpOutputMessage outputMessage)
 			throws IOException, HttpMessageNotWritableException {
