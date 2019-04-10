@@ -402,7 +402,8 @@ public class TableManager implements java.io.Serializable{
 		
 		StringBuilder selectQuery = new StringBuilder();
 		
-		selectQuery.append("SELECT * FROM USUARIO");
+		selectQuery.append("SELECT * FROM "+clazz.getSimpleName());
+
 		selectQuery.append(" WHERE (").append(pkStr).append(") ").append(tableRequestDto.getMultiselection().getSelectedAll()?" NOT ":"").append(" IN (");
 		for (T selectedBean : tableRequestDto.getMultiselection().getSelected(clazz)) {
 			selectQuery.append("(");
