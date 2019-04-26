@@ -602,58 +602,6 @@
 			<artifactId>selenium-java-client-driver</artifactId>
 			<version>1.0</version>
 		</dependency>
-
-		<!-- WEBLOGIC -->
-		<dependency>
-			<groupId>weblogic</groupId>
-			<artifactId>javax.servlet</artifactId>
-			<version>1.0.0.0</version>
-			<systemPath>c:/bea/weblogic1036/modules/javax.servlet_1.0.0.0_2-5.jar</systemPath>
-			<scope>system</scope>
-		</dependency>
-		<dependency>
-			<groupId>weblogic</groupId>
-			<artifactId>javax.interceptor</artifactId>
-			<version>1.0</version>
-			<systemPath>c:/bea/weblogic1036/modules/javax.interceptor_1.0.jar</systemPath>
-			<scope>system</scope>
-		</dependency>
-		<dependency>
-			<groupId>weblogic</groupId>
-			<artifactId>javax.mail</artifactId>
-			<version>1.1.0.0</version>
-			<systemPath>c:/bea/weblogic1036/modules/javax.mail_1.1.0.0_1-4-1.jar</systemPath>
-			<scope>system</scope>
-		</dependency>
-		<dependency>
-			<groupId>weblogic</groupId>
-			<artifactId>glassfish</artifactId>
-			<version>1.2.0.1</version>
-			<systemPath>c:/bea/weblogic1036/modules/glassfish.jstl_1.2.0.1.jar</systemPath>
-			<scope>system</scope>
-		</dependency>
-		<dependency>
-			<groupId>weblogic</groupId>
-			<artifactId>wls-api</artifactId>
-			<version>10.3</version>
-			<systemPath>c:/bea/weblogic1036/wlserver_10.3/server/lib/wls-api.jar</systemPath>
-			<scope>system</scope>
-		</dependency>
-		<dependency>
-			<groupId>weblogic</groupId>
-			<artifactId>weblogic</artifactId>
-			<version>10.3.6</version>
-			<systemPath>c:/bea/weblogic1036/wlserver_10.3/server/lib/weblogic.jar</systemPath>
-			<scope>system</scope>
-		</dependency>
-		<!-- JPA 2.0 -->
-		<dependency>
-			<groupId>weblogic</groupId>
-			<artifactId>javax.persistence</artifactId>
-			<version>1.1.0.0</version>
-			<systemPath>c:/bea/weblogic1036/modules/javax.persistence_1.1.0.0_2-0.jar</systemPath>
-			<scope>system</scope>
-		</dependency>
 	</dependencies>
 
 

@@ -42,7 +42,6 @@
 	<classpathentry kind="lib" path="lib/eclipselink-2.3.0.jar"/>
 	<classpathentry kind="lib" path="lib/ezmorph-1.0.2.jar"/>
 	<classpathentry kind="lib" path="lib/flexjson-2.1.jar"/>
-	<classpathentry kind="lib" path="lib/glassfish.jstl_1.2.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/hadoop-client-1.0.3.jar"/>
 	<classpathentry kind="lib" path="lib/hadoop-core-1.0.3.jar"/>
 	<classpathentry kind="lib" path="lib/hadoop-core-without-webhdfs-1.0.3.jar"/>
@@ -58,10 +57,6 @@
 	<classpathentry kind="lib" path="lib/jackson-databind-2.7.9.5.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-mapper-asl-1.9.13.jar"/>
 	<classpathentry kind="lib" path="lib/jasperreports-4.7.1.jar"/>
-	<classpathentry kind="lib" path="lib/javax.interceptor_1.0.jar"/>
-	<classpathentry kind="lib" path="lib/javax.mail_1.1.0.0_1-4-1.jar"/>
-	<classpathentry kind="lib" path="lib/javax.persistence_1.1.0.0_2-0.jar"/>
-	<classpathentry kind="lib" path="lib/javax.servlet_1.0.0.0_2-5.jar"/>
 	<classpathentry kind="lib" path="lib/javax.servlet-api-3.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/javax.ws.rs-api-2.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/jboss-logging-3.3.0.Final.jar"/>
@@ -121,8 +116,6 @@
 	<classpathentry kind="lib" path="lib/tiles-template-3.0.8.jar"/>
 	<classpathentry kind="lib" path="lib/validation-api-1.1.0.Final.jar"/>
 	<classpathentry kind="lib" path="lib/w43ta-2.4.jar"/>
-	<classpathentry kind="lib" path="lib/weblogic.jar"/>
-	<classpathentry kind="lib" path="lib/wls-api.jar"/>
 	<classpathentry kind="lib" path="lib/xz-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/y31b-1.4-ifaz.jar"/>
 	<classpathentry kind="lib" path="lib/y31bIfaz-1.1.jar"/>
