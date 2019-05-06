@@ -225,28 +225,6 @@
 			</exclusions>
 		</dependency>
 
-		<!-- n38 -->
-		<dependency>
-			<groupId>com.ejie</groupId>
-			<artifactId>n38a</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.ejie</groupId>
-			<artifactId>n38c</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.ejie</groupId>
-			<artifactId>n38i</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.ejie</groupId>
-			<artifactId>n38n</artifactId>
-			<version>1.0</version>
-		</dependency>
-
 		<!-- EclipseLink -->
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
@@ -472,17 +450,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
-		<dependency>
-			<groupId>com.ejie.y31b</groupId>
-			<artifactId>y31bIfaz</artifactId>
-			<version>1.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.ejie.y31c</groupId>
-			<artifactId>y31cImpl</artifactId>
-			<version>1.1</version>
-		</dependency>
 		<!-- FIN:HADOOP EN APLICACION UDA -->
 
 		<!-- PIF 1.4 -->
@@ -576,32 +543,6 @@
 			<version>3.2.2</version>
 		</dependency>
 		<!-- FIN PIF 1.4 -->
-
-		<!-- CRYPTIX -->
-		<dependency>
-			<groupId>cryptix</groupId>
-			<artifactId>cryptix</artifactId>
-			<version>3.2.0</version>
-		</dependency>
-
-		<!-- IWS -->
-		<dependency>
-			<groupId>iws</groupId>
-			<artifactId>iws</artifactId>
-			<version>1.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>logging-selenium</groupId>
-			<artifactId>logging-selenium</artifactId>
-			<version>1.2</version>
-		</dependency>
-
-		<dependency>
-			<groupId>selenium-java-client-driver</groupId>
-			<artifactId>selenium-java-client-driver</artifactId>
-			<version>1.0</version>
-		</dependency>
 	</dependencies>
 
 
@@ -654,26 +595,6 @@
 							<overWriteSnapshots>true</overWriteSnapshots>
 							<excludeTransitive>false</excludeTransitive>
 						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.2</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-					</execution>
-					<!-- attached to Maven test phase -->
-					<execution>
-						<id>report</id>
-						<phase>test</phase>
-						<goals>
-							<goal>report</goal>
-						</goals>
 					</execution>
 				</executions>
 			</plugin>
