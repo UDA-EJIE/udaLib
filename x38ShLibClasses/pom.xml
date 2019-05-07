@@ -91,14 +91,6 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- JUNIT -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-			<scope>test</scope>
-		</dependency>
-
 		<!-- TILES -->
 		<dependency>
 			<groupId>org.apache.tiles</groupId>
