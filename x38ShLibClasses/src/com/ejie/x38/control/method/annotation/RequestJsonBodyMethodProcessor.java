@@ -4,10 +4,6 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
-
-
-import com.fasterxml.jackson.databind.JsonNode;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Conventions;
 import org.springframework.core.MethodParameter;
@@ -26,6 +22,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestResponseBody
 
 import com.ejie.x38.control.bind.annotation.RequestJsonBody;
 import com.ejie.x38.serialization.UdaMappingJackson2HttpMessageConverter;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class RequestJsonBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
 
@@ -85,8 +82,9 @@ public class RequestJsonBodyMethodProcessor extends RequestResponseBodyMethodPro
 		}
 		
 
-		Object arg = this.getMappingJackson2HttpMessageConverter().getObjectMapper().readValue(baseNode.traverse(), parameter.getParameterType());
-
+		Object arg = this.getMappingJackson2HttpMessageConverter().getObjectMapper().readValue(
+		        baseNode.traverse(this.getMappingJackson2HttpMessageConverter().getObjectMapper()),
+		        parameter.getParameterType());
 		
 		
         Annotation annotations[] = parameter.getParameterAnnotations();

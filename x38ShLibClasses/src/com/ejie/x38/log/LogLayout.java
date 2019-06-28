@@ -61,7 +61,7 @@ public class LogLayout extends LayoutBase<ILoggingEvent>{
 		try{
 			
 			//Get internal log info
-			if(event.getArgumentArray() != null){
+			if(event !=null && event.getArgumentArray() != null && event.getArgumentArray().length>0){
 				argArray = event.getArgumentArray();
 				if (argArray[0].getClass() == java.util.HashMap.class ){
 					argUdaObjec = (HashMap<String, String>) argArray[0];
@@ -142,7 +142,7 @@ public class LogLayout extends LayoutBase<ILoggingEvent>{
 					if (event.getThrowableProxy() != null) {
 						ThrowableProxy throwableProxy = (ThrowableProxy) event.getThrowableProxy();
 						table.put(LogConstants.ADITIONALINFO,StackTraceManager.getStackTrace(throwableProxy.getThrowable()));
-					} else if (argArray != null && argArray[0].getClass() == String.class){
+					} else if (argArray != null && argArray.length>0 && argArray[0].getClass() == String.class){
 						table.put(LogConstants.ADITIONALINFO, (String)argArray[0]);
 					}
 				}

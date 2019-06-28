@@ -75,7 +75,7 @@ public class FilterDaoImpl implements FilterDao{
 		query.append("SELECT ").append(filterSeq).append(".NEXTVAL FROM DUAL");
 		SqlParameterSource beanParameterSource =  new BeanPropertySqlParameterSource(filtro);
 
-		filtro.setFilterId(jdbcTemplate.queryForInt(query.toString(), beanParameterSource));
+		filtro.setFilterId(jdbcTemplate.queryForObject(query.toString(), beanParameterSource, Integer.class));
 		
 		beanParameterSource=  new BeanPropertySqlParameterSource(filtro);
 

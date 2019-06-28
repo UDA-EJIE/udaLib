@@ -482,7 +482,7 @@ public class TestXlnets {
 					.andExpect(status().isMovedTemporarily())
 
 					.andExpect(redirectedUrl(
-							"http://xlnets.servicios.jakina.ejiedes.net/n38a/N38LoginInicioServlet?N38API=http://localhost:80/security/security"));
+							"http://xlnets.servicios.jakina.ejiedes.net/n38a/N38LoginInicioServlet?N38API=http://localhost/security/security"));
 		} catch (Exception e) {
 			fail("Exception al realizar la petición SIN AUTENTICARSE [/security/security]");
 		}
@@ -504,7 +504,7 @@ public class TestXlnets {
 					.andExpect(status().isMovedTemporarily())
 
 					.andExpect(redirectedUrl(
-							"http://xlnets.servicios.jakina.ejiedes.net/n38a/N38LoginInicioServlet?N38API=http://localhost:80/security/security"));
+							"http://xlnets.servicios.jakina.ejiedes.net/n38a/N38LoginInicioServlet?N38API=http://localhost/security/security"));
 		} catch (Exception e) {
 			fail("Exception al realizar la petición SIN AUTENTICARSE por ajax [/security/security]");
 		}

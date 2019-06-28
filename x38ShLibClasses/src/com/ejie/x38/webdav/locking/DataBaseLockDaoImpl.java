@@ -144,7 +144,7 @@ public class DataBaseLockDaoImpl implements DataBaseLockDao {
 		logger.debug("\tSQL: " +query.toString());
 		logger.debug("\tparams: {path: " +path + ", tempLock: "+tempLock+"}");
 		
-		return jdbcTemplate.queryForInt(query.toString(), mapParameterSource)>0;
+		return jdbcTemplate.queryForObject(query.toString(), mapParameterSource, Integer.class)>0;
 	}
 
 	@Override
@@ -163,7 +163,7 @@ public class DataBaseLockDaoImpl implements DataBaseLockDao {
 		logger.debug("\tSQL: " +query.toString());
 		logger.debug("\tparams: {id: " +id+ ", tempLock: "+tempLock+"}");
 		
-		return jdbcTemplate.queryForInt(query.toString(), mapParameterSource)>0;
+		return jdbcTemplate.queryForObject(query.toString(), mapParameterSource, Integer.class)>0;
 	}
 
 	@Override

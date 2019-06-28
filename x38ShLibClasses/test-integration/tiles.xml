@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN" "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
 <tiles-definitions>
 
 
@@ -581,11 +581,6 @@
 <!--         <put-attribute name="includes" value="/WEB-INF/views/table/tablealumno-includes.jsp"/> -->
 <!--     </definition> -->
     
-<!--     <definition extends="template" name="tableRssDetail"> -->
-<!--         <put-attribute name="content" value="/WEB-INF/views/table/tableRssDetail.jsp"/> -->
-<!--         <put-attribute name="includes" value=""/> -->
-<!--     </definition> -->
-
 	<!-- TABLE -->
     <definition extends="templateDashboard" name="dashboardSimple">
         <put-attribute name="content" value="/WEB-INF/views/dashboard/dashboard.jsp"/>

@@ -65,9 +65,9 @@ public class TestCustomSerializer {
 			fail("IOException serializando con el CustomSerializer de un objeto con propiedad simple");
 		} finally {
 			assertTrue("No se ha realizado la serialización del objeto con propiedad simple",
-					StringUtils.isNotEmpty(jsonModelo));
-			assertEquals("La serialización del objeto con propiedad simple no es correcta", jsonModelo,
-					"{\"modelo\":\"CRX-5\"}");
+			        StringUtils.isNotEmpty(jsonModelo));
+			assertEquals("La serialización del objeto con propiedad simple no es correcta", "{\"modelo\":\"CRX-5\"}",
+			        jsonModelo);
 		}
 		/**
 		 * FIN PRUEBA OBJETO PROPIEDAD SIMPLE
@@ -85,9 +85,10 @@ public class TestCustomSerializer {
 			fail("IOException serializando con el CustomSerializer de un objeto con propiedad compleja");
 		} finally {
 			assertTrue("No se ha realizado la serialización del objeto con propiedad compleja",
-					StringUtils.isNotEmpty(jsonMarca));
-			assertEquals("La serialización del objeto con propiedad simple no es correcta", jsonModelo,
-					"{\"modelo\":\"CRX-5\",\"marca\":{\"nombre\":\"Foo\",\"empleados\":[{\"nombre\":\"Eneko\"},{\"nombre\":\"Laura\"}]}}");
+			        StringUtils.isNotEmpty(jsonMarca));
+			assertEquals("La serialización del objeto con propiedad simple no es correcta",
+			        "{\"marca\":{\"nombre\":\"Foo\",\"pais\":null,\"empleados\":[{\"nombre\":\"Eneko\",\"apellido1\":null,\"apellido2\":null,\"fechaNacimiento\":null},{\"nombre\":\"Laura\",\"apellido1\":null,\"apellido2\":null,\"fechaNacimiento\":null}]}}",
+			        jsonMarca);
 		}
 
 		/**
@@ -104,11 +105,12 @@ public class TestCustomSerializer {
 	private String testSerializeDo(Coche crx5) throws IOException {
 		String json = "";
 		Writer jsonWriter = new StringWriter();
-		SerializerProvider serializerProvider = new ObjectMapper().getSerializerProvider();
+		JsonFactory jsonFactory = new JsonFactory();
+		SerializerProvider serializerProvider = new ObjectMapper(jsonFactory).getSerializerProvider();
 		JsonGenerator jsonGenerator = null;
 
 		try {
-			jsonGenerator = new JsonFactory().createGenerator(jsonWriter);
+			jsonGenerator = jsonFactory.createGenerator(jsonWriter);
 			new CustomSerializer().serialize(crx5, jsonGenerator, serializerProvider);
 		} catch (Exception e) {
 			fail("Exception serializando con el CustomSerializer");

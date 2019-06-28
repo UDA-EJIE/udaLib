@@ -4,37 +4,16 @@
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:jee="http://www.springframework.org/schema/jee"
 	xsi:schemaLocation="
-			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
-			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd 
-			http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.2.xsd">
-
-	<!--Configuration of dataSource with DDBB audit -->
-<!-- 	<jee:jndi-lookup id="dataSource" -->
-<!-- 		jndi-name="java:comp/env/dataSource" -->
-<!-- 		expected-type="javax.sql.DataSource" /> -->
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd 
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd 
+			http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.3.xsd">
 
 	<bean id="lobHandler"
-		class="org.springframework.jdbc.support.lob.OracleLobHandler">
-		<property name="nativeJdbcExtractor">
-			<ref local="nativeJdbcExtractor" />
-		</property>
-	</bean>
-
-	<bean id="nativeJdbcExtractor"
-		class="org.springframework.jdbc.support.nativejdbc.CommonsDbcpNativeJdbcExtractor" />
+		class="org.springframework.jdbc.support.lob.DefaultLobHandler" />
 
 	<!-- Scans the classpath of this application for @Repository to deploy as 
 		beans -->
 	<context:component-scan
 		base-package="com.ejie.x21a.dao" />
-
-<!-- 	<bean id="afterReturningConnectionAdvice" -->
-<!-- 		class="com.ejie.x21a.util.AfterReturningConnectionAdvice"> -->
-<!-- 		<property name="sqls"> -->
-<!-- 			<list> -->
-<!-- 				<value>ALTER SESSION SET NLS_SORT='SPANISH_AI'</value> -->
-<!-- 			</list> -->
-<!-- 		</property> -->
-<!-- 	</bean> -->
 
 </beans>

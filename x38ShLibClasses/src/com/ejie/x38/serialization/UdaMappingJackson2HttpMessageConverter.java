@@ -16,11 +16,11 @@
 package com.ejie.x38.serialization;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 
 import javax.annotation.PostConstruct;
 
-	
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpInputMessage;
@@ -122,26 +122,32 @@ public class UdaMappingJackson2HttpMessageConverter extends
 	}
 
 	@Override
-	protected void writeInternal(Object o, HttpOutputMessage outputMessage)
+	protected void writeInternal(Object object, Type type, HttpOutputMessage outputMessage)
 			throws IOException, HttpMessageNotWritableException {
-
-		JsonEncoding encoding = getEncoding(outputMessage.getHeaders()
-				.getContentType());
-		JsonGenerator jsonGenerator = udaObjectMapper.getJsonFactory()
-				.createJsonGenerator(outputMessage.getBody(), encoding);
+		if (!ThreadSafeCache.getMap().isEmpty() && ThreadSafeCache.getMap().keySet().contains("RUP")) {
+			this.writeInternal(object, outputMessage);
+		} else {
+			super.writeInternal(object, type, outputMessage);
+		}
+		
+	}
+	
+	@Override
+	protected void writeInternal(Object object, HttpOutputMessage outputMessage)
+			throws IOException, HttpMessageNotWritableException {
+		JsonEncoding encoding = getEncoding(outputMessage.getHeaders().getContentType());
+		JsonGenerator jsonGenerator = udaObjectMapper.getFactory().createGenerator(outputMessage.getBody(), encoding);
 		try {
-			if (!ThreadSafeCache.getMap().isEmpty()
-					&& ThreadSafeCache.getMap().keySet().contains("RUP")) {
+			if (!ThreadSafeCache.getMap().isEmpty() && ThreadSafeCache.getMap().keySet().contains("RUP")) {
 				logger.info("UDA's Serialization Mechanism is being triggered.");
-				udaObjectMapper.writeValue(jsonGenerator, o);
+				udaObjectMapper.writeValue(jsonGenerator, object);
 			} else {
 				logger.info("Spring's Default Object Mapper searialization is being triggered.");
-				super.writeInternal(o, outputMessage);
+				super.writeInternal(object, outputMessage);
 			}
 		} catch (Exception ex) {
 			logger.error(StackTraceManager.getStackTrace(ex));
-			throw new HttpMessageNotWritableException("Could not write JSON: "
-					+ ex.getMessage(), ex);
+			throw new HttpMessageNotWritableException("Could not write JSON: " + ex.getMessage(), ex);
 		}
 	}
 
@@ -168,8 +174,8 @@ public class UdaMappingJackson2HttpMessageConverter extends
 	}
 
 	private JsonEncoding getEncoding(MediaType contentType) {
-		if (contentType != null && contentType.getCharSet() != null) {
-			Charset charset = contentType.getCharSet();
+		if (contentType != null && contentType.getCharset() != null) {
+			Charset charset = contentType.getCharset();
 			for (JsonEncoding encoding : JsonEncoding.values()) {
 				if (charset.name().equals(encoding.getJavaName())) {
 					return encoding;

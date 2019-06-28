@@ -32,7 +32,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 
-
 /**
  * 
  * Used to serialize Java.util.Date, which is not a common JSON type, so we have
@@ -46,21 +45,21 @@ public class JsonDateTimeDeserializer extends JsonDeserializer<Timestamp> {
 
 	@Override
 	public Timestamp deserialize(JsonParser par, DeserializationContext ctx)
-			throws IOException, JsonProcessingException {
+	        throws IOException, JsonProcessingException {
 		try {
 			Locale locale = LocaleContextHolder.getLocale();
 			SimpleDateFormat format = DateTimeManager.getTimestampFormat(locale);
-			
+
 			String dateText = par.getText();
-			
-			if (dateText == null || "".equals(dateText)){
+
+			if (dateText == null || "".equals(dateText)) {
 				return null;
 			}
-			
+
 			Date date = format.parse(dateText);
 			return new Timestamp(date.getTime());
 		} catch (ParseException e) {
-			throw new JsonParseException(null, null, e);
+			throw new JsonParseException(par, "JsonDateTimeDeserializer.deserialize", e);
 		}
 	}
 }

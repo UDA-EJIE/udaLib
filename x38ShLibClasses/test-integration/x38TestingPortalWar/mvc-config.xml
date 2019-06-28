@@ -5,12 +5,9 @@
 	xmlns:p="http://www.springframework.org/schema/p"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="
-		http://www.springframework.org/schema/beans 
-		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
-		http://www.springframework.org/schema/mvc 
-		http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd 
-		http://www.springframework.org/schema/context 
-		http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd 
+			http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd 
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
 
 
 	<!-- Crea un bean por cada clase anotada con @Component en el paquete 'com.ejie.x21a.control' -->
@@ -74,11 +71,6 @@
 	<!-- Configurar Excepciones propagadas en los Controller -->
 	<bean
 		class="com.ejie.x38.control.exception.MvcExceptionResolverConfig">
-		<!-- <property name="handlers"> -->
-		<!-- <list> -->
-		<!-- <ref bean="fileExceedsFileSizeLimitHandler"></ref> -->
-		<!-- </list> -->
-		<!-- </property> -->
 	</bean>
 
 	<!-- Configurar Excepcion de límite de subida de ficheros -->
@@ -141,7 +133,7 @@
 
 	<!-- Gestión de la Vista (View) -->
 	<bean id="tilesConfigurer"
-		class="org.springframework.web.servlet.view.tiles2.TilesConfigurer">
+		class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
 		<property name="definitions">
 			<list>
 				<value>classpath:x38TestingPortalWar/tiles.xml</value>

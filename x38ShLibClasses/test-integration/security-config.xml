@@ -1,70 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:security="http://www.springframework.org/schema/security"
-xmlns:util="http://www.springframework.org/schema/util"
-xsi:schemaLocation="http://www.springframework.org/schema/security
-		http://www.springframework.org/schema/security/spring-security-3.2.xsd
-		http://www.springframework.org/schema/beans
-		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
-		http://www.springframework.org/schema/util
-		http://www.springframework.org/schema/util/spring-util.xsd">
-
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+			http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
 	<!-- Definicion del Wrapper de seguridad utilizado -->
-	<bean id="perimetralSecurityWrapper" class="com.ejie.x38.security.PerimetralSecurityWrapperN38Impl">
-        <property name="xlnetCachingPeriod" value="0" />
-<!--         <property name="specificCredentials" value="com.ejie.x21a.security.MyUserCredentials"/> -->
-        <property name="userChangeUrl" value="/x21aPilotoPatronesWar/" />
-<!--         <property name="alternativeStorageUserCredentials" ref="jdbcUserService"/> -->
-        <property name="useXlnetProfiles" value="true"/>
+	<bean id="perimetralSecurityWrapper"
+		class="com.ejie.x38.security.PerimetralSecurityWrapperN38Impl">
+		<property name="xlnetCachingPeriod" value="0" />
+		<!-- <property name="specificCredentials" value="com.ejie.x21a.security.MyUserCredentials"/> -->
+		<property name="userChangeUrl"
+			value="/x21aPilotoPatronesWar/" />
+		<!-- <property name="alternativeStorageUserCredentials" ref="jdbcUserService"/> -->
+		<property name="useXlnetProfiles" value="true" />
 		<property name="anonymousCredentials">
-        	<map>
-        		<entry key="userProfiles" value="UDA" />
-        		<!-- entry key="userProfiles" value="udaAnonymousProfile" /-->
+			<map>
+				<entry key="userProfiles" value="UDA" />
+				<!-- entry key="userProfiles" value="udaAnonymousProfile" / -->
 				<entry key="position" value="udaAnonymousPosition" />
 			</map>
-        </property>
-<!--        <property name="excludeFilter" ref="usuariosConCertificado"/> -->
-<!-- 		<property name="alternativeOriginCredentialsApp" value="y90t"></property> -->
-<!-- 		<property name="alternativeOriginCredentialsApp"> -->
-<!-- 			<list> -->
-<!-- 				<value>y52b</value> -->
-<!-- 			</list> -->
-<!-- 		</property> -->
-<!-- 		<property name="alternativeOriginCredentialsApp" ref="aplicacionesAceptadas"/> -->
+		</property>
 	</bean>
-	
-	<!-- Se especifica un filtro de exclusión sobre los usuarios validados. Esto permite la limitación del acceso aunque se han usuarios validos de XLNets. -->
-<!-- 	<bean id="aplicacionesAceptadas" class="com.ejie.x21a.security.ObtencionAplicaciones"/> -->
 
-	<!-- Se especifica un el punto de origen  de exclusión sobre los usuarios validados. Esto permite la limitación del acceso aunque se han usuarios validos de XLNets. -->
-<!-- 	<bean id="usuariosConCertificado" class="com.ejie.x21a.security.UsuariosConCertificado"> -->
-<!-- 		<property name="accessDeniedUrl" value="/x21aPilotoPatronesWar/accessDenied" /> -->
-<!-- 	</bean> -->
-	
-	<!-- A conctinuación, se parametrizan los distintos aspectos asociada al manejo de credenciales mediante una base de datos en Spring Security	 -->
-<!-- 	<bean id="jdbcUserService" class="com.ejie.x21a.security.SecurityCustomJdbcDaoImpl"> -->
-<!-- 		<property name="dataSource" ref="dataSource"/> -->
-<!-- 		<property name="positionByUserdataQuery"> -->
-<!-- 			<value> select PUESTO from CERT_USER_DATA where UPPER(USERNAME) = ? and UPPER(DNI) = ? </value> -->
-<!-- 		</property> -->
-<!-- 		<property name="authoritiesByUserdataQuery"> -->
-<!-- 			<value> select ROLES from CERT_USER_ROLES where UPPER(USERNAME) = ? and UPPER(DNI) = ? </value> -->
-<!-- 		</property> -->
-<!-- 	</bean>    -->
-	
-    <bean id="filterSecurityInterceptor" class="org.springframework.security.web.access.intercept.FilterSecurityInterceptor">
-        <property name="authenticationManager" ref="authenticationManager" />
-        <property name="accessDecisionManager" ref="affirmativeBased" />
-        <property name="securityMetadataSource" >
-            <security:filter-security-metadata-source use-expressions="true" request-matcher="regex">
-            	<security:intercept-url pattern="/rssfeed/.*" access="isAuthenticated()" />
-           		<security:intercept-url pattern="/webdavServlet/.*" access="isAuthenticated()" />
-           			<security:intercept-url pattern="/iberdok/.*" access="isAuthenticated()" />
-<!--                 <security:intercept-url pattern="/experimental/.*" access="hasRole('ROLE_X21A-IN-0003')" /> -->
-<!--                 <security:intercept-url pattern="/patrones/comboEnlazadoMultiple/.*" access="hasRole('ROLE_X21A-IN-0003')" /> -->
-<!--                 <security:intercept-url pattern="/**" access="isAuthenticated()" /> -->
-		        <security:intercept-url pattern="/**" access="" />
-            </security:filter-security-metadata-source>
-        </property>
-    </bean>
+	<bean id="filterSecurityInterceptor"
+		class="org.springframework.security.web.access.intercept.FilterSecurityInterceptor">
+		<property name="authenticationManager"
+			ref="authenticationManager" />
+		<property name="accessDecisionManager" ref="affirmativeBased" />
+		<property name="securityMetadataSource">
+			<security:filter-security-metadata-source
+				use-expressions="true" request-matcher="regex">
+				<security:intercept-url
+					pattern="/webdavServlet/.*" access="isAuthenticated()" />
+				<security:intercept-url pattern="/iberdok/.*"
+					access="isAuthenticated()" />
+				<!-- <security:intercept-url pattern="/experimental/.*" access="hasRole('ROLE_X21A-IN-0003')" 
+					/> -->
+				<!-- <security:intercept-url pattern="/patrones/comboEnlazadoMultiple/.*" 
+					access="hasRole('ROLE_X21A-IN-0003')" /> -->
+				<!-- <security:intercept-url pattern="/**" access="isAuthenticated()" 
+					/> -->
+				<security:intercept-url pattern="/**"
+					access="" />
+			</security:filter-security-metadata-source>
+		</property>
+	</bean>
 </beans>

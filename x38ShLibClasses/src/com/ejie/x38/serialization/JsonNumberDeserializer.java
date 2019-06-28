@@ -13,22 +13,26 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 
-public class JsonNumberDeserializer extends JsonDeserializer<BigDecimal>{
+public class JsonNumberDeserializer extends JsonDeserializer<BigDecimal> {
 
 	@Override
 	public BigDecimal deserialize(JsonParser jsonParser, DeserializationContext ctx)
-			throws IOException, JsonProcessingException {
+	        throws IOException, JsonProcessingException {
 		try {
 			NumberFormat numberFormatter = NumberFormat.getInstance(LocaleContextHolder.getLocale());
 			String numberText = jsonParser.getText();
-			
-			if (numberText == null || "".equals(numberText)){
+
+			if (numberText == null || "".equals(numberText)) {
 				return null;
 			}
 			
+			if(LocaleContextHolder.getLocale().getLanguage() == "eu") {
+				numberText = numberText.replace(",", "&PUNTO&").replace(".", ",").replace("&PUNTO&", ".");
+			}
+
 			return new BigDecimal(numberFormatter.parse(numberText).doubleValue());
 		} catch (ParseException e) {
-			throw new JsonParseException(null, null, e);
+			throw new JsonParseException(jsonParser, "JsonNumberDeserializer.deserialize", e);
 		}
 	}
 }
