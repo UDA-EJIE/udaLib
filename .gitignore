@@ -1,2 +1,4 @@
 .metadata/**
 RemoteSystemsTempFiles/.project
+.idea/**
+*.iml
