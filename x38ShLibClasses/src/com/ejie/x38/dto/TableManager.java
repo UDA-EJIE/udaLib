@@ -15,6 +15,8 @@
 */
 package com.ejie.x38.dto;
 
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,79 +28,79 @@ import com.ejie.x38.dao.sql.OracleEncoder;
 import com.ejie.x38.dao.sql.error.SqlInjectionException;
 
 /**
- * 
+ *
  * @author UDA
  *
  */
 public class TableManager implements java.io.Serializable{
 
 	private static final long serialVersionUID = 2127819481595995328L;
-	
-	
-	
+
+
+
 	/**
 	 * PAGINACIÓN
 	 */
 	public static <T> StringBuilder getPaginationQuery(TableRequestDto pagination, StringBuilder query){
 		return getQueryForPagination(pagination, query, false, null);
     }
-	
+
 	public static <T> StringBuilder getPaginationQuery(TableRequestDto pagination, StringBuilder query,  boolean isJerarquia){
 		return getQueryForPagination(pagination, query, isJerarquia, null);
     }
-	
+
 	public static <T> StringBuilder getPaginationQuery(TableRequestDto pagination, StringBuilder query,  String[] orderByWhiteList){
 		return getQueryForPagination(pagination, query, false, orderByWhiteList);
     }
-	
+
 	public static <T> StringBuilder getPaginationQuery(TableRequestDto pagination, StringBuilder query,  boolean isJerarquia, String[] orderByWhiteList){
 		return getQueryForPagination(pagination, query, isJerarquia, orderByWhiteList);
     }
-	
+
 	private static boolean isInWhiteList(String[] whiteList, String text){
-		
+
 		// Comprobamos si la cadena de ordenación contiene varios campos
-					
-		
+
+
 		if (StringUtils.isBlank(text)){
 			return false;
 		}
-		
+
 		for (String string : whiteList) {
 			if (text.trim().toUpperCase().equals(string.trim().toUpperCase())){
 				return true;
 			}
 		}
-		
+
 		return false;
-		
+
 	}
-	
+
 	private static boolean validateOrderByFields (String[] orderByWhiteList, String text){
-		
+
 		boolean result = true;
-		
+
 		String[] fields = text.indexOf(",")!=-1?text.split(","):new String[]{text};
-		
+
 		for (String field : fields) {
-			
+
 			result = result && TableManager.isInWhiteList(orderByWhiteList, field);
-			
+
 		}
-		
+
 		return result;
-		
-		
+
+
 	}
-	
+
 	protected static <T> StringBuilder getQueryForPagination(TableRequestDto pagination, StringBuilder query, boolean isJerarquia, String[] orderByWhiteList){
 		//Order
 		query.append(getOrderBy(pagination, isJerarquia, orderByWhiteList));
-			
-		
+
+
 		//Limits
 		StringBuilder paginationQuery = new StringBuilder();
-		Long rows = pagination.getRows();	
+		Long rows = pagination.getRows();
 		Long page = pagination.getPage();
 		if (page!=null && rows!=null){
 			paginationQuery.append("SELECT * FROM (SELECT rownum rnum, a.*  FROM (" + query + ")a) where rnum > " + (rows*(page-1)) +" and rnum < " + ((rows*page)+1));
@@ -109,12 +111,12 @@ public class TableManager implements java.io.Serializable{
 		}
 		return paginationQuery;
     }
-	
+
 	protected static <T> StringBuilder getOrderBy (TableRequestDto pagination, boolean isJerarquia){
 		return TableManager.getOrderBy(pagination, isJerarquia, null);
-	
+
 	}
-	
+
 	/**
 	 * ORDER BY (interno)
 	 */
@@ -122,7 +124,7 @@ public class TableManager implements java.io.Serializable{
 		//Order
 		StringBuilder orderBy = new StringBuilder();
 		if (pagination.getSidx() != null) {
-						
+
 			if (orderByWhiteList != null && !TableManager.validateOrderByFields(orderByWhiteList, pagination.getSidx())){
 				throw new SqlInjectionException("Campo no permitido");
 			}
@@ -132,32 +134,49 @@ public class TableManager implements java.io.Serializable{
 			} else {
 				orderBy.append("\n\t").append("order siblings by ");
 			}
-			orderBy.append(OracleEncoder.getInstance().encode(pagination.getSidx()));
-			orderBy.append(" ");
-			orderBy.append(OracleEncoder.getInstance().encode(pagination.getSord()));
-			if (isJerarquia){
-				orderBy.append("\n");
+			if(pagination.getSidx().indexOf(',') >= 0) {
+				String[] arrSidx = pagination.getSidx().split(",");
+				String[] arrSord = pagination.getSord().split(",");
+				
+				for (int i = 0; i < arrSidx.length ; i++) {
+					orderBy.append(OracleEncoder.getInstance().encode(arrSidx[i]));
+					orderBy.append(" ");
+					orderBy.append(OracleEncoder.getInstance().encode(arrSord[i]));
+					if(i < arrSidx.length -1) {
+						orderBy.append(",");
+					}
+					if (isJerarquia){
+						orderBy.append("\n");
+					}
+				}
+			} else {
+				orderBy.append(OracleEncoder.getInstance().encode(pagination.getSidx()));
+				orderBy.append(" ");
+				orderBy.append(OracleEncoder.getInstance().encode(pagination.getSord()));
+				if (isJerarquia){
+					orderBy.append("\n");
+				}
 			}
 		}
 		return orderBy;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * MULTISELECCION (utilidades internas)
 	 */
 	protected static <T> StringBuilder getMultiselectionSelectOutter(TableRequestDto pagination){
-		return new StringBuilder().append(" , page, pageLine, tableLine "); 
+		return new StringBuilder().append(" , page, pageLine, tableLine ");
 	}
 	protected static <T> StringBuilder getMultiselectionSelectInner(TableRequestDto pagination){
-		return new StringBuilder().append(" , ceil(rownum/").append(pagination.getRows()).append(") page, case when (mod(rownum,").append(pagination.getRows()).append(")=0) then '").append(pagination.getRows()).append("' else TO_CHAR(mod(rownum,").append(pagination.getRows()).append(")) end as pageLine, rownum as tableLine "); 
+		return new StringBuilder().append(" , ceil(rownum/").append(pagination.getRows()).append(") page, case when (mod(rownum,").append(pagination.getRows()).append(")=0) then '").append(pagination.getRows()).append("' else TO_CHAR(mod(rownum,").append(pagination.getRows()).append(")) end as pageLine, rownum as tableLine ");
 	}
-	
-//	public static StringBuilder getMultiselectionQuery(Pagination pagination, List<String> pkList, String tabla){	
+
+//	public static StringBuilder getMultiselectionQuery(Pagination pagination, List<String> pkList, String tabla){
 //		StringBuilder sbSQL = new StringBuilder();
-//		sbSQL.append("\n").append("select ID, page, pageLine, tableLine from ( ");      
-//		sbSQL.append("\n\t").append("select ID, ceil(rownum/").append(pagination.getRowNum()).append(") page, case when (mod(rownum,").append(pagination.getRowNum()).append(")=0) then '").append(pagination.getRowNum()).append("' else TO_CHAR(mod(rownum,").append(pagination.getRowNum()).append(")) end as pageLine, rownum as tableLine "); 
+//		sbSQL.append("\n").append("select ID, page, pageLine, tableLine from ( ");
+//		sbSQL.append("\n\t").append("select ID, ceil(rownum/").append(pagination.getRowNum()).append(") page, case when (mod(rownum,").append(pagination.getRowNum()).append(")=0) then '").append(pagination.getRowNum()).append("' else TO_CHAR(mod(rownum,").append(pagination.getRowNum()).append(")) end as pageLine, rownum as tableLine ");
 //		sbSQL.append("\n\t").append("from ").append(tabla).append(" ");
 //			sbSQL.append("\n\t").append("order by ").append(pagination.getSidx()).append(" ").append(pagination.getSord()).append(" ");
 //		sbSQL.append("\n").append(") ");
@@ -167,11 +186,11 @@ public class TableManager implements java.io.Serializable{
 //		sbSQL.append("\n").append(") ");
 //		return sbSQL;
 //	}
-	
-//	public static StringBuilder getSearchQuery(Pagination pagination, List<String> pkList, String tabla){	
+
+//	public static StringBuilder getSearchQuery(Pagination pagination, List<String> pkList, String tabla){
 //		StringBuilder sbSQL = new StringBuilder();
-//		sbSQL.append("\n").append("select ID, page, pageLine, tableLine from ( ");      
-//		sbSQL.append("\n\t").append("select ID, ceil(rownum/").append(pagination.getRowNum()).append(") page, case when (mod(rownum,").append(pagination.getRowNum()).append(")=0) then '").append(pagination.getRowNum()).append("' else TO_CHAR(mod(rownum,").append(pagination.getRowNum()).append(")) end as pageLine, rownum as tableLine "); 
+//		sbSQL.append("\n").append("select ID, page, pageLine, tableLine from ( ");
+//		sbSQL.append("\n\t").append("select ID, ceil(rownum/").append(pagination.getRowNum()).append(") page, case when (mod(rownum,").append(pagination.getRowNum()).append(")=0) then '").append(pagination.getRowNum()).append("' else TO_CHAR(mod(rownum,").append(pagination.getRowNum()).append(")) end as pageLine, rownum as tableLine ");
 //		sbSQL.append("\n\t").append("from ").append(tabla).append(" ");
 //			sbSQL.append("\n\t").append("order by ").append(pagination.getSidx()).append(" ").append(pagination.getSord()).append(" ");
 //		sbSQL.append("\n").append(") ");
@@ -181,33 +200,33 @@ public class TableManager implements java.io.Serializable{
 //		sbSQL.append("\n").append(") ");
 //		return sbSQL;
 //	}
-	
+
 	public static <T> StringBuilder getSearchQuery(StringBuilder query, TableRequestDto pagination, Class<T> clazz, List<Object> paramList, String searchSQL, List<Object> searchParamList, String... pkList){
 		return TableManager.getSearchQuery(query, pagination, clazz, paramList, searchSQL, searchParamList, null, pkList);
 	}
-	
-	public static <T> StringBuilder getSearchQuery(StringBuilder query, TableRequestDto pagination, Class<T> clazz, List<Object> paramList, String searchSQL, List<Object> searchParamList, List<String> tableAliases, String... pkList){	
-		
+
+	public static <T> StringBuilder getSearchQuery(StringBuilder query, TableRequestDto pagination, Class<T> clazz, List<Object> paramList, String searchSQL, List<Object> searchParamList, List<String> tableAliases, String... pkList){
+
 		String pkStr = TableManager.strArrayToCommaSeparatedStr(pkList);
-		
+
 		StringBuilder sbSQL = new StringBuilder();
-		
-		sbSQL.append("\n").append("select ").append(pkStr.replaceAll("_","")).append(TableManager.getMultiselectionSelectOutter(pagination)).append("from ( ");      
-		sbSQL.append("\n\t").append("select SEARCH_QUERY.*").append(TableManager.getMultiselectionSelectInner(pagination)); 
+
+		sbSQL.append("\n").append("select ").append(pkStr.replaceAll("_","")).append(TableManager.getMultiselectionSelectOutter(pagination)).append("from ( ");
+		sbSQL.append("\n\t").append("select SEARCH_QUERY.*").append(TableManager.getMultiselectionSelectInner(pagination));
 		sbSQL.append("\n\t").append("from (").append(query);
 			sbSQL.append("\n\t").append(TableManager.getOrderBy(pagination, false)).append(") SEARCH_QUERY ");
 		sbSQL.append("\n").append(") ");
 		sbSQL.append("\n").append("where 1=1 ");
-		
+
 		for (String tableAlias : tableAliases) {
 			searchSQL = searchSQL.replaceAll("(?i)"+tableAlias.trim()+"\\.", "").trim();
 		}
 		sbSQL.append("\n\t").append(searchSQL.replaceAll("_",""));
-			
+
 		paramList.addAll(searchParamList);
 //		sbSQL.append("(").append(pkStr).append(") ");
 //		sbSQL.append(pagination.getMultiselection().getSelectedAll()?" NOT IN ":" IN (");
-//		
+//
 //		for (T selectedBean : pagination.getMultiselection().getSelected(clazz)) {
 //			sbSQL.append("(");
 //			for (int i = 0; i < pkList.length; i++) {
@@ -230,26 +249,26 @@ public class TableManager implements java.io.Serializable{
 //			sbSQL.deleteCharAt(sbSQL.length()-1);
 //			sbSQL.append("),");
 //		}
-//		
+//
 //		sbSQL.deleteCharAt(sbSQL.length()-1);
 //		sbSQL.append(")");
-		
+
 		return sbSQL;
 	}
-	
-	public static <T extends Object> StringBuilder getReorderQuery(StringBuilder query, TableRequestDto tableRequestDto, Class<T> clazz, List<Object> paramList, String... pkList){	
-		
+
+	public static <T extends Object> StringBuilder getReorderQuery(StringBuilder query, TableRequestDto tableRequestDto, Class<T> clazz, List<Object> paramList, String... pkList){
+
 		String pkStr = TableManager.strArrayToCommaSeparatedStr(pkList);
-		
+
 		StringBuilder sbSQL = new StringBuilder();
-		
-		sbSQL.append("\n").append("select ").append(pkStr).append(TableManager.getMultiselectionSelectOutter(tableRequestDto)).append("from ( ");      
-		sbSQL.append("\n\t").append("select ").append(pkStr).append(TableManager.getMultiselectionSelectInner(tableRequestDto)); 
+
+		sbSQL.append("\n").append("select ").append(pkStr).append(TableManager.getMultiselectionSelectOutter(tableRequestDto)).append("from ( ");
+		sbSQL.append("\n\t").append("select ").append(pkStr).append(TableManager.getMultiselectionSelectInner(tableRequestDto));
 		sbSQL.append("\n\t").append("from (").append(query);
 			sbSQL.append("\n\t").append(TableManager.getOrderBy(tableRequestDto, false)).append(") ");
 		sbSQL.append("\n").append(") ");
 		sbSQL.append("\n").append("where ");
-		
+
 		sbSQL.append("(").append(pkStr).append(") IN (");
 //		sbSQL.append(tableRequestDto.getMultiselection().getSelectedAll()?" NOT IN (":" IN (");
 		for (T selectedBean : tableRequestDto.getMultiselection().getSelected(clazz)) {
@@ -258,42 +277,42 @@ public class TableManager implements java.io.Serializable{
 				String prop = tableRequestDto.getCore().getPkNames().get(i);
 				sbSQL.append("?").append(",");
 				try {
-					paramList.add(BeanUtils.getProperty(selectedBean, prop));
+//					paramList.add(BeanUtils.getProperty(selectedBean, prop));
+                    paramList.add(new PropertyDescriptor(prop, selectedBean.getClass()).getReadMethod().invoke(selectedBean));
 				} catch (IllegalAccessException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (InvocationTargetException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				} catch (NoSuchMethodException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
+				} catch (IntrospectionException e) {
+                    e.printStackTrace();
+                }
+            }
 
 			sbSQL.deleteCharAt(sbSQL.length()-1);
 			sbSQL.append("),");
 		}
-		
+
 		sbSQL.deleteCharAt(sbSQL.length()-1);
 		sbSQL.append(")");
-		
+
 		return sbSQL;
 	}
-	
+
 	private static String strArrayToCommaSeparatedStr(String[] strArray){
 		StringBuilder retStr = new StringBuilder();
 		for (String str : strArray) {
 			retStr.append(str).append(",");
 		}
 		retStr.deleteCharAt(retStr.length()-1);
-		
+
 		return retStr.toString();
 	}
-	
+
 	public static <T> List<?> getPaginationList(TableRequestDto pagination, List<?> list){
 		List <Object> returnList = new ArrayList<Object>();
-		Long rows = pagination.getRows();	
+		Long rows = pagination.getRows();
 		Long page = pagination.getPage();
 		if (page!=null && rows!=null){
 			for (int i = (int) (rows*(page-1)); i < (rows*page); i++) {
@@ -308,11 +327,11 @@ public class TableManager implements java.io.Serializable{
 		}
 		return returnList;
 	}
-	
+
 	/*
 	 * REORDENACION
 	 */
-	
+
 	public static <T> StringBuilder getReorderQuery(TableRequestDto pagination, StringBuilder query, String... pkCols){
 		//Order
 		StringBuilder reorderQuery = new StringBuilder();
@@ -323,10 +342,10 @@ public class TableManager implements java.io.Serializable{
 			reorderQuery.append(pagination.getSord());
 			query.append(reorderQuery);
 		}
-		
+
 		reorderQuery = new StringBuilder();
 		//Limits
-//		Long rows = pagination.getRows();	
+//		Long rows = pagination.getRows();
 //		Long page = pagination.getPage();
 //		if (page!=null && rows!=null){
 //		SELECT rownum rnum, a.*  FROM (
@@ -355,11 +374,11 @@ public class TableManager implements java.io.Serializable{
 	 * BORRADO MULTIPLE
 	 */
 	public static <T> StringBuilder getRemoveMultipleQuery(TableRequestDto tableRequestDto, Class<T> clazz, StringBuilder query, List<Object> paramList, String... pkCols){
-		
+
 		String pkStr = TableManager.strArrayToCommaSeparatedStr(pkCols);
-		
+
 		StringBuilder removeQuery = new StringBuilder();
-		
+
 		removeQuery.append("DELETE FROM (").append(query).append(") ");
 		removeQuery.append(" WHERE (").append(pkStr).append(") ").append(tableRequestDto.getMultiselection().getSelectedAll()?" NOT ":"").append(" IN (");
 //		sbSQL.append(tableRequestDto.getMultiselection().getSelectedAll()?" NOT IN (":" IN (");
@@ -385,23 +404,23 @@ public class TableManager implements java.io.Serializable{
 			removeQuery.deleteCharAt(removeQuery.length()-1);
 			removeQuery.append("),");
 		}
-		
+
 		removeQuery.deleteCharAt(removeQuery.length()-1);
 		removeQuery.append(")");
-		
+
 		return removeQuery;
-		
+
 	}
-	
+
 	/*
 	 * SELECCION MULTIPLE
 	 */
 	public static <T> StringBuilder getSelectMultipleQuery(TableRequestDto tableRequestDto, Class<T> clazz, List<Object> paramList, String... pkCols){
-		
+
 		String pkStr = TableManager.strArrayToCommaSeparatedStr(pkCols);
-		
+
 		StringBuilder selectQuery = new StringBuilder();
-		
+
 		selectQuery.append("SELECT * FROM "+clazz.getSimpleName());
 
 		selectQuery.append(" WHERE (").append(pkStr).append(") ").append(tableRequestDto.getMultiselection().getSelectedAll()?" NOT ":"").append(" IN (");
@@ -427,12 +446,12 @@ public class TableManager implements java.io.Serializable{
 			selectQuery.deleteCharAt(selectQuery.length()-1);
 			selectQuery.append("),");
 		}
-		
+
 		selectQuery.deleteCharAt(selectQuery.length()-1);
 		selectQuery.append(")");
-		
+
 		return selectQuery;
-		
+
 	}
-	
+
 }
