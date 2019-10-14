@@ -124,9 +124,17 @@ public class TableManager implements java.io.Serializable{
 		//Order
 		StringBuilder orderBy = new StringBuilder();
 		if (pagination.getSidx() != null) {
-
-			if (orderByWhiteList != null && !TableManager.validateOrderByFields(orderByWhiteList, pagination.getSidx())){
-				throw new SqlInjectionException("Campo no permitido");
+			
+			if(pagination.getSidx().indexOf(',') >= 0) {
+				for(String sidx : pagination.getSidx().split(",")) {
+					if (orderByWhiteList != null && !TableManager.validateOrderByFields(orderByWhiteList, sidx)){
+						throw new SqlInjectionException("Campo no permitido");
+					}
+				}
+			} else {
+				if (orderByWhiteList != null && !TableManager.validateOrderByFields(orderByWhiteList, pagination.getSidx())){
+					throw new SqlInjectionException("Campo no permitido");
+				}
 			}
 			
 			if (!isJerarquia){
@@ -337,11 +345,26 @@ public class TableManager implements java.io.Serializable{
 		StringBuilder reorderQuery = new StringBuilder();
 		if (pagination.getSidx() != null) {
 			reorderQuery.append(" ORDER BY ");
-			reorderQuery.append(pagination.getSidx());
-			reorderQuery.append(" ");
-			reorderQuery.append(pagination.getSord());
-			query.append(reorderQuery);
+			if(pagination.getSidx().contains(",")) {
+				String[] arrSidx = pagination.getSidx().split(",");
+				String[] arrSord = pagination.getSord().split(",");
+				
+				for (int i = 0; i < arrSidx.length ; i++) {
+					reorderQuery.append(arrSidx);
+					reorderQuery.append(" ");
+					reorderQuery.append(arrSord);
+					if(i < arrSidx.length -1) {
+						reorderQuery.append(",");
+					}
+				}
+			} else {
+				reorderQuery.append(pagination.getSidx());
+				reorderQuery.append(" ");
+				reorderQuery.append(pagination.getSord());
+				query.append(reorderQuery);
+			}
 		}
+		
 
 		reorderQuery = new StringBuilder();
 		//Limits
