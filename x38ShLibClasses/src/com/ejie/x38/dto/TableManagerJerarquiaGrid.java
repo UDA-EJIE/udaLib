@@ -20,6 +20,7 @@ import java.beans.PropertyDescriptor;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -111,8 +112,17 @@ public class TableManagerJerarquiaGrid implements java.io.Serializable{
 	        PropertyDescriptor[] props = Introspector.getBeanInfo(bean.getClass(), Object.class).getPropertyDescriptors();  
 	        for (PropertyDescriptor pd : props) {  
 	            String name = pd.getName();  
-	            if (pd.getReadMethod().invoke(bean)!=null && !name.equals(tableRequestDto.getSidx())){
-	            	filterNames.append(name).append(", ");
+	            if (pd.getReadMethod().invoke(bean)!=null){
+	            	if(tableRequestDto.getSidx().contains(",")) {
+	            		String[] arrSidx = tableRequestDto.getSidx().split(",");
+	            		if(!Arrays.asList(arrSidx).contains(name)) {
+	            			filterNames.append(name).append(", ");
+	            		}
+	            	} else {
+	            		if(!name.equals(tableRequestDto.getSidx())){
+	            			filterNames.append(name).append(", ");
+	            		}
+	            	}
 	            }
 	        }
 		} catch(Exception e){
@@ -131,17 +141,27 @@ public class TableManagerJerarquiaGrid implements java.io.Serializable{
 		queryParams.add(tableRequestDto.getRows().toString()); //case requiere literal
 		queryParams.add(tableRequestDto.getRows());
 		query.append("\n\t").append("from ( ");
-		String sidx = tableRequestDto.getSidx();
-		if (sidx.contains(",")){
-			sidx = sidx.replaceAll("asc", " ");
-			sidx = sidx.replaceAll("desc", " ");
-		}
-		query.append("\n\t\t").append("select ").append(filterNames).append(columna).append(", ").append(columnaPadre).append(", ").append(sidx).append(", rownum ");
+
+		query.append("\n\t\t").append("select ").append(filterNames).append(columna).append(", ").append(columnaPadre).append(", ").append(tableRequestDto.getSidx()).append(", rownum ");
 		query.append("\n\t\t").append("from ").append(StringUtils.collectionToCommaDelimitedString(tabla));
 		query.append("\n\t\t").append("-- Relacion JERARQUIA");
 		query.append("\n\t\t").append("start with ").append(columnaPadre).append(" is null "); 
 		query.append("\n\t\t").append("connect by prior ").append(columna).append(" = ").append(columnaPadre).append(" ");
-		query.append("\n\t\t").append("order siblings by ").append(tableRequestDto.getSidx()).append(" ").append(tableRequestDto.getSord());
+		query.append("\n\t\t").append("order siblings by ");
+		if(tableRequestDto.getSidx().contains(",")) {
+			String[] arrSidx = tableRequestDto.getSidx().split(",");
+			String[] arrSord = tableRequestDto.getSord().split(",");
+			
+			for(int i = 0; i < arrSidx.length ; i++) {
+				query.append(arrSidx[i]).append(arrSord[i]);
+				if(i < arrSidx.length -1) {
+					query.append(",");
+				}
+			}
+		} else {
+			query.append(tableRequestDto.getSidx()).append(" ").append(tableRequestDto.getSord());
+		}
+		
 		query.append("\n\t").append(") ").append(aliasTabla.get(0)).append(", (");
 		
 		//Subqueries
@@ -177,7 +197,20 @@ public class TableManagerJerarquiaGrid implements java.io.Serializable{
 		//Nodos contraídos
 		query = TableManagerJerarquia.filterUnexpanded(tableRequestDto, query, queryParams, columnaPadre);
 		
-		query.append("\n\t").append("order siblings by ").append(tableRequestDto.getSidx()).append(" ").append(tableRequestDto.getSord());
+		query.append("\n\t").append("order siblings by ");
+		if(tableRequestDto.getSidx().contains(",")) {
+			String[] arrSidx = tableRequestDto.getSidx().split(",");
+			String[] arrSord = tableRequestDto.getSord().split(",");
+			
+			for(int i = 0; i < arrSidx.length ; i++) {
+				query.append(arrSidx[i]).append(arrSord[i]);
+				if(i < arrSidx.length -1) {
+					query.append(",");
+				}
+			}
+		} else {
+			query.append(tableRequestDto.getSidx()).append(" ").append(tableRequestDto.getSord());
+		}
 		query.append("\n").append(") ");
 
 		//Filtrar seleccionados

@@ -33,8 +33,8 @@ public class TableRequestDto implements java.io.Serializable{
 	//jqGrid -> Table
 	private Long rows;
 	private Long page;
-//	private String sidx;
-//	private String sord;
+	private String sidx;
+	private String sord;
 	
 	// Core
 	private TableRequestDto.Core core = new TableRequestDto.Core();
@@ -57,14 +57,14 @@ public class TableRequestDto implements java.io.Serializable{
 	public TableRequestDto(Long rows, Long page, String sidx, String sord){
 		this.rows = rows;
 		this.page = page;
-//		this.sidx = sidx;
-//		this.setSord(sord);
+		this.sidx = sidx;
+		this.setSord(sord);
 	}
-	public TableRequestDto(Long rows, Long page, /*String sidx, String sord,*/ String multiselectionIds, Boolean selectAll){
+	public TableRequestDto(Long rows, Long page, String sidx, String sord, String multiselectionIds, Boolean selectAll){
 		this.rows = rows;
 		this.page = page;
-//		this.sidx = sidx;
-//		this.setSord(sord);
+		this.sidx = sidx;
+		this.setSord(sord);
 //		this.multiselectionIds = multiselectionIds;
 //		this.selectedAll = selectAll;
 	}
@@ -81,20 +81,20 @@ public class TableRequestDto implements java.io.Serializable{
 	public void setPage(Long page) {
 		this.page = page;
 	}
-//	public String getSidx() {
-//		return sidx;
-//	}
-//	public void setSidx (String sidx) {
-//		if (!"".equals(sidx)){ //Posible vacío en petición Ajax (jQuery >= 1.8)
-//			this.sidx = sidx;
-//		}
-//	}
-//	public String getSord() {
-//		return sord;
-//	}
-//	public void setSord (String sord) {
-//		this.sord = TableRequestDto.SORT_DESC.equals(sord.trim().toUpperCase())?TableRequestDto.SORT_DESC:TableRequestDto.SORT_ASC;
-//	}
+	public String getSidx() {
+		return sidx;
+	}
+	public void setSidx (String sidx) {
+		if (!"".equals(sidx)){ //Posible vacío en petición Ajax (jQuery >= 1.8)
+			this.sidx = sidx;
+		}
+	}
+	public String getSord() {
+		return sord;
+	}
+	public void setSord (String sord) {
+		this.sord = TableRequestDto.SORT_DESC.equals(sord.trim().toUpperCase())?TableRequestDto.SORT_DESC:TableRequestDto.SORT_ASC;
+	}
 	
 	
 	public TableRequestDto.Core getCore() {
@@ -129,8 +129,8 @@ public class TableRequestDto implements java.io.Serializable{
 		result.append(this.getClass().getName()).append(" Object {");
 		result.append(" [ rows: ").append(this.rows).append(" ]");
 		result.append(" [ page: ").append(this.page).append(" ]");
-//		result.append(" [ sidx: ").append(this.sidx).append(" ]");
-//		result.append(" [ sord: ").append(this.sord).append(" ]");
+		result.append(" [ sidx: ").append(this.sidx).append(" ]");
+		result.append(" [ sord: ").append(this.sord).append(" ]");
 		result.append("}");
 		return result.toString();
 	}
