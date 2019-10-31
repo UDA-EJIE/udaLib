@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.ejie.x38.util.StaticsContainer;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -24,6 +25,7 @@ public class TestValidationManager {
 
 	@Before
 	public void setUpBefore() throws Exception {
+		StaticsContainer.webAppName = "x38";
 		validationManager = new ValidationManager();
 	}
 
