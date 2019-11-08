@@ -1,15 +1,10 @@
 package com.ejie.x38.test.integration;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-
-import java.io.FileInputStream;
-
-import javax.annotation.Resource;
-import javax.servlet.Filter;
-
+import com.ejie.x38.UdaFilter;
+import com.ejie.x38.test.integration.config.logging.X38TestingLoggingApplicationContext;
+import com.ejie.x38.test.integration.config.logging.X38TestingLoggingContextLoader;
+import com.ejie.x38.test.integration.config.logging.X38TestingLoggingSpringJUnit4ClassRunner;
+import com.sun.mail.iap.ByteArray;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,18 +16,19 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.ejie.x38.UdaFilter;
-import com.ejie.x38.test.integration.config.logging.X38TestingLoggingSpringJUnit4ClassRunner;
-import com.ejie.x38.test.integration.config.pib.X38TestingPibApplicationContext;
-import com.ejie.x38.test.integration.config.pib.X38TestingPibContextLoader;
-import com.sun.mail.iap.ByteArray;
+import javax.annotation.Resource;
+import javax.servlet.Filter;
+import java.io.FileInputStream;
+
+import static org.junit.Assert.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 /**
  * @author Eurohelp S.L.
  */
 @RunWith(X38TestingLoggingSpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration(loader = X38TestingPibContextLoader.class, classes = X38TestingPibApplicationContext.class)
+@ContextConfiguration(loader = X38TestingLoggingContextLoader.class, classes = X38TestingLoggingApplicationContext.class)
 public class TestLogging {
 
 	@Resource
