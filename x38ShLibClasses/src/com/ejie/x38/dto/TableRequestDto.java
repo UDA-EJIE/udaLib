@@ -18,6 +18,7 @@ package com.ejie.x38.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
@@ -93,7 +94,17 @@ public class TableRequestDto implements java.io.Serializable{
 		return sord;
 	}
 	public void setSord (String sord) {
-		this.sord = TableRequestDto.SORT_DESC.equals(sord.trim().toUpperCase())?TableRequestDto.SORT_DESC:TableRequestDto.SORT_ASC;
+		if (sord.contains(",")) {
+			ArrayList<String> tmpArr = new ArrayList<String>();
+			String[] arrSord = sord.split(",");
+			for(String str : arrSord) {
+				tmpArr.add(TableRequestDto.SORT_DESC.equals(str.trim().toUpperCase())?TableRequestDto.SORT_DESC:TableRequestDto.SORT_ASC);
+			}
+			
+			this.sord =StringUtils.join(tmpArr.toArray(arrSord), ",");
+		} else {
+			this.sord = TableRequestDto.SORT_DESC.equals(sord.trim().toUpperCase())?TableRequestDto.SORT_DESC:TableRequestDto.SORT_ASC;
+		}
 	}
 	
 	
