@@ -118,24 +118,26 @@ public class MvcInterceptor extends HandlerInterceptorAdapter {
         //Modificación de la Locale y Cookie
         LocaleContextHolder.setLocale(locale);
 
-		//Sobreescribir cookie
+        //Sobreescribir cookie
         RequestContextUtils.getLocaleResolver(request).setLocale(request, response, locale);
 
-		for(Cookie cookie: request.getCookies()) {
-			response.setHeader("SET-COOKIE", getHttpOnlyCookieHeader(cookie));
-		}
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                response.setHeader("SET-COOKIE", getHttpOnlyCookieHeader(cookie));
+            }
+        }
 
-		return true;
+        return true;
     }
 
-	private String getHttpOnlyCookieHeader(Cookie cookie) {
+    private String getHttpOnlyCookieHeader(Cookie cookie) {
 
-		NewCookie newCookie = new NewCookie(cookie.getName(), cookie.getValue(),
-				cookie.getPath(), cookie.getDomain(), cookie.getVersion(),
-				cookie.getComment(), cookie.getMaxAge(), cookie.getSecure());
+        NewCookie newCookie = new NewCookie(cookie.getName(), cookie.getValue(),
+                cookie.getPath(), cookie.getDomain(), cookie.getVersion(),
+                cookie.getComment(), cookie.getMaxAge(), cookie.getSecure());
 
-		return newCookie + "; HttpOnly";
-	}
+        return newCookie + "; HttpOnly";
+    }
 
     /**
      * Función que busca la cookie de idioma y determina si es idioma válido (devuelve la cookie)
