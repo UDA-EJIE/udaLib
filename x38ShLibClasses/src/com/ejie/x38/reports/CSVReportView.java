@@ -28,6 +28,7 @@ public class CSVReportView extends AbstractView{
 		//Gestión de cookie (determina el final de la generación del fichero)
 		Cookie cookie = new Cookie("fileDownload", "true");
 		cookie.setPath("/");
+		cookie.setSecure(true);
 		response.addCookie(cookie); 
 		
 		//Token

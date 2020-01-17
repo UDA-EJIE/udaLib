@@ -33,6 +33,7 @@ public class PDFReportView extends JasperReportsPdfView{
 		
 		//Gestión de cookie (determina el final de la generación del fichero)
 		Cookie cookie = new Cookie("fileDownload", "true");
+		cookie.setSecure(true);
 		cookie.setPath("/");
 		response.addCookie(cookie); 
 		

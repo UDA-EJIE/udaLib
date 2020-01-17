@@ -73,11 +73,11 @@ public class TestMock {
 		}
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	@Test
 	public void testGet() {
+		final Cookie cookie = new Cookie("udaMockUserName", "FOO");
+		cookie.setSecure(true);
+
 		try {
 
 			mockMvc.perform(
@@ -88,7 +88,7 @@ public class TestMock {
 
 							.accept(MediaType.ALL)
 
-							.cookie(new Cookie("udaMockUserName", "FOO"))
+							.cookie(cookie)
 
 							.content(""))
 
@@ -111,7 +111,7 @@ public class TestMock {
 
 							.accept(MediaType.ALL)
 
-							.cookie(new Cookie("udaMockUserName", "FOO"))
+							.cookie(cookie)
 
 							.content(""))
 
@@ -121,11 +121,11 @@ public class TestMock {
 		}
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	@Test
 	public void testPost() {
+		final Cookie cookie = new Cookie("udaMockUserName", "FOO");
+		cookie.setSecure(true);
+
 		try {
 
 			mockMvc.perform(
@@ -136,7 +136,7 @@ public class TestMock {
 
 							.accept(MediaType.ALL)
 
-							.cookie(new Cookie("udaMockUserName", "FOO"))
+							.cookie(cookie)
 
 							.content(""))
 
@@ -156,7 +156,7 @@ public class TestMock {
 
 							.accept(MediaType.ALL)
 
-							.cookie(new Cookie("udaMockUserName", "FOO"))
+							.cookie(cookie)
 
 							.content(""))
 
@@ -166,11 +166,11 @@ public class TestMock {
 		}
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	@Test
 	public void testPut() {
+		final Cookie cookie = new Cookie("udaMockUserName", "FOO");
+		cookie.setSecure(true);
+
 		try {
 
 			mockMvc.perform(
@@ -181,7 +181,7 @@ public class TestMock {
 
 							.accept(MediaType.ALL)
 
-							.cookie(new Cookie("udaMockUserName", "FOO"))
+							.cookie(cookie)
 
 							.content(""))
 
@@ -201,7 +201,7 @@ public class TestMock {
 
 							.accept(MediaType.ALL)
 
-							.cookie(new Cookie("udaMockUserName", "FOO"))
+							.cookie(cookie)
 
 							.content(""))
 
@@ -211,11 +211,11 @@ public class TestMock {
 		}
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	@Test
 	public void testAccessDenied() {
+		final Cookie cookie = new Cookie("udaMockUserName", "FOO");
+		cookie.setSecure(true);
+
 		try {
 
 			mockMvc.perform(
@@ -226,7 +226,7 @@ public class TestMock {
 
 							.accept(MediaType.ALL)
 
-							.cookie(new Cookie("udaMockUserName", "FOO"))
+							.cookie(cookie)
 
 							.content(""))
 
@@ -248,7 +248,7 @@ public class TestMock {
 
 							.accept(MediaType.ALL)
 
-							.cookie(new Cookie("udaMockUserName", "FOO"))
+							.cookie(cookie)
 
 							.content(""))
 
