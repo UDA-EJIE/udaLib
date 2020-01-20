@@ -76,8 +76,8 @@ public  class PreAuthenticateProcessingFilter extends
 				logger.info("the request is exiting of the security system");
 			} else {
 				HttpSession httpSession = ((HttpServletRequest)request).getSession(false);
-				
-				//Delete security variables 
+
+				//Delete security variables
 				httpSession.removeAttribute("name");
 				httpSession.removeAttribute("surname");
 				httpSession.removeAttribute("fullName");
@@ -86,7 +86,7 @@ public  class PreAuthenticateProcessingFilter extends
 				httpSession.removeAttribute("uidSession");
 				httpSession.removeAttribute("userChange");
 				httpSession.removeAttribute("destroySessionSecuritySystem");
-				
+
 				String content = messageSource.getMessage("security.ajaxLoadError", null, LocaleContextHolder.getLocale());
 				HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 				httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);

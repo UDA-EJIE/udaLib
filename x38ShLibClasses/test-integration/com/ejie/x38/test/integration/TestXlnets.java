@@ -112,6 +112,12 @@ public class TestXlnets {
 	private void testGetDo(Document token, String expect, String msgError) {
 		try {
 
+			final Cookie n38DominioUid = new Cookie("n38DominioUid", "D0_Euskalsarea01");
+			n38DominioUid.setSecure(true);
+
+			final Cookie n38UidSesion = new Cookie("n38UidSesion", "1519022548012");
+			n38UidSesion.setSecure(true);
+
 			mockMvc.perform(
 
 					get("/security/get")
@@ -120,9 +126,9 @@ public class TestXlnets {
 
 							.accept(MediaType.ALL)
 
-							.cookie(new Cookie("n38DominioUid", "D0_Euskalsarea01"))
+							.cookie(n38DominioUid)
 
-							.cookie(new Cookie("n38UidSesion", "1519022548012"))
+							.cookie(n38UidSesion)
 
 							.requestAttr("N38SesionXML", token)
 
@@ -143,6 +149,10 @@ public class TestXlnets {
 	 */
 	private void testAjaxGetDo(Document token, String expect, String msgError) {
 		try {
+			final Cookie n38DominioUid = new Cookie("n38DominioUid", "D0_Euskalsarea01");
+			n38DominioUid.setSecure(true);
+			final Cookie n38UidSesion = new Cookie("n38UidSesion", "1519022548012");
+			n38UidSesion.setSecure(true);
 
 			mockMvc.perform(
 
@@ -154,9 +164,9 @@ public class TestXlnets {
 
 							.accept(MediaType.ALL)
 
-							.cookie(new Cookie("n38DominioUid", "D0_Euskalsarea01"))
+							.cookie(n38DominioUid)
 
-							.cookie(new Cookie("n38UidSesion", "1519022548012"))
+							.cookie(n38UidSesion)
 
 							.requestAttr("N38SesionXML", token)
 
@@ -177,6 +187,10 @@ public class TestXlnets {
 	 */
 	private void testPostDo(Document token, String expect, String msgError) {
 		try {
+			final Cookie n38DominioUid = new Cookie("n38DominioUid", "D0_Euskalsarea01");
+			n38DominioUid.setSecure(true);
+			final Cookie n38UidSesion = new Cookie("n38UidSesion", "1519022548012");
+			n38UidSesion.setSecure(true);
 
 			mockMvc.perform(
 
@@ -186,9 +200,9 @@ public class TestXlnets {
 
 							.accept(MediaType.ALL)
 
-							.cookie(new Cookie("n38DominioUid", "D0_Euskalsarea01"))
+							.cookie(n38DominioUid)
 
-							.cookie(new Cookie("n38UidSesion", "1519022548012"))
+							.cookie(n38UidSesion)
 
 							.requestAttr("N38SesionXML", token)
 
@@ -209,6 +223,10 @@ public class TestXlnets {
 	 */
 	private void testAjaxPostDo(Document token, String expect, String msgError) {
 		try {
+			final Cookie n38DominioUid = new Cookie("n38DominioUid", "D0_Euskalsarea01");
+			n38DominioUid.setSecure(true);
+			final Cookie n38UidSesion = new Cookie("n38UidSesion", "1519022548012");
+			n38UidSesion.setSecure(true);
 
 			mockMvc.perform(
 
@@ -220,9 +238,9 @@ public class TestXlnets {
 
 							.accept(MediaType.ALL)
 
-							.cookie(new Cookie("n38DominioUid", "D0_Euskalsarea01"))
+							.cookie(n38DominioUid)
 
-							.cookie(new Cookie("n38UidSesion", "1519022548012"))
+							.cookie(n38UidSesion)
 
 							.requestAttr("N38SesionXML", token)
 
@@ -243,6 +261,10 @@ public class TestXlnets {
 	 */
 	private void testPutDo(Document token, String expect, String msgError) {
 		try {
+			final Cookie n38DominioUid = new Cookie("n38DominioUid", "D0_Euskalsarea01");
+			n38DominioUid.setSecure(true);
+			final Cookie n38UidSesion = new Cookie("n38UidSesion", "1519022548012");
+			n38UidSesion.setSecure(true);
 
 			mockMvc.perform(
 
@@ -252,9 +274,9 @@ public class TestXlnets {
 
 							.accept(MediaType.ALL)
 
-							.cookie(new Cookie("n38DominioUid", "D0_Euskalsarea01"))
+							.cookie(n38DominioUid)
 
-							.cookie(new Cookie("n38UidSesion", "1519022548012"))
+							.cookie(n38UidSesion)
 
 							.requestAttr("N38SesionXML", token)
 
@@ -276,6 +298,11 @@ public class TestXlnets {
 	private void testAjaxPutDo(Document token, String expect, String msgError) {
 		try {
 
+			final Cookie n38DominioUid = new Cookie("n38DominioUid", "D0_Euskalsarea01");
+			n38DominioUid.setSecure(true);
+			final Cookie n38UidSesion = new Cookie("n38UidSesion", "1519022548012");
+			n38UidSesion.setSecure(true);
+
 			mockMvc.perform(
 
 					put("/security/put")
@@ -286,9 +313,9 @@ public class TestXlnets {
 
 							.accept(MediaType.ALL)
 
-							.cookie(new Cookie("n38DominioUid", "D0_Euskalsarea01"))
+							.cookie(n38DominioUid)
 
-							.cookie(new Cookie("n38UidSesion", "1519022548012"))
+							.cookie(n38UidSesion)
 
 							.requestAttr("N38SesionXML", token)
 
@@ -309,6 +336,10 @@ public class TestXlnets {
 	 */
 	private void testAccessDeniedDo(Document token, String expect, String msgError) {
 		try {
+			final Cookie n38DominioUid = new Cookie("n38DominioUid", "D0_Euskalsarea01");
+			n38DominioUid.setSecure(true);
+			final Cookie n38UidSesion = new Cookie("n38UidSesion", "1519022548012");
+			n38UidSesion.setSecure(true);
 
 			mockMvc.perform(
 
@@ -318,9 +349,9 @@ public class TestXlnets {
 
 							.accept(MediaType.ALL)
 
-							.cookie(new Cookie("n38DominioUid", "D0_Euskalsarea01"))
+							.cookie(n38DominioUid)
 
-							.cookie(new Cookie("n38UidSesion", "1519022548012"))
+							.cookie(n38UidSesion)
 
 							.requestAttr("N38SesionXML", token)
 
@@ -341,6 +372,10 @@ public class TestXlnets {
 	 */
 	private void testAjaxAccessDeniedDo(Document token, String expect, String msgError) {
 		try {
+			final Cookie n38DominioUid = new Cookie("n38DominioUid", "D0_Euskalsarea01");
+			n38DominioUid.setSecure(true);
+			final Cookie n38UidSesion = new Cookie("n38UidSesion", "1519022548012");
+			n38UidSesion.setSecure(true);
 
 			mockMvc.perform(
 
@@ -352,9 +387,9 @@ public class TestXlnets {
 
 							.accept(MediaType.ALL)
 
-							.cookie(new Cookie("n38DominioUid", "D0_Euskalsarea01"))
+							.cookie(n38DominioUid)
 
-							.cookie(new Cookie("n38UidSesion", "1519022548012"))
+							.cookie(n38UidSesion)
 
 							.requestAttr("N38SesionXML", token)
 

@@ -252,14 +252,16 @@ public final class RequestUtil {
                 if (equals > 0) {
                     String name = token.substring(0, equals).trim();
                     String value = token.substring(equals + 1).trim();
-                    cookies.add(new Cookie(name, value));
+                    final Cookie cookie = new Cookie(name, value);
+                    cookie.setSecure(true);
+                    cookies.add(cookie);
                 }
-            } catch (Throwable e) {
+            } catch (Throwable ignored) {
                 ;
             }
         }
 
-        return ((Cookie[]) cookies.toArray(new Cookie[cookies.size()]));
+        return ((Cookie[]) cookies.toArray(new Cookie[0]));
 
     }
 

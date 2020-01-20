@@ -42,16 +42,16 @@ public class WebDAVXLNetsAuthenticationFilter extends GenericFilterBean {
 		
 		
 		if (webdavXLNetsParam!=null){
-//			String param = new String(Base64.decodeBase64(webdavXLNetsParam));
 			String param = new String(DatatypeConverter.parseBase64Binary(webdavXLNetsParam));
 			
 			String[] arrParam = param.split("&");
-			
-			for (int i=0;i<arrParam.length;i++){
-				String[] paramKeyValue = arrParam[i].split("=");
-//				httpResponse.addCookie(new Cookie(paramKeyValue[0], paramKeyValue[1]));
-				wrapedRequest.addCookie(new Cookie(paramKeyValue[0], paramKeyValue[1]));
-				
+
+			for (String s : arrParam) {
+				String[] paramKeyValue = s.split("=");
+				final Cookie cookie = new Cookie(paramKeyValue[0], paramKeyValue[1]);
+				cookie.setSecure(true);
+				wrapedRequest.addCookie(cookie);
+
 			}
 		}
 		
