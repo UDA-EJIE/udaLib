@@ -391,10 +391,52 @@ public class TableManager implements java.io.Serializable{
 //		}
 		return reorderQuery;
     }
+	
+	/*
+	 * BORRADO MULTIPLE
+	 */
+	public static <T> StringBuilder getRemoveMultipleQuery(TableRequestDto tableRequestDto, Class<T> clazz, String table, String... pkCols){
+		
+		String pkStr = TableManager.strArrayToCommaSeparatedStr(pkCols);
+		List<Object> paramList = new ArrayList<Object>();
+		StringBuilder removeQuery = new StringBuilder();
+		
+		removeQuery.append("DELETE FROM ").append(table);
+		if(!tableRequestDto.getMultiselection().getSelectedIds().isEmpty()) {
+			removeQuery.append(" WHERE (").append(pkStr).append(") ")
+				.append(tableRequestDto.getMultiselection().getSelectedAll()? "NOT":"").append(" IN (");
+			
+			for (T selectedBean : tableRequestDto.getMultiselection().getSelected(clazz)) {
+				removeQuery.append("(");
+				for (int i = 0; i < pkCols.length; i++) {
+					String prop = tableRequestDto.getCore().getPkNames().get(i);
+					removeQuery.append("?").append(",");
+					try {
+						paramList.add(BeanUtils.getProperty(selectedBean, prop));
+					} catch (IllegalAccessException e) {
+						e.printStackTrace();
+					} catch (InvocationTargetException e) {
+						e.printStackTrace();
+					} catch (NoSuchMethodException e) {
+						e.printStackTrace();
+					}
+				}
+
+				removeQuery.deleteCharAt(removeQuery.length()-1);
+				removeQuery.append("),");
+			}
+			
+			removeQuery.deleteCharAt(removeQuery.length()-1);
+			removeQuery.append(")");
+		}
+
+		return removeQuery;
+	}
 
 	/*
 	 * BORRADO MULTIPLE
 	 */
+	@Deprecated
 	public static <T> StringBuilder getRemoveMultipleQuery(TableRequestDto tableRequestDto, Class<T> clazz, StringBuilder query, List<Object> paramList, String... pkCols){
 
 		String pkStr = TableManager.strArrayToCommaSeparatedStr(pkCols);
