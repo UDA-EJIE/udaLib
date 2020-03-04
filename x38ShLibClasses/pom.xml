@@ -16,7 +16,7 @@
 		<org.slf4j.version>1.7.25</org.slf4j.version>
 		<eclipselink.version>2.3.0</eclipselink.version>
 		<!-- <org.jackson.version>2.8.11.3</org.jackson.version> -->
-		<org.jackson.version>2.7.9.5</org.jackson.version>
+		<org.jackson.version>2.9.10.3</org.jackson.version>
 		<org.apache.tiles.version>3.0.8</org.apache.tiles.version>
 	</properties>
 
