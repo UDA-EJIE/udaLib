@@ -122,8 +122,13 @@ public class TableManager implements java.io.Serializable{
 		//Order
 		StringBuilder orderBy = new StringBuilder();
 		if (pagination.getSidx() != null) {
-						
-			if (orderByWhiteList != null && !TableManager.validateOrderByFields(orderByWhiteList, pagination.getSidx())){
+			boolean isColumnIndex = false;
+			try {
+		        Integer.parseInt(pagination.getSidx());
+		        isColumnIndex = true;
+		    } catch (NumberFormatException nfe) {
+		    }
+			if ( !isColumnIndex && orderByWhiteList != null && !TableManager.validateOrderByFields(orderByWhiteList, pagination.getSidx())){
 				throw new SqlInjectionException("Campo no permitido");
 			}
 			

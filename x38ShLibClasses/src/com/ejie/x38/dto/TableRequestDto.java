@@ -18,6 +18,7 @@ package com.ejie.x38.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hdiv.services.SecureIdContainer;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
@@ -26,7 +27,7 @@ import org.springframework.beans.BeanWrapperImpl;
  * @author UDA
  *
  */
-public class TableRequestDto implements java.io.Serializable{
+public class TableRequestDto implements java.io.Serializable, SecureIdContainer {
 
 	private static final long serialVersionUID = 2127819481595995328L;
 	

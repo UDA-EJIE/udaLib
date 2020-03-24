@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hdiv.services.SecureIdContainer;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -34,7 +36,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
  */
 @Deprecated
 @JsonInclude(Include.NON_NULL)
-		public class JQGridResponseDto<T> {
+public class JQGridResponseDto<T> implements SecureIdContainer {
 
 	//Página actual
 	private String page = null;
