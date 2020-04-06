@@ -484,35 +484,34 @@ public class TableManager implements java.io.Serializable{
 		String pkStr = TableManager.strArrayToCommaSeparatedStr(pkCols);
 
 		StringBuilder selectQuery = new StringBuilder();
+		
+		if(!tableRequestDto.getMultiselection().getSelectedIds().isEmpty()) {
+			selectQuery.append(" AND (").append(pkStr).append(") ")
+				.append(tableRequestDto.getMultiselection().getSelectedAll()? "NOT":"").append(" IN (");
+			
+			for (T selectedBean : tableRequestDto.getMultiselection().getSelected(clazz)) {
+				selectQuery.append("(");
+				for (int i = 0; i < tableRequestDto.getCore().getPkNames().size(); i++) {
+					String prop = tableRequestDto.getCore().getPkNames().get(i);
+					selectQuery.append("?").append(",");
+					try {
+	                    paramList.add(new PropertyDescriptor(prop, selectedBean.getClass()).getReadMethod().invoke(selectedBean));
+					} catch (IllegalAccessException e) {
+						e.printStackTrace();
+					} catch (InvocationTargetException e) {
+						e.printStackTrace();
+					} catch (IntrospectionException e) {
+	                    e.printStackTrace();
+	                }
+	            }
 
-		selectQuery.append("SELECT * FROM "+clazz.getSimpleName());
-
-		selectQuery.append(" WHERE (").append(pkStr).append(") ").append(tableRequestDto.getMultiselection().getSelectedAll()?" NOT ":"").append(" IN (");
-		for (T selectedBean : tableRequestDto.getMultiselection().getSelected(clazz)) {
-			selectQuery.append("(");
-			for (int i = 0; i < pkCols.length; i++) {
-				String prop = tableRequestDto.getCore().getPkNames().get(i);
-				selectQuery.append("?").append(",");
-				try {
-					paramList.add(BeanUtils.getProperty(selectedBean, prop));
-				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (NoSuchMethodException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				selectQuery.deleteCharAt(selectQuery.length()-1);
+				selectQuery.append("),");
 			}
-
+			
 			selectQuery.deleteCharAt(selectQuery.length()-1);
-			selectQuery.append("),");
+			selectQuery.append(")");
 		}
-
-		selectQuery.deleteCharAt(selectQuery.length()-1);
-		selectQuery.append(")");
 
 		return selectQuery;
 
