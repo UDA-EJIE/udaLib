@@ -27,9 +27,6 @@
 	<mvc:view-controller path="/mockLoginAjaxPage"
 		view-name="mockLoginAjaxPage" />
 
-	<mvc:view-controller path="/y52bdocumentos"
-		view-name="y52bdocumentos" />
-
 	<!-- Filtro utilizado para emular el comportamiento de los mensajes de error 
 		http en peticiones realizadas desde iframes -->
 	<bean id="iframeXHREmulationFilter"
