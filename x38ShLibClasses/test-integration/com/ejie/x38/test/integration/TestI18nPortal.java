@@ -94,9 +94,12 @@ public class TestI18nPortal {
 	public void portalCookieChange() {
 
 		try {
+			final Cookie r61_es = new Cookie(PORTAL_COOKIE, "r61_es");
+			r61_es.setSecure(true);
+
 			mockMvc.perform(get("/i18n/test")
 
-					.cookie(new Cookie(PORTAL_COOKIE, "r61_es")))
+					.cookie(r61_es))
 
 					.andExpect(cookie().exists(COOKIE_LANGUAGE))
 
@@ -107,9 +110,12 @@ public class TestI18nPortal {
 		}
 
 		try {
+			final Cookie r61_eu = new Cookie(PORTAL_COOKIE, "r61_eu");
+			r61_eu.setSecure(true);
+
 			mockMvc.perform(get("/i18n/test")
 
-					.cookie(new Cookie(PORTAL_COOKIE, "r61_eu")))
+					.cookie(r61_eu))
 
 					.andExpect(cookie().exists(COOKIE_LANGUAGE))
 

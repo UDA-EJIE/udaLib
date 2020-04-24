@@ -26,9 +26,6 @@
 	<mvc:view-controller path="/mockLoginAjaxPage"
 		view-name="mockLoginAjaxPage" />
 
-	<mvc:view-controller path="/y52bdocumentos"
-		view-name="y52bdocumentos" />
-
 	<!-- Filtro utilizado para emular el comportamiento de los mensajes de error 
 		http en peticiones realizadas desde iframes -->
 	<bean id="iframeXHREmulationFilter"
@@ -155,7 +152,7 @@
 	<!-- Reports -->
 	<bean class="org.springframework.web.servlet.view.XmlViewResolver">
 		<property name="location">
-			<value>x38TestingLoggingWar/reports-config.xml</value>
+			<value>classpath:x38TestingLoggingWar/reports-config.xml</value>
 		</property>
 		<property name="order" value="0" />
 	</bean>
