@@ -25,13 +25,12 @@
 		<echo>Eliminando ficheros existentes ...</echo>
 		<delete file="${destDir}/x38ShLibClasses-${version}.jar" />
 		<delete file="${destDir}/x38ShLibClasses-dav-${version}.jar" />
-		<delete file="${destDir}/x38ShLibClasses-pif-${version}.jar" />
 		<delete file="${destDir}/x38ShLibClasses-rup-${version}.jar" />
 		<delete file="${destDir}/x38ShLibClasses-cache-${version}.jar" />
 		
 		<echo>Generando ${destDir}/x38ShLibClasses-${version}.jar ...</echo>
 		<jar destfile="${destDir}/x38ShLibClasses-${version}.jar">
-			<fileset dir="${buildDir}" includes="com/ejie/x38/** LICENSE.txt NOTICE.txt" excludes="com/ejie/x38/webdav/**, com/ejie/x38/pif/**, com/ejie/x38/rup/**,  com/ejie/x38/cache/**" />
+			<fileset dir="${buildDir}" includes="com/ejie/x38/** LICENSE.txt NOTICE.txt" excludes="com/ejie/x38/webdav/**, com/ejie/x38/rup/**,  com/ejie/x38/cache/**" />
 			<fileset dir="${baseDir}" includes="build.xml pom.xml" />
 			<fileset dir="${srcDir}" includes="**/*.java"/>
 			<manifest>
@@ -44,17 +43,6 @@
 		<echo>Generando ${destDir}/x38ShLibClasses-dav-${version}.jar ...</echo>
 		<jar destfile="${destDir}/x38ShLibClasses-dav-${version}.jar">
 			<fileset dir="${buildDir}" includes="com/ejie/x38/webdav/** LICENSE.txt NOTICE.txt" />
-			<fileset dir="${baseDir}" includes="build.xml pom.xml" />
-			<manifest>
-		      	<attribute name="Main-Class" value=""/>
-		     	<attribute name="Manifest-Version" value="${version}"/>
-		     	<attribute name="Created-By" value="UDA"/>
-		     </manifest>
-		</jar>
-		
-		<echo>Generando ${destDir}/x38ShLibClasses-pif-${version}.jar ...</echo>
-		<jar destfile="${destDir}/x38ShLibClasses-pif-${version}.jar">
-			<fileset dir="${buildDir}" includes="com/ejie/x38/pif/** LICENSE.txt NOTICE.txt" />
 			<fileset dir="${baseDir}" includes="build.xml pom.xml" />
 			<manifest>
 		      	<attribute name="Main-Class" value=""/>

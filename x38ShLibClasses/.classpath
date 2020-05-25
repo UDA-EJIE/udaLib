@@ -107,8 +107,6 @@
 	<classpathentry kind="lib" path="lib/validation-api-1.1.0.Final.jar"/>
 	<classpathentry kind="lib" path="lib/w43ta-2.4.jar"/>
 	<classpathentry kind="lib" path="lib/xz-1.0.jar"/>
-	<classpathentry kind="lib" path="lib/y31b-1.4-ifaz.jar"/>
-	<classpathentry kind="lib" path="lib/y31c-1.4-impl.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/UDAWLS11Classpath"/>
 	<classpathentry kind="con" path="oracle.eclipse.tools.weblogic.lib.system"/>
 	<classpathentry kind="output" path="target/classes"/>

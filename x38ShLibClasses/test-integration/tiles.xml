@@ -459,11 +459,6 @@
 		<put-attribute name="includes"
 			value="/WEB-INF/views/integracion/webdav-includes.jsp" />
 	</definition>
-	<definition name="pif" extends="template">
-		<put-attribute name="content" value="/WEB-INF/views/integracion/pif.jsp" />
-		<put-attribute name="includes"
-			value="/WEB-INF/views/integracion/pif-includes.jsp" />
-	</definition>
 	<definition name="cache" extends="template">
 		<put-attribute name="content"
 			value="/WEB-INF/views/integracion/cache.jsp" />
