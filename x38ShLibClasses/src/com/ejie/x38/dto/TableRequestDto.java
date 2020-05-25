@@ -159,7 +159,7 @@ public class TableRequestDto implements java.io.Serializable, SecureIdContainer 
 		}
 	}
 	
-	public class Multiselection {
+	public class Multiselection implements SecureIdContainer{
 		private List<String> selectedIds;
 		private Boolean selectedAll;
 		
