@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.hdiv.services.SecureIdContainer;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
@@ -27,7 +28,7 @@ import org.springframework.beans.BeanWrapperImpl;
  * @author UDA
  *
  */
-public class TableRequestDto implements java.io.Serializable{
+public class TableRequestDto implements java.io.Serializable, SecureIdContainer {
 
 	private static final long serialVersionUID = 2127819481595995328L;
 	
@@ -169,7 +170,7 @@ public class TableRequestDto implements java.io.Serializable{
 		}
 	}
 	
-	public class Multiselection {
+	public class Multiselection implements SecureIdContainer{
 		private List<String> selectedIds;
 		private Boolean selectedAll;
 		

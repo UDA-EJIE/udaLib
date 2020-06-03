@@ -124,15 +124,21 @@ public class TableManager implements java.io.Serializable{
 		//Order
 		StringBuilder orderBy = new StringBuilder();
 		if (pagination.getSidx() != null) {
+			boolean isColumnIndex = false;
+			
+			try {
+		        Integer.parseInt(pagination.getSidx());
+		        isColumnIndex = true;
+		    } catch (NumberFormatException nfe) {}
 			
 			if(pagination.getSidx().indexOf(',') >= 0) {
 				for(String sidx : pagination.getSidx().split(",")) {
-					if (orderByWhiteList != null && !TableManager.validateOrderByFields(orderByWhiteList, sidx)){
+					if (!isColumnIndex && orderByWhiteList != null && !TableManager.validateOrderByFields(orderByWhiteList, sidx)){
 						throw new SqlInjectionException("Campo no permitido");
 					}
 				}
 			} else {
-				if (orderByWhiteList != null && !TableManager.validateOrderByFields(orderByWhiteList, pagination.getSidx())){
+				if (!isColumnIndex && orderByWhiteList != null && !TableManager.validateOrderByFields(orderByWhiteList, pagination.getSidx())){
 					throw new SqlInjectionException("Campo no permitido");
 				}
 			}
