@@ -111,8 +111,9 @@
 	<classpathentry kind="lib" path="lib/y31c-1.4-impl.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/UDAWLS11Classpath"/>
 	<classpathentry kind="con" path="oracle.eclipse.tools.weblogic.lib.system"/>
+	<classpathentry kind="lib" path="lib/spring-hateoas-0.23.0.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/hdiv-core-3.5.0.RC2.jar"/>
 	<classpathentry kind="lib" path="lib/hdiv-services-3.5.0.RC2.jar"/>
-	<classpathentry kind="lib" path="lib/spring-hateoas-0.23.0.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/uda-for-services-1.1-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
