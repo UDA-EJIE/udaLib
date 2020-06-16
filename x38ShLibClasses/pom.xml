@@ -19,7 +19,7 @@
 		<org.jackson.version>2.7.9.5</org.jackson.version>
 		<org.apache.tiles.version>3.0.8</org.apache.tiles.version>
 		<hdiv.version>3.5.0.RC2</hdiv.version>
-		<com.ejie.hdiv.version>1.1-SNAPSHOT</com.ejie.hdiv.version>
+		<hdivsecurity.version>2.1.2-RC1</hdivsecurity.version>
 	</properties>
 
 	<dependencies>
@@ -30,9 +30,9 @@
 			<version>${hdiv.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.ejie.hdiv</groupId>
-			<artifactId>uda-for-services</artifactId>
-			<version>${com.ejie.hdiv.version}</version>
+		    <groupId>com.hdivsecurity</groupId>
+		    <artifactId>hdiv-for-services</artifactId>
+		    <version>${hdivsecurity.version}</version>
 		</dependency>
 		<!-- Spring -->
 		<dependency>
