@@ -29,7 +29,7 @@ public class LinkResourcesAspect {
 	@Autowired
 	private LinkProvider linkProvider;
 
-	@Around("@annotation(com.ejie.hdiv.annotation.UDALink)")
+	@Around("@annotation(com.ejie.x38.hdiv.annotation.UDALink)")
 	public Object processLinks(final ProceedingJoinPoint joinPoint) throws Throwable {
 
 		Object result = joinPoint.proceed();
