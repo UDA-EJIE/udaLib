@@ -42,6 +42,10 @@ public abstract class UDA4HdivConfigurerAdapter extends HdivServicesSecurityConf
 	protected abstract String getHomePage();
 
 	protected abstract String getLoginPage();
+	
+	protected abstract String getDashboardUser();
+	
+	protected abstract String getDashboardPass();
 
 	@Override
 	public final void configure(final ServicesSecurityConfigBuilder builder) {
@@ -52,7 +56,7 @@ public abstract class UDA4HdivConfigurerAdapter extends HdivServicesSecurityConf
 		builder.cookiesConfidentiality(false);
 		builder.idProtection(IdProtectionType.PLAINTEXT_HID);
 		builder.serverSideHypermedia(ServerSideHypermedia.COMPLETE);
-		builder.dashboardUser("dashboard-admin").dashboardPass("password");
+		builder.dashboardUser(getDashboardUser()).dashboardPass(getDashboardPass());
 
 		builder.validationSupport(SupportedValidators.JSONFORM);
 
