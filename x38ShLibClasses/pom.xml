@@ -18,8 +18,8 @@
 		<!-- <org.jackson.version>2.8.11.3</org.jackson.version> -->
 		<org.jackson.version>2.7.9.5</org.jackson.version>
 		<org.apache.tiles.version>3.0.8</org.apache.tiles.version>
-		<hdiv.version>3.5.0.RC2</hdiv.version>
-		<hdivsecurity.version>2.1.2-RC1</hdivsecurity.version>
+		<hdiv.version>3.5.0.RC3</hdiv.version>
+		<hdivsecurity.version>2.3.0.RC1</hdivsecurity.version>
 	</properties>
 
 	<dependencies>
