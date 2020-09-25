@@ -19,7 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.hdiv.services.AnyEntity;
 import org.hdiv.services.SecureIdContainer;
+import org.hdiv.services.TrustAssertion;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
@@ -170,7 +172,8 @@ public class TableRequestDto implements java.io.Serializable, SecureIdContainer 
 		}
 	}
 	
-	public class Multiselection implements SecureIdContainer{
+	public class Multiselection implements SecureIdContainer {
+		@TrustAssertion(idFor = AnyEntity.class)
 		private List<String> selectedIds;
 		private Boolean selectedAll;
 		
