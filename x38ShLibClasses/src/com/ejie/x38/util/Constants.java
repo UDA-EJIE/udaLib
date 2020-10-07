@@ -55,7 +55,9 @@ public class Constants {
 	
 	public static final SimpleDateFormat HHMMSS_TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
 	
+	// MultiPK separator
+	public static final String PK_TOKEN = "@@@@";
 	
-	//security
-	public static final String dataNotApplicable = "N/A";
+	// Security
+	public static final String DATA_NOT_APPLICABLE = "N/A";
 }
