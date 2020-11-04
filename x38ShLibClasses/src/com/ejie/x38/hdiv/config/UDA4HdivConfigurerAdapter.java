@@ -154,7 +154,7 @@ public abstract class UDA4HdivConfigurerAdapter extends HdivServicesSecurityConf
 		Map<RequestMappingInfo, HandlerMethod> map = handler.getHandlerMethods();
 		for (Entry<RequestMappingInfo, HandlerMethod> mapEntry : map.entrySet()) {
 			mpd.addMethodMappings(mapEntry.getValue().getMethod().toString(), mapEntry.getKey().getPatternsCondition().getPatterns(),
-					mapEntry.getKey().getMethodsCondition().getMethods());
+					mapEntry.getKey().getMethodsCondition().getMethods(), mapEntry.getValue().getMethodParameters());
 		}
 
 		return mpd;

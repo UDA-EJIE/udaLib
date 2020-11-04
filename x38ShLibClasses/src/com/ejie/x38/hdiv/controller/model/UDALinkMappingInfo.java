@@ -8,8 +8,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.hdiv.ee.comcore.discovery.resolve.NoEntity;
+import org.hdiv.services.TrustAssertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.MethodParameter;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 public class UDALinkMappingInfo {
@@ -59,7 +63,8 @@ public class UDALinkMappingInfo {
 		Set<String> entityMapping = new HashSet<String>();
 
 		for (String mapping : mappings.getMappings()) {
-			if (mapping.contains("{")) {
+			int pathVariableCount = StringUtils.countOccurrencesOf("mapping", "{");
+			if (pathVariableCount > 0 && getParametersNoEntityAnnotationCount(mappings.getParameters()) < pathVariableCount) {
 				// Template mapping
 				entityMapping.add(mapping);
 			}
@@ -97,6 +102,17 @@ public class UDALinkMappingInfo {
 		entityMappingInfo = new MappingInfo(allowMethod, entityMapping);
 		staticMappingInfo = new MappingInfo(allowMethod, staticMapping);
 		methodCondition = mappings.getMethodCondition();
+	}
+	
+	private int getParametersNoEntityAnnotationCount(final MethodParameter[] parameters) {
+		int count = 0;
+		for(MethodParameter param: parameters ) {
+			TrustAssertion annotation = param.getParameterAnnotation(TrustAssertion.class);
+			if(annotation != null && annotation.idFor() == NoEntity.class) {
+				count++;
+			}
+		}
+		return count;
 	}
 
 }

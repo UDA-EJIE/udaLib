@@ -7,6 +7,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerExecutionChain;
@@ -24,10 +25,10 @@ public class MethodMappingDiscoverer {
 		this.handler = handler;
 	}
 
-	public void addMethodMappings(final String method, final Set<String> mapping, final Set<RequestMethod> methodCondition) {
+	public void addMethodMappings(final String method, final Set<String> mapping, final Set<RequestMethod> methodCondition, final MethodParameter[] parameters) {
 		MethodMappingInfo mappings = methodMappings.get(method);
 		if (mappings == null) {
-			mappings = new MethodMappingInfo(mapping, methodCondition);
+			mappings = new MethodMappingInfo(mapping, methodCondition, parameters);
 			methodMappings.put(method, mappings);
 		}
 		else {
