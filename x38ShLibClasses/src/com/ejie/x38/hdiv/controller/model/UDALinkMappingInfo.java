@@ -63,7 +63,7 @@ public class UDALinkMappingInfo {
 		Set<String> entityMapping = new HashSet<String>();
 
 		for (String mapping : mappings.getMappings()) {
-			int pathVariableCount = StringUtils.countOccurrencesOf("mapping", "{");
+			int pathVariableCount = StringUtils.countOccurrencesOf(mapping, "{");
 			if (pathVariableCount > 0 && getParametersNoEntityAnnotationCount(mappings.getParameters()) < pathVariableCount) {
 				// Template mapping
 				entityMapping.add(mapping);
