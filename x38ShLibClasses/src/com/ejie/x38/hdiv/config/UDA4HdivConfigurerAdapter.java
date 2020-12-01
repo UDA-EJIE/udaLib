@@ -87,6 +87,7 @@ public abstract class UDA4HdivConfigurerAdapter extends HdivServicesSecurityConf
 		registry.addRule("partialUrl").acceptedPattern("[a-zA-Z0-9@.\\-_\\/]*$").rejectedPattern("(\\s|\\S)*(--)(\\s|\\S)*");
 		registry.addRule("boolean").acceptedPattern("(\\W|^)(true|false)(\\W|$)");
 		registry.addRule("order").acceptedPattern("(\\W|^)(asc|desc)(\\W|$)");
+		registry.addRule("locale").acceptedPattern("(\\W|^)(es|eu|en|fr)(\\W|$)");
 
 		addCustomRules(registry);
 	}
@@ -126,6 +127,8 @@ public abstract class UDA4HdivConfigurerAdapter extends HdivServicesSecurityConf
 				.disableDefaults();
 
 		validationConfigurer.addValidation(getLoginPage()).forParameters("userNames").disableDefaults();
+		
+		validationConfigurer.addValidation(".*/").forParameters("locale").rules("locale").target(ValidationTargetType.CLIENT_PARAMETERS);
 
 		customConfigureEditableValidation(validationConfigurer);
 
