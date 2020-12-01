@@ -58,7 +58,7 @@ public abstract class UDA4HdivConfigurerAdapter extends HdivServicesSecurityConf
 		builder.serverSideHypermedia(ServerSideHypermedia.COMPLETE);
 		builder.dashboardUser(getDashboardUser()).dashboardPass(getDashboardPass());
 
-		builder.validationSupport(SupportedValidators.JSONFORM);
+		builder.validationSupport(SupportedValidators.JSONFORM, SupportedValidators.HTMLFORM);
 
 		builder.allowPartialSubEntities(true);
 	}
