@@ -4,19 +4,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-
-
 public class TableRowDto<T> {
-
+	
+	@JsonIgnore
 	private Map<String, String> pkMap = new HashMap<String, String>();
 	
 	private Integer page;
 	private Integer pageLine;
 	private Integer tableLine;
 	
-	@JsonIgnore
+	@JsonInclude(content = Include.NON_NULL)
+	@JsonProperty("pk")
 	private T model;
 	
 	
@@ -63,8 +65,7 @@ public class TableRowDto<T> {
 		this.tableLine = tableLine;
 		this.model = model;
 	}
-
-	@JsonProperty("pk")
+	
 	public Map<String, String> getPkMap() {
 		return pkMap;
 	}
