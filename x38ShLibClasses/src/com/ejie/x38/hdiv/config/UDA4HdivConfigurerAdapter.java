@@ -128,7 +128,7 @@ public abstract class UDA4HdivConfigurerAdapter extends HdivServicesSecurityConf
 
 		validationConfigurer.addValidation(getLoginPage()).forParameters("userNames").disableDefaults();
 		
-		validationConfigurer.addValidation(".*/").forParameters("locale").rules("locale").target(ValidationTargetType.CLIENT_PARAMETERS);
+		validationConfigurer.addValidation("/.*").forParameters("locale").rules("locale").target(ValidationTargetType.CLIENT_PARAMETERS);
 
 		customConfigureEditableValidation(validationConfigurer);
 
