@@ -23,9 +23,12 @@ import java.util.List;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.ejie.x38.dao.sql.OracleEncoder;
 import com.ejie.x38.dao.sql.error.SqlInjectionException;
+import com.ejie.x38.util.Constants;
 
 /**
  *
@@ -36,7 +39,7 @@ public class TableManager implements java.io.Serializable{
 
 	private static final long serialVersionUID = 2127819481595995328L;
 
-
+	private static final Logger logger = LoggerFactory.getLogger(TableManager.class);
 
 	/**
 	 * PAGINACIÓN
@@ -273,16 +276,22 @@ public class TableManager implements java.io.Serializable{
 		sbSQL.append("\n").append("select ").append(pkStr).append(TableManager.getMultiselectionSelectOutter(tableRequestDto)).append("from ( ");
 		sbSQL.append("\n\t").append("select ").append(pkStr).append(TableManager.getMultiselectionSelectInner(tableRequestDto));
 		sbSQL.append("\n\t").append("from (").append(query);
-			sbSQL.append("\n\t").append(TableManager.getOrderBy(tableRequestDto, false)).append(") ");
+		sbSQL.append("\n\t").append(TableManager.getOrderBy(tableRequestDto, false)).append(") ");
 		sbSQL.append("\n").append(") ");
 		sbSQL.append("\n").append("where ");
 
 		sbSQL.append("(").append(pkStr).append(") IN (");
 //		sbSQL.append(tableRequestDto.getMultiselection().getSelectedAll()?" NOT IN (":" IN (");
+		
+		// Comprobar si la lista de parámetros recibida es la misma que la aportada en pkList. 
+		// Cabe decir que en los casos en los que las claves primarias sean compuestas esta condición nunca será afirmativa ya que siempre diferirán los valores recibidos y aportados.
+		if (tableRequestDto.getCore().getPkNames().size() != pkList.length && !tableRequestDto.getMultiselection().getSelectedIds().get(0).contains(Constants.PK_TOKEN)) {
+			TableManager.logger.info("[getReorderQuery] : La lista de parámetros recibida no es la misma que la aportada");
+		}
+		
 		for (T selectedBean : tableRequestDto.getMultiselection().getSelected(clazz)) {
 			sbSQL.append("(");
-			for (int i = 0; i < tableRequestDto.getCore().getPkNames().size(); i++) {
-				String prop = tableRequestDto.getCore().getPkNames().get(i);
+			for (String prop: pkList) {
 				sbSQL.append("?").append(",");
 				try {
 //					paramList.add(BeanUtils.getProperty(selectedBean, prop));
@@ -406,10 +415,15 @@ public class TableManager implements java.io.Serializable{
 			removeQuery.append(" WHERE (").append(pkStr).append(") ")
 				.append(tableRequestDto.getMultiselection().getSelectedAll()? "NOT":"").append(" IN (");
 			
+			// Comprobar si la lista de parámetros recibida es la misma que la aportada en pkCols.
+			// Cabe decir que en los casos en los que las claves primarias sean compuestas esta condición nunca será afirmativa ya que siempre diferirán los valores recibidos y aportados.
+			if (tableRequestDto.getCore().getPkNames().size() != pkCols.length && !tableRequestDto.getMultiselection().getSelectedIds().get(0).contains(Constants.PK_TOKEN)) {
+				TableManager.logger.info("[getRemoveMultipleQuery] : La lista de parámetros recibida no es la misma que la aportada");
+			}
+			
 			for (T selectedBean : tableRequestDto.getMultiselection().getSelected(clazz)) {
 				removeQuery.append("(");
-				for (int i = 0; i < pkCols.length; i++) {
-					String prop = tableRequestDto.getCore().getPkNames().get(i);
+				for (String prop: pkCols) {
 					removeQuery.append("?").append(",");
 					try {
 						paramList.add(BeanUtils.getProperty(selectedBean, prop));
@@ -489,10 +503,15 @@ public class TableManager implements java.io.Serializable{
 			selectQuery.append(" AND (").append(pkStr).append(") ")
 				.append(tableRequestDto.getMultiselection().getSelectedAll()? "NOT":"").append(" IN (");
 			
+			// Comprobar si la lista de parámetros recibida es la misma que la aportada en pkCols.
+			// Cabe decir que en los casos en los que las claves primarias sean compuestas esta condición nunca será afirmativa ya que siempre diferirán los valores recibidos y aportados.
+			if (tableRequestDto.getCore().getPkNames().size() != pkCols.length && !tableRequestDto.getMultiselection().getSelectedIds().get(0).contains(Constants.PK_TOKEN)) {
+				TableManager.logger.info("[getSelectMultipleQuery] : La lista de parámetros recibida no es la misma que la aportada");
+			}
+			
 			for (T selectedBean : tableRequestDto.getMultiselection().getSelected(clazz)) {
 				selectQuery.append("(");
-				for (int i = 0; i < tableRequestDto.getCore().getPkNames().size(); i++) {
-					String prop = tableRequestDto.getCore().getPkNames().get(i);
+				for (String prop: pkCols) {
 					selectQuery.append("?").append(",");
 					try {
 	                    paramList.add(new PropertyDescriptor(prop, selectedBean.getClass()).getReadMethod().invoke(selectedBean));
