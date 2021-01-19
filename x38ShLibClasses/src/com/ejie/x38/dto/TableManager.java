@@ -17,6 +17,7 @@ package com.ejie.x38.dto;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -295,13 +296,21 @@ public class TableManager implements java.io.Serializable{
 			TableManager.logger.info("[getReorderQuery] : La lista de parámetros recibida no es la misma que la aportada");
 		}
 		
+		// Guardamos los campos declarados en la entidad.
+		Field[] fields = clazz.getDeclaredFields();
+		
 		for (T selectedBean : tableRequestDto.getMultiselection().getSelected(clazz)) {
 			sbSQL.append("(");
-			for (String prop: pkList) {
+			for (String prop : pkList) {
 				sbSQL.append("?").append(",");
 				try {
-//					paramList.add(BeanUtils.getProperty(selectedBean, prop));
-                    paramList.add(new PropertyDescriptor(prop, selectedBean.getClass()).getReadMethod().invoke(selectedBean));
+					for (Field field : fields) {
+						// No se usa equalsIgnoreCase() para evitar problemas con algunos locales.
+						if (field.getName().toLowerCase().equals(prop.toLowerCase())) {
+							paramList.add(new PropertyDescriptor(field.getName(), selectedBean.getClass()).getReadMethod().invoke(selectedBean));
+							break;
+						}
+					}
 				} catch (IllegalAccessException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -426,18 +435,27 @@ public class TableManager implements java.io.Serializable{
 			if (tableRequestDto.getCore().getPkNames().size() != pkList.length && !tableRequestDto.getMultiselection().getSelectedIds().get(0).contains(Constants.PK_TOKEN)) {
 				TableManager.logger.info("[getRemoveMultipleQuery] : La lista de parámetros recibida no es la misma que la aportada");
 			}
+		
+			// Guardamos los campos declarados en la entidad.
+			Field[] fields = clazz.getDeclaredFields();
 			
 			for (T selectedBean : tableRequestDto.getMultiselection().getSelected(clazz)) {
 				removeQuery.append("(");
-				for (String prop: pkList) {
+				for (String prop : pkList) {
 					removeQuery.append("?").append(",");
 					try {
-						paramList.add(BeanUtils.getProperty(selectedBean, prop));
+						for (Field field : fields) {
+							// No se usa equalsIgnoreCase() para evitar problemas con algunos locales.
+							if (field.getName().toLowerCase().equals(prop.toLowerCase())) {
+								paramList.add(new PropertyDescriptor(field.getName(), selectedBean.getClass()).getReadMethod().invoke(selectedBean));
+								break;
+							}
+						}
 					} catch (IllegalAccessException e) {
 						e.printStackTrace();
 					} catch (InvocationTargetException e) {
 						e.printStackTrace();
-					} catch (NoSuchMethodException e) {
+					} catch (IntrospectionException e) {
 						e.printStackTrace();
 					}
 				}
@@ -514,13 +532,22 @@ public class TableManager implements java.io.Serializable{
 			if (tableRequestDto.getCore().getPkNames().size() != pkList.length && !tableRequestDto.getMultiselection().getSelectedIds().get(0).contains(Constants.PK_TOKEN)) {
 				TableManager.logger.info("[getSelectMultipleQuery] : La lista de parámetros recibida no es la misma que la aportada");
 			}
+		
+			// Guardamos los campos declarados en la entidad.
+			Field[] fields = clazz.getDeclaredFields();
 			
 			for (T selectedBean : tableRequestDto.getMultiselection().getSelected(clazz)) {
 				selectQuery.append("(");
-				for (String prop: pkList) {
+				for (String prop : pkList) {
 					selectQuery.append("?").append(",");
 					try {
-	                    paramList.add(new PropertyDescriptor(prop, selectedBean.getClass()).getReadMethod().invoke(selectedBean));
+						for (Field field : fields) {
+							// No se usa equalsIgnoreCase() para evitar problemas con algunos locales.
+							if (field.getName().toLowerCase().equals(prop.toLowerCase())) {
+								paramList.add(new PropertyDescriptor(field.getName(), selectedBean.getClass()).getReadMethod().invoke(selectedBean));
+								break;
+							}
+						}
 					} catch (IllegalAccessException e) {
 						e.printStackTrace();
 					} catch (InvocationTargetException e) {
