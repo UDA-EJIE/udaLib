@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -60,6 +61,11 @@ public class LinkResourcesAspect {
 		}
 		else if (result instanceof Iterable) {
 			for (Object o : (Iterable<?>) result) {
+				resources.addAll(getResources(o, deep + 1));
+			}
+		}
+		else if (result instanceof Map) {
+			for (Object o : ((Map<?, ?>) result).values()) {
 				resources.addAll(getResources(o, deep + 1));
 			}
 		}
