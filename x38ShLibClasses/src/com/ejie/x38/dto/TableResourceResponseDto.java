@@ -219,7 +219,7 @@ public class TableResourceResponseDto<T> implements SecureIdContainer {
 	public void addAdditionalParam(final String key, final Object param) {
 		if(REORDER_SELECTION_KEY.equals(key) && param instanceof List 
 				&& !((List<?>)param).isEmpty() && ((List<?>)param).get(0) instanceof TableRowDto 
-				&& ((TableRowDto<?>)((List<?>)param).get(0)).getModel() instanceof Resource<?>) {
+				&& !(((TableRowDto<?>)((List<?>)param).get(0)).getModel() instanceof Resource<?>)) {
 			this.additionalParams.put(key, wrapReorderSelection((List<TableRowDto<T>>)param));
 		}else {
 			this.additionalParams.put(key, param);
