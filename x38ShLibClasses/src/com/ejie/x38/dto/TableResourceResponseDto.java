@@ -96,7 +96,7 @@ public class TableResourceResponseDto<T> implements SecureIdContainer {
 	 * @param reorderedSelection Lista con la reordenación de los registros.
 	 */
 	public <U> TableResourceResponseDto(final TableRequestDto tableRequestDto, final Long recordNum, final List<T> rows,
-			final List<TableRowDto<T>> reorderedSelection) {
+			final List<TableRowDto<Resource<T>>> reorderedSelection) {
 		this(tableRequestDto, recordNum, null, rows, reorderedSelection);
 	}
 
@@ -110,7 +110,7 @@ public class TableResourceResponseDto<T> implements SecureIdContainer {
 	 * @param reorderedSelection Lista con la reordenación de los registros.
 	 */
 	public <U> TableResourceResponseDto(final TableRequestDto tableRequestDto, final Long recordNum, final Long total, final List<T> rows,
-			final List<TableRowDto<T>> reorderedSelection) {
+			final List<TableRowDto<Resource<T>>> reorderedSelection) {
 		super();
 		this.page = (tableRequestDto.getPage() != null) ? tableRequestDto.getPage().toString() : "";
 		this.rows = fromListToResource(rows);
