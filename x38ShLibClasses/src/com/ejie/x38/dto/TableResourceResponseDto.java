@@ -23,7 +23,6 @@ import java.util.Map;
 import org.hdiv.services.SecureIdContainer;
 import org.springframework.hateoas.Resource;
 
-import com.ejie.o75b.model.Ficheros;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
