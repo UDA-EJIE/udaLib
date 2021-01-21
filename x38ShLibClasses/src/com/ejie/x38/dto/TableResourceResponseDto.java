@@ -124,6 +124,9 @@ public class TableResourceResponseDto<T> implements SecureIdContainer {
 	
 	private List<TableRowDto<Resource<T>>> wrapReorderSelection(List<TableRowDto<T>> reorderedSelection){
 		
+		if(reorderedSelection == null) {
+			return null;
+		}
 		List<TableRowDto<Resource<T>>> wraped = new ArrayList<TableRowDto<Resource<T>>>();
 		
 		for(TableRowDto<T> tr : reorderedSelection) {
