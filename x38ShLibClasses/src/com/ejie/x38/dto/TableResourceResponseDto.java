@@ -23,6 +23,7 @@ import java.util.Map;
 import org.hdiv.services.SecureIdContainer;
 import org.springframework.hateoas.Resource;
 
+import com.ejie.o75b.model.Ficheros;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -56,6 +57,8 @@ public class TableResourceResponseDto<T> implements SecureIdContainer {
 
 	// Constantes para parámetros adicionales
 	public static final String CHILDREN = "children";
+	
+	public static final String REORDER_SELECTION_KEY = "reorderedSelection";
 
 	/**
 	 * Constructor.
@@ -96,7 +99,7 @@ public class TableResourceResponseDto<T> implements SecureIdContainer {
 	 * @param reorderedSelection Lista con la reordenación de los registros.
 	 */
 	public <U> TableResourceResponseDto(final TableRequestDto tableRequestDto, final Long recordNum, final List<T> rows,
-			final List<TableRowDto<Resource<T>>> reorderedSelection) {
+			final List<TableRowDto<T>> reorderedSelection) {
 		this(tableRequestDto, recordNum, null, rows, reorderedSelection);
 	}
 
@@ -110,14 +113,24 @@ public class TableResourceResponseDto<T> implements SecureIdContainer {
 	 * @param reorderedSelection Lista con la reordenación de los registros.
 	 */
 	public <U> TableResourceResponseDto(final TableRequestDto tableRequestDto, final Long recordNum, final Long total, final List<T> rows,
-			final List<TableRowDto<Resource<T>>> reorderedSelection) {
+			final List<TableRowDto<T>> reorderedSelection) {
 		super();
 		this.page = (tableRequestDto.getPage() != null) ? tableRequestDto.getPage().toString() : "";
 		this.rows = fromListToResource(rows);
 		this.setTotal(recordNum, (tableRequestDto.getRows() != null) ? tableRequestDto.getRows() : 0);
 		this.records = total != null ? total.intValue() : recordNum.intValue();
-		this.addAdditionalParam("reorderedSelection", reorderedSelection);
+		this.addAdditionalParam(REORDER_SELECTION_KEY, wrapReorderSelection(reorderedSelection));
 		this.addAdditionalParam("selectedAll", tableRequestDto.getMultiselection().getSelectedAll());
+	}
+	
+	private List<TableRowDto<Resource<T>>> wrapReorderSelection(List<TableRowDto<T>> reorderedSelection){
+		
+		List<TableRowDto<Resource<T>>> wraped = new ArrayList<TableRowDto<Resource<T>>>();
+		
+		for(TableRowDto<T> tr : reorderedSelection) {
+			wraped.add(new TableRowDto<Resource<T>>(tr.getPkMap(), tr.getPage(), tr.getPageLine(), tr.getTableLine(), new Resource<T>(tr.getModel())));
+		}
+		return wraped;
 	}
 	
 	private List<Resource<T>> fromListToResource(List<T> list){
@@ -200,8 +213,15 @@ public class TableResourceResponseDto<T> implements SecureIdContainer {
 	 * @param key Nombre del parámetro.
 	 * @param param Objeto a admacenar.
 	 */
+	@SuppressWarnings("unchecked")
 	public void addAdditionalParam(final String key, final Object param) {
-		this.additionalParams.put(key, param);
+		if(REORDER_SELECTION_KEY.equals(key) && param instanceof List 
+				&& !((List<?>)param).isEmpty() && ((List<?>)param).get(0) instanceof TableRowDto 
+				&& ((TableRowDto<?>)((List<?>)param).get(0)).getModel() instanceof Resource<?>) {
+			this.additionalParams.put(key, wrapReorderSelection((List<TableRowDto<T>>)param));
+		}else {
+			this.additionalParams.put(key, param);
+		}
 	}
 
 	/**
