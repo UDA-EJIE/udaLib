@@ -24,7 +24,7 @@ public class LinkResourcesAspect {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkResourcesAspect.class);
 
-	private static final int MAX_DEEP = 4;
+	private static final int MAX_DEEP = 8;
 
 	@Autowired
 	private LinkProvider linkProvider;
