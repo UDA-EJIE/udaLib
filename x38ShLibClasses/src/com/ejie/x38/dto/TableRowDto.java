@@ -3,14 +3,12 @@ package com.ejie.x38.dto;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.hdiv.services.SecureIdContainer;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class TableRowDto<T> implements SecureIdContainer {
+public class TableRowDto<T> {
 	
 	@JsonIgnore
 	private Map<String, String> pkMap = new HashMap<String, String>();
