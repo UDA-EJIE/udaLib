@@ -307,7 +307,16 @@ public class TableManager implements java.io.Serializable{
 					for (Field field : fields) {
 						// No se usa equalsIgnoreCase() para evitar problemas con algunos locales.
 						if (field.getName().toLowerCase().equals(prop.toLowerCase())) {
-							paramList.add(new PropertyDescriptor(field.getName(), selectedBean.getClass()).getReadMethod().invoke(selectedBean));
+							final String[] multiFieldNames = prop.split("\\.", -1);
+							Object object = selectedBean;
+							
+					    	for (int j = 0; j < multiFieldNames.length; j++) {
+								String fieldName = multiFieldNames[j];
+								object = new PropertyDescriptor(fieldName, object.getClass()).getReadMethod().invoke(object);
+								
+							}
+						    	
+					    	paramList.add(object);
 							break;
 						}
 					}
