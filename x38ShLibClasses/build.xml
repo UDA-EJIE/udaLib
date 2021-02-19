@@ -9,12 +9,14 @@
 	<property name="version" value="4.3.0-RELEASE"/>
 	
 	<target name="mavenRunDependencies" description="Resuelve las dependencias del proyecto desde Maven">
-		<echo>${ant.home}</echo>
+		<echo message="Ubicacion Motor Ant: ${ant.home}"/>
 		<path id="maven-ant-tasks.classpath" path="${ant.home}/lib/maven-ant-tasks-2.1.1.jar" />
 		<typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="antlib:org.apache.maven.artifact.ant" classpathref="maven-ant-tasks.classpath" />	
 		<property environment="env" />
+		<echo message="Ubicacion Maven: ${env.M2_HOME}"/>
 		<artifact:dependencies settingsFile="${env.M2_HOME}/conf/settings.xml"/>
 		<artifact:mvn pom="pom.xml" mavenHome="${env.M2_HOME}" fork="true">
+			<jvmarg value="-Dmaven.multiModuleProjectDirectory=${env.M2_HOME}" />
 			<arg value="package"/>
 			<arg value="-Dmaven.test.skip=true"/>
 		</artifact:mvn>
