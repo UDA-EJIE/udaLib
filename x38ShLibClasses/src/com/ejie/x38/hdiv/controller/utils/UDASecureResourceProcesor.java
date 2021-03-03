@@ -147,6 +147,7 @@ public class UDASecureResourceProcesor {
 		List<Link> entityLinks = new ArrayList<Link>();
 
 		if (allowedForEntity(entityToProcces, allowInfo.getName(), allowInfo.getEntityMappingInfo(), request)) {
+			// Dynamic links
 			// Replace mapping with entity values
 			for (String mapping : allowInfo.getEntityMappingInfo().getMappings()) {
 
@@ -184,6 +185,12 @@ public class UDASecureResourceProcesor {
 				entityLinks.add(
 						new MethodAwareLink(new Link(requestStr + uriComponents.expand(templateValuesMap).getPath(), allowInfo.getName()),
 								allowInfo.getMethodForLinkCondition()));
+			}
+			
+			// Static links
+			for (String mapping : allowInfo.getStaticMappingInfo().getMappings()) {
+				entityLinks.add(
+						new MethodAwareLink(new Link(requestStr + mapping, allowInfo.getName()), allowInfo.getMethodForLinkCondition()));
 			}
 		}
 		return entityLinks;
