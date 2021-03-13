@@ -40,6 +40,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 /**
  * 
@@ -76,12 +77,20 @@ public class UdaMappingJackson2HttpMessageConverter extends
 	 */
 	private UdaModule udaModule;
 	
+	private List<SimpleModule> extraModules;
+	
 	/**
 	 * Inicializa los componentes necesarios una vez instanciada la clase. En
 	 * concreto configura el ObjectMapper personalizado mediante el UdaModule.
 	 */
 	@PostConstruct
 	public void initialize() {
+		if(extraModules != null) {
+			for(SimpleModule module : extraModules) {
+				udaObjectMapper.registerModule(module);
+				this.getObjectMapper().registerModule(module);
+			}
+		}
 		if (udaModule != null) {
 			udaObjectMapper.registerModule(udaModule);
 		
@@ -207,6 +216,10 @@ public class UdaMappingJackson2HttpMessageConverter extends
 	@Override
 	public List<ObjectMapper> getObjectMappers() {
 		return Arrays.asList(udaObjectMapper, getObjectMapper());
+	}
+
+	public void setExtraModules(List<SimpleModule> extraModules) {
+		this.extraModules = extraModules;
 	}
 
 }
