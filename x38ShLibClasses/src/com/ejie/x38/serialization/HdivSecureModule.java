@@ -1,4 +1,4 @@
-package com.ejie.x38.hdiv.config;
+package com.ejie.x38.serialization;
 
 import java.io.IOException;
 import java.util.List;
@@ -21,12 +21,12 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 
-public class SecureModule extends SimpleModule {
+public class HdivSecureModule extends SimpleModule {
 
 	private static final long serialVersionUID = -496403297394833735L;
 
-	public SecureModule() {
-		super("secure-module", new Version(1, 0, 0, null, "com.ejie.x38.hdiv.config", "x38"));
+	public HdivSecureModule() {
+		super("hdiv-secure-module", new Version(1, 0, 0, null, "com.ejie.x38.serialization", "x38"));
 	}
 
 	@Override

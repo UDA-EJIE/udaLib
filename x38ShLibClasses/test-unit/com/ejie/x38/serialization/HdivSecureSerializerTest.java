@@ -11,18 +11,17 @@ import org.hdiv.services.TrustAssertion;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.ejie.x38.hdiv.config.SecureModule;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class SecureSerializerTest {
+public class HdivSecureSerializerTest {
 	
 	private ObjectMapper mapper;
 	
 	@Before
 	public void setup() {
 		mapper = new ObjectMapper();
-		mapper.registerModule(new SecureModule());
+		mapper.registerModule(new HdivSecureModule());
 	}
 	
 	@Test
@@ -80,7 +79,7 @@ public class SecureSerializerTest {
 	public void testIdentifiableTrustedSerialize() throws JsonProcessingException, IOException {
 
 		ObjectMapper mapper = new ObjectMapper();
-		mapper.registerModule(new SecureModule());
+		mapper.registerModule(new HdivSecureModule());
 		String serial = mapper.writeValueAsString(new SecuredTrustedIdentifiableParent("name"));
 		assertTrue(serial.contains("\"nid\":\"name_Sec\""));
 
