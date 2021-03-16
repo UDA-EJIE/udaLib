@@ -188,7 +188,7 @@ public class TableManager implements java.io.Serializable{
 		return new StringBuilder().append(" , page, pageLine, tableLine ");
 	}
 	protected static <T> StringBuilder getMultiselectionSelectInner(TableRequestDto pagination){
-		return new StringBuilder().append(" , ceil(rownum/").append(pagination.getRows()).append(") page, case when (mod(rownum,").append(pagination.getRows()).append(")=0) then '").append(pagination.getRows()).append("' else TO_CHAR(mod(rownum,").append(pagination.getRows()).append(")) end as pageLine, rownum as tableLine ");
+		return new StringBuilder().append(" , ceil(rownum/").append(pagination.getRows()).append(") as page, rownum - ((ceil(rownum/").append(pagination.getRows()).append(") - 1) * ").append(pagination.getRows()).append(") as pageLine, rownum as tableLine ");
 	}
 
 //	public static StringBuilder getMultiselectionQuery(Pagination pagination, List<String> pkList, String tabla){
@@ -225,7 +225,7 @@ public class TableManager implements java.io.Serializable{
 
 	public static <T> StringBuilder getSearchQuery(StringBuilder query, TableRequestDto pagination, Class<T> clazz, List<Object> paramList, String searchSQL, List<Object> searchParamList, List<String> tableAliases, String... pkList){
 
-		String pkStr = TableManager.strArrayToCommaSeparatedStr(pkList);
+		String pkStr = (TableManager.strArrayToCommaSeparatedStr(pkList)).toUpperCase();
 
 		StringBuilder sbSQL = new StringBuilder();
 
@@ -276,7 +276,7 @@ public class TableManager implements java.io.Serializable{
 
 	public static <T extends Object> StringBuilder getReorderQuery(StringBuilder query, TableRequestDto tableRequestDto, Class<T> clazz, List<Object> paramList, String... pkList){
 
-		String pkStr = TableManager.strArrayToCommaSeparatedStr(pkList);
+		String pkStr = (TableManager.strArrayToCommaSeparatedStr(pkList)).toUpperCase();
 
 		StringBuilder sbSQL = new StringBuilder();
 
@@ -296,40 +296,23 @@ public class TableManager implements java.io.Serializable{
 			TableManager.logger.info("[getReorderQuery] : La lista de parámetros recibida no es la misma que la aportada");
 		}
 		
-		// Guardamos los campos declarados en la entidad.
-		Field[] fields = clazz.getDeclaredFields();
-		
 		for (T selectedBean : tableRequestDto.getMultiselection().getSelected(clazz)) {
 			sbSQL.append("(");
-			for (String prop : pkList) {
+			for (String pk : pkList) {
 				sbSQL.append("?").append(",");
 				try {
-					for (Field field : fields) {
-						// No se usa equalsIgnoreCase() para evitar problemas con algunos locales.
-						if (field.getName().toLowerCase().equals(prop.toLowerCase())) {
-							final String[] multiFieldNames = prop.split("\\.", -1);
-							Object object = selectedBean;
-							
-					    	for (int j = 0; j < multiFieldNames.length; j++) {
-								String fieldName = multiFieldNames[j];
-								object = new PropertyDescriptor(fieldName, object.getClass()).getReadMethod().invoke(object);
-								
-							}
-						    	
-					    	paramList.add(object);
-							break;
-						}
-					}
+					
+					// Se obtiene el valor de la pk declarada.
+					paramList.add(getCampoByIntrospection(clazz, selectedBean, pk));
+					
 				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					TableManager.logger.error(e.getMessage(), e);
 				} catch (InvocationTargetException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					TableManager.logger.error(e.getMessage(), e);
 				} catch (IntrospectionException e) {
-                    e.printStackTrace();
-                }
-            }
+					TableManager.logger.error(e.getMessage(), e);
+				}
+			}
 
 			sbSQL.deleteCharAt(sbSQL.length()-1);
 			sbSQL.append("),");
@@ -341,6 +324,12 @@ public class TableManager implements java.io.Serializable{
 		return sbSQL;
 	}
 
+	/**
+	 * Str array to comma separated str.
+	 *
+	 * @param strArray the str array
+	 * @return the string
+	 */
 	private static String strArrayToCommaSeparatedStr(String[] strArray){
 		StringBuilder retStr = new StringBuilder();
 		for (String str : strArray) {
@@ -351,6 +340,14 @@ public class TableManager implements java.io.Serializable{
 		return retStr.toString();
 	}
 
+	/**
+	 * Gets the pagination list.
+	 *
+	 * @param <T> the generic type
+	 * @param pagination the pagination
+	 * @param list the list
+	 * @return the pagination list
+	 */
 	public static <T> List<?> getPaginationList(TableRequestDto pagination, List<?> list){
 		List <Object> returnList = new ArrayList<Object>();
 		Long rows = pagination.getRows();
@@ -430,7 +427,7 @@ public class TableManager implements java.io.Serializable{
 	 */
 	public static <T> StringBuilder getRemoveMultipleQuery(TableRequestDto tableRequestDto, Class<T> clazz, String table, String... pkList){
 		
-		String pkStr = TableManager.strArrayToCommaSeparatedStr(pkList);
+		String pkStr = (TableManager.strArrayToCommaSeparatedStr(pkList)).toUpperCase();
 		List<Object> paramList = new ArrayList<Object>();
 		StringBuilder removeQuery = new StringBuilder();
 		
@@ -445,27 +442,22 @@ public class TableManager implements java.io.Serializable{
 				TableManager.logger.info("[getRemoveMultipleQuery] : La lista de parámetros recibida no es la misma que la aportada");
 			}
 		
-			// Guardamos los campos declarados en la entidad.
-			Field[] fields = clazz.getDeclaredFields();
-			
 			for (T selectedBean : tableRequestDto.getMultiselection().getSelected(clazz)) {
 				removeQuery.append("(");
-				for (String prop : pkList) {
+				for (String pk : pkList) {
 					removeQuery.append("?").append(",");
+					
 					try {
-						for (Field field : fields) {
-							// No se usa equalsIgnoreCase() para evitar problemas con algunos locales.
-							if (field.getName().toLowerCase().equals(prop.toLowerCase())) {
-								paramList.add(new PropertyDescriptor(field.getName(), selectedBean.getClass()).getReadMethod().invoke(selectedBean));
-								break;
-							}
-						}
+						
+						// Se obtiene el valor de la pk declarada.
+						paramList.add(getCampoByIntrospection(clazz, selectedBean, pk));
+						
 					} catch (IllegalAccessException e) {
-						e.printStackTrace();
+						TableManager.logger.error(e.getMessage(), e);
 					} catch (InvocationTargetException e) {
-						e.printStackTrace();
+						TableManager.logger.error(e.getMessage(), e);
 					} catch (IntrospectionException e) {
-						e.printStackTrace();
+						TableManager.logger.error(e.getMessage(), e);
 					}
 				}
 
@@ -486,7 +478,7 @@ public class TableManager implements java.io.Serializable{
 	@Deprecated
 	public static <T> StringBuilder getRemoveMultipleQuery(TableRequestDto tableRequestDto, Class<T> clazz, StringBuilder query, List<Object> paramList, String... pkList){
 
-		String pkStr = TableManager.strArrayToCommaSeparatedStr(pkList);
+		String pkStr = (TableManager.strArrayToCommaSeparatedStr(pkList)).toUpperCase();
 
 		StringBuilder removeQuery = new StringBuilder();
 
@@ -528,7 +520,7 @@ public class TableManager implements java.io.Serializable{
 	 */
 	public static <T> StringBuilder getSelectMultipleQuery(TableRequestDto tableRequestDto, Class<T> clazz, List<Object> paramList, String... pkList){
 
-		String pkStr = TableManager.strArrayToCommaSeparatedStr(pkList);
+		String pkStr = (TableManager.strArrayToCommaSeparatedStr(pkList)).toUpperCase();
 
 		StringBuilder selectQuery = new StringBuilder();
 		
@@ -547,24 +539,23 @@ public class TableManager implements java.io.Serializable{
 			
 			for (T selectedBean : tableRequestDto.getMultiselection().getSelected(clazz)) {
 				selectQuery.append("(");
-				for (String prop : pkList) {
+				for (String pk : pkList) {
 					selectQuery.append("?").append(",");
+					
 					try {
-						for (Field field : fields) {
-							// No se usa equalsIgnoreCase() para evitar problemas con algunos locales.
-							if (field.getName().toLowerCase().equals(prop.toLowerCase())) {
-								paramList.add(new PropertyDescriptor(field.getName(), selectedBean.getClass()).getReadMethod().invoke(selectedBean));
-								break;
-							}
-						}
+						
+						// Se obtiene el valor de la pk declarada.
+						paramList.add(getCampoByIntrospection(clazz, selectedBean, pk));
+						
 					} catch (IllegalAccessException e) {
-						e.printStackTrace();
+						TableManager.logger.error(e.getMessage(), e);
 					} catch (InvocationTargetException e) {
-						e.printStackTrace();
+						TableManager.logger.error(e.getMessage(), e);
 					} catch (IntrospectionException e) {
-	                    e.printStackTrace();
-	                }
-	            }
+						TableManager.logger.error(e.getMessage(), e);
+					}
+					
+				}
 
 				selectQuery.deleteCharAt(selectQuery.length()-1);
 				selectQuery.append("),");
@@ -577,5 +568,45 @@ public class TableManager implements java.io.Serializable{
 		return selectQuery;
 
 	}
-
+	
+	/**
+	 * Gets the campo by introspection.
+	 * @param <T>
+	 *
+	 * @return the campo by introspection
+	 * @throws IntrospectionException 
+	 * @throws InvocationTargetException 
+	 * @throws IllegalArgumentException 
+	 * @throws IllegalAccessException 
+	 */
+	private static <T> Object getCampoByIntrospection(Class<T> clazz, T selectedBean, String pk) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IntrospectionException {
+		
+		// Guardamos los campos declarados en la entidad.
+		Field[] fields = clazz.getDeclaredFields();
+		final String[] pkFieldNames = pk.split("\\.", -1);
+		Object object = selectedBean;
+		
+		for (int j = 0; j < pkFieldNames.length; j++) {
+			String pkFieldName = pkFieldNames[j];
+			boolean pkOk = Boolean.FALSE;
+			
+			for (Field field : fields) {
+				// No se usa equalsIgnoreCase() para evitar problemas con algunos locales.
+				if (pkFieldName.toLowerCase().equals(field.getName().toLowerCase())) {
+					
+					object = new PropertyDescriptor(field.getName(), object.getClass()).getReadMethod().invoke(object);
+					pkOk = Boolean.TRUE;
+					break;
+				}
+			}
+			
+			if(pkOk) {
+				fields = object.getClass().getDeclaredFields();
+			} else {
+				throw new IntrospectionException("La clave especificada \"" + pk + "\", no tiene su correspondencia en la clase \"" + clazz +"\". "); 
+			}
+		}
+		
+		return object;
+	}
 }
