@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.hdiv.services.SecureIdContainer;
+import org.springframework.hateoas.Resource;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -21,7 +22,7 @@ public class TableRowDto<T> implements SecureIdContainer {
 	
 	@JsonInclude(content = Include.NON_NULL)
 	@JsonProperty("pk")
-	private T model;
+	private Resource<T> model;
 	
 	
 	public TableRowDto() {
@@ -33,7 +34,7 @@ public class TableRowDto<T> implements SecureIdContainer {
 	 */
 	public TableRowDto(T model) {
 		super();
-		this.model = model;
+		this.model = new Resource<T>(model);
 	}
 
 	/**
@@ -65,7 +66,7 @@ public class TableRowDto<T> implements SecureIdContainer {
 		this.page = page;
 		this.pageLine = pageLine;
 		this.tableLine = tableLine;
-		this.model = model;
+		this.model = new Resource<T>(model);
 	}
 	
 	public Map<String, String> getPkMap() {
@@ -93,10 +94,14 @@ public class TableRowDto<T> implements SecureIdContainer {
 		this.tableLine = tableLine;
 	}
 	public T getModel() {
-		return model;
+		return model.getContent();
 	}
 	public void setModel(T model) {
-		this.model = model;
+		this.model = new Resource<T>(model);
+	}
+	
+	public Resource<T> getModelAsResource() {
+		return model;
 	}
 	
 	
