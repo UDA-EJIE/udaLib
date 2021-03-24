@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
+import com.fasterxml.jackson.databind.ser.std.NullSerializer;
 
 public class HdivSecureModule extends SimpleModule {
 
@@ -59,8 +60,10 @@ public class HdivSecureModule extends SimpleModule {
 		private void checkSecureIdentifiable(BeanDescription beanDesc,
 				List<BeanPropertyWriter> beanProperties) {
 			if (SecureIdentifiable.class.isAssignableFrom(beanDesc.getBeanClass())) {
+				JsonSerializer<Object> nullSer = NullSerializer.instance;
 				for (int i = 0; i < beanProperties.size(); i++) {
 					BeanPropertyWriter writer = beanProperties.get(i);
+					writer.assignNullSerializer(nullSer);
 					beanProperties.set(i, new NidPropertyWriter(writer, true));
 				}
 			}
@@ -70,9 +73,10 @@ public class HdivSecureModule extends SimpleModule {
 				List<BeanPropertyWriter> beanProperties) {
 			if (SecureIdContainer.class.isAssignableFrom(beanDesc.getBeanClass())) {
 				CustomBeanPropertyWriter newProperty = null; 
+				JsonSerializer<Object> nullSer = NullSerializer.instance;
 				for (int i = 0; i < beanProperties.size(); i++) {
 					BeanPropertyWriter writer = beanProperties.get(i);
-
+					writer.assignNullSerializer(nullSer);
 					TrustAssertion annotation = writer.getAnnotation(TrustAssertion.class);
 					if (annotation != null && annotation.idFor() != null) {
 						newProperty = new CustomBeanPropertyWriter(writer, SecureIdentifiable.NID_PROPERTY);
@@ -104,7 +108,6 @@ public class HdivSecureModule extends SimpleModule {
 						jgen.writeStringField(SecureIdentifiable.NID_PROPERTY, currentNid);
 						provider.setAttribute("NID_OBJECT", null);
 					}
-
 				}
 				
 				super.serializeAsField(bean, jgen, provider);
