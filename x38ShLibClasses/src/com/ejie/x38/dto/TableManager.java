@@ -432,12 +432,12 @@ public class TableManager implements java.io.Serializable{
 	 *
 	 * @param Map<?, ?> Mapa que contiene la query where like
 	 * @param TableRequestDto Dto que contiene los parámetros de configuración propios del RUP_TABLE
-     * @param Class<T> Tipo de clase
-     * @param String Nombre de la tabla a tratar
+	 * @param Class<T> Tipo de clase
+	 * @param String Nombre de la tabla a tratar
 	 * @param String Alias usado en la query
-     * @param String... Strings que forman la clave primaria
-     * 
-     * @return StringBuilder Query que permite eliminar múltiples registros de la tabla
+	 * @param String... Strings que forman la clave primaria
+	 * 
+	 * @return StringBuilder Query que permite eliminar múltiples registros de la tabla
 	 */
 	public static <T> StringBuilder getRemoveMultipleQuery(Map<?, ?> mapaWhereLike, TableRequestDto tableRequestDto, Class<T> clazz, String table, String alias, String... pkList) {
 		String pkStr = (TableManager.strArrayToCommaSeparatedStr(pkList)).toUpperCase();
@@ -489,11 +489,11 @@ public class TableManager implements java.io.Serializable{
 	 * Crea una consulta de eliminación múltiple.
 	 *
 	 * @param TableRequestDto Dto que contiene los parámetros de configuración propios del RUP_TABLE
-     * @param Class<T> Tipo de clase
-     * @param String Nombre de la tabla a tratar
-     * @param String... Strings que forman la clave primaria
-     * 
-     * @return StringBuilder Query que permite eliminar múltiples registros de la tabla
+	 * @param Class<T> Tipo de clase
+	 * @param String Nombre de la tabla a tratar
+	 * @param String... Strings que forman la clave primaria
+	 * 
+	 * @return StringBuilder Query que permite eliminar múltiples registros de la tabla
 	 */
 	@Deprecated
 	public static <T> StringBuilder getRemoveMultipleQuery(TableRequestDto tableRequestDto, Class<T> clazz, String table, String... pkList){
