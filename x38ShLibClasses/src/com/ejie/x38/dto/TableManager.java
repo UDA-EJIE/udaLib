@@ -21,6 +21,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -419,6 +420,76 @@ public class TableManager implements java.io.Serializable{
 	/*
 	 * BORRADO MULTIPLE
 	 */
+	
+	/**
+	 * Crea una consulta de eliminación múltiple teniendo en cuenta el filtro (en caso de haberlo).
+	 *
+	 * @param Map<?, ?> Mapa que contiene la query where like
+	 * @param TableRequestDto Dto que contiene los parámetros de configuración propios del RUP_TABLE
+     * @param Class<T> Tipo de clase
+     * @param String Nombre de la tabla a tratar
+	 * @param String Alias usado en la query
+     * @param String... Strings que forman la clave primaria
+     * 
+     * @return StringBuilder Query que permite eliminar múltiples registros de la tabla
+	 */
+	public static <T> StringBuilder getRemoveMultipleQuery(Map<?, ?> mapaWhereLike, TableRequestDto tableRequestDto, Class<T> clazz, String table, String alias, String... pkList) {
+		String pkStr = (TableManager.strArrayToCommaSeparatedStr(pkList)).toUpperCase();
+		List<Object> paramList = new ArrayList<Object>();
+		StringBuilder removeQuery = new StringBuilder();
+		
+		removeQuery.append("DELETE FROM ").append(table).append(" ").append(alias).append(" WHERE 1=1 ");
+		
+		// Comprobar si el mapa no es nulo y tiene contenido
+		if (mapaWhereLike != null && !mapaWhereLike.isEmpty()) {
+			removeQuery.append(mapaWhereLike.get("query"));
+		}
+		
+		if (!tableRequestDto.getMultiselection().getSelectedIds().isEmpty()) {
+			removeQuery.append(" AND (").append(alias).append(".").append(pkStr).append(") ").append(tableRequestDto.getMultiselection().getSelectedAll() ? "NOT" : "").append(" IN (");
+			
+			// Comprobar si la lista de parámetros recibida es la misma que la aportada en pkList.
+			// Cabe decir que en los casos en los que las claves primarias sean compuestas esta condición nunca será afirmativa ya que siempre diferirán los valores recibidos y aportados.
+			if (tableRequestDto.getCore().getPkNames().size() != pkList.length && !tableRequestDto.getMultiselection().getSelectedIds().get(0).contains(Constants.PK_TOKEN)) {
+				TableManager.logger.info("[getRemoveMultipleQuery] : La lista de parámetros recibida no es la misma que la aportada");
+			}
+		
+			for (T selectedBean : tableRequestDto.getMultiselection().getSelected(clazz)) {
+				removeQuery.append("(");
+				for (String pk : pkList) {
+					removeQuery.append("?").append(",");
+					
+					try {
+						// Se obtiene el valor de la pk declarada.
+						paramList.add(getCampoByIntrospection(clazz, selectedBean, pk));
+					} catch (IllegalAccessException e) {
+						TableManager.logger.error(e.getMessage(), e);
+					} catch (InvocationTargetException e) {
+						TableManager.logger.error(e.getMessage(), e);
+					} catch (IntrospectionException e) {
+						TableManager.logger.error(e.getMessage(), e);
+					}
+				}
+				removeQuery.deleteCharAt(removeQuery.length()-1);
+				removeQuery.append("),");
+			}
+			removeQuery.deleteCharAt(removeQuery.length()-1);
+			removeQuery.append(")");
+		}
+		return removeQuery;
+	}
+	
+	/**
+	 * Crea una consulta de eliminación múltiple.
+	 *
+	 * @param TableRequestDto Dto que contiene los parámetros de configuración propios del RUP_TABLE
+     * @param Class<T> Tipo de clase
+     * @param String Nombre de la tabla a tratar
+     * @param String... Strings que forman la clave primaria
+     * 
+     * @return StringBuilder Query que permite eliminar múltiples registros de la tabla
+	 */
+	@Deprecated
 	public static <T> StringBuilder getRemoveMultipleQuery(TableRequestDto tableRequestDto, Class<T> clazz, String table, String... pkList){
 		
 		String pkStr = (TableManager.strArrayToCommaSeparatedStr(pkList)).toUpperCase();
@@ -465,10 +536,7 @@ public class TableManager implements java.io.Serializable{
 
 		return removeQuery;
 	}
-
-	/*
-	 * BORRADO MULTIPLE
-	 */
+	
 	@Deprecated
 	public static <T> StringBuilder getRemoveMultipleQuery(TableRequestDto tableRequestDto, Class<T> clazz, StringBuilder query, List<Object> paramList, String... pkList){
 
