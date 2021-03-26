@@ -3,6 +3,7 @@ package com.ejie.x38.serialization;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -19,9 +20,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class HdivSecureSerializerTest {
 	
@@ -103,6 +106,20 @@ public class HdivSecureSerializerTest {
 		assertTrue(serial.contains("\"nid\":\"1\""));
 		assertTrue(serial.contains("\"apellido2\":null"));
 
+	}
+	
+	@Test
+	public void testMultiPKSerialize() throws JsonProcessingException, IOException {
+
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new HdivSecureModule());
+		String serial = mapper.writeValueAsString(new MultiPk( new BigDecimal(1), new BigDecimal(2), "nombre", "ap1", "ap2"));
+		assertTrue(serial.contains("\"nid\":\"1@@@@2\""));
+		assertTrue(serial.contains("\"id\":\"1@@@@2\""));
+		ObjectNode node = (ObjectNode)mapper.readTree(serial);
+		node.remove("nid");
+		node.remove("id");
+		mapper.readValue(mapper.writeValueAsString(node), MultiPk.class);
 	}
 	
 	public class NonSecured {

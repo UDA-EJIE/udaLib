@@ -112,6 +112,8 @@ public class HdivSecureModule extends SimpleModule {
 				
 				super.serializeAsField(bean, jgen, provider);
 			}
+			
+			
 		}
 	}
 
@@ -148,13 +150,17 @@ public class HdivSecureModule extends SimpleModule {
 		@Override
 		public void serialize(final SecureIdentifiable<?> value, final JsonGenerator gen, final SerializerProvider provider)
 				throws IOException, JsonProcessingException {
-			String currentNid = (String) provider.getAttribute("NID_OBJECT");
-			if(currentNid == null) {
-				provider.setAttribute("NID_OBJECT", value.getId().toString());
+			if(provider != null) {
+				String currentNid = (String) provider.getAttribute("NID_OBJECT");
+				if(currentNid == null) {
+					provider.setAttribute("NID_OBJECT", value.getId().toString());
+				}
 			}
 			
 			originalSerializer.serialize(value, gen, provider);
 		}
+		
+		
 	}
 	
 	public static class CustomBeanPropertyWriter extends BeanPropertyWriter {
