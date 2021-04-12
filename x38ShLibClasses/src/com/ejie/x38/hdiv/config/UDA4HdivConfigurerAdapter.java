@@ -100,7 +100,7 @@ public abstract class UDA4HdivConfigurerAdapter extends HdivServicesSecurityConf
 	public final void configureEditableValidation(final ValidationConfigurer validationConfigurer) {
 
 		validationConfigurer.addValidation("/.*")
-				.forParameters("multiselection.selectedIds", "multiselection.lastSelectedId", "seeker.selectedIds").rules("fulltext")
+				.forParameters("multiselection.selectedIds", "multiselection.lastSelectedId", "multiselection.deselectedIds", "seeker.selectedIds").rules("fulltext")
 				.target(ValidationTargetType.CLIENT_PARAMETERS).disableDefaults();
 
 		validationConfigurer.addValidation("/.*")
