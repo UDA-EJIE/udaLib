@@ -500,8 +500,25 @@ public class PerimetralSecurityWrapperN38Impl implements
 	private String getXlnetsUserId(HttpServletRequest httpRequest) {
 		String udaXLNetsSessionId = XlnetCore.getN38ItemSesion(XlnetCore.getN38API(httpRequest), "n38UidSesion");
 
-		if (udaXLNetsSessionId == null) {
-			logger.debug("getXlnetsUserId: udaXlnetsSession value => null");
+		Cookie requestCookies[] = httpRequest.getCookies();
+		Cookie n38UidSesion = null;
+		
+		StringBuilder udaXLNetsSessionId = new StringBuilder();
+
+		if (requestCookies != null) {
+			for (int i = 0; i < requestCookies.length; i++) {
+				if (requestCookies[i].getName().equals("n38UidSesion")) {
+					n38UidSesion = requestCookies[i];
+				} 
+			}
+		}
+
+		logger.debug("getXlnetsUserId: udaXlnetsSession value");
+		if (n38UidSesion != null) {
+			udaXLNetsSessionId.append(n38UidSesion.getValue());
+			logger.debug("getXlnetsUserId: cookie - n38UidSesion => " + n38UidSesion.getValue());
+		} else {
+			logger.debug("getXlnetsUserId: null");
 			return null;
 		} else {
 			logger.debug("getXlnetsUserId: udaXlnetsSession value => " + udaXLNetsSessionId);
