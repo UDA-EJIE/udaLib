@@ -48,7 +48,7 @@ public class XlnetCore {
 
 	public static final String PATH_SUBTIPO_N38INSTANCIA = "/n38/elementos/elemento/elemento/elemento/parametro[@id='n38uidobjseguridad']/valor";
 	public static final String PATH_SUBTIPO_N38SESION = "/n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='?']/valor";
-	public static final String PATH_SUBTIPO_n38DOMINIOCOMUNCOOKIE = "/n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='n38dominiocomuncookie']/valor";
+	public static final String PATH_SUBTIPO_N38DOMINIOCOMUNCOOKIE = "/n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='n38dominiocomuncookie']/valor";
 	public static final String PATH_SUBTIPO_N38SUBJECTCERT = "/n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='n38subjectcert']/valor";
 	public static final String PATH_SUBTIPO_DNI = "/n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='dni']/valor";
 	public static final String PATH_SUBTIPO_N38PERSONAUID = "n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='n38personauid']/valor";
@@ -187,7 +187,7 @@ public class XlnetCore {
 
 		try {
 			
-			n38DominioComunCookieNode = XmlManager.searchDomNode(xmlSesion, PATH_SUBTIPO_n38DOMINIOCOMUNCOOKIE);
+			n38DominioComunCookieNode = XmlManager.searchDomNode(xmlSesion, PATH_SUBTIPO_N38DOMINIOCOMUNCOOKIE);
 			return n38DominioComunCookieNode.getFirstChild().getNodeValue();
 			
 		} catch (TransformerException e) {
