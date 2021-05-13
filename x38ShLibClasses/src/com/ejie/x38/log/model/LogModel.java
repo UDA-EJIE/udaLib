@@ -1,21 +1,16 @@
 package com.ejie.x38.log.model;
 
-import java.io.Serializable;
+import org.hdiv.services.SecureIdContainer;
+import org.hdiv.services.TrustAssertion;
 
-public class LogModel implements Serializable {
-
-	 /**
-	 * 
-	 */
+public class LogModel implements java.io.Serializable, SecureIdContainer {
 	private static final long serialVersionUID = 1L;
-
-	private String nameLog;
-	 
-	 private String levelLog;
-//	 private String nameEscape;
-	 
-	 
-
+	
+	@TrustAssertion(idFor = LogModel.class)
+	private String nameLog; 
+	private String levelLog;
+//	private String nameEscape;
+	
 	public String getNameLog() {
 		return nameLog;
 	}
@@ -38,8 +33,5 @@ public class LogModel implements Serializable {
 //
 //	public void setNameEscape(String nameEscape) {
 //		this.nameEscape = nameEscape;
-//	}
-	 
-	
-	 
+//	}	 
 }

@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.ejie.x38.dto.TableResponseDto;
+import com.ejie.x38.dto.TableResourceResponseDto;
 import com.ejie.x38.log.model.LogModel;
 
 import ch.qos.logback.classic.LoggerContext;
@@ -159,8 +159,6 @@ public  class LoggingEditor
 		return it.hasNext();
 	}
 
-
-
 	private  static Object getFieldVaulue(String fullClassName, String fieldName)
 	{
 		try
@@ -175,69 +173,47 @@ public  class LoggingEditor
 		}
 	}
 
-	
-	public static  TableResponseDto<LogModel>  getLoggersFiltered(LogModel filterLogModel
-			) {
+	public static TableResourceResponseDto<LogModel> getLoggersFiltered(LogModel filterLogModel) {
+		TableResourceResponseDto<LogModel> resultado= new TableResourceResponseDto<LogModel>();
 		
-		
-		
-		TableResponseDto<LogModel> resultado= new TableResponseDto<LogModel>();
-		
-		List<LogModel> listalogs=getLoggers((LoggerContext) LoggerFactory.getILoggerFactory() ,false);
+		List<LogModel> listalogs = getLoggers((LoggerContext) LoggerFactory.getILoggerFactory(), false);
 		
 		List<LogModel> resulList= new ArrayList<LogModel>();
 		LogModel model;
-		for (int i=0;i<listalogs.size();i++){
-			
-			
-			
-			
-		if (filterLogModel.getLevelLog()==null && filterLogModel.getNameLog()==null){
-			model= new LogModel();						
-			model.setNameLog(listalogs.get(i).getNameLog());
-			model.setLevelLog(listalogs.get(i).getLevelLog());
-			resulList.add(model);
-		}else if (filterLogModel.getLevelLog()!=null && filterLogModel.getNameLog()==null){
-				if(filterLogModel.getLevelLog().equalsIgnoreCase(listalogs.get(i).getLevelLog())){
-					model= new LogModel();						
-					model.setNameLog(listalogs.get(i).getNameLog());
-					model.setLevelLog(listalogs.get(i).getLevelLog());
-					resulList.add(model);
-				}
-		}else if(filterLogModel.getLevelLog()==null && filterLogModel.getNameLog()!=null){
-				if 	(listalogs.get(i).getNameLog().toLowerCase().contains(filterLogModel.getNameLog().toLowerCase()) ||   listalogs.get(i).getNameLog().toLowerCase().contains(filterLogModel.getNameLog().toLowerCase())){
-					model= new LogModel();						
-					model.setNameLog(listalogs.get(i).getNameLog());
-					model.setLevelLog(listalogs.get(i).getLevelLog());
-					resulList.add(model);
-				}
-				
-		}else if (filterLogModel.getLevelLog()!=null && filterLogModel.getNameLog()!=null){
-			if (listalogs.get(i).getNameLog().toLowerCase().contains(filterLogModel.getNameLog().toLowerCase()) && filterLogModel.getLevelLog().equalsIgnoreCase(listalogs.get(i).getLevelLog())){
-				model= new LogModel();						
+		for (int i = 0; i < listalogs.size(); i++){	
+			if (filterLogModel.getLevelLog() == null && filterLogModel.getNameLog() == null) {
+				model = new LogModel();						
 				model.setNameLog(listalogs.get(i).getNameLog());
 				model.setLevelLog(listalogs.get(i).getLevelLog());
 				resulList.add(model);
+			} else if (filterLogModel.getLevelLog() != null && filterLogModel.getNameLog() == null) {
+				if(filterLogModel.getLevelLog().equalsIgnoreCase(listalogs.get(i).getLevelLog())) {
+					model = new LogModel();						
+					model.setNameLog(listalogs.get(i).getNameLog());
+					model.setLevelLog(listalogs.get(i).getLevelLog());
+					resulList.add(model);
+				}
+			} else if (filterLogModel.getLevelLog() == null && filterLogModel.getNameLog() != null) {
+				if (listalogs.get(i).getNameLog().toLowerCase().contains(filterLogModel.getNameLog().toLowerCase()) || listalogs.get(i).getNameLog().toLowerCase().contains(filterLogModel.getNameLog().toLowerCase())) {
+					model = new LogModel();						
+					model.setNameLog(listalogs.get(i).getNameLog());
+					model.setLevelLog(listalogs.get(i).getLevelLog());
+					resulList.add(model);
+				}	
+			} else if (filterLogModel.getLevelLog() != null && filterLogModel.getNameLog() != null) {
+				if (listalogs.get(i).getNameLog().toLowerCase().contains(filterLogModel.getNameLog().toLowerCase()) && filterLogModel.getLevelLog().equalsIgnoreCase(listalogs.get(i).getLevelLog())) {
+					model = new LogModel();						
+					model.setNameLog(listalogs.get(i).getNameLog());
+					model.setLevelLog(listalogs.get(i).getLevelLog());
+					resulList.add(model);
+				}
 			}
-		}
 		}			
-			
-			
-				
-		
-			
 		
 		resultado.setRows(resulList);
 		resultado.setRecords(resulList.size());
 		resultado.setTotal(new Long(resulList.size()), new Long(resulList.size()));
 		
-		
-		
-	return resultado;
+		return resultado;
 	}
-
-
-	
-
-
 }
