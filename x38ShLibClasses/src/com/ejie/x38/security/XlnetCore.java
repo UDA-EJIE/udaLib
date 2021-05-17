@@ -327,57 +327,5 @@ public class XlnetCore {
 		}			
 
 		return result;
-	}
-	
-	@Deprecated
-	public static String getUidSesion(N38API n38Api){
-		String[] uidSesions = null;
-		try {
-			uidSesions = n38Api.n38ItemSesion(N38API.NOMBRE_N38UIDSESION);
-		} catch (N38ParameterException e) {
-			logger.error(StackTraceManager.getStackTrace(e));
-		} catch (N38Excepcion e) {
-			logger.error(StackTraceManager.getStackTrace(e));
-		}	
-		if(uidSesions!=null && uidSesions.length>0){
-			return uidSesions[0];
-		}else{
-			return null;
-		}
-	}
-	
-	@Deprecated
-	public static String getLogin(N38API n38Api){
-		String[] personaUids = null;
-		try {
-			personaUids = n38Api.n38ItemSesion("n38personasuid");
-		} catch (N38ParameterException e) {
-			logger.error(StackTraceManager.getStackTrace(e));
-		} catch (N38Excepcion e) {
-			logger.error(StackTraceManager.getStackTrace(e));
-		}	
-		if(personaUids!=null && personaUids.length>0){
-			return personaUids[0];
-		}else{
-			return null;
-		}
-	}
-	
-	@Deprecated
-	public static String getPuesto(N38API n38Api){
-		String[] personaPuestoUids = null;
-		try {
-			personaPuestoUids = n38Api.n38ItemSesion(N38API.NOMBRE_N38PUESTOUID);
-		} catch (N38ParameterException e) {
-			logger.error(StackTraceManager.getStackTrace(e));
-		} catch (N38Excepcion e) {
-			logger.error(StackTraceManager.getStackTrace(e));
-		}	
-		if(personaPuestoUids!=null && personaPuestoUids.length>0){
-			return personaPuestoUids[0];
-		}else{
-			return null;
-		}
 	}	
-	
 }

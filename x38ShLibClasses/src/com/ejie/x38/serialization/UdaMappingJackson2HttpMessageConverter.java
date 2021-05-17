@@ -204,11 +204,6 @@ public class UdaMappingJackson2HttpMessageConverter extends
 		return this.udaObjectMapper;
 	}
 
-	@Deprecated
-	public void setJacksonJsonObjectMapper(ObjectMapper jacksonJsonObjectMapper) {
-		this.udaObjectMapper = jacksonJsonObjectMapper;
-	}
-
 	public void setUdaModule(UdaModule udaModule) {
 		this.udaModule = udaModule;
 	}
