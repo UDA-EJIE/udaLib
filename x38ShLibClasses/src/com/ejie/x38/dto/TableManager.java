@@ -595,9 +595,6 @@ public class TableManager implements java.io.Serializable{
 			if (tableRequestDto.getCore().getPkNames().size() != pkList.length && !tableRequestDto.getMultiselection().getSelectedIds().get(0).contains(Constants.PK_TOKEN)) {
 				TableManager.logger.info("[getSelectMultipleQuery] : La lista de parámetros recibida no es la misma que la aportada");
 			}
-		
-			// Guardamos los campos declarados en la entidad.
-			Field[] fields = clazz.getDeclaredFields();
 			
 			for (T selectedBean : tableRequestDto.getMultiselection().getSelected(clazz)) {
 				selectQuery.append("(");
