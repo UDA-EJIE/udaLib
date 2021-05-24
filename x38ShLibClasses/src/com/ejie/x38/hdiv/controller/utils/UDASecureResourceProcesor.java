@@ -77,8 +77,11 @@ public class UDASecureResourceProcesor {
 			// Check allower for the link
 			MappingInfo<?> staticMappingInfo = udaMappingInfo.getStaticMappingInfo();
 			if (allowedForEntity(null, udaMappingInfo.getName(), staticMappingInfo, request)) {
+				Link link;
 				for (String linkUrl : staticMappingInfo.getMappings()) {
-					links.add(new MethodAwareLink(new Link(requestStr + linkUrl, udaMappingInfo.getName()),
+					link = new Link(requestStr + linkUrl, udaMappingInfo.getName());
+					LOGGER.debug("Allowed static link: " + link);
+					links.add(new MethodAwareLink(link,
 							udaMappingInfo.getMethodForLinkCondition()));
 				}
 			}
@@ -182,15 +185,19 @@ public class UDASecureResourceProcesor {
 				}
 
 				// Replace each segment by entity value;
+				Link link = new Link(requestStr + uriComponents.expand(templateValuesMap).getPath(), allowInfo.getName());
+				LOGGER.debug("Allowed link to entity: " + link);
 				entityLinks.add(
-						new MethodAwareLink(new Link(requestStr + uriComponents.expand(templateValuesMap).getPath(), allowInfo.getName()),
+						new MethodAwareLink(link,
 								allowInfo.getMethodForLinkCondition()));
 			}
 			
 			// Static links
 			for (String mapping : allowInfo.getStaticMappingInfo().getMappings()) {
+				Link link = new Link(requestStr + mapping, allowInfo.getName());
+				LOGGER.debug("Allowed static link: " + link);
 				entityLinks.add(
-						new MethodAwareLink(new Link(requestStr + mapping, allowInfo.getName()), allowInfo.getMethodForLinkCondition()));
+						new MethodAwareLink(link, allowInfo.getMethodForLinkCondition()));
 			}
 		}
 		return entityLinks;
