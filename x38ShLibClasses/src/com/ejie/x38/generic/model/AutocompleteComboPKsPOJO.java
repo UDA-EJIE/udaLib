@@ -1,26 +1,30 @@
 package com.ejie.x38.generic.model;
 
-/** Entidad que permite construir la estructura necesaria para los componentes autocomplete y combo.
+import org.hdiv.services.SecureIdContainer;
+import org.hdiv.services.TrustAssertion;
+
+/** Entidad que permite construir la estructura necesaria para los componentes autocomplete y combo. Se diferencia de la entidad AutocompleteComboGenericPOJO en que esta cifrará el campo value, permitiendo su uso sobre campos que sean clave primaria.
  * @since 5.0.0
 */
-public class AutocompleteComboGenericPOJO implements java.io.Serializable {
+public class AutocompleteComboPKsPOJO implements java.io.Serializable, SecureIdContainer {
 	private static final long serialVersionUID = 1L;
 	
+	@TrustAssertion(idFor = AutocompleteComboPKsPOJO.class)
 	private String value;
 	private String label;
 	private String style;
 	
-	public AutocompleteComboGenericPOJO() {
+	public AutocompleteComboPKsPOJO() {
 		super();
 	}
 
-	public AutocompleteComboGenericPOJO(String value, String label) {
+	public AutocompleteComboPKsPOJO(String value, String label) {
 		super();
 		this.value = value;
 		this.label = label;
 	}
 
-	public AutocompleteComboGenericPOJO(String value, String label, String style) {
+	public AutocompleteComboPKsPOJO(String value, String label, String style) {
 		super();
 		this.value = value;
 		this.label = label;
