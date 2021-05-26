@@ -1,18 +1,22 @@
 package com.ejie.x38.log;
 
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.hateoas.Resource;
 import org.springframework.stereotype.Service;
 
 import com.ejie.x38.dto.TableResourceResponseDto;
+import com.ejie.x38.generic.model.AutocompleteComboPKsPOJO;
+import com.ejie.x38.generic.model.AutocompleteComboGenericPOJO;
 import com.ejie.x38.log.model.LogModel;
+import com.ejie.x38.util.ResourceUtils;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -26,13 +30,11 @@ import ch.qos.logback.core.Appender;
  */
 
 @Service(value = "LoggingEditor")
-public  class LoggingEditor
-{
-	private static final String LOGBACK_CLASSIC        = "ch.qos.logback.classic";
+public  class LoggingEditor {
+	private static final String LOGBACK_CLASSIC = "ch.qos.logback.classic";
     private static final String LOGBACK_CLASSIC_LOGGER = "ch.qos.logback.classic.Logger";
-	private static final String LOGBACK_CLASSIC_LEVEL  = "ch.qos.logback.classic.Level";
-	private static  final Logger logger                 = LoggerFactory.getLogger(LoggingEditor.class);
-
+	private static final String LOGBACK_CLASSIC_LEVEL = "ch.qos.logback.classic.Level";
+	private static final Logger logger = LoggerFactory.getLogger(LoggingEditor.class);
 
 	/**
 	 * Cambio en runtime del nivel de logger
@@ -159,7 +161,7 @@ public  class LoggingEditor
 		return it.hasNext();
 	}
 
-	private  static Object getFieldVaulue(String fullClassName, String fieldName)
+	private static Object getFieldVaulue(String fullClassName, String fieldName)
 	{
 		try
 		{
@@ -174,7 +176,7 @@ public  class LoggingEditor
 	}
 
 	public static TableResourceResponseDto<LogModel> getLoggersFiltered(LogModel filterLogModel) {
-		TableResourceResponseDto<LogModel> resultado= new TableResourceResponseDto<LogModel>();
+		TableResourceResponseDto<LogModel> resultado = new TableResourceResponseDto<LogModel>();
 		
 		List<LogModel> listalogs = getLoggers((LoggerContext) LoggerFactory.getILoggerFactory(), false);
 		
@@ -215,5 +217,51 @@ public  class LoggingEditor
 		resultado.setTotal(new Long(resulList.size()), new Long(resulList.size()));
 		
 		return resultado;
+	}
+
+	/** 
+	 * Devuelve los nombres disponibles.
+	 *
+	 * @return List<Resource<AutocompleteComboPKsPOJO>>
+	 */
+	public static List<Resource<AutocompleteComboPKsPOJO>> getNames(String q) {		
+		List<LogModel> listalogs = getLoggers((LoggerContext) LoggerFactory.getILoggerFactory(), false);
+		
+		List<AutocompleteComboPKsPOJO> columnValues = new ArrayList<AutocompleteComboPKsPOJO>();
+		
+		if(q != null) {
+			q = Normalizer.normalize(q, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
+		} else {
+			q = "";
+		}
+		
+		for (int i = 0; i < listalogs.size(); i++){	
+			if (listalogs.get(i).getNameLog() != null) {
+				String name = listalogs.get(i).getNameLog();
+				name = Normalizer.normalize(name, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
+				
+				if (q.equals("") || name.indexOf(q) >= 0) {
+					columnValues.add(new AutocompleteComboPKsPOJO(name, name));
+				}
+			}
+		}
+		
+		return ResourceUtils.fromListToResource(columnValues);
+	}
+
+	/** 
+	 * Devuelve los niveles disponibles.
+	 *
+	 * @return List<Resource<AutocompleteComboGenericPOJO>>
+	 */
+	public static List<Resource<AutocompleteComboGenericPOJO>> getLevels() {		
+		List<AutocompleteComboGenericPOJO> columnValues = new ArrayList<AutocompleteComboGenericPOJO>();
+		columnValues.add(new AutocompleteComboGenericPOJO("TRACE", "TRACE"));
+		columnValues.add(new AutocompleteComboGenericPOJO("DEBUG", "DEBUG"));
+		columnValues.add(new AutocompleteComboGenericPOJO("INFO", "INFO"));
+		columnValues.add(new AutocompleteComboGenericPOJO("WARN", "WARN"));
+		columnValues.add(new AutocompleteComboGenericPOJO("ERROR", "ERROR"));
+		
+		return ResourceUtils.fromListToResource(columnValues);
 	}
 }

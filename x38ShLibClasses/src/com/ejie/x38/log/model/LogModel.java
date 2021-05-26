@@ -9,7 +9,24 @@ public class LogModel implements java.io.Serializable, SecureIdContainer {
 	@TrustAssertion(idFor = LogModel.class)
 	private String nameLog; 
 	private String levelLog;
-//	private String nameEscape;
+	private String nameEscape;
+	
+	public LogModel() {
+		super();
+	}
+
+	public LogModel(String nameLog, String levelLog) {
+		super();
+		this.nameLog = nameLog;
+		this.levelLog = levelLog;
+	}
+
+	public LogModel(String nameLog, String levelLog, String nameEscape) {
+		super();
+		this.nameLog = nameLog;
+		this.levelLog = levelLog;
+		this.nameEscape = nameEscape;
+	}
 	
 	public String getNameLog() {
 		return nameLog;
@@ -27,11 +44,11 @@ public class LogModel implements java.io.Serializable, SecureIdContainer {
 		this.levelLog = level;
 	}
 
-//	public String getNameEscape() {
-//		return nameEscape;
-//	}
-//
-//	public void setNameEscape(String nameEscape) {
-//		this.nameEscape = nameEscape;
-//	}	 
+	public String getNameEscape() {
+		return nameEscape;
+	}
+
+	public void setNameEscape(String nameEscape) {
+		this.nameEscape = nameEscape;
+	}	 
 }
