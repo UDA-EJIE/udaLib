@@ -1,0 +1,72 @@
+package com.ejie.x38.generic.model;
+
+import org.hdiv.services.SecureIdContainer;
+import org.hdiv.services.TrustAssertion;
+
+public class AutocompleteComboGenericPOJO implements java.io.Serializable, SecureIdContainer {
+	private static final long serialVersionUID = 1L;
+	
+	@TrustAssertion(idFor = AutocompleteComboGenericPOJO.class)
+	private String value;
+	private String label;
+	private String style;
+	
+	public AutocompleteComboGenericPOJO() {
+		super();
+	}
+
+	public AutocompleteComboGenericPOJO(String value, String label) {
+		super();
+		this.value = value;
+		this.label = label;
+	}
+
+	public AutocompleteComboGenericPOJO(String value, String label, String style) {
+		super();
+		this.value = value;
+		this.label = label;
+		this.style = style;
+	}
+
+	/**
+	 * @return the value
+	 */
+	public String getValue() {
+		return value;
+	}
+
+	/**
+	 * @param value the value to set
+	 */
+	public void setValue(String value) {
+		this.value = value;
+	}
+
+	/**
+	 * @return the label
+	 */
+	public String getLabel() {
+		return label;
+	}
+
+	/**
+	 * @param label the label to set
+	 */
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
+	/**
+	 * @return the style
+	 */
+	public String getStyle() {
+		return style;
+	}
+
+	/**
+	 * @param style the style to set
+	 */
+	public void setStyle(String style) {
+		this.style = style;
+	}
+}
