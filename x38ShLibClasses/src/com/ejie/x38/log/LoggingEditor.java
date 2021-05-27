@@ -23,34 +23,29 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 
 /**
- * Gestion del cambio de logs en runtime 
+ * Gestion del cambio de logs en runtime.
  *
  * @author Urko Guinea
  * 
  */
-
 @Service(value = "LoggingEditor")
-public  class LoggingEditor {
+public class LoggingEditor {
 	private static final String LOGBACK_CLASSIC = "ch.qos.logback.classic";
     private static final String LOGBACK_CLASSIC_LOGGER = "ch.qos.logback.classic.Logger";
 	private static final String LOGBACK_CLASSIC_LEVEL = "ch.qos.logback.classic.Level";
 	private static final Logger logger = LoggerFactory.getLogger(LoggingEditor.class);
 
 	/**
-	 * Cambio en runtime del nivel de logger
+	 * Cambio en runtime del nivel de logger.
 	 *
 	 * @param loggerName Nombre del logger a cambiar su nivel. Si blank, se usara el root logger.
-	 * @param logLevel   Uno de los niveles de logs soportado: TRACE, DEBUG, INFO, WARN, ERROR, FATAL,
-	 *                      OFF. {@code null}  se considera 'OFF'.
+	 * @param logLevel Uno de los niveles de logs soportado: TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF. {@code null}  se considera 'OFF'.
+	 * @return boolean
 	 */
-	public static boolean setLogLevel(String loggerName, String logLevel)
-	{
+	public static boolean setLogLevel(String loggerName, String logLevel) {
 		String logLevelUpper = (logLevel == null) ? "OFF" : logLevel.toUpperCase();
 	
-
-		
-		try
-		{
+		try {
 			Package logbackPackage = Package.getPackage(LOGBACK_CLASSIC);
 			if (logbackPackage == null)
 			{
@@ -91,42 +86,37 @@ public  class LoggingEditor {
 			
 			return true;
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			logger.warn("No se pudo asignar el log level a {} para el logger '{}'", logLevelUpper, loggerName);
 			return false;
 		}
 	}
 	
 	/**
-	 * Obtener un logger concreto
+	 * Obtener un logger en concreto.
 	 * 
-	 * @return Logger
+	 * @param loggerName Nombre del log a obtener.
+	 * @return LogModel
 	 */
 	public static LogModel getLogger(final String loggerName) {
-
 		final LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 		ch.qos.logback.classic.Logger aux;
 		LogModel result = new LogModel();
 		
-		aux= lc.getLogger(loggerName);
+		aux = lc.getLogger(loggerName);
 		result.setLevelLog(aux.getEffectiveLevel().toString());
 		result.setNameLog(aux.getName());
 		
 		return result;
-		
 	}
 	
-	
-	
 	/**
-	 * Devuelto todos los loggers configurados. 
+	 * Devuelve todos los loggers configurados.
 	 * 
-	 * @param showAll para devolver todos los loggers, no solo los configurados.
-	 * @return list de LogModel
+	 * @param showAll Devuelve todos los loggers, no sólo los configurados.
+	 * @return List<LogModel>
 	 */
-	public static List<LogModel> getLoggers(final LoggerContext logContext ,final boolean showAll) {
-
+	public static List<LogModel> getLoggers(final boolean showAll) {
 		final LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 		final List<LogModel> loggers = new ArrayList<LogModel>();
 		LogModel aux;
@@ -134,13 +124,45 @@ public  class LoggingEditor {
 		for (ch.qos.logback.classic.Logger log : lc.getLoggerList()) {
 			if(showAll == false) {
 				if(log.getLevel() != null || hasAppenders(log)) {
-					aux= new LogModel();
+					aux = new LogModel();
 					aux.setLevelLog(log.getEffectiveLevel().toString());
 					aux.setNameLog(log.getName());
 					loggers.add(aux);
 				}
 			} else {
-				aux= new LogModel();
+				aux = new LogModel();
+				aux.setLevelLog(log.getEffectiveLevel().toString());
+				aux.setNameLog(log.getName());
+				loggers.add(aux);
+			}
+		}
+
+		return loggers;
+	}
+	
+	/**
+	 * Devuelve todos los loggers configurados.
+	 * 
+	 * @param logContext Contexto del log.
+	 * @param showAll Devuelve todos los loggers, no sólo los configurados.
+	 * @return List<LogModel>
+	 */
+	@Deprecated
+	public static List<LogModel> getLoggers(final LoggerContext logContext, final boolean showAll) {
+		final LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+		final List<LogModel> loggers = new ArrayList<LogModel>();
+		LogModel aux;
+		
+		for (ch.qos.logback.classic.Logger log : lc.getLoggerList()) {
+			if(showAll == false) {
+				if(log.getLevel() != null || hasAppenders(log)) {
+					aux = new LogModel();
+					aux.setLevelLog(log.getEffectiveLevel().toString());
+					aux.setNameLog(log.getName());
+					loggers.add(aux);
+				}
+			} else {
+				aux = new LogModel();
 				aux.setLevelLog(log.getEffectiveLevel().toString());
 				aux.setNameLog(log.getName());
 				loggers.add(aux);
@@ -151,37 +173,39 @@ public  class LoggingEditor {
 	}
 	
 	/** 
-	 * Comprueba si el logger seleccionado tiene appender 
+	 * Comprueba si el logger seleccionado tiene appender.
 	 * 
-	 * @param logger el logger a probar
-	 * @return true si el logger tiene appenders.
+	 * @param logger Logger a probar.
+	 * @return boolean True si el logger tiene appenders.
 	 */
 	public static boolean hasAppenders(Logger logger) {
 		Iterator<Appender<ILoggingEvent>> it =((ch.qos.logback.classic.Logger) logger).iteratorForAppenders();
 		return it.hasNext();
 	}
 
-	private static Object getFieldVaulue(String fullClassName, String fieldName)
-	{
-		try
-		{
+	private static Object getFieldVaulue(String fullClassName, String fieldName) {
+		try {
 			Class<?> clazz = Class.forName(fullClassName);
-			Field    field = clazz.getField(fieldName);
+			Field field = clazz.getField(fieldName);
 			return field.get(null);
 		}
-		catch (Exception ex)
-		{
+		catch (Exception ex) {
 			return null;
 		}
 	}
-
+	
+	/** 
+	 * Devuelve los logs filtrados.
+	 *
+	 * @param filterLogModel Filtro a aplicar enviado por el cliente.
+	 * @return TableResourceResponseDto<LogModel>
+	 */
 	public static TableResourceResponseDto<LogModel> getLoggersFiltered(LogModel filterLogModel) {
 		TableResourceResponseDto<LogModel> resultado = new TableResourceResponseDto<LogModel>();
-		
 		List<LogModel> listalogs = getLoggers((LoggerContext) LoggerFactory.getILoggerFactory(), false);
-		
 		List<LogModel> resulList= new ArrayList<LogModel>();
 		LogModel model;
+		
 		for (int i = 0; i < listalogs.size(); i++){	
 			if (filterLogModel.getLevelLog() == null && filterLogModel.getNameLog() == null) {
 				model = new LogModel();						
@@ -222,11 +246,11 @@ public  class LoggingEditor {
 	/** 
 	 * Devuelve los nombres disponibles.
 	 *
+	 * @param q String enviado por el cliente para la búsqueda de resultados.
 	 * @return List<Resource<AutocompleteComboPKsPOJO>>
 	 */
 	public static List<Resource<AutocompleteComboPKsPOJO>> getNames(String q) {		
 		List<LogModel> listalogs = getLoggers((LoggerContext) LoggerFactory.getILoggerFactory(), false);
-		
 		List<AutocompleteComboPKsPOJO> columnValues = new ArrayList<AutocompleteComboPKsPOJO>();
 		
 		if(q != null) {
