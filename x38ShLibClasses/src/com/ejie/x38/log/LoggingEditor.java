@@ -202,7 +202,7 @@ public class LoggingEditor {
 	 */
 	public static TableResourceResponseDto<LogModel> getLoggersFiltered(LogModel filterLogModel) {
 		TableResourceResponseDto<LogModel> resultado = new TableResourceResponseDto<LogModel>();
-		List<LogModel> listalogs = getLoggers((LoggerContext) LoggerFactory.getILoggerFactory(), false);
+		List<LogModel> listalogs = getLoggers(false);
 		List<LogModel> resulList= new ArrayList<LogModel>();
 		LogModel model;
 		
@@ -250,7 +250,7 @@ public class LoggingEditor {
 	 * @return List<Resource<AutocompleteComboPKsPOJO>>
 	 */
 	public static List<Resource<AutocompleteComboPKsPOJO>> getNames(String q) {		
-		List<LogModel> listalogs = getLoggers((LoggerContext) LoggerFactory.getILoggerFactory(), false);
+		List<LogModel> listalogs = getLoggers(false);
 		List<AutocompleteComboPKsPOJO> columnValues = new ArrayList<AutocompleteComboPKsPOJO>();
 		
 		if(q != null) {
