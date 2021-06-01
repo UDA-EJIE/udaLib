@@ -4,17 +4,21 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.Resource;
 import org.springframework.stereotype.Service;
 
+import com.ejie.x38.dto.TableRequestDto;
 import com.ejie.x38.dto.TableResourceResponseDto;
-import com.ejie.x38.generic.model.AutocompleteComboPKsPOJO;
+import com.ejie.x38.dto.TableRowDto;
 import com.ejie.x38.generic.model.AutocompleteComboGenericPOJO;
+import com.ejie.x38.generic.model.AutocompleteComboPKsPOJO;
 import com.ejie.x38.log.model.LogModel;
 import com.ejie.x38.util.ResourceUtils;
 
@@ -34,12 +38,17 @@ public class LoggingEditor {
     private static final String LOGBACK_CLASSIC_LOGGER = "ch.qos.logback.classic.Logger";
 	private static final String LOGBACK_CLASSIC_LEVEL = "ch.qos.logback.classic.Level";
 	private static final Logger logger = LoggerFactory.getLogger(LoggingEditor.class);
+	private static List<TableRowDto<LogModel>> listReorderSelection = new ArrayList<TableRowDto<LogModel>>();
+	private static LogModel lastFilterLogModel = new LogModel();
+	private static int lastRowsNumber = 10;
+	private static int lastPageNumber = 0;
 
 	/**
 	 * Cambio en runtime del nivel de logger.
 	 *
 	 * @param loggerName Nombre del logger a cambiar su nivel. Si blank, se usara el root logger.
 	 * @param logLevel Uno de los niveles de logs soportado: TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF. {@code null}  se considera 'OFF'.
+	 * 
 	 * @return boolean
 	 */
 	public static boolean setLogLevel(String loggerName, String logLevel) {
@@ -96,6 +105,7 @@ public class LoggingEditor {
 	 * Obtener un logger en concreto.
 	 * 
 	 * @param loggerName Nombre del log a obtener.
+	 * 
 	 * @return LogModel
 	 */
 	public static LogModel getLogger(final String loggerName) {
@@ -114,6 +124,7 @@ public class LoggingEditor {
 	 * Devuelve todos los loggers configurados.
 	 * 
 	 * @param showAll Devuelve todos los loggers, no sólo los configurados.
+	 * 
 	 * @return List<LogModel>
 	 */
 	public static List<LogModel> getLoggers(final boolean showAll) {
@@ -122,7 +133,7 @@ public class LoggingEditor {
 		LogModel aux;
 		
 		for (ch.qos.logback.classic.Logger log : lc.getLoggerList()) {
-			if(showAll == false) {
+			if(!showAll) {
 				if(log.getLevel() != null || hasAppenders(log)) {
 					aux = new LogModel();
 					aux.setLevelLog(log.getEffectiveLevel().toString());
@@ -145,6 +156,7 @@ public class LoggingEditor {
 	 * 
 	 * @param logContext Contexto del log.
 	 * @param showAll Devuelve todos los loggers, no sólo los configurados.
+	 * 
 	 * @return List<LogModel>
 	 */
 	@Deprecated
@@ -176,6 +188,7 @@ public class LoggingEditor {
 	 * Comprueba si el logger seleccionado tiene appender.
 	 * 
 	 * @param logger Logger a probar.
+	 * 
 	 * @return boolean True si el logger tiene appenders.
 	 */
 	public static boolean hasAppenders(Logger logger) {
@@ -198,15 +211,164 @@ public class LoggingEditor {
 	 * Devuelve los logs filtrados.
 	 *
 	 * @param filterLogModel Filtro a aplicar enviado por el cliente.
+	 * @param tableRequestDto DTO que contiene los parámetros de configuración propios del RUP_TABLE a aplicar en el filtrado.
+	 * 
 	 * @return TableResourceResponseDto<LogModel>
 	 */
+	public static TableResourceResponseDto<LogModel> getLoggersFiltered(LogModel filterLogModel, TableRequestDto tableRequestDto) {
+		TableResourceResponseDto<LogModel> resultado = new TableResourceResponseDto<LogModel>();
+		List<LogModel> listalogs = getLoggers(true);
+		List<LogModel> resulList = new ArrayList<LogModel>();
+		LogModel model;
+		
+		// Paginación
+		int startPosition = (int) (tableRequestDto.getRows() * (tableRequestDto.getPage() - 1));
+		long iterations = (listalogs.size() - startPosition) > tableRequestDto.getRows() ? tableRequestDto.getRows() : listalogs.size() - startPosition;
+		
+		for (int i = startPosition; i < startPosition + iterations; i++) {	
+			if (filterLogModel.getLevelLog() == null && filterLogModel.getNameLog() == null) {
+				model = new LogModel();						
+				model.setNameLog(listalogs.get(i).getNameLog());
+				model.setLevelLog(listalogs.get(i).getLevelLog());
+				resulList.add(model);
+			} else if (filterLogModel.getLevelLog() != null && filterLogModel.getNameLog() == null) {
+				if (filterLogModel.getLevelLog().equalsIgnoreCase(listalogs.get(i).getLevelLog())) {
+					model = new LogModel();						
+					model.setNameLog(listalogs.get(i).getNameLog());
+					model.setLevelLog(listalogs.get(i).getLevelLog());
+					resulList.add(model);
+				}
+			} else if (filterLogModel.getLevelLog() == null && filterLogModel.getNameLog() != null) {
+				if (listalogs.get(i).getNameLog().toLowerCase().contains(filterLogModel.getNameLog().toLowerCase()) || listalogs.get(i).getNameLog().toLowerCase().contains(filterLogModel.getNameLog().toLowerCase())) {
+					model = new LogModel();						
+					model.setNameLog(listalogs.get(i).getNameLog());
+					model.setLevelLog(listalogs.get(i).getLevelLog());
+					resulList.add(model);
+				}	
+			} else if (filterLogModel.getLevelLog() != null && filterLogModel.getNameLog() != null) {
+				if (listalogs.get(i).getNameLog().toLowerCase().contains(filterLogModel.getNameLog().toLowerCase()) && filterLogModel.getLevelLog().equalsIgnoreCase(listalogs.get(i).getLevelLog())) {
+					model = new LogModel();						
+					model.setNameLog(listalogs.get(i).getNameLog());
+					model.setLevelLog(listalogs.get(i).getLevelLog());
+					resulList.add(model);
+				}
+			}
+		}
+		
+		// NOTA: las siguientes gestiones son experimentales y podrían no funcionar perfectamente
+		// Cuando el filtro actual es diferente al nuevo, se deseleccionan todos los registros seleccionados. En realidad, existe la posibilidad de mantenerlos, pero habría que hacer muchas comparaciones y sería costoso en cuanto a memoria se refiere.
+		if (filterLogModel.compare(lastFilterLogModel)) {
+			// Añadir seleccionado o seleccionados (dependiendo de si es selección simple o múltiple)
+			List<String> selectedIds = tableRequestDto.getMultiselection().getSelectedIds();
+			if (selectedIds != null) {
+				// Al cambiar el número de filas por página, hay que actualizar la ubicación de los registros seleccionados
+				if (lastRowsNumber != tableRequestDto.getRows()) {
+					for (TableRowDto<LogModel> selectedItem : listReorderSelection) {
+						// Comprueba si el registro está en la página actual para poder obtener la ubicación de una manera más sencilla
+						boolean inTheSamePage = false;
+						int rowIndex = 0;
+						for (LogModel log : resulList) {
+							if (log.getNameLog().equals(selectedItem.getModel().getNameLog())) {
+								selectedItem.setPage(tableRequestDto.getPage().intValue());
+								selectedItem.setPageLine(rowIndex);
+								selectedItem.setTableLine(rowIndex);
+								
+								inTheSamePage = true;
+								break;
+							}
+							rowIndex++;
+						}
+						
+						// En caso de no estar el registro en la página actual, se calcula su posición
+						if (!inTheSamePage) {
+							int newPageNumber = (int) ((selectedItem.getPage() * lastRowsNumber) / tableRequestDto.getRows());
+							int newPageLineNumber = 0;
+							
+							// Gestiona los cambios ascendentes o descendentes de la cantidad de registros a mostrar por página
+							if (lastRowsNumber < tableRequestDto.getRows()) {
+								newPageLineNumber = (int) ((((selectedItem.getPage() - 1) * lastRowsNumber) + selectedItem.getPageLine()) - (newPageNumber * tableRequestDto.getRows()));
+								
+								if (newPageLineNumber > tableRequestDto.getRows()) {
+									newPageLineNumber = (int) (newPageLineNumber - tableRequestDto.getRows());
+								} else if (newPageLineNumber < 0) {
+									newPageLineNumber = (int) (newPageLineNumber + tableRequestDto.getRows());
+								} else {
+									newPageNumber = newPageNumber + 1;
+								}
+							} else {
+								newPageLineNumber = (int) (((selectedItem.getPage() * lastRowsNumber) + selectedItem.getPageLine()) - (newPageNumber * tableRequestDto.getRows()));
+								
+								if (newPageLineNumber > tableRequestDto.getRows()) {
+									newPageLineNumber = (int) (newPageLineNumber - tableRequestDto.getRows());
+								} else {
+									newPageNumber = newPageNumber - 1;
+								}
+							}
+							
+							selectedItem.setPage((int) (newPageNumber <= 0 ? 1 : newPageNumber));
+							selectedItem.setPageLine((int) (newPageLineNumber < 0 ? (newPageNumber * tableRequestDto.getRows()) + newPageLineNumber : newPageLineNumber));
+							selectedItem.setTableLine((int) (newPageLineNumber < 0 ? (newPageNumber * tableRequestDto.getRows()) + newPageLineNumber : newPageLineNumber));
+						}
+					}
+				}
+				
+				if (selectedIds.size() == 1) {
+					// Selección o multiselección con un registro seleccionado
+					String rowID = tableRequestDto.getMultiselection().getSelectedIds().get(0);
+					
+					if (listReorderSelection.size() > 0) {
+						if (!rowID.equals(listReorderSelection.get(0).getModel().getNameLog())) {
+							setSelectionReorder(listalogs, rowID, tableRequestDto);
+						}
+					} else {
+						setSelectionReorder(listalogs, rowID, tableRequestDto);
+					}
+				} else {
+					// Multiselección
+					setMultiselectionReorder(listalogs, selectedIds, tableRequestDto);
+				}
+			} else {
+				// Nada seleccionado
+				listReorderSelection.clear();
+			}
+		} else {
+			// Como el filtro ha cambiado, se deselecciona todo
+			listReorderSelection.clear();
+		}
+		
+		resultado.setReorderedSelection(listReorderSelection);
+		resultado.addAdditionalParam("reorderedSelection", listReorderSelection);
+		resultado.addAdditionalParam("selectedAll", tableRequestDto.getMultiselection().getSelectedAll());
+		
+		// Añadir información necesaria para la tabla
+		resultado.setRows(resulList);
+		resultado.setRecords(listalogs.size());
+		resultado.setPage(tableRequestDto.getPage().toString());
+		resultado.setTotal(new Long(listalogs.size()), new Long(tableRequestDto.getRows()));
+		
+		// Guardar número de filas por página, número de la página actual y filtrado para poder obtenerlo en el siguiente filtrado
+		lastRowsNumber = tableRequestDto.getRows().intValue();
+		lastPageNumber = tableRequestDto.getPage().intValue();
+		lastFilterLogModel = filterLogModel;
+		
+		return resultado;
+	}
+	
+	/** 
+	 * Devuelve los logs filtrados.
+	 *
+	 * @param filterLogModel Filtro a aplicar enviado por el cliente.
+	 * 
+	 * @return TableResourceResponseDto<LogModel>
+	 */
+	@Deprecated
 	public static TableResourceResponseDto<LogModel> getLoggersFiltered(LogModel filterLogModel) {
 		TableResourceResponseDto<LogModel> resultado = new TableResourceResponseDto<LogModel>();
 		List<LogModel> listalogs = getLoggers(false);
 		List<LogModel> resulList= new ArrayList<LogModel>();
 		LogModel model;
 		
-		for (int i = 0; i < listalogs.size(); i++){	
+		for (int i = 0; i < listalogs.size(); i++) {	
 			if (filterLogModel.getLevelLog() == null && filterLogModel.getNameLog() == null) {
 				model = new LogModel();						
 				model.setNameLog(listalogs.get(i).getNameLog());
@@ -247,10 +409,11 @@ public class LoggingEditor {
 	 * Devuelve los nombres disponibles.
 	 *
 	 * @param q String enviado por el cliente para la búsqueda de resultados.
+	 * 
 	 * @return List<Resource<AutocompleteComboPKsPOJO>>
 	 */
 	public static List<Resource<AutocompleteComboPKsPOJO>> getNames(String q) {		
-		List<LogModel> listalogs = getLoggers(false);
+		List<LogModel> listalogs = getLoggers(true);
 		List<AutocompleteComboPKsPOJO> columnValues = new ArrayList<AutocompleteComboPKsPOJO>();
 		
 		if(q != null) {
@@ -287,5 +450,97 @@ public class LoggingEditor {
 		columnValues.add(new AutocompleteComboGenericPOJO("ERROR", "ERROR"));
 		
 		return ResourceUtils.fromListToResource(columnValues);
+	}
+
+	/** 
+	 * Gestiona la selección cuando se pagina.
+	 *
+	 * @param listalogs Lista que contiene los logs.
+	 * @param rowID Identificador del registro seleccionado.
+	 * @param tableRequestDto DTO que contiene los parámetros de configuración propios del RUP_TABLE a aplicar en el filtrado.
+	 */
+	private static void setSelectionReorder(List<LogModel> listalogs, String rowID, TableRequestDto tableRequestDto) {
+		Map<String, String> pkMap = new HashMap<String, String>();
+		pkMap.put(tableRequestDto.getCore().getPkNames().get(0), rowID);
+		
+		TableRowDto<LogModel> reorderSelection = new TableRowDto<LogModel>();
+		reorderSelection.setPage(lastPageNumber);
+		reorderSelection.setModel(new LogModel(rowID, null));
+		reorderSelection.setPkMap(pkMap);
+		
+		int index = 0;
+		for (LogModel log : listalogs) {
+			if (log.getNameLog().equals(rowID)) {
+				reorderSelection.setPageLine((int) (index - ((lastPageNumber - 1) * tableRequestDto.getRows())));
+				reorderSelection.setTableLine((int) (index - ((lastPageNumber - 1) * tableRequestDto.getRows())));
+			}
+			index++;
+		}
+		
+		// Vaciar la lista que contiene el elemento anteriormente seleccionado
+		listReorderSelection.clear();
+		
+		// Añadir redorderSelection a la lista
+		listReorderSelection.add(reorderSelection);
+	}
+
+	/** 
+	 * Gestiona la multiselección cuando se pagina.
+	 *
+	 * @param listalogs Lista que contiene los logs.
+	 * @param rowID Identificadores de registros seleccionados.
+	 * @param tableRequestDto DTO que contiene los parámetros de configuración propios del RUP_TABLE a aplicar en el filtrado.
+	 */
+	private static void setMultiselectionReorder(List<LogModel> listalogs, List<String> selectedIds, TableRequestDto tableRequestDto) {
+		// Eliminar los elementos que hayan sido deseleccionados
+		Iterator<TableRowDto<LogModel>> selectedItemIterator = listReorderSelection.iterator();
+		while (selectedItemIterator.hasNext()) {
+			TableRowDto<LogModel> item = selectedItemIterator.next();
+			boolean alreadySelected = false;
+			
+			for (String rowID : selectedIds) {
+				if (rowID.equals(item.getModel().getNameLog())) {
+					alreadySelected = true;
+					break;
+				}
+			}
+			
+			if (!alreadySelected) {
+				selectedItemIterator.remove();
+			}
+		}
+		
+		for (String rowID : selectedIds) {
+			boolean alreadySelected = false;
+			
+			for (TableRowDto<LogModel> selectedItem : listReorderSelection) {
+				if (rowID.equals(selectedItem.getModel().getNameLog())) {
+					alreadySelected = true;
+					break;
+				}
+			}
+			
+			if (!alreadySelected) {
+				Map<String, String> pkMap = new HashMap<String, String>();
+				pkMap.put(tableRequestDto.getCore().getPkNames().get(0), rowID);
+				
+				TableRowDto<LogModel> reorderSelection = new TableRowDto<LogModel>();
+				reorderSelection.setPage(lastPageNumber);
+				reorderSelection.setModel(new LogModel(rowID, null));
+				reorderSelection.setPkMap(pkMap);
+				
+				int logIndex = 0;
+				for (LogModel log : listalogs) {
+					if (log.getNameLog().equals(rowID)) {
+						reorderSelection.setPageLine((int) (logIndex - ((lastPageNumber - 1) * tableRequestDto.getRows())));
+						reorderSelection.setTableLine((int) (logIndex - ((lastPageNumber - 1) * tableRequestDto.getRows())));
+					}
+					logIndex++;
+				}
+				
+				// Añadir redorderSelection a la lista
+				listReorderSelection.add(reorderSelection);
+			}
+		}
 	}
 }

@@ -1,5 +1,6 @@
 package com.ejie.x38.log.model;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.hdiv.services.SecureIdContainer;
 import org.hdiv.services.TrustAssertion;
 
@@ -50,5 +51,9 @@ public class LogModel implements java.io.Serializable, SecureIdContainer {
 
 	public void setNameEscape(String nameEscape) {
 		this.nameEscape = nameEscape;
-	}	 
+	}
+	
+	public boolean compare(LogModel log2) {
+		return (ObjectUtils.equals(this.nameLog, log2.getNameLog()) && ObjectUtils.equals(this.levelLog, log2.getLevelLog()) && ObjectUtils.equals(this.nameEscape, log2.getNameEscape()));
+	}
 }
