@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.hdiv.ee.comcore.discovery.resolve.NoEntity;
+import org.hdiv.services.NoEntity;
 import org.hdiv.services.TrustAssertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
