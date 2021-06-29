@@ -602,10 +602,8 @@ public class TableManager implements java.io.Serializable{
 					selectQuery.append("?").append(",");
 					
 					try {
-						
 						// Se obtiene el valor de la pk declarada.
-						paramList.add(getCampoByIntrospection(clazz, selectedBean, pk));
-						
+						paramList.add(getCampoByIntrospection(clazz, selectedBean, pk.replace("_", "")));
 					} catch (IllegalAccessException e) {
 						TableManager.logger.error(e.getMessage(), e);
 					} catch (InvocationTargetException e) {
@@ -613,7 +611,6 @@ public class TableManager implements java.io.Serializable{
 					} catch (IntrospectionException e) {
 						TableManager.logger.error(e.getMessage(), e);
 					}
-					
 				}
 
 				selectQuery.deleteCharAt(selectQuery.length()-1);
