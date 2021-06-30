@@ -3,21 +3,26 @@ package com.ejie.x38.dto;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.hdiv.services.SecureIdContainer;
+import org.springframework.hateoas.Resource;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-
-
-public class TableRowDto<T> {
-
+public class TableRowDto<T> implements SecureIdContainer {
+	
+	@JsonIgnore
 	private Map<String, String> pkMap = new HashMap<String, String>();
 	
 	private Integer page;
 	private Integer pageLine;
 	private Integer tableLine;
 	
-	@JsonIgnore
-	private T model;
+	@JsonInclude(content = Include.NON_NULL)
+	@JsonProperty("pk")
+	private Resource<T> model;
 	
 	
 	public TableRowDto() {
@@ -29,7 +34,7 @@ public class TableRowDto<T> {
 	 */
 	public TableRowDto(T model) {
 		super();
-		this.model = model;
+		this.model = new Resource<T>(model);
 	}
 
 	/**
@@ -61,10 +66,9 @@ public class TableRowDto<T> {
 		this.page = page;
 		this.pageLine = pageLine;
 		this.tableLine = tableLine;
-		this.model = model;
+		this.model = new Resource<T>(model);
 	}
-
-	@JsonProperty("pk")
+	
 	public Map<String, String> getPkMap() {
 		return pkMap;
 	}
@@ -90,10 +94,14 @@ public class TableRowDto<T> {
 		this.tableLine = tableLine;
 	}
 	public T getModel() {
-		return model;
+		return model.getContent();
 	}
 	public void setModel(T model) {
-		this.model = model;
+		this.model = new Resource<T>(model);
+	}
+	
+	public Resource<T> getModelAsResource() {
+		return model;
 	}
 	
 	

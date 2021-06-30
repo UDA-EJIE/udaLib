@@ -1,13 +1,13 @@
 package com.ejie.x38.rup.table.filter.model;
 
+import org.hdiv.services.SecureIdContainer;
+import org.hdiv.services.TrustAssertion;
 
-public class Filter implements java.io.Serializable{
-	
-	
-	/**
-	 * 
-	 */
+public class Filter implements java.io.Serializable, SecureIdContainer {
+
 	private static final long serialVersionUID = 1L;
+	
+	@TrustAssertion(idFor = Filter.class)
 	private int filterId;
 	private String filterSelector;
 	private String filterUser;
@@ -15,57 +15,63 @@ public class Filter implements java.io.Serializable{
 	private boolean filterDefault;
 	private String filterValue;
 	private String filterFeedback;
-	
-	
-	
-	
-	
-	
+
 	public int getFilterId() {
 		return filterId;
 	}
+
 	public void setFilterId(int pId) {
 		this.filterId = pId;
 	}
+
 	public String getFilterSelector() {
 		return filterSelector;
 	}
+
 	public void setFilterSelector(String pSelector) {
 		this.filterSelector = pSelector;
 	}
+
 	public String getFilterName() {
 		return filterName;
 	}
+
 	public void setFilterName(String pName) {
 		this.filterName = pName;
 	}
+
 	public boolean isFilterDefault() {
 		return filterDefault;
 	}
+
 	public void setFilterDefault(boolean pDefault) {
 		this.filterDefault = pDefault;
 	}
+
 	public String getFilterValue() {
 		return filterValue;
 	}
+
 	public void setFilterValue(String pValue) {
 		this.filterValue = pValue;
 	}
-	
-	
-	
+
 	public String getFilterUser() {
 		return filterUser;
 	}
+
 	public void setFilterUser(String filterUser) {
 		this.filterUser = filterUser;
 	}
+
 	public String getFilterFeedback() {
 		return filterFeedback;
 	}
+
 	public void setFilterFeedback(String filterFeedback) {
 		this.filterFeedback = filterFeedback;
 	}
+
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();
@@ -79,9 +85,5 @@ public class Filter implements java.io.Serializable{
 		result.append("}");
 		return result.toString();
 	}
-	
-	
-	
-	
 
 }

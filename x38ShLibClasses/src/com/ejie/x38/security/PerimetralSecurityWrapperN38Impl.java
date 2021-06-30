@@ -1,16 +1,16 @@
 /*
  * Copyright 2012 E.J.I.E., S.A.
  *
- * Licencia con arreglo a la EUPL, Versión 1.1 exclusivamente (la «Licencia»);
- * Solo podrá usarse esta obra si se respeta la Licencia.
+ * Licencia con arreglo a la EUPL, VersiÃ³n 1.1 exclusivamente (la Â«LicenciaÂ»);
+ * Solo podrÃ¡ usarse esta obra si se respeta la Licencia.
  * Puede obtenerse una copia de la Licencia en
  *
  * http://ec.europa.eu/idabc/eupl.html
  *
- * Salvo cuando lo exija la legislación aplicable o se acuerde por escrito,
- * el programa distribuido con arreglo a la Licencia se distribuye «TAL CUAL»,
- * SIN GARANTÍAS NI CONDICIONES DE NINGÚN TIPO, ni expresas ni implícitas.
- * Véase la Licencia en el idioma concreto que rige los permisos y limitaciones
+ * Salvo cuando lo exija la legislaciÃ³n aplicable o se acuerde por escrito,
+ * el programa distribuido con arreglo a la Licencia se distribuye Â«TAL CUALÂ»,
+ * SIN GARANTÃ�AS NI CONDICIONES DE NINGÃšN TIPO, ni expresas ni implÃ­citas.
+ * VÃ©ase la Licencia en el idioma concreto que rige los permisos y limitaciones
  * que establece la Licencia.
  */
 package com.ejie.x38.security;
@@ -233,8 +233,8 @@ public class PerimetralSecurityWrapperN38Impl implements
 				// User isn't in the XLNets's LDap: certificado o juego de barcos
 				userData.put("name", userData.get("GIVENNAME"));
 				userData.put("surname", userData.get("SURNAME"));
-				// En caso de autenticación mediante juego de barcos el campo CN tendrá 
-				// el valor de la propiedad dni del xml de sesión de XLNetS
+				// En caso de autenticaciÃ³n mediante juego de barcos el campo CN tendrÃ¡ 
+				// el valor de la propiedad dni del xml de sesiÃ³n de XLNetS
 				// o, si estuviera vacio el dni, el valor del n38SubjectCert  
 				userData.put("fullName", userData.get("CN"));
 				httpSession.setAttribute("fullName", userData.get("CN"));
@@ -427,8 +427,8 @@ public class PerimetralSecurityWrapperN38Impl implements
 						httpSession.setAttribute("name", userInfo.get("GIVENNAME"));
 						httpSession.setAttribute("surname", userInfo.get("SURNAME"));
 						// En caso de autentificarse mediante juego de barcos el
-						// campo CN tendrá el valor de la propiedad dni del xml
-						// de sesión de XLNets.
+						// campo CN tendrÃ¡ el valor de la propiedad dni del xml
+						// de sesiÃ³n de XLNets.
 						httpSession.setAttribute("fullName", userInfo.get("CN"));
 					}
 
@@ -498,35 +498,15 @@ public class PerimetralSecurityWrapperN38Impl implements
 
 	// Recovery the unique User Id
 	private String getXlnetsUserId(HttpServletRequest httpRequest) {
+		String udaXLNetsSessionId = XlnetCore.getN38ItemSesion(XlnetCore.getN38API(httpRequest), "n38UidSesion");
 
-		Cookie requestCookies[] = httpRequest.getCookies();
-		Cookie n38UidSesion = null;
-		Cookie n38UidSistemasXLNetS = null;
-		StringBuilder udaXLNetsSessionId = new StringBuilder();
-
-		if (requestCookies != null) {
-			for (int i = 0; i < requestCookies.length; i++) {
-				if (requestCookies[i].getName().equals("n38UidSesion")) {
-					n38UidSesion = requestCookies[i];
-				} else if (requestCookies[i].getName().equals("n38UidSistemasXLNetS")) {
-					n38UidSistemasXLNetS = requestCookies[i];
-				}
-			}
-		}
-
-		logger.debug("getXlnetsUserId: udaXlnetsSession value");
-		if (n38UidSesion != null && n38UidSistemasXLNetS != null) {
-			udaXLNetsSessionId.append(n38UidSistemasXLNetS.getValue()).append("-").append(n38UidSesion.getValue());
-			logger.debug("getXlnetsUserId: cookie - n38UidSistemasXLNetS => " + n38UidSistemasXLNetS.getValue());
-		} else if (n38UidSesion != null) {
-			udaXLNetsSessionId.append(n38UidSesion.getValue());
-			logger.debug("getXlnetsUserId: cookie - n38UidSesion => " + n38UidSesion.getValue());
-		} else {
-			logger.debug("getXlnetsUserId: null");
+		if (udaXLNetsSessionId == null) {
+			logger.debug("getXlnetsUserId: udaXlnetsSession value => null");
 			return null;
+		} else {
+			logger.debug("getXlnetsUserId: udaXlnetsSession value => " + udaXLNetsSessionId);
+			return udaXLNetsSessionId;
 		}
-		logger.debug("getXlnetsUserId: udaXlnetsSession value => " + udaXLNetsSessionId.toString());
-		return udaXLNetsSessionId.toString();
 	}
 
 	// Recovery and storage of the Credential info of XLNets

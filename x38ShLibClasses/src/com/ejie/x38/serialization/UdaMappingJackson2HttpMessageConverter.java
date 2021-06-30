@@ -18,9 +18,12 @@ package com.ejie.x38.serialization;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.hdiv.services.CustomSecureConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpInputMessage;
@@ -37,6 +40,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 /**
  * 
@@ -58,7 +62,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  * 
  */
 public class UdaMappingJackson2HttpMessageConverter extends
-		MappingJackson2HttpMessageConverter {
+		MappingJackson2HttpMessageConverter implements CustomSecureConverter {
 
 	protected final Logger logger = LoggerFactory
 			.getLogger(UdaMappingJackson2HttpMessageConverter.class);
@@ -73,12 +77,20 @@ public class UdaMappingJackson2HttpMessageConverter extends
 	 */
 	private UdaModule udaModule;
 	
+	private List<SimpleModule> extraModules;
+	
 	/**
 	 * Inicializa los componentes necesarios una vez instanciada la clase. En
 	 * concreto configura el ObjectMapper personalizado mediante el UdaModule.
 	 */
 	@PostConstruct
 	public void initialize() {
+		if(extraModules != null) {
+			for(SimpleModule module : extraModules) {
+				udaObjectMapper.registerModule(module);
+				this.getObjectMapper().registerModule(module);
+			}
+		}
 		if (udaModule != null) {
 			udaObjectMapper.registerModule(udaModule);
 		
@@ -136,11 +148,11 @@ public class UdaMappingJackson2HttpMessageConverter extends
 	protected void writeInternal(Object object, HttpOutputMessage outputMessage)
 			throws IOException, HttpMessageNotWritableException {
 		JsonEncoding encoding = getEncoding(outputMessage.getHeaders().getContentType());
-		JsonGenerator jsonGenerator = udaObjectMapper.getFactory().createGenerator(outputMessage.getBody(), encoding);
+		JsonGenerator jsonGenerator = getUdaObjectMapper().getFactory().createGenerator(outputMessage.getBody(), encoding);
 		try {
 			if (!ThreadSafeCache.getMap().isEmpty() && ThreadSafeCache.getMap().keySet().contains("RUP")) {
 				logger.info("UDA's Serialization Mechanism is being triggered.");
-				udaObjectMapper.writeValue(jsonGenerator, object);
+				getUdaObjectMapper().writeValue(jsonGenerator, object);
 			} else {
 				logger.info("Spring's Default Object Mapper searialization is being triggered.");
 				super.writeInternal(object, outputMessage);
@@ -160,8 +172,7 @@ public class UdaMappingJackson2HttpMessageConverter extends
 					&& ThreadSafeCache.getMap().keySet()
 							.contains("RUP_MULTI_ENTITY")) {
 				logger.info("UDA's MultiBean deserialization Mechanism is being triggered.");
-				return this.udaObjectMapper.readValue(inputMessage.getBody(),
-						clazz);
+				return getUdaObjectMapper().readValue(inputMessage.getBody(), clazz);
 			} else {
 				logger.info("Spring's Default Object Mapper deserialization is being triggered.");
 				return super.readInternal(clazz, inputMessage);
@@ -193,12 +204,17 @@ public class UdaMappingJackson2HttpMessageConverter extends
 		return this.udaObjectMapper;
 	}
 
-	@Deprecated
-	public void setJacksonJsonObjectMapper(ObjectMapper jacksonJsonObjectMapper) {
-		this.udaObjectMapper = jacksonJsonObjectMapper;
-	}
-
 	public void setUdaModule(UdaModule udaModule) {
 		this.udaModule = udaModule;
 	}
+
+	@Override
+	public List<ObjectMapper> getObjectMappers() {
+		return Arrays.asList(udaObjectMapper, getObjectMapper());
+	}
+
+	public void setExtraModules(List<SimpleModule> extraModules) {
+		this.extraModules = extraModules;
+	}
+
 }

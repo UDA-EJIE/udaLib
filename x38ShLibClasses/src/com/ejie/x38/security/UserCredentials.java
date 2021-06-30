@@ -384,7 +384,7 @@ public class UserCredentials implements Credentials {
 			if(containsSubjectCert(data)){
 				return (String)this.subjectCert.get(data);
 			} else {
-				return Constants.dataNotApplicable;
+				return Constants.DATA_NOT_APPLICABLE;
 			}
 		} else {
 			return "";

@@ -30,7 +30,7 @@ public class Pagination<T> implements java.io.Serializable{
 
 	private static final long serialVersionUID = 2127819481595995328L;
 	
-	//jqGrid -> Table
+	//Table
 	private Long rows;
 	private Long page;
 	private String sidx;
@@ -214,42 +214,4 @@ public class Pagination<T> implements java.io.Serializable{
 			this.child = child;
 		}
 	}
-	
-	//Retrocompatibilidad
-	//*******************
-		//MANAGER
-		@Deprecated
-		public StringBuilder getPaginationQuery(StringBuilder query){
-			return PaginationManager.getQueryForPagination(this, query, false);
-	    }
-		@Deprecated
-		public StringBuilder getPaginationQueryJerarquia(StringBuilder query){
-			return PaginationManager.getQueryForPagination(this, query, true);
-		}
-		@Deprecated
-		public List<?> getPaginationList(List<?> list){
-			return PaginationManager.getPaginationList(this, list);
-		}
-		@Deprecated
-		public StringBuilder getReorderQuery(StringBuilder query, String... pkCols){
-			return PaginationManager.getReorderQuery(this, query, pkCols);
-	    }
-	
-		//Pagination
-		@Deprecated
-		public String getSort() {
-			return getSidx();
-		}
-		@Deprecated
-		public void setSort(String sidx) {
-			setSidx(sidx);
-		}	
-		@Deprecated
-		public String getAscDsc() {
-			return getSord();
-		}
-		@Deprecated
-		public void setAscDsc(String sord) {
-			setSord(sord);
-		}
 }

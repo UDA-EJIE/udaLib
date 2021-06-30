@@ -48,7 +48,7 @@ public class XlnetCore {
 
 	public static final String PATH_SUBTIPO_N38INSTANCIA = "/n38/elementos/elemento/elemento/elemento/parametro[@id='n38uidobjseguridad']/valor";
 	public static final String PATH_SUBTIPO_N38SESION = "/n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='?']/valor";
-	public static final String PATH_SUBTIPO_n38DOMINIOCOMUNCOOKIE = "/n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='n38dominiocomuncookie']/valor";
+	public static final String PATH_SUBTIPO_N38DOMINIOCOMUNCOOKIE = "/n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='n38dominiocomuncookie']/valor";
 	public static final String PATH_SUBTIPO_N38SUBJECTCERT = "/n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='n38subjectcert']/valor";
 	public static final String PATH_SUBTIPO_DNI = "/n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='dni']/valor";
 	public static final String PATH_SUBTIPO_N38PERSONAUID = "n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='n38personauid']/valor";
@@ -90,6 +90,26 @@ public class XlnetCore {
 		}
 
 		return documentReturn;
+	}
+	
+	public static String getN38ItemSesion(N38API n38api, String parametro) {
+		if (n38api == null)
+			throw new IllegalArgumentException(
+					"getN38ItemSesion(): The N38API input parameter can't be NULL.");
+		
+		try {
+			String[] n38UidSesion = n38api.n38ItemSesion(parametro);
+			if (n38UidSesion != null && n38UidSesion.length > 0) {
+				logger.trace("N38ItemSesion is: "+ n38UidSesion[0]);
+				return n38UidSesion[0];
+			}
+		} catch (N38ParameterException e) {
+			logger.error(StackTraceManager.getStackTrace(e));
+		} catch (N38Excepcion e) {
+			logger.error(StackTraceManager.getStackTrace(e));
+		}
+		
+		return null;
 	}
 
 	public static Document getN38ItemSeguridad(N38API n38api, String idItemSeguridad) {
@@ -167,7 +187,7 @@ public class XlnetCore {
 
 		try {
 			
-			n38DominioComunCookieNode = XmlManager.searchDomNode(xmlSesion, PATH_SUBTIPO_n38DOMINIOCOMUNCOOKIE);
+			n38DominioComunCookieNode = XmlManager.searchDomNode(xmlSesion, PATH_SUBTIPO_N38DOMINIOCOMUNCOOKIE);
 			return n38DominioComunCookieNode.getFirstChild().getNodeValue();
 			
 		} catch (TransformerException e) {
@@ -307,57 +327,5 @@ public class XlnetCore {
 		}			
 
 		return result;
-	}
-	
-	@Deprecated
-	public static String getUidSesion(N38API n38Api){
-		String[] uidSesions = null;
-		try {
-			uidSesions = n38Api.n38ItemSesion(N38API.NOMBRE_N38UIDSESION);
-		} catch (N38ParameterException e) {
-			logger.error(StackTraceManager.getStackTrace(e));
-		} catch (N38Excepcion e) {
-			logger.error(StackTraceManager.getStackTrace(e));
-		}	
-		if(uidSesions!=null && uidSesions.length>0){
-			return uidSesions[0];
-		}else{
-			return null;
-		}
-	}
-	
-	@Deprecated
-	public static String getLogin(N38API n38Api){
-		String[] personaUids = null;
-		try {
-			personaUids = n38Api.n38ItemSesion("n38personasuid");
-		} catch (N38ParameterException e) {
-			logger.error(StackTraceManager.getStackTrace(e));
-		} catch (N38Excepcion e) {
-			logger.error(StackTraceManager.getStackTrace(e));
-		}	
-		if(personaUids!=null && personaUids.length>0){
-			return personaUids[0];
-		}else{
-			return null;
-		}
-	}
-	
-	@Deprecated
-	public static String getPuesto(N38API n38Api){
-		String[] personaPuestoUids = null;
-		try {
-			personaPuestoUids = n38Api.n38ItemSesion(N38API.NOMBRE_N38PUESTOUID);
-		} catch (N38ParameterException e) {
-			logger.error(StackTraceManager.getStackTrace(e));
-		} catch (N38Excepcion e) {
-			logger.error(StackTraceManager.getStackTrace(e));
-		}	
-		if(personaPuestoUids!=null && personaPuestoUids.length>0){
-			return personaPuestoUids[0];
-		}else{
-			return null;
-		}
 	}	
-	
 }

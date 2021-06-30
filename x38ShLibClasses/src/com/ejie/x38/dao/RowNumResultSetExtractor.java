@@ -12,7 +12,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 
-import com.ejie.x38.dto.JQGridRequestDto;
 import com.ejie.x38.dto.Pagination;
 import com.ejie.x38.dto.TableRequestDto;
 import com.ejie.x38.dto.TableRowDto;
@@ -59,12 +58,6 @@ public class RowNumResultSetExtractor<T> implements ResultSetExtractor<List<Tabl
 	public RowNumResultSetExtractor(RowMapper<T> rowMapper, Pagination<T> pagination){
 		this.rowMapper = rowMapper;
 		this.pkColums = pagination.getMultiselection().getPkNames();
-	}
-	
-	@Deprecated
-	public RowNumResultSetExtractor(RowMapper<T> rowMapper, JQGridRequestDto jqGridRequestDto){
-		this.rowMapper = rowMapper;
-		this.pkColums = jqGridRequestDto.getCore().getPkNames();
 	}
 	
 	public RowNumResultSetExtractor(RowMapper<T> rowMapper, TableRequestDto tableRequestDto){

@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.hdiv.services.AnyEntity;
+import org.hdiv.services.SecureIdContainer;
+import org.hdiv.services.TrustAssertion;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
@@ -27,11 +30,11 @@ import org.springframework.beans.BeanWrapperImpl;
  * @author UDA
  *
  */
-public class TableRequestDto implements java.io.Serializable{
+public class TableRequestDto implements java.io.Serializable, SecureIdContainer {
 
 	private static final long serialVersionUID = 2127819481595995328L;
 	
-	//jqGrid -> Table
+	//Table
 	private Long rows;
 	private Long page;
 	private String sidx;
@@ -169,7 +172,8 @@ public class TableRequestDto implements java.io.Serializable{
 		}
 	}
 	
-	public class Multiselection {
+	public class Multiselection implements SecureIdContainer {
+		@TrustAssertion(idFor = AnyEntity.class)
 		private List<String> selectedIds;
 		private Boolean selectedAll;
 		
@@ -210,6 +214,9 @@ public class TableRequestDto implements java.io.Serializable{
 		}
 		
 		public Boolean getSelectedAll() {
+			if (selectedAll == null) {
+				selectedAll = false;
+			}
 			return selectedAll;
 		}
 		public void setSelectedAll(Boolean selectedAll) {
@@ -260,42 +267,4 @@ public class TableRequestDto implements java.io.Serializable{
 			this.child = child;
 		}
 	}
-	
-	//Retrocompatibilidad
-	//*******************
-		//MANAGER
-//		@Deprecated
-//		public StringBuilder getPaginationQuery(StringBuilder query){
-//			return PaginationManager.getQueryForPagination(this, query, false);
-//	    }
-//		@Deprecated
-//		public StringBuilder getPaginationQueryJerarquia(StringBuilder query){
-//			return PaginationManager.getQueryForPagination(this, query, true);
-//		}
-//		@Deprecated
-//		public List<?> getPaginationList(List<?> list){
-//			return PaginationManager.getPaginationList(this, list);
-//		}
-//		@Deprecated
-//		public StringBuilder getReorderQuery(StringBuilder query, String... pkCols){
-//			return PaginationManager.getReorderQuery(this, query, pkCols);
-//	    }
-	
-		//Pagination
-		@Deprecated
-		public String getSort() {
-			return getSidx();
-		}
-		@Deprecated
-		public void setSort(String sidx) {
-			setSidx(sidx);
-		}	
-		@Deprecated
-		public String getAscDsc() {
-			return getSord();
-		}
-		@Deprecated
-		public void setAscDsc(String sord) {
-			setSord(sord);
-		}
 }
