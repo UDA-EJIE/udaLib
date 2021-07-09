@@ -22,8 +22,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.ejie.x38.hdiv.controller.model.LinkInfo;
 import com.ejie.x38.hdiv.controller.model.MappingInfo;
 import com.ejie.x38.hdiv.controller.model.UDALinkMappingInfo;
-import com.hdivsecurity.services.affordance.MethodAwareLink;
-import com.hdivsecurity.services.util.HdivHATEOASUtils;
 
 public class UDASecureResourceProcesor {
 
