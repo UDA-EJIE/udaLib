@@ -23,6 +23,7 @@ import com.ejie.x38.hdiv.controller.model.LinkInfo;
 import com.ejie.x38.hdiv.controller.model.MappingInfo;
 import com.ejie.x38.hdiv.controller.model.UDALinkMappingInfo;
 import com.hdivsecurity.services.affordance.MethodAwareLink;
+import com.hdivsecurity.services.util.HdivHATEOASUtils;
 
 public class UDASecureResourceProcesor {
 
@@ -56,8 +57,7 @@ public class UDASecureResourceProcesor {
 		List<Resource<T>> resources = new ArrayList<Resource<T>>();
 
 		if (allowInfoList != null) {
-			String requestStr = request.getRequestURL().substring(0, request.getRequestURL().indexOf(request.getContextPath()))
-					+ request.getContextPath();
+			String requestStr = getBaseUrl(request).toString();
 			if (entities != null && entities.size() > 0) {
 				resources = processEntities(entities, request, allowInfoList, requestStr);
 			}
@@ -68,6 +68,28 @@ public class UDASecureResourceProcesor {
 
 		return resources;
 
+	}
+	
+	private static StringBuilder getBaseUrl(final HttpServletRequest request) {
+
+		StringBuilder url = new StringBuilder();
+		String scheme = request.getScheme();
+		int port = request.getServerPort();
+		if (port < 0) {
+			port = 80; // Work around java.net.URL bug
+		}
+
+		url.append(scheme);
+		url.append("://");
+		url.append(request.getServerName());
+		if (scheme.equals("http") && port != 80 || scheme.equals("https") && port != 443) {
+			url.append(':');
+			url.append(port);
+		}
+
+		url.append(request.getContextPath());
+		
+		return url;
 	}
 
 	private static <T> void processStaticLinks(final HttpServletRequest request, final List<UDALinkMappingInfo> allowInfoList,
