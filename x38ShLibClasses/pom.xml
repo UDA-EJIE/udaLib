@@ -5,7 +5,7 @@
 	<groupId>com.ejie.x38</groupId>
 	<artifactId>x38ShLibClasses</artifactId>
 	<packaging>jar</packaging>
-	<version>5.0.0-SNAPSHOT</version>
+	<version>5.0.0-RELEASE</version>
 	<name>x38ShLibClasses</name>
 	<url>http://maven.apache.org</url>
 
@@ -19,7 +19,7 @@
 		<org.jackson.version>2.7.9.5</org.jackson.version>
 		<org.apache.tiles.version>3.0.8</org.apache.tiles.version>
 		<hdiv.version>3.5.0.RC3</hdiv.version>
-		<hdivsecurity.version>2.3.0.RC1</hdivsecurity.version>
+		<hdivsecurity.version>2.4.1</hdivsecurity.version>
 	</properties>
 
 	<dependencies>
@@ -34,6 +34,7 @@
 		    <artifactId>hdiv-for-services</artifactId>
 		    <version>${hdivsecurity.version}</version>
 		</dependency>
+		
 		<!-- Spring -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -564,6 +565,7 @@
 			<url>http://www.otc.ejiedes.net/archiva/repository/repoCACRep</url>
 			<snapshots>
 				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
 			</snapshots>
 		</repository>
 	</repositories>

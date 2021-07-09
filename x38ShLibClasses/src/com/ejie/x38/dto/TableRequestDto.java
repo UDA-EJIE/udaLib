@@ -214,6 +214,9 @@ public class TableRequestDto implements java.io.Serializable, SecureIdContainer 
 		}
 		
 		public Boolean getSelectedAll() {
+			if (selectedAll == null) {
+				selectedAll = false;
+			}
 			return selectedAll;
 		}
 		public void setSelectedAll(Boolean selectedAll) {

@@ -599,14 +599,11 @@ public class TableManager implements java.io.Serializable{
 			selectQuery.append(" AND (").append(pkStr).append(") ")
 				.append(tableRequestDto.getMultiselection().getSelectedAll()? "NOT":"").append(" IN (");
 			
-			// Comprobar si la lista de parÃ¡metros recibida es la misma que la aportada en pkList.
-			// Cabe decir que en los casos en los que las claves primarias sean compuestas esta condiciÃ³n nunca serÃ¡ afirmativa ya que siempre diferirÃ¡n los valores recibidos y aportados.
+			// Comprobar si la lista de parámetros recibida es la misma que la aportada en pkList.
+			// Cabe decir que en los casos en los que las claves primarias sean compuestas esta condición nunca será afirmativa ya que siempre diferirán los valores recibidos y aportados.
 			if (tableRequestDto.getCore().getPkNames().size() != pkList.length && !tableRequestDto.getMultiselection().getSelectedIds().get(0).contains(Constants.PK_TOKEN)) {
-				TableManager.logger.info("[getSelectMultipleQuery] : La lista de parÃ¡metros recibida no es la misma que la aportada");
+				TableManager.logger.info("[getSelectMultipleQuery] : La lista de parámetros recibida no es la misma que la aportada");
 			}
-		
-			// Guardamos los campos declarados en la entidad.
-			Field[] fields = clazz.getDeclaredFields();
 			
 			for (T selectedBean : tableRequestDto.getMultiselection().getSelected(clazz)) {
 				selectQuery.append("(");
@@ -614,10 +611,8 @@ public class TableManager implements java.io.Serializable{
 					selectQuery.append("?").append(",");
 					
 					try {
-						
 						// Se obtiene el valor de la pk declarada.
-						paramList.add(getCampoByIntrospection(clazz, selectedBean, pk));
-						
+						paramList.add(getCampoByIntrospection(clazz, selectedBean, pk.replace("_", "")));
 					} catch (IllegalAccessException e) {
 						TableManager.logger.error(e.getMessage(), e);
 					} catch (InvocationTargetException e) {
@@ -625,7 +620,6 @@ public class TableManager implements java.io.Serializable{
 					} catch (IntrospectionException e) {
 						TableManager.logger.error(e.getMessage(), e);
 					}
-					
 				}
 
 				selectQuery.deleteCharAt(selectQuery.length()-1);

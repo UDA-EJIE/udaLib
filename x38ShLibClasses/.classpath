@@ -128,11 +128,11 @@
 	<classpathentry kind="lib" path="lib/hdiv-ee-spring-mvc-2.6.4-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/hdiv-ee-ssl-2.4.3.jar"/>
 	<classpathentry kind="lib" path="lib/hdiv-ee-ssl-jdk6-1.0.0.jar"/>
-	<classpathentry kind="lib" path="lib/hdiv-for-services-2.4.1.RC2-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/hdiv-jstl-taglibs-1.2-3.5.0.RC3.jar"/>
 	<classpathentry kind="lib" path="lib/hdiv-services-3.5.0.RC3.jar"/>
 	<classpathentry kind="lib" path="lib/hdiv-spring-mvc-3.5.0.RC3.jar"/>
 	<classpathentry kind="lib" path="lib/licensing-core-1.1.0.jar"/>
 	<classpathentry kind="lib" path="lib/y31c-1.5-impl.jar"/>
+	<classpathentry kind="lib" path="lib/hdiv-for-services-2.4.1.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
