@@ -468,7 +468,7 @@
 		<dependency>
 			<groupId>com.ejie</groupId>
 			<artifactId>y31c</artifactId>
-			<version>1.4</version>
+			<version>1.5</version>
 			<classifier>impl</classifier>
 		</dependency>
 		<dependency>
