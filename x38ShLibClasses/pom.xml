@@ -213,7 +213,7 @@
 		<dependency>
 			<groupId>commons-beanutils</groupId>
 			<artifactId>commons-beanutils</artifactId>
-			<version>1.8.0</version>
+			<version>1.9.4</version>
 			<exclusions>
 				<!-- Exclude Commons Logging in favor of logback -->
 				<exclusion>
@@ -460,7 +460,7 @@
 		<dependency>
 			<groupId>com.ejie</groupId>
 			<artifactId>y31c</artifactId>
-			<version>1.4</version>
+			<version>1.5</version>
 			<classifier>impl</classifier>
 		</dependency>
 		<dependency>
