@@ -27,6 +27,60 @@
 		    <groupId>com.hdivsecurity</groupId>
 		    <artifactId>hdiv-for-services</artifactId>
 		    <version>${hdivsecurity.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.github.fge</groupId>
+					<artifactId>btf</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.github.fge</groupId>
+					<artifactId>jackson-coreutils</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.datatype</groupId>
+					<artifactId>jackson-datatype-hibernate4</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.module</groupId>
+					<artifactId>jackson-module-jsonSchema</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.jcip</groupId>
+					<artifactId>jcip-annotations</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.edropple.jregex</groupId>
+					<artifactId>jregex</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.github.fge</groupId>
+					<artifactId>json-patch</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.github.jsqlparser</groupId>
+					<artifactId>jsqlparser</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.annotation</groupId>
+					<artifactId>jsr250-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.sourceforge.streamsupport</groupId>
+					<artifactId>streamsupport</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>stax</groupId>
+					<artifactId>stax-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.activation</groupId>
+					<artifactId>activation</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.freemarker</groupId>
+					<artifactId>freemarker</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		
 		<!-- Spring -->
