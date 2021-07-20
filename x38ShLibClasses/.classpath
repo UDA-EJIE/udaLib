@@ -107,12 +107,10 @@
 	<classpathentry kind="lib" path="lib/w43ta-2.4.jar"/>
 	<classpathentry kind="lib" path="lib/xz-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/y31b-1.4-ifaz.jar"/>
-	<classpathentry kind="lib" path="lib/y31c-1.4-impl.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/UDAWLS11Classpath"/>
 	<classpathentry kind="con" path="oracle.eclipse.tools.weblogic.lib.system"/>
 	<classpathentry kind="lib" path="lib/spring-hateoas-0.23.0.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/itext-2.1.7.jar"/>
-	<classpathentry kind="lib" path="lib/jackson-datatype-hibernate4-2.6.7.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-module-jsonSchema-2.6.7.jar"/>
 	<classpathentry kind="lib" path="lib/jregex-1.2_01.jar"/>
 	<classpathentry kind="lib" path="lib/spring-plugin-core-1.2.0.RELEASE.jar"/>

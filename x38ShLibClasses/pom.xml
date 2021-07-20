@@ -5,7 +5,7 @@
 	<groupId>com.ejie.x38</groupId>
 	<artifactId>x38ShLibClasses</artifactId>
 	<packaging>jar</packaging>
-	<version>5.0.0-RELEASE</version>
+	<version>5.0.1-RELEASE</version>
 	<name>x38ShLibClasses</name>
 	<url>http://maven.apache.org</url>
 
@@ -18,22 +18,71 @@
 		<!-- <org.jackson.version>2.8.11.3</org.jackson.version> -->
 		<org.jackson.version>2.7.9.5</org.jackson.version>
 		<org.apache.tiles.version>3.0.8</org.apache.tiles.version>
-		<hdiv.version>3.5.0.RC3</hdiv.version>
-		<hdivsecurity.version>2.3.0.RC1</hdivsecurity.version>
+		<hdivsecurity.version>2.4.1</hdivsecurity.version>
 	</properties>
 
 	<dependencies>
 		<!-- Hdiv -->
 		<dependency>
-			<groupId>org.hdiv</groupId>
-			<artifactId>hdiv-services</artifactId>
-			<version>${hdiv.version}</version>
-		</dependency>
-		<dependency>
 		    <groupId>com.hdivsecurity</groupId>
 		    <artifactId>hdiv-for-services</artifactId>
 		    <version>${hdivsecurity.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.github.fge</groupId>
+					<artifactId>btf</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.github.fge</groupId>
+					<artifactId>jackson-coreutils</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.datatype</groupId>
+					<artifactId>jackson-datatype-hibernate4</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.module</groupId>
+					<artifactId>jackson-module-jsonSchema</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.jcip</groupId>
+					<artifactId>jcip-annotations</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.edropple.jregex</groupId>
+					<artifactId>jregex</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.github.fge</groupId>
+					<artifactId>json-patch</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.github.jsqlparser</groupId>
+					<artifactId>jsqlparser</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.annotation</groupId>
+					<artifactId>jsr250-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.sourceforge.streamsupport</groupId>
+					<artifactId>streamsupport</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>stax</groupId>
+					<artifactId>stax-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.activation</groupId>
+					<artifactId>activation</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.freemarker</groupId>
+					<artifactId>freemarker</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
+		
 		<!-- Spring -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -473,7 +522,7 @@
 		<dependency>
 			<groupId>com.ejie</groupId>
 			<artifactId>y31c</artifactId>
-			<version>1.4</version>
+			<version>1.5</version>
 			<classifier>impl</classifier>
 		</dependency>
 		<dependency>
@@ -564,6 +613,7 @@
 			<url>http://www.otc.ejiedes.net/archiva/repository/repoCACRep</url>
 			<snapshots>
 				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
 			</snapshots>
 		</repository>
 	</repositories>
