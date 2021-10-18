@@ -36,7 +36,7 @@
 		<jar destfile="${destDir}/x38ShLibClasses-${version}.jar">
 			<fileset dir="${buildDir}" includes="com/ejie/x38/** LICENSE.txt NOTICE.txt" excludes="com/ejie/x38/webdav/**, com/ejie/x38/pif/**, com/ejie/x38/rup/**, com/ejie/x38/cache/**, com/ejie/x38/hdiv/**" />
 			<fileset dir="${baseDir}" includes="build.xml pom.xml" />
-			<fileset dir="${srcDir}" includes="**/*.java"/>
+			<fileset dir="${srcDir}" includes="**/*.java" excludes="com/ejie/x38/webdav/**, com/ejie/x38/pif/**, com/ejie/x38/rup/**, com/ejie/x38/cache/**, com/ejie/x38/hdiv/**" />
 			<manifest>
 		      	<attribute name="Main-Class" value=""/>
 		     	<attribute name="Manifest-Version" value="${version}"/>
