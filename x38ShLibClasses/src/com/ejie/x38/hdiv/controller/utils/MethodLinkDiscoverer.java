@@ -44,9 +44,10 @@ public class MethodLinkDiscoverer {
 
 		UDALink udalink = currentMethod.getAnnotation(UDALink.class);
 
-		// TODO: XAS - Cache allowInfoList by udaLink?
+		LOGGER.debug(" udalink found for method " + currentMethod.toString());
 		if (udalink != null) {
 			UDALinkAllower[] linkAllowers = udalink.linkTo();
+			LOGGER.debug(" udalink allower found for link " + udalink.name());
 			if (linkAllowers != null) {
 				allowInfoList = getAllowedInfo(linkAllowers, controller);
 			}
