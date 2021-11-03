@@ -64,7 +64,7 @@ public class MethodLinkDiscoverer {
 			LOGGER.debug(" processing allower " + udalinkAllower.name());	
 			for (Method m : getControllerMethods(udalinkAllower, controller)) {
 				UDALink mlink = m.getAnnotation(UDALink.class);
-				LOGGER.debug(" processing method " + m.toString() + " with link " + mlink.name());
+				LOGGER.debug(" processing method " + m.toString() );
 				if (mlink != null && mlink.name().equals(udalinkAllower.name())) {
 					LOGGER.debug(" processing method " + m.toString() + " mappings");
 					MethodMappingInfo mappings = methodMappingDiscoverer.getMethodMappings(m.toString());
