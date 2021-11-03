@@ -8,6 +8,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ejie.x38.hdiv.annotation.UDALink;
@@ -17,6 +19,8 @@ import com.ejie.x38.hdiv.controller.model.UDALinkMappingInfo;
 
 public class MethodLinkDiscoverer {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(MethodLinkDiscoverer.class);
+	
 	@Autowired
 	private MethodMappingDiscoverer methodMappingDiscoverer;
 
@@ -53,12 +57,16 @@ public class MethodLinkDiscoverer {
 	private List<UDALinkMappingInfo> getAllowedInfo(final UDALinkAllower[] linkAllowers, final Class<?> controller) {
 		List<UDALinkMappingInfo> allowInfo = new ArrayList<UDALinkMappingInfo>();
 
+		LOGGER.debug(linkAllowers.length + " link allowers found for controller " + controller.getName());
 		for (UDALinkAllower udalinkAllower : linkAllowers) {
 
 			// The allowed link could belong to other controller defined into UDALinkAllower
+			LOGGER.debug(" processing allower " + udalinkAllower.name());	
 			for (Method m : getControllerMethods(udalinkAllower, controller)) {
 				UDALink mlink = m.getAnnotation(UDALink.class);
+				LOGGER.debug(" processing method " + m.toString() + " with link " + mlink.name());
 				if (mlink != null && mlink.name().equals(udalinkAllower.name())) {
+					LOGGER.debug(" processing method " + m.toString() + " mappings");
 					MethodMappingInfo mappings = methodMappingDiscoverer.getMethodMappings(m.toString());
 					allowInfo.add(new UDALinkMappingInfo(udalinkAllower.name(), udalinkAllower.allower(), mappings));
 				}
