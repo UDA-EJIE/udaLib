@@ -64,14 +64,14 @@ public class LinkResourcesAspect {
 			Object content = ((Resource<?>)result).getContent();
 			if(content != null) {
 				Field[] fields = content.getClass().getDeclaredFields();
-				resources.addAll(checkFields(fields, content));	
+				resources.addAll(checkFields(fields, content, Math.max((deep + 1), (MAX_DEEP-2))));	
 			}
 			
 		}else if (result instanceof SecureIdentifiable<?> || result instanceof SecureIdContainer) {
 			resources.add(result);
 			
 			Field[] fields = result.getClass().getDeclaredFields();
-			resources.addAll(checkFields(fields, result));
+			resources.addAll(checkFields(fields, result, Math.max((deep + 1), (MAX_DEEP-2))));
 			
 		}
 		else if (result instanceof Iterable) {
@@ -106,14 +106,14 @@ public class LinkResourcesAspect {
 		return resources;
 	}
 	
-	private List<Object> checkFields(Field[] fields, Object object) {
+	private List<Object> checkFields(Field[] fields, Object object, final int deep) {
 		List<Object> resources = new ArrayList<Object>();
 		
 		for (Field field : fields) {
 			try {
 				if( !Modifier.isStatic(field.getModifiers()) && (Resource.class.isAssignableFrom(field.getDeclaringClass()) || SecureIdentifiable.class.isAssignableFrom(field.getDeclaringClass()) || SecureIdContainer.class.isAssignableFrom(field.getDeclaringClass()))) {
 					field.setAccessible(true);
-					resources.add(field.get(object));
+					resources.addAll(getResources(field.get(object), deep));
 				}
 			}
 			catch (Exception e) {
