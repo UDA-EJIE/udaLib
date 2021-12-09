@@ -1,5 +1,6 @@
 package com.ejie.x38.hdiv.aspect;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -10,6 +11,8 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.hdiv.services.LinkProvider;
+import org.hdiv.services.SecureIdContainer;
+import org.hdiv.services.SecureIdentifiable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +31,7 @@ public class LinkResourcesAspect {
 	private static final int MAX_DEEP = 8;
 
 	@Autowired
-	private LinkProvider linkProvider;
+	private LinkProvider<?> linkProvider;
 
 	@Around("@annotation(com.ejie.x38.hdiv.annotation.UDALink)")
 	public Object processLinks(final ProceedingJoinPoint joinPoint) throws Throwable {
@@ -56,8 +59,21 @@ public class LinkResourcesAspect {
 		if (result == null || deep > MAX_DEEP) {
 			return resources;
 		}
-		if (result instanceof Resource) {
+		if (result instanceof Resource || result instanceof SecureIdentifiable<?> || result instanceof SecureIdContainer) {
 			resources.add(result);
+			
+			Field[] fields = result.getClass().getDeclaredFields();
+			for (Field field : fields) {
+				try {
+					if( !Modifier.isStatic(field.getModifiers()) && (Resource.class.isAssignableFrom(field.getDeclaringClass()) || SecureIdentifiable.class.isAssignableFrom(field.getDeclaringClass()) || SecureIdContainer.class.isAssignableFrom(field.getDeclaringClass()))) {
+						field.setAccessible(true);
+						resources.add(field.get(result));
+					}
+				}
+				catch (Exception e) {
+					LOGGER.error("Error getting field " + field.getName() + " of class:" + result.getClass().getName(), e);
+				}
+			}
 		}
 		else if (result instanceof Iterable) {
 			for (Object o : (Iterable<?>) result) {
