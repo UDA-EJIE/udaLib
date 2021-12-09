@@ -31,7 +31,7 @@ public class LinkResourcesAspect {
 	private static final int MAX_DEEP = 8;
 
 	@Autowired
-	private LinkProvider<?> linkProvider;
+	private LinkProvider linkProvider;
 
 	@Around("@annotation(com.ejie.x38.hdiv.annotation.UDALink)")
 	public Object processLinks(final ProceedingJoinPoint joinPoint) throws Throwable {
