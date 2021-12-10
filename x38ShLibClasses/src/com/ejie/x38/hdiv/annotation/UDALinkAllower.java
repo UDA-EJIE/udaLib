@@ -9,6 +9,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface UDALinkAllower {
 	String name();
+	
+	boolean allowSubEntities() default false;
 
 	Class<?> allower() default Void.class;
 

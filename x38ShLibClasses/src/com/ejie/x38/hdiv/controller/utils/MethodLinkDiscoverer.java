@@ -69,7 +69,7 @@ public class MethodLinkDiscoverer {
 				if (mlink != null && mlink.name().equals(udalinkAllower.name())) {
 					LOGGER.debug(" processing method " + m.toString() + " mappings");
 					MethodMappingInfo mappings = methodMappingDiscoverer.getMethodMappings(m.toString());
-					allowInfo.add(new UDALinkMappingInfo(udalinkAllower.name(), udalinkAllower.allower(), mappings));
+					allowInfo.add(new UDALinkMappingInfo(udalinkAllower.name(), udalinkAllower.allowSubEntities() ,udalinkAllower.allower(), mappings));
 				}
 			}
 		}

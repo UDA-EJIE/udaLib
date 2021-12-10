@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resource;
 import org.springframework.stereotype.Component;
 
+import com.ejie.x38.hdiv.controller.model.UDALinkResources;
 import com.ejie.x38.hdiv.controller.utils.DinamicLinkProvider;
 import com.ejie.x38.hdiv.controller.utils.UDASecureResourceProcesor;
 
@@ -41,8 +42,9 @@ public class LinkResourcesAspect {
 
 			Class<?> controller = joinPoint.getTarget().getClass();
 
-			List<Object> entities = getResources(result, 0);
-			UDASecureResourceProcesor.processLinks(entities, controller, (DinamicLinkProvider) linkProvider);
+			UDALinkResources udaLinkResources = new UDALinkResources();
+			fillResources(result, 0, udaLinkResources, false);
+			UDASecureResourceProcesor.processLinks(udaLinkResources, controller, (DinamicLinkProvider) linkProvider);
 
 		}
 		catch (Throwable e) {
@@ -53,35 +55,36 @@ public class LinkResourcesAspect {
 
 	}
 
-	private List<Object> getResources(final Object result, final int deep) {
+	private void fillResources(final Object result, final int deep, UDALinkResources udaLinkResources, boolean isSubEntity) {
 
-		List<Object> resources = new ArrayList<Object>();
 		if (result == null || deep > MAX_DEEP) {
-			return resources;
+			return;
 		}
+		
+		List<Object> resources = isSubEntity ? udaLinkResources.getSubEntities() : udaLinkResources.getEntities();
 		if (result instanceof Resource) {
 			resources.add(result);
 			Object content = ((Resource<?>)result).getContent();
 			if(content != null) {
 				Field[] fields = content.getClass().getDeclaredFields();
-				resources.addAll(checkFields(fields, content, Math.max((deep + 1), (MAX_DEEP-2))));	
+				checkFields(fields, content, deep + 1, udaLinkResources);	
 			}
 			
 		}else if (result instanceof SecureIdentifiable<?> || result instanceof SecureIdContainer) {
 			resources.add(result);
 			
 			Field[] fields = result.getClass().getDeclaredFields();
-			resources.addAll(checkFields(fields, result, Math.max((deep + 1), (MAX_DEEP-2))));
+			checkFields(fields, result, deep + 1, udaLinkResources);
 			
 		}
 		else if (result instanceof Iterable) {
 			for (Object o : (Iterable<?>) result) {
-				resources.addAll(getResources(o, deep + 1));
+				fillResources(o, deep + 1, udaLinkResources, isSubEntity);
 			}
 		}
 		else if (result instanceof Map) {
 			for (Object o : ((Map<?, ?>) result).values()) {
-				resources.addAll(getResources(o, deep + 1));
+				fillResources(o, deep + 1, udaLinkResources, isSubEntity);
 			}
 		}
 		else if (!isJRECLass(result.getClass().getName())) {
@@ -91,7 +94,7 @@ public class LinkResourcesAspect {
 					try {
 						if (Modifier.isPublic(method.getModifiers()) && method.getParameterTypes().length == 0
 								&& method.getReturnType() != null) {
-							resources.addAll(getResources(method.invoke(result), deep + 1));
+							fillResources(method.invoke(result), deep + 1, udaLinkResources, isSubEntity);
 						}
 					}
 					catch (Exception e) {
@@ -103,17 +106,15 @@ public class LinkResourcesAspect {
 			}
 
 		}
-		return resources;
 	}
 	
-	private List<Object> checkFields(Field[] fields, Object object, final int deep) {
-		List<Object> resources = new ArrayList<Object>();
+	private void checkFields(Field[] fields, Object object, final int deep, UDALinkResources udaLinkResources) {
 		
 		for (Field field : fields) {
 			try {
 				if( !Modifier.isStatic(field.getModifiers()) && (Resource.class.isAssignableFrom(field.getDeclaringClass()) || SecureIdentifiable.class.isAssignableFrom(field.getDeclaringClass()) || SecureIdContainer.class.isAssignableFrom(field.getDeclaringClass()))) {
 					field.setAccessible(true);
-					resources.addAll(getResources(field.get(object), deep));
+					fillResources(field.get(object), deep, udaLinkResources, true);
 				}
 			}
 			catch (Exception e) {
@@ -121,7 +122,6 @@ public class LinkResourcesAspect {
 			}
 		}
 		
-		return resources;
 	}
 
 	String[] jrePackages = new String[] { "java.", "com.sun.", "sun.", "oracle.", "org.xml.", "com.oracle." };

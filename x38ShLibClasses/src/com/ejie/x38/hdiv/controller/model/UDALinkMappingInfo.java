@@ -21,6 +21,8 @@ public class UDALinkMappingInfo {
 	private static final Logger LOGGER = LoggerFactory.getLogger(UDALinkMappingInfo.class);
 
 	private final String name;
+	
+	private final boolean allowSubEntities;
 
 	private MappingInfo<?> entityMappingInfo;
 
@@ -28,8 +30,9 @@ public class UDALinkMappingInfo {
 
 	private Set<RequestMethod> methodCondition;
 
-	public UDALinkMappingInfo(final String name, final Class<?> allower, final MethodMappingInfo mappings) {
+	public UDALinkMappingInfo(final String name, final boolean allowSubEntities, final Class<?> allower, final MethodMappingInfo mappings) {
 		this.name = name;
+		this.allowSubEntities = allowSubEntities;
 		setMappingInfo(allower, mappings);
 	}
 
@@ -43,6 +46,10 @@ public class UDALinkMappingInfo {
 
 	public String getName() {
 		return name;
+	}
+	
+	public boolean isAllowSubEntities() {
+		return allowSubEntities;
 	}
 
 	public Set<RequestMethod> getMethodCondition() {
