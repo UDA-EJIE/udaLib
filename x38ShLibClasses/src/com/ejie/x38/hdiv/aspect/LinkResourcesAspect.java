@@ -1,6 +1,5 @@
 package com.ejie.x38.hdiv.aspect;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -11,8 +10,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.hdiv.services.LinkProvider;
-import org.hdiv.services.SecureIdContainer;
-import org.hdiv.services.SecureIdentifiable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,18 +58,6 @@ public class LinkResourcesAspect {
 		}
 		if (result instanceof Resource) {
 			resources.add(result);
-			Object content = ((Resource<?>)result).getContent();
-			if(content != null) {
-				Field[] fields = content.getClass().getDeclaredFields();
-				resources.addAll(checkFields(fields, content, Math.max((deep + 1), (MAX_DEEP-2))));	
-			}
-			
-		}else if (result instanceof SecureIdentifiable<?> || result instanceof SecureIdContainer) {
-			resources.add(result);
-			
-			Field[] fields = result.getClass().getDeclaredFields();
-			resources.addAll(checkFields(fields, result, Math.max((deep + 1), (MAX_DEEP-2))));
-			
 		}
 		else if (result instanceof Iterable) {
 			for (Object o : (Iterable<?>) result) {
@@ -103,24 +88,6 @@ public class LinkResourcesAspect {
 			}
 
 		}
-		return resources;
-	}
-	
-	private List<Object> checkFields(Field[] fields, Object object, final int deep) {
-		List<Object> resources = new ArrayList<Object>();
-		
-		for (Field field : fields) {
-			try {
-				if( !Modifier.isStatic(field.getModifiers()) && (Resource.class.isAssignableFrom(field.getDeclaringClass()) || SecureIdentifiable.class.isAssignableFrom(field.getDeclaringClass()) || SecureIdContainer.class.isAssignableFrom(field.getDeclaringClass()))) {
-					field.setAccessible(true);
-					resources.addAll(getResources(field.get(object), deep));
-				}
-			}
-			catch (Exception e) {
-				LOGGER.error("Error getting field " + field.getName() + " of class:" + object.getClass().getName(), e);
-			}
-		}
-		
 		return resources;
 	}
 
