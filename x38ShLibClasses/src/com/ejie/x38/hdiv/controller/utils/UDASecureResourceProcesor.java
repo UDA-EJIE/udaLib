@@ -22,6 +22,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.ejie.x38.hdiv.controller.model.LinkInfo;
 import com.ejie.x38.hdiv.controller.model.MappingInfo;
 import com.ejie.x38.hdiv.controller.model.UDALinkMappingInfo;
+import com.ejie.x38.hdiv.controller.model.UDALinkResources;
 import com.hdivsecurity.services.affordance.MethodAwareLink;
 
 public class UDASecureResourceProcesor {
@@ -34,31 +35,39 @@ public class UDASecureResourceProcesor {
 		UDASecureResourceProcesor.methodLinkDiscoverer = methodLinkDiscoverer;
 	}
 
-	@SuppressWarnings("unchecked")
-	public static <T> Resource<T> asResource(final T entity, final Class<?> controller) {
-		List<Resource<T>> resources = asResources(Arrays.asList(entity), controller);
+	public static Resource<Object> asResource(final Object entity, final Class<?> controller) {
+		List<Resource<Object>> resources = asResources(Arrays.asList(entity), controller);
 		if (resources != null) {
 			return resources.get(0);
 		}
 		return null;
 	}
 
-	public static <T> List<Resource<T>> asResources(final List<T> entities, final Class<?> controller) {
-		return processLinks(entities, controller, null);
+	public static List<Resource<Object>> asResources(final List<Object> entities, final Class<?> controller) {
+		return processLinks(entities, null, controller, null);
+	}
+	
+	public static List<Resource<Object>> processLinks(final UDALinkResources udaLinkResources, final Class<?> controller,
+			final DinamicLinkProvider linkProvider) {
+		return processLinks(udaLinkResources.getEntities(), udaLinkResources.getSubEntities(), controller, linkProvider);
+		
 	}
 
-	public static <T> List<Resource<T>> processLinks(final List<T> entities, final Class<?> controller,
+	private static List<Resource<Object>> processLinks(final List<Object> entities, final List<Object> subEntities, final Class<?> controller,
 			final DinamicLinkProvider linkProvider) {
 
 		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 		List<UDALinkMappingInfo> allowInfoList = methodLinkDiscoverer.getMethodLinkInfo(request);
 
-		List<Resource<T>> resources = new ArrayList<Resource<T>>();
+		List<Resource<Object>> resources = new ArrayList<Resource<Object>>();
 
 		if (allowInfoList != null) {
 			String requestStr = getBaseUrl(request).toString();
-			if (entities != null && entities.size() > 0) {
-				resources = processEntities(entities, request, allowInfoList, requestStr);
+			if (entities != null && !entities.isEmpty()) {
+				resources = processEntities(entities, false, request, allowInfoList, requestStr);
+			}
+			if (subEntities != null && !subEntities.isEmpty()) {
+				resources.addAll(processEntities(subEntities, true, request, allowInfoList, requestStr));
 			}
 			if (linkProvider != null) {
 				processStaticLinks(request, allowInfoList, requestStr, linkProvider);
@@ -110,19 +119,19 @@ public class UDASecureResourceProcesor {
 		linkProvider.addLinks(links, request);
 	}
 
-	private static <T> List<Resource<T>> processEntities(final List<T> entities, final HttpServletRequest request,
+	private static List<Resource<Object>> processEntities(final List<Object> entities, final boolean isSubEntity, final HttpServletRequest request,
 			final List<UDALinkMappingInfo> allowInfoList, final String requestStr) {
 
-		List<Resource<T>> resources = new ArrayList<Resource<T>>();
+		List<Resource<Object>> resources = new ArrayList<Resource<Object>>();
 
-		if (entities != null && entities.size() > 0) {
+		if (entities != null && !entities.isEmpty()) {
 
 			if (allowInfoList != null) {
 
 				Map<String, Map<String, Method>> urlTemplatesMap = new HashMap<String, Map<String, Method>>();
 				// add links to resources
-				for (T entity : entities) {
-					resources.addAll(processEntity(entity, request, allowInfoList, requestStr, urlTemplatesMap));
+				for (Object entity : entities) {
+					resources.addAll(processEntity(entity, request, allowInfoList, requestStr, urlTemplatesMap, isSubEntity));
 				}
 			}
 
@@ -131,10 +140,10 @@ public class UDASecureResourceProcesor {
 		return resources;
 	}
 
-	private static <T> List<Resource<T>> processEntity(final T entity, final HttpServletRequest request,
-			final List<UDALinkMappingInfo> allowInfoList, final String requestStr, final Map<String, Map<String, Method>> urlTemplatesMap) {
+	private static List<Resource<Object>> processEntity(final Object entity, final HttpServletRequest request,
+			final List<UDALinkMappingInfo> allowInfoList, final String requestStr, final Map<String, Map<String, Method>> urlTemplatesMap, final boolean isSubEntity) {
 
-		List<Resource<T>> resources = new ArrayList<Resource<T>>();
+		List<Resource<Object>> resources = new ArrayList<Resource<Object>>();
 
 		// add links to resources
 		Object entityToProcces;
@@ -151,15 +160,20 @@ public class UDASecureResourceProcesor {
 		List<Link> entityLinks = new ArrayList<Link>();
 
 		for (UDALinkMappingInfo allowInfo : allowInfoList) {
-			// Check allower for this certain entity
-			entityLinks.addAll(getAllowedEntityLinks(entityToProcces, allowInfo, request, requestStr, urlTemplatesMap));
+			
+			if(!allowInfo.isAllowSubEntities() && isSubEntity) {
+				LOGGER.debug("Sub entity found but not allowed for : " + allowInfo.getName());
+			}else {
+				// Check allower for this certain entity
+				entityLinks.addAll(getAllowedEntityLinks(entityToProcces, allowInfo, request, requestStr, urlTemplatesMap));
+			}
 		}
 
 		if (entity instanceof Resource) {
 			((Resource<?>) entity).add(entityLinks);
 		}
 		else {
-			resources.add(new Resource<T>(entity, entityLinks));
+			resources.add(new Resource<Object>(entity, entityLinks));
 		}
 
 		return resources;
@@ -235,7 +249,7 @@ public class UDASecureResourceProcesor {
 		}
 	}
 
-	private static <T> Map<String, Object> getEntityValueMapFromTemplates(final T entity, final Map<String, Method> segments,
+	private static <T> Map<String, Object> getEntityValueMapFromTemplates(final Object entity, final Map<String, Method> segments,
 			final Map<String, Object> map) {
 
 		for (Entry<String, Method> segmentInfo : segments.entrySet()) {
@@ -245,7 +259,7 @@ public class UDASecureResourceProcesor {
 		return map;
 	}
 
-	private static <T> Object getTemplateValuesFromEntity(final T entity, final Method segmentMethod, final String segmentName) {
+	private static <T> Object getTemplateValuesFromEntity(final Object entity, final Method segmentMethod, final String segmentName) {
 
 		Object value = null;
 		try {
@@ -265,7 +279,7 @@ public class UDASecureResourceProcesor {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static <T> boolean allowedForEntity(final T entity, final String name, final MappingInfo<?> mappingInfo,
+	private static <T> boolean allowedForEntity(final Object entity, final String name, final MappingInfo<?> mappingInfo,
 			final HttpServletRequest request) {
 		if (mappingInfo == null) {
 			return false;
