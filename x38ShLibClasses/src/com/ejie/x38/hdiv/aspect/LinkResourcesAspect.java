@@ -35,11 +35,13 @@ public class LinkResourcesAspect extends ResponseLinkProcesor {
 	}
 
 	@Override
-	protected void onSecureIdentifiableFound(Object object) {
+	protected Object updateOnSecureIdentifiableFound(Object object) {
+		return object;
 	}
 
 	@Override
-	protected void onSecureIdContainerFound(Object object) {
+	protected Object updateOnSecureIdContainerFound(Object object) {
+		return object;
 	}
 
 }

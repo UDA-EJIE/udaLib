@@ -26,17 +26,18 @@ public abstract class ResponseLinkProcesor {
 	private static final String[] JRE_PACKAGES = new String[] { "java.", "com.sun.", "sun.", "oracle.", "org.xml.", "com.oracle." };
 
 
-	public void checkResponseToLinks(final Object object, Class<?> controller, LinkProvider linkProvider) throws Throwable {
+	public Object checkResponseToLinks(final Object object, Class<?> controller, LinkProvider linkProvider) throws Throwable {
 
 			UDALinkResources udaLinkResources = new UDALinkResources();
-			fillResources(object, 0, udaLinkResources, false);
+			Object processed = fillResources(object, 0, udaLinkResources, false);
 			UDASecureResourceProcesor.processLinks(udaLinkResources, controller, (DinamicLinkProvider) linkProvider);
+			return processed;
 	}
 
-	private void fillResources(final Object result, final int deep, UDALinkResources udaLinkResources, boolean isSubEntity) {
+	private Object fillResources( Object result, final int deep, UDALinkResources udaLinkResources, boolean isSubEntity) {
 
 		if (result == null || deep > MAX_DEEP) {
-			return;
+			return result;
 		}
 		
 		List<Object> resources = isSubEntity ? udaLinkResources.getSubEntities() : udaLinkResources.getEntities();
@@ -51,12 +52,12 @@ public abstract class ResponseLinkProcesor {
 			
 			resources.add(result);
 			checkFields(result, deep + 1, udaLinkResources);
-			onSecureIdentifiableFound(result);
+			result = updateOnSecureIdentifiableFound(result);
 			
 		}else if (result instanceof SecureIdContainer) {
 			resources.add(result);
 			checkFields(result, deep + 1, udaLinkResources);
-			onSecureIdContainerFound(result);
+			result = updateOnSecureIdContainerFound(result);
 			
 		}else if (result instanceof Iterable) {
 			for (Object o : (Iterable<?>) result) {
@@ -84,8 +85,9 @@ public abstract class ResponseLinkProcesor {
 			catch (Exception e) {
 				LOGGER.error("Error getting methods of class:" + result.getClass().getName(), e);
 			}
-
 		}
+		
+		return result;
 	}
 	
 	private void checkFields(Object object, final int deep, UDALinkResources udaLinkResources) {
@@ -114,8 +116,8 @@ public abstract class ResponseLinkProcesor {
 		return false;
 	}
 	
-	protected abstract void onSecureIdentifiableFound(Object object);
+	protected abstract Object updateOnSecureIdentifiableFound(Object object);
 	
-	protected abstract void onSecureIdContainerFound(Object object);
+	protected abstract Object updateOnSecureIdContainerFound(Object object);
 
 }

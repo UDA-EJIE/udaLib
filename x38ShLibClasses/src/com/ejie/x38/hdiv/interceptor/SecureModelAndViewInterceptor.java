@@ -38,33 +38,11 @@ public class SecureModelAndViewInterceptor extends HandlerInterceptorAdapter {
 		for(Entry<String, Object > modelObject : modelAndView.getModel().entrySet()) {
 			
 			try {
-				responseLinkProcessor.checkResponseToLinks(modelObject.getValue(), handler.getClass(), linkProvider);
+				modelAndView.addObject(modelObject.getKey(), responseLinkProcessor.checkResponseToLinks(modelObject.getValue(), handler.getClass(), linkProvider));
 			}
 			catch (Throwable e) {
 				LOGGER.error("Error processing links of object {} with exception:", modelObject.getKey(), e);
 			}
-			
-			
-			//checkObject(modelObject.getValue());
 		}
 	}
-	
-//	private void checkObject(Object value) {
-//		
-//		if (value instanceof SecureIdentifiable<?> ) {
-//			
-//			Object id = ((SecureIdentifiable<?>)value).getId();
-//			
-//			
-//		} else if (value instanceof SecureIdContainer) {
-//			
-//			Field[] fields = value.getClass().getDeclaredFields();
-//			
-//				
-//		} else if (value instanceof Iterable) {
-//			for (Object o : (Iterable<?>) value) {
-//				checkObject(o);
-//			}
-//		}
-//	}
 }

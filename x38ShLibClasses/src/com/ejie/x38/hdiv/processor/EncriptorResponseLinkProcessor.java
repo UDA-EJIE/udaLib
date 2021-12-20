@@ -8,17 +8,17 @@ import org.springframework.stereotype.Component;
 public class EncriptorResponseLinkProcessor extends ResponseLinkProcesor {
 
 	@Override
-	protected void onSecureIdentifiableFound(Object object) {
-		setAsProxy(object, "id");
+	protected Object updateOnSecureIdentifiableFound(Object object) {
+		return setAsProxy(object, "id");
 	}
 
 	@Override
-	protected void onSecureIdContainerFound(Object object) {
-		
+	protected Object updateOnSecureIdContainerFound(Object object) {
+		return null;
 	}
 	
-	private void setAsProxy(Object object, String paramName) {
-		Proxy.newProxyInstance(
+	private Object setAsProxy(Object object, String paramName) {
+		return Proxy.newProxyInstance(
 				object.getClass().getClassLoader(),
 		        new Class[]{ object.getClass() },
 		        new SecureInvocationHandler(object, paramName)
