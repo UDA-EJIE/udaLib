@@ -12,10 +12,12 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
 import com.ejie.x38.control.method.annotation.RequestJsonBodyMethodArgumentResolver;
+import com.ejie.x38.hdiv.interceptor.SecureModelAndViewInterceptor;
 
 @Configuration
 public class WebConfig extends WebMvcConfigurationSupport {
@@ -25,6 +27,9 @@ public class WebConfig extends WebMvcConfigurationSupport {
 
 	@Autowired
 	private ConversionService conversionService;
+	
+	@Autowired
+	private SecureModelAndViewInterceptor secureModelAndViewInterceptor;
 
 	@Autowired
 	@Qualifier("validator")
@@ -52,4 +57,8 @@ public class WebConfig extends WebMvcConfigurationSupport {
 		return adapter;
 	}
 
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+	    registry.addInterceptor(secureModelAndViewInterceptor);
+	}
 }
