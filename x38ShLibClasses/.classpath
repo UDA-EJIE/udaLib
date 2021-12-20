@@ -19,6 +19,11 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="owner.project.facets" value="java"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="lib/aopalliance-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/aspectjweaver-1.8.13.jar"/>
 	<classpathentry kind="lib" path="lib/avro-1.7.7.jar"/>
@@ -103,11 +108,7 @@
 	<classpathentry kind="lib" path="lib/xz-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/y31b-1.4-ifaz.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/UDAWLS11Classpath"/>
-	<classpathentry kind="con" path="oracle.eclipse.tools.weblogic.lib.system">
-		<attributes>
-			<attribute name="owner.project.facets" value="#system#;jst.utility"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="con" path="oracle.eclipse.tools.weblogic.lib.system"/>
 	<classpathentry kind="lib" path="lib/spring-hateoas-0.23.0.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/itext-2.1.7.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-module-jsonSchema-2.6.7.jar"/>
@@ -126,16 +127,10 @@
 	<classpathentry kind="lib" path="lib/hdiv-ee-ssl-2.4.3.jar"/>
 	<classpathentry kind="lib" path="lib/hdiv-ee-ssl-jdk6-1.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/hdiv-jstl-taglibs-1.2-3.5.0.RC3.jar"/>
+	<classpathentry kind="lib" path="lib/hdiv-services-3.5.0.RC3.jar"/>
 	<classpathentry kind="lib" path="lib/hdiv-spring-mvc-3.5.0.RC3.jar"/>
 	<classpathentry kind="lib" path="lib/licensing-core-1.1.0.jar"/>
 	<classpathentry kind="lib" path="lib/y31c-1.5-impl.jar"/>
 	<classpathentry kind="lib" path="lib/hdiv-for-services-2.4.1.jar"/>
-	<classpathentry kind="lib" path="lib/hdiv-services-3.5.1.jar"/>
-	<classpathentry kind="lib" path="lib/javax.persistence-api-2.2.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_91">
-		<attributes>
-			<attribute name="owner.project.facets" value="java"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
