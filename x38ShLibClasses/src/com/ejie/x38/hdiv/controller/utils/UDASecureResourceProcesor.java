@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -128,7 +127,7 @@ public class UDASecureResourceProcesor {
 
 			if (allowInfoList != null) {
 
-				Map<String, Map<String, Method>> urlTemplatesMap = new HashMap<String, Map<String, Method>>();
+				Map<String, Map<String, Map<Class<?>,Method>>> urlTemplatesMap = new HashMap<String, Map<String, Map<Class<?>,Method>>>();
 				// add links to resources
 				for (Object entity : entities) {
 					resources.addAll(processEntity(entity, request, allowInfoList, requestStr, urlTemplatesMap, isSubEntity));
@@ -141,7 +140,7 @@ public class UDASecureResourceProcesor {
 	}
 
 	private static List<Resource<Object>> processEntity(final Object entity, final HttpServletRequest request,
-			final List<UDALinkMappingInfo> allowInfoList, final String requestStr, final Map<String, Map<String, Method>> urlTemplatesMap, final boolean isSubEntity) {
+			final List<UDALinkMappingInfo> allowInfoList, final String requestStr, final Map<String, Map<String, Map<Class<?>,Method>>> urlTemplatesMap, final boolean isSubEntity) {
 
 		List<Resource<Object>> resources = new ArrayList<Resource<Object>>();
 
@@ -180,7 +179,7 @@ public class UDASecureResourceProcesor {
 	}
 
 	private static List<Link> getAllowedEntityLinks(final Object entityToProcces, final UDALinkMappingInfo allowInfo,
-			final HttpServletRequest request, final String requestStr, final Map<String, Map<String, Method>> urlTemplatesMap) {
+			final HttpServletRequest request, final String requestStr, final Map<String, Map<String, Map<Class<?>,Method>>> urlTemplatesMap) {
 
 		List<Link> entityLinks = new ArrayList<Link>();
 
@@ -191,10 +190,10 @@ public class UDASecureResourceProcesor {
 
 				Map<String, Object> templateValuesMap = new HashMap<String, Object>();
 
-				Map<String, Method> segments = urlTemplatesMap.get(mapping);
+				Map<String, Map<Class<?>,Method>> segments = urlTemplatesMap.get(mapping);
 				UriComponents uriComponents = UriComponentsBuilder.fromUriString(mapping).build();
 				if (segments == null) {
-					segments = new HashMap<String, Method>();
+					segments = new HashMap<String,Map<Class<?>,Method>>();
 					for (String segment : uriComponents.getPathSegments()) {
 						// no need to check if segment ends with '}'. We assume that case
 						if (segment.startsWith("{")) {
@@ -206,16 +205,14 @@ public class UDASecureResourceProcesor {
 							else {
 								segment = segment.substring(1, segment.length() - 1);
 							}
-
-							Method segmentMethod = getSegmentMethod(entityToProcces.getClass(), segment);
-							templateValuesMap.put(segment, getTemplateValuesFromEntity(entityToProcces, segmentMethod, segment));
-
-							segments.put(segment, segmentMethod);
+						
+							templateValuesMap.put(segment, getTemplateValuesFromEntity(entityToProcces, addSegmentMethodIfNeeded(entityToProcces, segment , segments), segment));
 						}
 					}
 					urlTemplatesMap.put(mapping, segments);
 				}
 				else {
+					
 					templateValuesMap = getEntityValueMapFromTemplates(entityToProcces, segments, templateValuesMap);
 				}
 
@@ -238,6 +235,26 @@ public class UDASecureResourceProcesor {
 		return entityLinks;
 
 	}
+	
+	private static Method addSegmentMethodIfNeeded(final Object entityToProcces, String segment , Map<String, Map<Class<?>,Method>> segments) {
+		Class<?> clazz = entityToProcces.getClass();
+		
+		Map<Class<?>,Method> segmentMethod = segments.get(segment);
+		if(segmentMethod == null) {
+			segmentMethod = new HashMap<Class<?>,Method>();
+			segments.put(segment, segmentMethod);
+		}
+		
+		Method method = segmentMethod.get(clazz);
+		
+		if(method == null) {
+			method = getSegmentMethod(entityToProcces.getClass(), segment);
+			segmentMethod.put(clazz, method);
+		}
+		
+		return method;
+		
+	}
 
 	private static Method getSegmentMethod(final Class<?> entityClass, final String segment) {
 		try {
@@ -249,11 +266,12 @@ public class UDASecureResourceProcesor {
 		}
 	}
 
-	private static <T> Map<String, Object> getEntityValueMapFromTemplates(final Object entity, final Map<String, Method> segments,
+	private static <T> Map<String, Object> getEntityValueMapFromTemplates(final Object entity, final Map<String, Map<Class<?>,Method>> segments,
 			final Map<String, Object> map) {
 
-		for (Entry<String, Method> segmentInfo : segments.entrySet()) {
-			map.put(segmentInfo.getKey(), getTemplateValuesFromEntity(entity, segmentInfo.getValue(), segmentInfo.getKey()));
+		for (String segment : new ArrayList<String>(segments.keySet())) {
+			Method method = addSegmentMethodIfNeeded(entity, segment , segments);
+			map.put(segment, getTemplateValuesFromEntity(entity, method, segment));
 		}
 
 		return map;

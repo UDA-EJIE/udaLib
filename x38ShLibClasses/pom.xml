@@ -18,14 +18,20 @@
 		<!-- <org.jackson.version>2.8.11.3</org.jackson.version> -->
 		<org.jackson.version>2.7.9.5</org.jackson.version>
 		<org.apache.tiles.version>3.0.8</org.apache.tiles.version>
-		<hdivsecurity.version>2.4.1</hdivsecurity.version>
+		<hdivsecurity.version>2.6.3-SNAPSHOT</hdivsecurity.version>
 	</properties>
 
 	<dependencies>
+		<dependency>
+		    <groupId>javax.servlet</groupId>
+		    <artifactId>servlet-api</artifactId>
+		    <scope>provided</scope>
+		    <version>2.5</version>
+		</dependency>
 		<!-- Hdiv -->
 		<dependency>
 		    <groupId>com.hdivsecurity</groupId>
-		    <artifactId>hdiv-for-services</artifactId>
+		    <artifactId>hdiv-for-services-hateoas0</artifactId>
 		    <version>${hdivsecurity.version}</version>
 			<exclusions>
 				<exclusion>
@@ -79,6 +85,10 @@
 				<exclusion>
 					<groupId>org.freemarker</groupId>
 					<artifactId>freemarker</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.core</groupId>
+					<artifactId>jackson-core</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -603,6 +613,51 @@
 			<version>3.2.2</version>
 		</dependency>
 		<!-- FIN PIF 1.4 -->
+		<dependency>
+		    <groupId>com.ejie.x38</groupId>
+		    <artifactId>n38a</artifactId>
+		    <version>1.0</version>
+		    <scope>system</scope>
+		    <systemPath>${project.basedir}/lib/n38a-1.0.jar</systemPath>
+		</dependency>
+		<dependency>
+		    <groupId>com.ejie.x38</groupId>
+		    <artifactId>n38c</artifactId>
+		    <version>1.0</version>
+		    <scope>system</scope>
+		    <systemPath>${project.basedir}/lib/n38c-1.0.jar</systemPath>
+		</dependency>
+		<dependency>
+		    <groupId>com.ejie.x38</groupId>
+		    <artifactId>n38i</artifactId>
+		    <version>1.0</version>
+		    <scope>system</scope>
+		    <systemPath>${project.basedir}/lib/n38i-1.0.jar</systemPath>
+		</dependency>
+		<dependency>
+		    <groupId>weblogic</groupId>
+		    <artifactId>weblogic</artifactId>
+		    <version>10.3.6</version>
+		    <scope>system</scope>
+		    <systemPath>/Users/xaldama/app/EJIE/eurohelp/usr/j2se/weblogic/weblogic.jar</systemPath>
+		</dependency>
+		<dependency>
+		    <groupId>com.ejie.x38</groupId>
+		    <artifactId>n38n</artifactId>
+		    <version>1.0</version>
+		    <scope>system</scope>
+		    <systemPath>${project.basedir}/lib/n38n-1.0.jar</systemPath>
+		</dependency>
+		<dependency>
+		    <groupId>javax.persistence</groupId>
+		    <artifactId>javax.persistence-api</artifactId>
+		    <version>2.2</version>
+		</dependency>
+		<dependency>
+		    <groupId>javax.interceptor</groupId>
+		    <artifactId>javax.interceptor-api</artifactId>
+		    <version>1.2.2</version>
+		</dependency>
 	</dependencies>
 
 

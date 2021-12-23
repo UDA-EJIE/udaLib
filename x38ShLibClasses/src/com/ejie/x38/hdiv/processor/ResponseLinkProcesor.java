@@ -26,7 +26,7 @@ public abstract class ResponseLinkProcesor {
 	private static final String[] JRE_PACKAGES = new String[] { "java.", "com.sun.", "sun.", "oracle.", "org.xml.", "com.oracle." };
 
 
-	public Object checkResponseToLinks(final Object object, Class<?> controller, LinkProvider linkProvider) throws Throwable {
+	public Object checkResponseToLinks(final Object object, Class<?> controller, LinkProvider<?> linkProvider) throws Throwable {
 
 			UDALinkResources udaLinkResources = new UDALinkResources();
 			Object processed = fillResources(object, 0, udaLinkResources, false);
@@ -69,6 +69,8 @@ public abstract class ResponseLinkProcesor {
 			}
 		}
 		else if (!isJRECLass(result.getClass().getName())) {
+			//TODO: This case should be deleted due to an unneeded action
+			//Test it just in case
 			try {
 				Method[] methods = result.getClass().getDeclaredMethods();
 				for (Method method : methods) {

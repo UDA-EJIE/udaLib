@@ -4,14 +4,18 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
+import com.hdivsecurity.services.util.HdivHATEOASUtils;
+
 public class SecureInvocationHandler implements InvocationHandler {
  
     private final Object invocationTarget;
-    private String identifiableParam = null;
+    private SecureClassInfo[] secureClassInfoList = null;
     
-    public SecureInvocationHandler(Object invocationTarget, String identifiableParam) {
+    public SecureInvocationHandler(Object invocationTarget, SecureClassInfo... secureClassInfo) {
         this.invocationTarget = invocationTarget;
-        this.identifiableParam = identifiableParam;
+        if(secureClassInfo != null) {
+        	this.secureClassInfoList = secureClassInfo;
+        }
     }
  
     @Override
@@ -19,13 +23,43 @@ public class SecureInvocationHandler implements InvocationHandler {
         System.out.println(String.format("Calling method %s with args: %s",
                 method.getName(), Arrays.toString(args)));
         
-        if(identifiableParam != null && method.getName().endsWith(identifiableParam)) {
-        	
-        	System.out.println("XAS-->identifiable param: " + identifiableParam);
-        	return method.invoke(invocationTarget, args);
-        }else {
-        	return method.invoke(invocationTarget, args);
+        if(secureClassInfoList != null) {
+        	for(SecureClassInfo info : secureClassInfoList) {
+            	if(method.getName().endsWith(info.getParamName())) {
+	        		return invokeProxy(method, args, info);
+            	}
+        	}
         }
+        
+        return method.invoke(invocationTarget, args);
+        
     }
+    
+    private Object invokeProxy(Method method, Object[] args, SecureClassInfo info) throws Throwable {
+    	Object value = method.invoke(invocationTarget, args);
+    	try {
+    		return HdivHATEOASUtils.ofuscate(value, info.getTargetClass(), info.getParamName());
+    	}catch(Throwable e) {
+    		return value;
+    	}
+    }
+    
+    public static class SecureClassInfo {
+    	private String paramName;
+    	private Class<?> targetClass;
+    	
+    	public SecureClassInfo(String paramName, Class<?> targetClass) {
+    		this.paramName = paramName;
+    		this.targetClass = targetClass;
+    	}
 
+		public String getParamName() {
+			return paramName;
+		}
+
+		public Class<?> getTargetClass() {
+			return targetClass;
+		}
+    	
+    }
 }

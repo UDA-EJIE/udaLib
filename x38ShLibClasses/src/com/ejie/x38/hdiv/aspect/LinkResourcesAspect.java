@@ -18,7 +18,7 @@ public class LinkResourcesAspect extends ResponseLinkProcesor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkResourcesAspect.class);
 
 	@Autowired
-	private LinkProvider linkProvider;
+	private LinkProvider<?> linkProvider;
 
 	@Around("@annotation(com.ejie.x38.hdiv.annotation.UDALink)")
 	public Object processLinks(final ProceedingJoinPoint joinPoint) throws Throwable {
