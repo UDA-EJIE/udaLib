@@ -123,7 +123,7 @@ public class LoggingEditor {
 	/**
 	 * Devuelve todos los loggers configurados.
 	 * 
-	 * @param showAll Devuelve todos los loggers, no sÛlo los configurados.
+	 * @param showAll Devuelve todos los loggers, no solo los configurados.
 	 * 
 	 * @return List<LogModel>
 	 */
@@ -155,7 +155,7 @@ public class LoggingEditor {
 	 * Devuelve todos los loggers configurados.
 	 * 
 	 * @param logContext Contexto del log.
-	 * @param showAll Devuelve todos los loggers, no sÛlo los configurados.
+	 * @param showAll Devuelve todos los loggers, no solo los configurados.
 	 * 
 	 * @return List<LogModel>
 	 */
@@ -211,7 +211,7 @@ public class LoggingEditor {
 	 * Devuelve los logs filtrados.
 	 *
 	 * @param filterLogModel Filtro a aplicar enviado por el cliente.
-	 * @param tableRequestDto DTO que contiene los par·metros de configuraciÛn propios del RUP_TABLE a aplicar en el filtrado.
+	 * @param tableRequestDto DTO que contiene los par√°metros de configuraci√≥n propios del RUP_TABLE a aplicar en el filtrado.
 	 * 
 	 * @return TableResourceResponseDto<LogModel>
 	 */
@@ -221,7 +221,7 @@ public class LoggingEditor {
 		List<LogModel> resulList = new ArrayList<LogModel>();
 		LogModel model;
 		
-		// PaginaciÛn
+		// Paginaci√≥n
 		int startPosition = (int) (tableRequestDto.getRows() * (tableRequestDto.getPage() - 1));
 		long iterations = (listalogs.size() - startPosition) > tableRequestDto.getRows() ? tableRequestDto.getRows() : listalogs.size() - startPosition;
 		
@@ -255,16 +255,16 @@ public class LoggingEditor {
 			}
 		}
 		
-		// NOTA: las siguientes gestiones son experimentales y podrÌan no funcionar perfectamente
-		// Cuando el filtro actual es diferente al nuevo, se deseleccionan todos los registros seleccionados. En realidad, existe la posibilidad de mantenerlos, pero habrÌa que hacer muchas comparaciones y serÌa costoso en cuanto a memoria se refiere.
+		// NOTA: las siguientes gestiones son experimentales y podr√≠an no funcionar perfectamente
+		// Cuando el filtro actual es diferente al nuevo, se deseleccionan todos los registros seleccionados. En realidad, existe la posibilidad de mantenerlos, pero habr√≠a que hacer muchas comparaciones y ser√≠a costoso en cuanto a memoria se refiere.
 		if (filterLogModel.compare(lastFilterLogModel)) {
-			// AÒadir seleccionado o seleccionados (dependiendo de si es selecciÛn simple o m˙ltiple)
+			// A√±adir seleccionado o seleccionados (dependiendo de si es selecci√≥n simple o m√∫ltiple)
 			List<String> selectedIds = tableRequestDto.getMultiselection().getSelectedIds();
 			if (selectedIds != null) {
-				// Al cambiar el n˙mero de filas por p·gina, hay que actualizar la ubicaciÛn de los registros seleccionados
+				// Al cambiar el n√∫mero de filas por p√°gina, hay que actualizar la ubicaciÔøΩn de los registros seleccionados
 				if (lastRowsNumber != tableRequestDto.getRows()) {
 					for (TableRowDto<LogModel> selectedItem : listReorderSelection) {
-						// Comprueba si el registro est· en la p·gina actual para poder obtener la ubicaciÛn de una manera m·s sencilla
+						// Comprueba si el registro est√° en la p√°gina actual para poder obtener la ubicaci√≥n de una manera m√°s sencilla
 						boolean inTheSamePage = false;
 						int rowIndex = 0;
 						for (LogModel log : resulList) {
@@ -279,12 +279,12 @@ public class LoggingEditor {
 							rowIndex++;
 						}
 						
-						// En caso de no estar el registro en la p·gina actual, se calcula su posiciÛn
+						// En caso de no estar el registro en la p√°gina actual, se calcula su posici√≥n
 						if (!inTheSamePage) {
 							int newPageNumber = (int) ((selectedItem.getPage() * lastRowsNumber) / tableRequestDto.getRows());
 							int newPageLineNumber = 0;
 							
-							// Gestiona los cambios ascendentes o descendentes de la cantidad de registros a mostrar por p·gina
+							// Gestiona los cambios ascendentes o descendentes de la cantidad de registros a mostrar por p√°gina
 							if (lastRowsNumber < tableRequestDto.getRows()) {
 								newPageLineNumber = (int) ((((selectedItem.getPage() - 1) * lastRowsNumber) + selectedItem.getPageLine()) - (newPageNumber * tableRequestDto.getRows()));
 								
@@ -313,7 +313,7 @@ public class LoggingEditor {
 				}
 				
 				if (selectedIds.size() == 1) {
-					// SelecciÛn o multiselecciÛn con un registro seleccionado
+					// Selecci√≥n o multiselecci√≥n con un registro seleccionado
 					String rowID = tableRequestDto.getMultiselection().getSelectedIds().get(0);
 					
 					if (listReorderSelection.size() > 0) {
@@ -324,7 +324,7 @@ public class LoggingEditor {
 						setSelectionReorder(listalogs, rowID, tableRequestDto);
 					}
 				} else {
-					// MultiselecciÛn
+					// Multiselecci√≥n
 					setMultiselectionReorder(listalogs, selectedIds, tableRequestDto);
 				}
 			} else {
@@ -340,13 +340,13 @@ public class LoggingEditor {
 		resultado.addAdditionalParam("reorderedSelection", listReorderSelection);
 		resultado.addAdditionalParam("selectedAll", tableRequestDto.getMultiselection().getSelectedAll());
 		
-		// AÒadir informaciÛn necesaria para la tabla
+		// A√±adir informaci√≥n necesaria para la tabla
 		resultado.setRows(resulList);
 		resultado.setRecords(listalogs.size());
 		resultado.setPage(tableRequestDto.getPage().toString());
 		resultado.setTotal(new Long(listalogs.size()), new Long(tableRequestDto.getRows()));
 		
-		// Guardar n˙mero de filas por p·gina, n˙mero de la p·gina actual y filtrado para poder obtenerlo en el siguiente filtrado
+		// Guardar n√∫mero de filas por p√°gina, n√∫mero de la p√°gina actual y filtrado para poder obtenerlo en el siguiente filtrado
 		lastRowsNumber = tableRequestDto.getRows().intValue();
 		lastPageNumber = tableRequestDto.getPage().intValue();
 		lastFilterLogModel = filterLogModel;
@@ -408,7 +408,7 @@ public class LoggingEditor {
 	/** 
 	 * Devuelve los nombres disponibles.
 	 *
-	 * @param q String enviado por el cliente para la b˙squeda de resultados.
+	 * @param q String enviado por el cliente para la b√∫ssqueda de resultados.
 	 * 
 	 * @return List<Resource<AutocompleteComboPKsPOJO>>
 	 */
@@ -453,11 +453,11 @@ public class LoggingEditor {
 	}
 
 	/** 
-	 * Gestiona la selecciÛn cuando se pagina.
+	 * Gestiona la selecci√≥n cuando se pagina.
 	 *
 	 * @param listalogs Lista que contiene los logs.
 	 * @param rowID Identificador del registro seleccionado.
-	 * @param tableRequestDto DTO que contiene los par·metros de configuraciÛn propios del RUP_TABLE a aplicar en el filtrado.
+	 * @param tableRequestDto DTO que contiene los par√°metros de configuraci√≥n propios del RUP_TABLE a aplicar en el filtrado.
 	 */
 	private static void setSelectionReorder(List<LogModel> listalogs, String rowID, TableRequestDto tableRequestDto) {
 		Map<String, String> pkMap = new HashMap<String, String>();
@@ -480,16 +480,16 @@ public class LoggingEditor {
 		// Vaciar la lista que contiene el elemento anteriormente seleccionado
 		listReorderSelection.clear();
 		
-		// AÒadir redorderSelection a la lista
+		// A√±adir redorderSelection a la lista
 		listReorderSelection.add(reorderSelection);
 	}
 
 	/** 
-	 * Gestiona la multiselecciÛn cuando se pagina.
+	 * Gestiona la multiselecci√≥n cuando se pagina.
 	 *
 	 * @param listalogs Lista que contiene los logs.
 	 * @param rowID Identificadores de registros seleccionados.
-	 * @param tableRequestDto DTO que contiene los par·metros de configuraciÛn propios del RUP_TABLE a aplicar en el filtrado.
+	 * @param tableRequestDto DTO que contiene los par√°metros de configuraci√≥n propios del RUP_TABLE a aplicar en el filtrado.
 	 */
 	private static void setMultiselectionReorder(List<LogModel> listalogs, List<String> selectedIds, TableRequestDto tableRequestDto) {
 		// Eliminar los elementos que hayan sido deseleccionados
@@ -538,7 +538,7 @@ public class LoggingEditor {
 					logIndex++;
 				}
 				
-				// AÒadir redorderSelection a la lista
+				// A√±adir redorderSelection a la lista
 				listReorderSelection.add(reorderSelection);
 			}
 		}
