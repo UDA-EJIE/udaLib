@@ -27,7 +27,6 @@
 	<classpathentry kind="lib" path="lib/aopalliance-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/aspectjweaver-1.8.13.jar"/>
 	<classpathentry kind="lib" path="lib/avro-1.7.7.jar"/>
-	<classpathentry kind="lib" path="lib/castor-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/classmate-1.3.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-codec-1.6.jar"/>
 	<classpathentry kind="lib" path="lib/commons-collections-3.2.2.jar"/>
@@ -57,11 +56,8 @@
 	<classpathentry kind="lib" path="lib/javax.ws.rs-api-2.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/jboss-logging-3.3.0.Final.jar"/>
 	<classpathentry kind="lib" path="lib/jcl-over-slf4j-1.7.25.jar"/>
-	<classpathentry kind="lib" path="lib/jcommon-1.0.15.jar"/>
 	<classpathentry kind="lib" path="lib/jdbcdslog-1.0.5.jar"/>
-	<classpathentry kind="lib" path="lib/jdtcore-3.1.0.jar"/>
 	<classpathentry kind="lib" path="lib/jetty-util-6.1.26.jar"/>
-	<classpathentry kind="lib" path="lib/jfreechart-1.0.12.jar"/>
 	<classpathentry kind="lib" path="lib/json-lib-2.3-jdk15.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.16.jar"/>
 	<classpathentry kind="lib" path="lib/logback-classic-1.2.3.jar"/>
@@ -111,26 +107,28 @@
 	<classpathentry kind="con" path="oracle.eclipse.tools.weblogic.lib.system"/>
 	<classpathentry kind="lib" path="lib/spring-hateoas-0.23.0.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/itext-2.1.7.jar"/>
-	<classpathentry kind="lib" path="lib/jackson-module-jsonSchema-2.6.7.jar"/>
-	<classpathentry kind="lib" path="lib/jregex-1.2_01.jar"/>
 	<classpathentry kind="lib" path="lib/spring-plugin-core-1.2.0.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/commons-beanutils-1.9.4.jar"/>
-	<classpathentry kind="lib" path="lib/hdiv-config-3.5.0.RC3.jar"/>
-	<classpathentry kind="lib" path="lib/hdiv-core-3.5.0.RC3.jar"/>
-	<classpathentry kind="lib" path="lib/hdiv-ee-commons-2.6.4-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/hdiv-ee-config-2.6.4-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/hdiv-ee-core-2.6.4-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/hdiv-ee-discovery-base-2.6.4-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/hdiv-ee-discovery-core-2.6.4-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/hdiv-ee-license-client-2.6.4-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/hdiv-ee-spring-mvc-2.6.4-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/hdiv-ee-ssl-2.4.3.jar"/>
 	<classpathentry kind="lib" path="lib/hdiv-ee-ssl-jdk6-1.0.0.jar"/>
-	<classpathentry kind="lib" path="lib/hdiv-jstl-taglibs-1.2-3.5.0.RC3.jar"/>
-	<classpathentry kind="lib" path="lib/hdiv-services-3.5.0.RC3.jar"/>
-	<classpathentry kind="lib" path="lib/hdiv-spring-mvc-3.5.0.RC3.jar"/>
 	<classpathentry kind="lib" path="lib/licensing-core-1.1.0.jar"/>
 	<classpathentry kind="lib" path="lib/y31c-1.5-impl.jar"/>
 	<classpathentry kind="lib" path="lib/hdiv-for-services-2.4.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-httpclient-3.1.jar"/>
+	<classpathentry kind="lib" path="lib/hdiv-config-3.5.0.jar"/>
+	<classpathentry kind="lib" path="lib/hdiv-core-3.5.0.jar"/>
+	<classpathentry kind="lib" path="lib/hdiv-ee-commons-2.6.4.jar"/>
+	<classpathentry kind="lib" path="lib/hdiv-ee-config-2.6.4.jar"/>
+	<classpathentry kind="lib" path="lib/hdiv-ee-core-2.6.4.jar"/>
+	<classpathentry kind="lib" path="lib/hdiv-ee-discovery-base-2.6.4.jar"/>
+	<classpathentry kind="lib" path="lib/hdiv-ee-discovery-core-2.6.4.jar"/>
+	<classpathentry kind="lib" path="lib/hdiv-ee-license-client-2.6.4.jar"/>
+	<classpathentry kind="lib" path="lib/hdiv-ee-spring-mvc-2.6.4.jar"/>
+	<classpathentry kind="lib" path="lib/hdiv-ee-ssl-2.6.4.jar"/>
+	<classpathentry kind="lib" path="lib/hdiv-jstl-taglibs-1.2-3.5.0.jar"/>
+	<classpathentry kind="lib" path="lib/hdiv-services-3.5.0.jar"/>
+	<classpathentry kind="lib" path="lib/hdiv-spring-mvc-3.5.0.jar"/>
+	<classpathentry kind="lib" path="lib/jaxrs-api-2.1.0.GA.jar"/>
+	<classpathentry kind="lib" path="lib/metrics-core-3.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/resteasy-jaxrs-2.1.0.GA.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

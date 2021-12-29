@@ -62,6 +62,10 @@ public class UDALinkMappingInfo {
 		Set<String> staticMapping = new HashSet<String>();
 		Set<String> entityMapping = new HashSet<String>();
 
+		if(mappings == null) {
+			LOGGER.debug("No mappings found for allower " + allower.getName());
+			return;
+		}
 		for (String mapping : mappings.getMappings()) {
 			int pathVariableCount = StringUtils.countOccurrencesOf(mapping, "{");
 			if (pathVariableCount > 0 && getParametersNoEntityAnnotationCount(mappings.getParameters()) < pathVariableCount) {

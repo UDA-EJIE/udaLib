@@ -6,7 +6,7 @@
 	<property name="srcDir" value="./src"/>
 	<property name="destDir" value="./target"/>
 	<property name="buildDir" value="./target/classes"/>
-	<property name="version" value="5.0.1-RELEASE"/>
+	<property name="version" value="5.0.2-RELEASE"/>
 	
 	<target name="mavenRunDependencies" description="Resuelve las dependencias del proyecto desde Maven">
 		<echo message="Ubicacion Motor Ant: ${ant.home}"/>
@@ -36,7 +36,7 @@
 		<jar destfile="${destDir}/x38ShLibClasses-${version}.jar">
 			<fileset dir="${buildDir}" includes="com/ejie/x38/** LICENSE.txt NOTICE.txt" excludes="com/ejie/x38/webdav/**, com/ejie/x38/pif/**, com/ejie/x38/rup/**, com/ejie/x38/cache/**, com/ejie/x38/hdiv/**" />
 			<fileset dir="${baseDir}" includes="build.xml pom.xml" />
-			<fileset dir="${srcDir}" includes="**/*.java"/>
+			<fileset dir="${srcDir}" includes="**/*.java" excludes="com/ejie/x38/webdav/**, com/ejie/x38/pif/**, com/ejie/x38/rup/**, com/ejie/x38/cache/**, com/ejie/x38/hdiv/**" />
 			<manifest>
 		      	<attribute name="Main-Class" value=""/>
 		     	<attribute name="Manifest-Version" value="${version}"/>
