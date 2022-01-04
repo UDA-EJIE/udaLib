@@ -63,10 +63,10 @@ public class UDASecureResourceProcesor {
 		if (allowInfoList != null) {
 			String requestStr = getBaseUrl(request).toString();
 			if (entities != null && !entities.isEmpty()) {
-				resources = processEntities(entities, false, request, allowInfoList, requestStr);
+				resources = processEntities(entities, false, request, allowInfoList, requestStr, linkProvider);
 			}
 			if (subEntities != null && !subEntities.isEmpty()) {
-				resources.addAll(processEntities(subEntities, true, request, allowInfoList, requestStr));
+				resources.addAll(processEntities(subEntities, true, request, allowInfoList, requestStr, linkProvider));
 			}
 			if (linkProvider != null) {
 				processStaticLinks(request, allowInfoList, requestStr, linkProvider);
@@ -119,7 +119,7 @@ public class UDASecureResourceProcesor {
 	}
 
 	private static List<Resource<Object>> processEntities(final List<Object> entities, final boolean isSubEntity, final HttpServletRequest request,
-			final List<UDALinkMappingInfo> allowInfoList, final String requestStr) {
+			final List<UDALinkMappingInfo> allowInfoList, final String requestStr, final DinamicLinkProvider linkProvider) {
 
 		List<Resource<Object>> resources = new ArrayList<Resource<Object>>();
 
@@ -130,7 +130,7 @@ public class UDASecureResourceProcesor {
 				Map<String, Map<String, Map<Class<?>,Method>>> urlTemplatesMap = new HashMap<String, Map<String, Map<Class<?>,Method>>>();
 				// add links to resources
 				for (Object entity : entities) {
-					resources.addAll(processEntity(entity, request, allowInfoList, requestStr, urlTemplatesMap, isSubEntity));
+					resources.addAll(processEntity(entity, request, allowInfoList, requestStr, urlTemplatesMap, isSubEntity, linkProvider));
 				}
 			}
 
@@ -140,7 +140,7 @@ public class UDASecureResourceProcesor {
 	}
 
 	private static List<Resource<Object>> processEntity(final Object entity, final HttpServletRequest request,
-			final List<UDALinkMappingInfo> allowInfoList, final String requestStr, final Map<String, Map<String, Map<Class<?>,Method>>> urlTemplatesMap, final boolean isSubEntity) {
+			final List<UDALinkMappingInfo> allowInfoList, final String requestStr, final Map<String, Map<String, Map<Class<?>,Method>>> urlTemplatesMap, final boolean isSubEntity, final DinamicLinkProvider linkProvider) {
 
 		List<Resource<Object>> resources = new ArrayList<Resource<Object>>();
 
@@ -172,6 +172,7 @@ public class UDASecureResourceProcesor {
 			((Resource<?>) entity).add(entityLinks);
 		}
 		else {
+			linkProvider.addLinks(entityLinks, request);
 			resources.add(new Resource<Object>(entity, entityLinks));
 		}
 
