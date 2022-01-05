@@ -83,6 +83,7 @@ public class UDALinkMappingInfo {
 				// Static mapping
 				staticMapping.add(mapping);
 			}
+			LOGGER.debug("Mapping found for link " + name + " and allower " + allower.getName() + " --> " + mapping);
 		}
 
 		LinkPredicate<?> allowMethod = null;

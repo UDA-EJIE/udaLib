@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.Resource;
 
+import com.ejie.x38.hdiv.controller.model.ReferencedObject;
 import com.ejie.x38.hdiv.controller.model.UDALinkResources;
 import com.ejie.x38.hdiv.controller.utils.DinamicLinkProvider;
 import com.ejie.x38.hdiv.controller.utils.UDASecureResourceProcesor;
@@ -29,43 +30,40 @@ public abstract class ResponseLinkProcesor {
 	public Object checkResponseToLinks(final Object object, Class<?> controller, LinkProvider<?> linkProvider) throws Throwable {
 
 			UDALinkResources udaLinkResources = new UDALinkResources();
-			Object processed = fillResources(object, 0, udaLinkResources, false);
+			Object processed = fillResources(object, 0, udaLinkResources, false, null);
 			UDASecureResourceProcesor.processLinks(udaLinkResources, controller, (DinamicLinkProvider) linkProvider);
 			return processed;
 	}
 
-	private Object fillResources( Object result, final int deep, UDALinkResources udaLinkResources, boolean isSubEntity) {
+	private Object fillResources( Object result, final int deep, UDALinkResources udaLinkResources, boolean isSubEntity, Integer parentIndex) {
 
 		if (result == null || deep > MAX_DEEP) {
 			return result;
 		}
 		
-		List<Object> resources = isSubEntity ? udaLinkResources.getSubEntities() : udaLinkResources.getEntities();
 		if (result instanceof Resource) {
-			resources.add(result);
+			int currentIndex = addResource(udaLinkResources, result, false, parentIndex);
 			Object content = ((Resource<?>)result).getContent();
 			if(content != null) {
-				checkFields(content, deep + 1, udaLinkResources);	
+				checkFields(content, deep + 1, udaLinkResources, currentIndex);	
 			}
-			
 		}else if (result instanceof SecureIdentifiable<?> ) {
-			
-			resources.add(result);
-			checkFields(result, deep + 1, udaLinkResources);
+			int currentIndex = addResource(udaLinkResources, result, isSubEntity, parentIndex);
+			checkFields(result, deep + 1, udaLinkResources, currentIndex);
 			result = updateOnSecureIdentifiableFound(result);
 			
 		}else if (result instanceof SecureIdContainer) {
-			resources.add(result);
-			checkFields(result, deep + 1, udaLinkResources);
+			int currentIndex = addResource(udaLinkResources, result, isSubEntity, parentIndex);
+			checkFields(result, deep + 1, udaLinkResources, currentIndex);
 			result = updateOnSecureIdContainerFound(result);
 			
 		}else if (result instanceof Iterable) {
 			for (Object o : (Iterable<?>) result) {
-				fillResources(o, deep + 1, udaLinkResources, isSubEntity);
+				fillResources(o, deep + 1, udaLinkResources, isSubEntity, parentIndex);
 			}
 		}else if (result instanceof Map) {
 			for (Object o : ((Map<?, ?>) result).values()) {
-				fillResources(o, deep + 1, udaLinkResources, isSubEntity);
+				fillResources(o, deep + 1, udaLinkResources, isSubEntity, parentIndex);
 			}
 		}
 		else if (!isJRECLass(result.getClass().getName())) {
@@ -77,7 +75,7 @@ public abstract class ResponseLinkProcesor {
 					try {
 						if (Modifier.isPublic(method.getModifiers()) && method.getParameterTypes().length == 0
 								&& method.getReturnType() != null) {
-							fillResources(method.invoke(result), deep + 1, udaLinkResources, isSubEntity);
+							fillResources(method.invoke(result), deep + 1, udaLinkResources, isSubEntity, parentIndex);
 						}
 					}
 					catch (Exception e) {
@@ -92,14 +90,25 @@ public abstract class ResponseLinkProcesor {
 		return result;
 	}
 	
-	private void checkFields(Object object, final int deep, UDALinkResources udaLinkResources) {
+	private int addResource(UDALinkResources udaLinkResources, Object resource, boolean isSubEntity, Integer parentIndex) {
+		if(isSubEntity) {
+			udaLinkResources.getSubEntities().add(new ReferencedObject(String.valueOf(parentIndex), resource));
+			return parentIndex;
+		}else {
+			udaLinkResources.getEntities().add(resource);
+			return udaLinkResources.getEntities().size() - 1;
+		}
+		
+	}
+	
+	private void checkFields(Object object, final int deep, UDALinkResources udaLinkResources, int parentIndex) {
 		
 		Field[] fields = object.getClass().getDeclaredFields();
 		for (Field field : fields) {
 			try {
 				if( !Modifier.isStatic(field.getModifiers()) && (Resource.class.isAssignableFrom(field.getDeclaringClass()) || SecureIdentifiable.class.isAssignableFrom(field.getDeclaringClass()) || SecureIdContainer.class.isAssignableFrom(field.getDeclaringClass()))) {
 					field.setAccessible(true);
-					fillResources(field.get(object), deep, udaLinkResources, true);
+					fillResources(field.get(object), deep, udaLinkResources, true, parentIndex);
 				}
 			}
 			catch (Exception e) {

@@ -5,14 +5,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.annotation.PostConstruct;
+
 import org.hdiv.config.annotation.ExclusionRegistry;
 import org.hdiv.config.annotation.RuleRegistry;
 import org.hdiv.ee.config.annotation.ValidationConfigurer;
 import org.hdiv.ee.validator.ValidationTargetType;
 import org.hdiv.listener.InitListener;
 import org.hdiv.services.LinkProvider;
+import org.hdiv.urlProcessor.FormUrlProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.hateoas.Link;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -28,12 +33,51 @@ import com.hdivsecurity.services.config.HdivServicesSecurityConfigurerAdapter;
 import com.hdivsecurity.services.config.ServicesConfig.IdProtectionType;
 import com.hdivsecurity.services.config.ServicesConfig.ServerSideHypermedia;
 import com.hdivsecurity.services.config.ServicesSecurityConfigBuilder;
+import com.hdivsecurity.services.processor.ServicesFormUrlProcessor;
 
 public abstract class UDA4HdivConfigurerAdapter extends HdivServicesSecurityConfigurerAdapter {
-
+	
 	@Autowired
 	private RequestMappingHandlerMapping handler;
+	
+	@Autowired
+	@Qualifier("formProcessor")
+	@Lazy
+	private ServicesFormUrlProcessor formProcessor;
+	
+	@PostConstruct
+	public void init() {
+		UDASecureResourceProcesor.registerFormProcessor(formProcessor);
+	}
 
+	@Bean
+	public MethodMappingDiscoverer MethodMappingDiscoverer() {
+
+		MethodMappingDiscoverer mpd = new MethodMappingDiscoverer(handler);
+
+		Map<RequestMappingInfo, HandlerMethod> map = handler.getHandlerMethods();
+		for (Entry<RequestMappingInfo, HandlerMethod> mapEntry : map.entrySet()) {
+			mpd.addMethodMappings(mapEntry.getValue().getMethod().toString(), mapEntry.getKey().getPatternsCondition().getPatterns(),
+					mapEntry.getKey().getMethodsCondition().getMethods(), mapEntry.getValue().getMethodParameters());
+		}
+
+		return mpd;
+	};
+
+	@Bean
+	public MethodLinkDiscoverer MethodLinkDiscoverer() {
+
+		MethodLinkDiscoverer mld = new MethodLinkDiscoverer();
+		UDASecureResourceProcesor.registerMethodLinkDiscoverer(mld);
+
+		return mld;
+	};
+
+	@Bean
+	public LinkResourcesAspect LinkResourcesAspect() {
+		return new LinkResourcesAspect();
+	}
+	
 	@Bean
 	public InitListener initListener() {
 		return new InitListener();
@@ -148,33 +192,5 @@ public abstract class UDA4HdivConfigurerAdapter extends HdivServicesSecurityConf
 	public List<LinkProvider> linkProviders() {
 		return Arrays.asList((LinkProvider) linkProvider());
 	};
-
-	@Bean
-	public MethodMappingDiscoverer MethodMappingDiscoverer() {
-
-		MethodMappingDiscoverer mpd = new MethodMappingDiscoverer(handler);
-
-		Map<RequestMappingInfo, HandlerMethod> map = handler.getHandlerMethods();
-		for (Entry<RequestMappingInfo, HandlerMethod> mapEntry : map.entrySet()) {
-			mpd.addMethodMappings(mapEntry.getValue().getMethod().toString(), mapEntry.getKey().getPatternsCondition().getPatterns(),
-					mapEntry.getKey().getMethodsCondition().getMethods(), mapEntry.getValue().getMethodParameters());
-		}
-
-		return mpd;
-	};
-
-	@Bean
-	public MethodLinkDiscoverer MethodLinkDiscoverer() {
-
-		MethodLinkDiscoverer mld = new MethodLinkDiscoverer();
-		UDASecureResourceProcesor.registerMethodLinkDiscoverer(mld);
-
-		return mld;
-	};
-
-	@Bean
-	public LinkResourcesAspect LinkResourcesAspect() {
-		return new LinkResourcesAspect();
-	}
 
 }

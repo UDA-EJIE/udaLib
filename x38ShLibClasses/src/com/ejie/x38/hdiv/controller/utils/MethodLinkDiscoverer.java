@@ -79,6 +79,7 @@ public class MethodLinkDiscoverer {
 
 	private Method[] getControllerMethods(final UDALinkAllower udalinkAllower, final Class<?> controller) {
 		if (udalinkAllower.linkClass() != Void.class) {
+			LOGGER.debug("Check methods of allower " + udalinkAllower.name() + " remote controller for allower " + udalinkAllower.linkClass());
 			return udalinkAllower.linkClass().getMethods();
 		}
 		else {
