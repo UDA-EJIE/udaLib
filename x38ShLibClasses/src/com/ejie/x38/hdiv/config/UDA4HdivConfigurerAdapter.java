@@ -12,11 +12,11 @@ import org.hdiv.config.annotation.RuleRegistry;
 import org.hdiv.ee.config.annotation.ValidationConfigurer;
 import org.hdiv.ee.validator.ValidationTargetType;
 import org.hdiv.listener.InitListener;
+import org.hdiv.services.EntityStateRecorder;
 import org.hdiv.services.LinkProvider;
-import org.hdiv.urlProcessor.FormUrlProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.hateoas.Link;
 import org.springframework.web.method.HandlerMethod;
@@ -27,27 +27,26 @@ import com.ejie.x38.hdiv.aspect.LinkResourcesAspect;
 import com.ejie.x38.hdiv.controller.utils.DinamicLinkProvider;
 import com.ejie.x38.hdiv.controller.utils.MethodLinkDiscoverer;
 import com.ejie.x38.hdiv.controller.utils.MethodMappingDiscoverer;
-import com.ejie.x38.hdiv.controller.utils.UDASecureResourceProcesor;
+import com.ejie.x38.hdiv.processor.UDASecureResourceProcesor;
 import com.hdivsecurity.services.config.EnableHdiv4ServicesSecurityConfiguration.SupportedValidators;
 import com.hdivsecurity.services.config.HdivServicesSecurityConfigurerAdapter;
 import com.hdivsecurity.services.config.ServicesConfig.IdProtectionType;
 import com.hdivsecurity.services.config.ServicesConfig.ServerSideHypermedia;
 import com.hdivsecurity.services.config.ServicesSecurityConfigBuilder;
-import com.hdivsecurity.services.processor.ServicesFormUrlProcessor;
 
+@ComponentScan(basePackages = "com.ejie.x38.hdiv")
 public abstract class UDA4HdivConfigurerAdapter extends HdivServicesSecurityConfigurerAdapter {
 	
 	@Autowired
 	private RequestMappingHandlerMapping handler;
 	
 	@Autowired
-	@Qualifier("formProcessor")
 	@Lazy
-	private ServicesFormUrlProcessor formProcessor;
+	private EntityStateRecorder<Link> entityStateRecorder;
 	
 	@PostConstruct
 	public void init() {
-		UDASecureResourceProcesor.registerFormProcessor(formProcessor);
+		UDASecureResourceProcesor.registerEntityStateRecorder(entityStateRecorder);
 	}
 
 	@Bean

@@ -3,8 +3,11 @@ package com.ejie.x38.hdiv.processor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.hdiv.services.LinkProvider;
 import org.hdiv.services.SecureIdContainer;
@@ -16,7 +19,6 @@ import org.springframework.hateoas.Resource;
 import com.ejie.x38.hdiv.controller.model.ReferencedObject;
 import com.ejie.x38.hdiv.controller.model.UDALinkResources;
 import com.ejie.x38.hdiv.controller.utils.DinamicLinkProvider;
-import com.ejie.x38.hdiv.controller.utils.UDASecureResourceProcesor;
 
 public abstract class ResponseLinkProcesor {
 
@@ -35,7 +37,8 @@ public abstract class ResponseLinkProcesor {
 			return processed;
 	}
 
-	private Object fillResources( Object result, final int deep, UDALinkResources udaLinkResources, boolean isSubEntity, Integer parentIndex) {
+	@SuppressWarnings("unchecked")
+	protected Object fillResources( Object result, final int deep, UDALinkResources udaLinkResources, boolean isSubEntity, Integer parentIndex) {
 
 		if (result == null || deep > MAX_DEEP) {
 			return result;
@@ -58,36 +61,52 @@ public abstract class ResponseLinkProcesor {
 			result = updateOnSecureIdContainerFound(result);
 			
 		}else if (result instanceof Iterable) {
+			List<Object> objects = new ArrayList<Object>();
 			for (Object o : (Iterable<?>) result) {
-				fillResources(o, deep + 1, udaLinkResources, isSubEntity, parentIndex);
+				objects.add(fillResources(o, deep + 1, udaLinkResources, isSubEntity, parentIndex));
+			}
+			if(result instanceof Collection) {
+				try {
+					((Collection<Object>) result).clear();
+					((Collection<Object>) result).addAll(objects);
+				}catch(Exception e) {
+					LOGGER.error("Response objects cannot be reasigned");
+				}
 			}
 		}else if (result instanceof Map) {
-			for (Object o : ((Map<?, ?>) result).values()) {
-				fillResources(o, deep + 1, udaLinkResources, isSubEntity, parentIndex);
+			for (Entry<Object, Object> entry : ((Map<Object, Object>) result).entrySet()) {
+				((Map<Object, Object>) result).put(entry.getKey(), fillResources(entry.getValue(), deep + 1, udaLinkResources, isSubEntity, parentIndex));
 			}
 		}
 		else if (!isJRECLass(result.getClass().getName())) {
+			
 			//TODO: This case should be deleted due to an unneeded action
 			//Test it just in case
-			try {
-				Method[] methods = result.getClass().getDeclaredMethods();
-				for (Method method : methods) {
-					try {
-						if (Modifier.isPublic(method.getModifiers()) && method.getParameterTypes().length == 0
-								&& method.getReturnType() != null) {
-							fillResources(method.invoke(result), deep + 1, udaLinkResources, isSubEntity, parentIndex);
-						}
-					}
-					catch (Exception e) {
-					}
-				}
-			}
-			catch (Exception e) {
-				LOGGER.error("Error getting methods of class:" + result.getClass().getName(), e);
-			}
+			onOtherType(result, deep, udaLinkResources, isSubEntity, parentIndex);
 		}
 		
 		return result;
+	}
+	
+	protected void onOtherType(Object result, final int deep, UDALinkResources udaLinkResources, boolean isSubEntity, Integer parentIndex) {
+
+		try {
+			Method[] methods = result.getClass().getDeclaredMethods();
+			for (Method method : methods) {
+				try {
+					if (Modifier.isPublic(method.getModifiers()) && method.getParameterTypes().length == 0
+							&& method.getReturnType() != null) {
+						fillResources(method.invoke(result), deep + 1, udaLinkResources, isSubEntity, parentIndex);
+					}
+				}
+				catch (Exception e) {
+				}
+			}
+		}
+		catch (Exception e) {
+			LOGGER.error("Error getting methods of class:" + result.getClass().getName(), e);
+		}
+	
 	}
 	
 	private int addResource(UDALinkResources udaLinkResources, Object resource, boolean isSubEntity, Integer parentIndex) {

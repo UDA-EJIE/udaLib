@@ -3,6 +3,9 @@ package com.ejie.x38.hdiv.config;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
+import org.hdiv.urlProcessor.FormUrlProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -18,47 +21,57 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 import com.ejie.x38.control.method.annotation.RequestJsonBodyMethodArgumentResolver;
 import com.ejie.x38.hdiv.interceptor.SecureModelAndViewInterceptor;
+import com.ejie.x38.hdiv.processor.UDASecureResourceProcesor;
 
 @Configuration
 public class WebConfig extends WebMvcConfigurationSupport {
 
-	@Autowired
-	private HttpMessageConverter<?> msgConverter;
-
-	@Autowired
-	private ConversionService conversionService;
+//	@Autowired
+//	private HttpMessageConverter<?> msgConverter;
+//
+//	@Autowired
+//	private ConversionService conversionService;
 	
 	@Autowired
 	private SecureModelAndViewInterceptor secureModelAndViewInterceptor;
 
-	@Autowired
-	@Qualifier("validator")
-	private LocalValidatorFactoryBean validatorFactoryBean;
+//	@Autowired
+//	@Qualifier("validator")
+//	private LocalValidatorFactoryBean validatorFactoryBean;
 
-	@Override
-	@Bean(name = "requestMappingHandlerAdapter")
-	public RequestMappingHandlerAdapter requestMappingHandlerAdapter() {
+//	@Override
+//	@Bean(name = "requestMappingHandlerAdapter")
+//	public RequestMappingHandlerAdapter requestMappingHandlerAdapter() {
+//
+//		RequestMappingHandlerAdapter adapter = super.requestMappingHandlerAdapter();
+//
+//		ConfigurableWebBindingInitializer webBindingInitializer = new ConfigurableWebBindingInitializer();
+//		webBindingInitializer.setConversionService(conversionService);
+//		webBindingInitializer.setValidator(validatorFactoryBean);
+//		adapter.setWebBindingInitializer(webBindingInitializer);
+//
+//		List<HttpMessageConverter<?>> msgConverters = new ArrayList<HttpMessageConverter<?>>();
+//		msgConverters.add(msgConverter);
+//		adapter.setMessageConverters(msgConverters);
+//
+//		List<HandlerMethodArgumentResolver> argumentResolvers = new ArrayList<HandlerMethodArgumentResolver>();
+//		argumentResolvers.add(new RequestJsonBodyMethodArgumentResolver());
+//		adapter.setCustomArgumentResolvers(argumentResolvers);
+//
+//		return adapter;
+//	}
+	
 
-		RequestMappingHandlerAdapter adapter = super.requestMappingHandlerAdapter();
-
-		ConfigurableWebBindingInitializer webBindingInitializer = new ConfigurableWebBindingInitializer();
-		webBindingInitializer.setConversionService(conversionService);
-		webBindingInitializer.setValidator(validatorFactoryBean);
-		adapter.setWebBindingInitializer(webBindingInitializer);
-
-		List<HttpMessageConverter<?>> msgConverters = new ArrayList<HttpMessageConverter<?>>();
-		msgConverters.add(msgConverter);
-		adapter.setMessageConverters(msgConverters);
-
-		List<HandlerMethodArgumentResolver> argumentResolvers = new ArrayList<HandlerMethodArgumentResolver>();
-		argumentResolvers.add(new RequestJsonBodyMethodArgumentResolver());
-		adapter.setCustomArgumentResolvers(argumentResolvers);
-
-		return adapter;
-	}
-
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-	    registry.addInterceptor(secureModelAndViewInterceptor);
-	}
+//	@Override
+//	public void addInterceptors(InterceptorRegistry registry) {
+//		System.out.println("XAS----*****************************************");
+//		System.out.println("XAS----*****************************************");
+//		System.out.println("XAS----*****************************************");
+//		System.out.println("XAS----*****************************************");
+//		System.out.println("XAS----*****************************************");
+//		System.out.println("XAS----*****************************************");
+//		System.out.println("XAS----*****************************************");
+//		System.out.println("XAS----*****************************************");
+//	    registry.addInterceptor(secureModelAndViewInterceptor);
+//	}
 }
