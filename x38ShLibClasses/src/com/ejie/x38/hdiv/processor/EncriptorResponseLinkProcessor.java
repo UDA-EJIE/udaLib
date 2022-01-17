@@ -31,8 +31,6 @@ public class EncriptorResponseLinkProcessor extends ResponseLinkProcesor {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(EncriptorResponseLinkProcessor.class);
 	
-	private static final String ID = "id";
-	
 	private static final String GET_ID = "getId";
 	
 	@Autowired
@@ -53,7 +51,7 @@ public class EncriptorResponseLinkProcessor extends ResponseLinkProcesor {
 		}
 		
 		if (result instanceof IdentifiableModelWrapper<?> ) {
-			SecureClassInfo identifiableInfo = new SecureClassInfo( ((IdentifiableModelWrapper<?>) result).getIdentifiableParamName(), GET_ID, ((IdentifiableModelWrapper<?>) result).getEntity().getClass());
+			SecureClassInfo identifiableInfo = new SecureClassInfo( ((IdentifiableModelWrapper<?>) result).getIdentifiableParamName(), GET_ID, ((IdentifiableModelWrapper<?>) result).getTarget());
 			result = updateOnIdentifiableModelFound((IdentifiableModelWrapper<?>)result, identifiableInfo);
 		}else if (result instanceof Iterable) {
 			List<Object> objects = new ArrayList<Object>();
