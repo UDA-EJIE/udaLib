@@ -9,7 +9,7 @@ import com.ejie.x38.hdiv.controller.model.IdentifiableModelWrapperImpl;
 public class IdentifiableModelWrapperFactory<T> {
 
 	public static <T> List<IdentifiableModelWrapper<T>> getInstance(List<T> entities) {
-		return getInstance(entities, "getId");
+		return getInstance(entities, "id");
 	}
 	
 	public static <T> List<IdentifiableModelWrapper<T>> getInstance(List<T> entities, String paramName) {
@@ -21,7 +21,7 @@ public class IdentifiableModelWrapperFactory<T> {
 	}
 	
 	public static <T> IdentifiableModelWrapper<T> getInstance(T entity) {
-		return getInstance(entity, "getId");
+		return getInstance(entity, "id");
 	}
 	
 	public static <T> IdentifiableModelWrapper<T> getInstance(T entity, String paramName) {
