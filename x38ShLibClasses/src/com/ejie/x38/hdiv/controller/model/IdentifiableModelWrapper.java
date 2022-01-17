@@ -7,4 +7,5 @@ public interface IdentifiableModelWrapper<T> {
 	public Object getNid() throws Exception;
 	public String getIdentifiableParamName();
 	public Class<?> getTarget();
+	public IdentifiableModelWrapper<T> target(Class<?> target);
 }
