@@ -1,27 +1,11 @@
 package com.ejie.x38.hdiv.config;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-
-import org.hdiv.urlProcessor.FormUrlProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
-import com.ejie.x38.control.method.annotation.RequestJsonBodyMethodArgumentResolver;
 import com.ejie.x38.hdiv.interceptor.SecureModelAndViewInterceptor;
-import com.ejie.x38.hdiv.processor.UDASecureResourceProcesor;
 
 @Configuration
 public class WebConfig extends WebMvcConfigurationSupport {
@@ -62,16 +46,16 @@ public class WebConfig extends WebMvcConfigurationSupport {
 //	}
 	
 
-//	@Override
-//	public void addInterceptors(InterceptorRegistry registry) {
-//		System.out.println("XAS----*****************************************");
-//		System.out.println("XAS----*****************************************");
-//		System.out.println("XAS----*****************************************");
-//		System.out.println("XAS----*****************************************");
-//		System.out.println("XAS----*****************************************");
-//		System.out.println("XAS----*****************************************");
-//		System.out.println("XAS----*****************************************");
-//		System.out.println("XAS----*****************************************");
-//	    registry.addInterceptor(secureModelAndViewInterceptor);
-//	}
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		System.out.println("XAS----*****************************************");
+		System.out.println("XAS----*****************************************");
+		System.out.println("XAS----*****************************************");
+		System.out.println("XAS----*****************************************");
+		System.out.println("XAS----*****************************************");
+		System.out.println("XAS----*****************************************");
+		System.out.println("XAS----*****************************************");
+		System.out.println("XAS----*****************************************");
+	    registry.addInterceptor(secureModelAndViewInterceptor);
+	}
 }

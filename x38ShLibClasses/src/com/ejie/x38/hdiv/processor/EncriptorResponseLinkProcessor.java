@@ -1,119 +1,113 @@
 package com.ejie.x38.hdiv.processor;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.hdiv.services.EntityStateRecorder;
 import org.hdiv.services.LinkProvider;
-import org.hdiv.services.TrustAssertion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import com.ejie.x38.hdiv.controller.model.IdentifiableModelWrapper;
+import com.ejie.x38.hdiv.controller.model.SecureClassInfo;
 import com.ejie.x38.hdiv.controller.model.UDALinkResources;
-import com.ejie.x38.hdiv.processor.SecureInvocationHandler.SecureClassInfo;
 
 import javassist.util.proxy.ProxyFactory;
 
 @Component
 public class EncriptorResponseLinkProcessor extends ResponseLinkProcesor {
 	
+	private static final Logger LOGGER = LoggerFactory.getLogger(EncriptorResponseLinkProcessor.class);
+	
 	private static final String ID = "id";
-	private static final String GET = "get";
+	
 	private static final String GET_ID = "getId";
+	
+	@Autowired
+	@Lazy
+	private EntityStateRecorder<Link> entityStateRecorder;
 
-	@Override
 	public Object checkResponseToLinks(final Object object, Class<?> controller, LinkProvider<?> linkProvider) throws Throwable {
 
-		UDALinkResources udaLinkResources = new UDALinkResources();
-		Object processed = fillResources(object, 0, udaLinkResources, false, null);
-		//UDASecureResourceProcesor.processLinks(udaLinkResources, controller, (DinamicLinkProvider) linkProvider);
+		Object processed = fillResources(object, 0, null, false, null);
 		return processed;
 	}
+	
+	@SuppressWarnings("unchecked")
+	protected Object fillResources( Object result, final int deep, UDALinkResources udaLinkResources, boolean isSubEntity, Integer parentIndex) {
 
-	@Override
-	protected Object updateOnSecureIdentifiableFound(Object object) {
+		if (result == null) {
+			return result;
+		}
+		
+		if (result instanceof IdentifiableModelWrapper<?> ) {
+			SecureClassInfo identifiableInfo = new SecureClassInfo( ((IdentifiableModelWrapper<?>) result).getIdentifiableParamName(), GET_ID, ((IdentifiableModelWrapper<?>) result).getEntity().getClass());
+			result = updateOnIdentifiableModelFound((IdentifiableModelWrapper<?>)result, identifiableInfo);
+		}else if (result instanceof Iterable) {
+			List<Object> objects = new ArrayList<Object>();
+			for (Object o : (Iterable<?>) result) {
+				objects.add(fillResources(o, deep + 1, udaLinkResources, isSubEntity, parentIndex));
+			}
+			if(result instanceof Collection) {
+				try {
+					((Collection<Object>) result).clear();
+					((Collection<Object>) result).addAll(objects);
+				}catch(Exception e) {
+					LOGGER.error("Response objects cannot be reasigned");
+				}
+			}
+		}else if (result instanceof Map) {
+			for (Entry<Object, Object> entry : ((Map<Object, Object>) result).entrySet()) {
+				((Map<Object, Object>) result).put(entry.getKey(), fillResources(entry.getValue(), deep + 1, udaLinkResources, isSubEntity, parentIndex));
+			}
+		}
+		
+		return result;
+	}
+
+	private Object updateOnIdentifiableModelFound(IdentifiableModelWrapper<?> wrapper, SecureClassInfo identifiableInfo) {
 		try {
-			Object value = object.getClass().getDeclaredMethod(GET_ID);
-	    	//Proxy only valued objects
-	    	if(value != null) {
+			//Proxy only valued objects
+			String idValue = wrapper.getId();
+	    	if(idValue != null) {
 	    		
 	    		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-				Resource<Object> resource = UDASecureResourceProcesor.getAllowedEntityResource(object, request);
-				UDASecureResourceProcesor.addEntityLink(resource.getLinks(), resource.getContent(), ID, GET_ID, request);
+				Resource<Object> resource = UDASecureResourceProcesor.getAllowedEntityResource(wrapper.getEntity(), request);
+				UDASecureResourceProcesor.addEntityLink(resource.getLinks(), resource.getContent(), identifiableInfo.getParamName(), idValue, identifiableInfo.getTargetClass(), request);
 				
-	    		return setAsProxy(object, new SecureClassInfo(ID, GET_ID, object.getClass()));
+	    		return setAsProxy(wrapper, identifiableInfo);
 	    	}
 		}catch(Exception e) {
-			e.printStackTrace();
 		}
-		return object;
+		return wrapper;
 	}
 
-	@Override
-	protected Object updateOnSecureIdContainerFound(Object object) {
-		System.out.println("updateOnSecureIdContainerFound-->"+object);
-		try {
-			List<SecureClassInfo> secureClassInfoList = getIdentificatorInfo(object);
+	private Object setAsProxy(IdentifiableModelWrapper<?> wrapper, SecureClassInfo... secureClassInfo) {
 		
-			if(secureClassInfoList != null && !secureClassInfoList.isEmpty()) {
-				HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-				Resource<Object> resource = UDASecureResourceProcesor.getAllowedEntityResource(object, request);
-				for(SecureClassInfo info : secureClassInfoList) {
-					UDASecureResourceProcesor.addEntityLink(resource.getLinks(), resource.getContent(), info.getParamName(), info.getMethodName(), request);
-				}
-				return setAsProxy(object, secureClassInfoList.toArray(new SecureClassInfo[0]));	
-			}
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
-		return object;
-		
-	}
-
-	private Object setAsProxy(Object object, SecureClassInfo... secureClassInfo) {
-		System.out.println("New proxy instance for "+ object);
-		Class<?> originalClass = object.getClass();
+		Class<?> originalClass = wrapper.getClass();
 	    ProxyFactory factory = new ProxyFactory();
 	
 	    factory.setSuperclass(originalClass);
 	
-	    factory.setHandler(new SecureInvocationHandler(object, secureClassInfo));
+	    factory.setHandler(new SecureInvocationHandler(wrapper, entityStateRecorder, secureClassInfo));
 	    Class<?> proxyClass = factory.createClass();
 		try {
 		    return proxyClass.newInstance();
 		}catch(Exception e) {
-			return object;
+			return wrapper;
 		}
-	}
-	
-	private List<SecureClassInfo> getIdentificatorInfo(Object object) throws Exception {
-		
-		List<SecureClassInfo> secureInfoList = new ArrayList<SecureClassInfo>();
-		
-		for(Field field  : object.getClass().getDeclaredFields()) {
-			TrustAssertion trustAssertion = field.getAnnotation(TrustAssertion.class);
-		    if (trustAssertion != null && trustAssertion.idFor() != null) {
-		    	String propertyName = field.getName();
-		    	String methodName = GET+ propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1);
-		    	Object value = object.getClass().getDeclaredMethod(GET+ propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1));
-		    	//Proxy only valued objects
-		    	if(value != null) {
-		    		secureInfoList.add(new SecureClassInfo(field.getName(), methodName,  trustAssertion.idFor()));
-		    	}
-		    }
-		}
-		
-		return secureInfoList;
-		
-	}
-	
-	@Override
-	protected void onOtherType( Object result, final int deep, UDALinkResources udaLinkResources, boolean isSubEntity, Integer parentIndex) {
-		//Do nothing
 	}
 
 }

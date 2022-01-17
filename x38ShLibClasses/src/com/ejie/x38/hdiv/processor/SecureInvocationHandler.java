@@ -3,7 +3,10 @@ package com.ejie.x38.hdiv.processor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
-import com.hdivsecurity.services.util.HdivHATEOASUtils;
+import org.hdiv.services.EntityStateRecorder;
+import org.springframework.hateoas.Link;
+
+import com.ejie.x38.hdiv.controller.model.SecureClassInfo;
 
 import javassist.util.proxy.MethodHandler;
 
@@ -11,49 +14,25 @@ public class SecureInvocationHandler implements MethodHandler {
  
     private final Object invocationTarget;
     private SecureClassInfo[] secureClassInfoList = null;
+    private EntityStateRecorder<Link> entityStateRecorder;
     
-    public SecureInvocationHandler(Object invocationTarget, SecureClassInfo... secureClassInfo) {
+    public SecureInvocationHandler(Object invocationTarget, EntityStateRecorder<Link> entityStateRecorder, SecureClassInfo... secureClassInfo) {
         this.invocationTarget = invocationTarget;
-        if(secureClassInfo != null) {
-        	this.secureClassInfoList = secureClassInfo;
-        }
+       	this.secureClassInfoList = secureClassInfo;
+       	this.entityStateRecorder = entityStateRecorder;
     }
 
     private Object invokeProxy(Method method, Object[] args, SecureClassInfo info) throws Throwable {
     	Object value = method.invoke(invocationTarget, args);
     	if(value != null) {
 	    	try {
-	    		return HdivHATEOASUtils.ofuscate(value, info.getTargetClass(), info.getParamName());
+	    		return entityStateRecorder.ofuscate(value, info.getTargetClass(), info.getParamName());
 	    	}catch(Throwable e) {
 	    		System.out.println("cannot ofuscate value of method");
+	    		e.printStackTrace();
 	    	}
     	}
     	return value;
-    }
-    
-    public static class SecureClassInfo {
-    	private String paramName;
-    	private String methodName;
-    	private Class<?> targetClass;
-    	
-    	public SecureClassInfo(String paramName, String methodName, Class<?> targetClass) {
-    		this.paramName = paramName;
-    		this.methodName = methodName;
-    		this.targetClass = targetClass;
-    	}
-
-		public String getParamName() {
-			return paramName;
-		}
-		
-		public String getMethodName() {
-			return methodName;
-		}
-
-		public Class<?> getTargetClass() {
-			return targetClass;
-		}
-    	
     }
 
 	@Override

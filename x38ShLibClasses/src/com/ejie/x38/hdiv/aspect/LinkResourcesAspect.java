@@ -31,17 +31,6 @@ public class LinkResourcesAspect extends ResponseLinkProcesor {
 			LOGGER.error("Error processing links with exception:", e);
 		}
 		return result;
-
-	}
-
-	@Override
-	protected Object updateOnSecureIdentifiableFound(Object object) {
-		return object;
-	}
-
-	@Override
-	protected Object updateOnSecureIdContainerFound(Object object) {
-		return object;
 	}
 
 }

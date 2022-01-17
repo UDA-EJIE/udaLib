@@ -4,7 +4,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -12,11 +14,13 @@ import java.util.Map.Entry;
 import org.hdiv.services.LinkProvider;
 import org.hdiv.services.SecureIdContainer;
 import org.hdiv.services.SecureIdentifiable;
+import org.hdiv.services.TrustAssertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.Resource;
 
 import com.ejie.x38.hdiv.controller.model.ReferencedObject;
+import com.ejie.x38.hdiv.controller.model.SecureClassInfo;
 import com.ejie.x38.hdiv.controller.model.UDALinkResources;
 import com.ejie.x38.hdiv.controller.utils.DinamicLinkProvider;
 
@@ -27,7 +31,12 @@ public abstract class ResponseLinkProcesor {
 	private static final int MAX_DEEP = 8;
 	
 	private static final String[] JRE_PACKAGES = new String[] { "java.", "com.sun.", "sun.", "oracle.", "org.xml.", "com.oracle." };
-
+	
+	private static final String ID = "id";
+	
+	private static final String GET = "get";
+	
+	private static final String GET_ID = "getId";
 
 	public Object checkResponseToLinks(final Object object, Class<?> controller, LinkProvider<?> linkProvider) throws Throwable {
 
@@ -45,34 +54,38 @@ public abstract class ResponseLinkProcesor {
 		}
 		
 		if (result instanceof Resource) {
-			int currentIndex = addResource(udaLinkResources, result, false, parentIndex);
+			int currentIndex = addResource(udaLinkResources, result, false, null, parentIndex);
 			Object content = ((Resource<?>)result).getContent();
 			if(content != null) {
 				checkFields(content, deep + 1, udaLinkResources, currentIndex);	
 			}
 		}else if (result instanceof SecureIdentifiable<?> ) {
-			int currentIndex = addResource(udaLinkResources, result, isSubEntity, parentIndex);
+			SecureClassInfo identifiableInfo = new SecureClassInfo(ID, GET_ID, result.getClass());
+			
+			int currentIndex = addResource(udaLinkResources, result, isSubEntity, Arrays.asList(identifiableInfo), parentIndex);
 			checkFields(result, deep + 1, udaLinkResources, currentIndex);
-			result = updateOnSecureIdentifiableFound(result);
+			//result = updateOnSecureIdentifiableFound(result, identifiableInfo);
 			
 		}else if (result instanceof SecureIdContainer) {
-			int currentIndex = addResource(udaLinkResources, result, isSubEntity, parentIndex);
+			
+			List<SecureClassInfo> identificatorInfo = getIdentificatorInfo(result);
+			int currentIndex = addResource(udaLinkResources, result, isSubEntity, identificatorInfo, parentIndex);
 			checkFields(result, deep + 1, udaLinkResources, currentIndex);
-			result = updateOnSecureIdContainerFound(result);
+			//result = updateOnSecureIdContainerFound(result, identificatorInfo);
 			
 		}else if (result instanceof Iterable) {
 			List<Object> objects = new ArrayList<Object>();
 			for (Object o : (Iterable<?>) result) {
 				objects.add(fillResources(o, deep + 1, udaLinkResources, isSubEntity, parentIndex));
 			}
-			if(result instanceof Collection) {
-				try {
-					((Collection<Object>) result).clear();
-					((Collection<Object>) result).addAll(objects);
-				}catch(Exception e) {
-					LOGGER.error("Response objects cannot be reasigned");
-				}
-			}
+//			if(result instanceof Collection) {
+//				try {
+//					((Collection<Object>) result).clear();
+//					((Collection<Object>) result).addAll(objects);
+//				}catch(Exception e) {
+//					LOGGER.error("Response objects cannot be reasigned");
+//				}
+//			}
 		}else if (result instanceof Map) {
 			for (Entry<Object, Object> entry : ((Map<Object, Object>) result).entrySet()) {
 				((Map<Object, Object>) result).put(entry.getKey(), fillResources(entry.getValue(), deep + 1, udaLinkResources, isSubEntity, parentIndex));
@@ -86,6 +99,31 @@ public abstract class ResponseLinkProcesor {
 		}
 		
 		return result;
+	}
+	
+	private List<SecureClassInfo> getIdentificatorInfo(Object object) {
+		
+		List<SecureClassInfo> secureInfoList = new ArrayList<SecureClassInfo>();
+		
+		for(Field field  : object.getClass().getDeclaredFields()) {
+			try {
+				TrustAssertion trustAssertion = field.getAnnotation(TrustAssertion.class);
+			    if (trustAssertion != null && trustAssertion.idFor() != null) {
+			    	String propertyName = field.getName();
+			    	String methodName = GET+ propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1);
+			    	Object value = object.getClass().getDeclaredMethod(GET+ propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1));
+			    	//Proxy only valued objects
+			    	if(value != null) {
+			    		secureInfoList.add(new SecureClassInfo(field.getName(), methodName,  trustAssertion.idFor()));
+			    	}
+			    }
+			}catch(Exception e) {
+		    	LOGGER.debug("Field {} of {} not processed", field.getName(), object );
+		    }
+		}
+		
+		return secureInfoList;
+		
 	}
 	
 	protected void onOtherType(Object result, final int deep, UDALinkResources udaLinkResources, boolean isSubEntity, Integer parentIndex) {
@@ -109,9 +147,9 @@ public abstract class ResponseLinkProcesor {
 	
 	}
 	
-	private int addResource(UDALinkResources udaLinkResources, Object resource, boolean isSubEntity, Integer parentIndex) {
+	protected int addResource(UDALinkResources udaLinkResources, Object resource, boolean isSubEntity, List<SecureClassInfo> secureClassInfo, Integer parentIndex) {
 		if(isSubEntity) {
-			udaLinkResources.getSubEntities().add(new ReferencedObject(String.valueOf(parentIndex), resource));
+			udaLinkResources.getSubEntities().add(new ReferencedObject(String.valueOf(parentIndex), resource, secureClassInfo));
 			return parentIndex;
 		}else {
 			udaLinkResources.getEntities().add(resource);
@@ -122,8 +160,7 @@ public abstract class ResponseLinkProcesor {
 	
 	private void checkFields(Object object, final int deep, UDALinkResources udaLinkResources, int parentIndex) {
 		
-		Field[] fields = object.getClass().getDeclaredFields();
-		for (Field field : fields) {
+		for (Field field : getObjectFields(object)) {
 			try {
 				if( !Modifier.isStatic(field.getModifiers()) && (Resource.class.isAssignableFrom(field.getDeclaringClass()) || SecureIdentifiable.class.isAssignableFrom(field.getDeclaringClass()) || SecureIdContainer.class.isAssignableFrom(field.getDeclaringClass()))) {
 					field.setAccessible(true);
@@ -133,8 +170,28 @@ public abstract class ResponseLinkProcesor {
 			catch (Exception e) {
 				LOGGER.error("Error getting field " + field.getName() + " of class:" + object.getClass().getName(), e);
 			}
+		}	
+	}
+	
+	private Field[] getObjectFields(Object object) {
+		Field[] fields;
+		Class<?> parentClass = object.getClass().getSuperclass();
+		if(parentClass != null) {
+			Map<String, Field> fieldsMap = new HashMap<String, Field>();
+			for(Field field : parentClass.getDeclaredFields()) {
+				fieldsMap.put(field.getName(), field);
+			}
+			for(Field field : object.getClass().getDeclaredFields()) {
+				fieldsMap.put(field.getName(), field);
+			}
+			fields = new Field[fieldsMap.size()];
+			fieldsMap.values().toArray(fields);
+			
+		}else {
+			fields = object.getClass().getDeclaredFields();
 		}
 		
+		return fields;
 	}
 	
 	public boolean isJRECLass(final String className) {
@@ -146,8 +203,8 @@ public abstract class ResponseLinkProcesor {
 		return false;
 	}
 	
-	protected abstract Object updateOnSecureIdentifiableFound(Object object);
-	
-	protected abstract Object updateOnSecureIdContainerFound(Object object);
+//	protected abstract Object updateOnSecureIdentifiableFound(Object object, SecureClassInfo identifiableInfo);
+//	
+//	protected abstract Object updateOnSecureIdContainerFound(Object object, List<SecureClassInfo> identifiableInfo);
 
 }

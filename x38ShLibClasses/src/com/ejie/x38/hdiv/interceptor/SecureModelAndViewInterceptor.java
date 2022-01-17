@@ -1,5 +1,6 @@
 package com.ejie.x38.hdiv.interceptor;
 
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import com.ejie.x38.hdiv.controller.model.IdentifiableModelWrapper;
 import com.ejie.x38.hdiv.processor.EncriptorResponseLinkProcessor;
 
 @Component
@@ -40,7 +42,10 @@ public class SecureModelAndViewInterceptor extends HandlerInterceptorAdapter {
 		for(Entry<String, Object > modelObject : modelAndView.getModel().entrySet()) {
 			
 			try {
-				modelAndView.addObject(modelObject.getKey(), responseLinkProcessor.checkResponseToLinks(modelObject.getValue(), handler.getClass(), linkProvider));
+				Object value = modelObject.getValue();
+				if(value instanceof IdentifiableModelWrapper || value instanceof Iterable || value instanceof Map) {
+					modelAndView.addObject(modelObject.getKey(), responseLinkProcessor.checkResponseToLinks(modelObject.getValue(), handler.getClass(), linkProvider));
+				}
 			}
 			catch (Throwable e) {
 				LOGGER.error("Error processing links of object {} with exception:", modelObject.getKey(), e);

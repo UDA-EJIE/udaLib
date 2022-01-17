@@ -23,6 +23,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.ejie.x38.hdiv.controller.model.LinkInfo;
 import com.ejie.x38.hdiv.controller.model.MappingInfo;
 import com.ejie.x38.hdiv.controller.model.ReferencedObject;
+import com.ejie.x38.hdiv.controller.model.SecureClassInfo;
 import com.ejie.x38.hdiv.controller.model.UDALinkMappingInfo;
 import com.ejie.x38.hdiv.controller.model.UDALinkResources;
 import com.ejie.x38.hdiv.controller.utils.DinamicLinkProvider;
@@ -77,6 +78,7 @@ public class UDASecureResourceProcesor {
 		return new Resource<Object>(entity, new ArrayList<Link>());
 	}
 
+	@SuppressWarnings("unchecked")
 	private static List<Resource<Object>> processLinks(final List<Object> entities, final List<ReferencedObject> subEntities, final Class<?> controller,
 			final DinamicLinkProvider linkProvider) {
 
@@ -97,11 +99,16 @@ public class UDASecureResourceProcesor {
 					Object parent = entities.get(Integer.valueOf(entity.getRef()));
 					if(parent instanceof Resource) {
 						for(Resource<Object> subentityResurce : processEntity(entity.getEntity(), request, allowInfoList, requestStr, urlTemplatesMap, true)) {
-							((Resource)parent).add(subentityResurce.getLinks());
-							try {
-								addEntityLink(subentityResurce.getLinks(), entity.getEntity(), "code", request);
-							}catch(Exception e) {
-								LOGGER.error("Cannot add links to entity", e);
+							((Resource<Object>)parent).add(subentityResurce.getLinks());
+							for(SecureClassInfo secureClassInfo : entity.getSecureClassInfo()){
+								try {
+									Object entityObject =  entity.getEntity();
+									//Note: targeted class can be different from entity class 
+									Method method = entityObject.getClass().getDeclaredMethod(secureClassInfo.getMethodName());
+									addEntityLink(subentityResurce.getLinks(), entityObject, secureClassInfo.getParamName(), String.valueOf(method.invoke(entityObject)), secureClassInfo.getTargetClass(), request);
+								}catch(Exception e) {
+									LOGGER.error("Cannot add links to entity", e);
+								}	
 							}
 						}
 					}
@@ -116,20 +123,11 @@ public class UDASecureResourceProcesor {
 
 	}
 	
-	private static void addEntityLink(final List<Link> links, final Object entityObject,
-			final String propertyName, HttpServletRequest request) throws Exception {
-		addEntityLink(links, entityObject, propertyName, "get"+ propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1), request);	
-	}
-	
 	static void addEntityLink(final List<Link> links, final Object entityObject,
-			final String propertyName,final String methodNameName, HttpServletRequest request) throws Exception {
+			final String propertyName,final String idValue, Class<?> targetedClass, HttpServletRequest request) throws Exception {
 
 		if(links != null && !links.isEmpty() && entityStateRecorder != null) {
-			
-			Class<?> entityClass = entityObject.getClass();
-			Method method = entityClass.getDeclaredMethod(methodNameName);
-			
-			entityStateRecorder.registerEntity(links, entityClass, String.valueOf(method.invoke(entityObject)), propertyName, HDIVUtil.getRequestContext(request));
+			entityStateRecorder.registerEntity(links, targetedClass, idValue, propertyName, HDIVUtil.getRequestContext(request));
 			
 		}
 	}
