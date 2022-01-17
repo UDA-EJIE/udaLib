@@ -14,7 +14,7 @@ import javax.servlet.http.HttpSession;
 import org.hdiv.services.LinkProvider;
 import org.springframework.hateoas.Link;
 
-public class DinamicLinkProvider implements LinkProvider {
+public class DinamicLinkProvider implements LinkProvider<Link> {
 
 	private final Map<String, Set<Link>> linksMap = new HashMap<String, Set<Link>>();
 
