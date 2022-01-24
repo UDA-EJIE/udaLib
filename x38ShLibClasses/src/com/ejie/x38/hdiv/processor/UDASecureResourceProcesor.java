@@ -242,38 +242,8 @@ public class UDASecureResourceProcesor {
 			// Dynamic links
 			// Replace mapping with entity values
 			for (String mapping : allowInfo.getEntityMappingInfo().getMappings()) {
-
-				LOGGER.debug("Evaluate mapping: " + mapping);
-				Map<String, Object> templateValuesMap = new HashMap<String, Object>();
-
-				Map<String, Map<Class<?>,Method>> segments = urlTemplatesMap.get(mapping);
-				UriComponents uriComponents = UriComponentsBuilder.fromUriString(mapping).build();
-				if (segments == null) {
-					segments = new HashMap<String,Map<Class<?>,Method>>();
-					for (String segment : uriComponents.getPathSegments()) {
-						// no need to check if segment ends with '}'. We assume that case
-						if (segment.startsWith("{")) {
-							// it is a template segment. Replace it with the entity value
-							int index = segment.indexOf(":");
-							if (index > 0) {
-								segment = segment.substring(1, index);
-							}
-							else {
-								segment = segment.substring(1, segment.length() - 1);
-							}
-						
-							templateValuesMap.put(segment, getTemplateValuesFromEntity(entityToProcces, addSegmentMethodIfNeeded(entityToProcces, segment , segments), segment));
-						}
-					}
-					urlTemplatesMap.put(mapping, segments);
-				}
-				else {
-					
-					templateValuesMap = getEntityValueMapFromTemplates(entityToProcces, segments, templateValuesMap);
-				}
-
 				// Replace each segment by entity value;
-				Link link = new Link(requestStr + uriComponents.expand(templateValuesMap).getPath(), allowInfo.getName());
+				Link link = new Link(revolveURL(mapping, entityToProcces, urlTemplatesMap, requestStr), allowInfo.getName());
 				LOGGER.debug("Allowed link to entity: " + link);
 				entityLinks.add(
 						new MethodAwareLink(link,
@@ -282,7 +252,8 @@ public class UDASecureResourceProcesor {
 			
 			// Static links
 			for (String mapping : allowInfo.getStaticMappingInfo().getMappings()) {
-				Link link = new Link(requestStr + mapping, allowInfo.getName());
+				//Need to resolve some urls that has NON id parameter as path variable
+				Link link = new Link(revolveURL(mapping, entityToProcces, urlTemplatesMap, requestStr), allowInfo.getName());
 				LOGGER.debug("Allowed static link: " + link);
 				entityLinks.add(
 						new MethodAwareLink(link, allowInfo.getMethodForLinkCondition()));
@@ -290,6 +261,40 @@ public class UDASecureResourceProcesor {
 		}
 		return entityLinks;
 
+	}
+	
+	private static String revolveURL(String mapping, final Object entityToProcces, final Map<String, Map<String, Map<Class<?>,Method>>> urlTemplatesMap, String requestStr) {
+		LOGGER.debug("Evaluate mapping: " + mapping);
+		Map<String, Object> templateValuesMap = new HashMap<String, Object>();
+
+		Map<String, Map<Class<?>,Method>> segments = urlTemplatesMap.get(mapping);
+		UriComponents uriComponents = UriComponentsBuilder.fromUriString(mapping).build();
+		if (segments == null) {
+			segments = new HashMap<String,Map<Class<?>,Method>>();
+			for (String segment : uriComponents.getPathSegments()) {
+				// no need to check if segment ends with '}'. We assume that case
+				if (segment.startsWith("{")) {
+					// it is a template segment. Replace it with the entity value
+					int index = segment.indexOf(":");
+					if (index > 0) {
+						segment = segment.substring(1, index);
+					}
+					else {
+						segment = segment.substring(1, segment.length() - 1);
+					}
+				
+					templateValuesMap.put(segment, getTemplateValuesFromEntity(entityToProcces, addSegmentMethodIfNeeded(entityToProcces, segment , segments), segment));
+				}
+			}
+			urlTemplatesMap.put(mapping, segments);
+		}
+		else {
+			
+			templateValuesMap = getEntityValueMapFromTemplates(entityToProcces, segments, templateValuesMap);
+		}
+
+		// Replace each segment by entity value;
+		return requestStr + uriComponents.expand(templateValuesMap).getPath();
 	}
 	
 	private static Method addSegmentMethodIfNeeded(final Object entityToProcces, String segment , Map<String, Map<Class<?>,Method>> segments) {
