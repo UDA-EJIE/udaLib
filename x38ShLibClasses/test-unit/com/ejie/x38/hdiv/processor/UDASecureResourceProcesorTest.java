@@ -29,7 +29,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
+import org.hdiv.services.SecureIdContainer;
 import org.hdiv.services.SecureIdentifiable;
+import org.hdiv.services.TrustAssertion;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.hateoas.Resource;
@@ -497,6 +499,32 @@ public class UDASecureResourceProcesorTest {
 		assertEquals("<http://domain:7001/testingWar/test/"+entity.getName()+">;rel=\""+relName+"\"", resource.getLinks().get(0).toString());	
 	}
 	
+	@Test
+	public void testMultipleResourceEntityLink() throws JsonProcessingException, IOException {
+		UDALinkResources resources = new UDALinkResources();
+		Other other = new Other(0l, "other1");
+		Resource<Other> resourceOther = new Resource<Other>(other);
+		resources.getEntities().add(resourceOther);
+		
+		Entity entity = new Entity(1l, "entity1");
+		Resource<Entity> resource = new Resource<Entity>(entity);
+		resources.getEntities().add(resource);
+		
+		MethodMappingInfo mappings = new MethodMappingInfo(new HashSet<String>(Arrays.asList("/test/{name}")), null, null);
+		
+		String relName = "allower";
+		UDASecureResourceProcesor.registerMethodLinkDiscoverer(getMethodLinkDiscoverer(relName, false, Void.class, mappings));
+		
+		List<Resource<Object>> resorces = UDASecureResourceProcesor.processLinks(resources, getClass(), dinamicLinkProvider);
+		
+		assertEquals(0, resorces.size());
+		assertEquals(1, resourceOther.getLinks().size());
+		assertEquals("<http://domain:7001/testingWar/test/{name}>;rel=\""+relName+"\"", resourceOther.getLinks().get(0).toString());
+		
+		assertEquals(1, resource.getLinks().size());
+		assertEquals("<http://domain:7001/testingWar/test/"+entity.getName()+">;rel=\""+relName+"\"", resource.getLinks().get(0).toString());
+	}
+	
 	public class Entity implements SecureIdentifiable<Long> {
 		
 		private Long id;
@@ -523,6 +551,37 @@ public class UDASecureResourceProcesorTest {
 		public void setId(Long id) {
 			this.id = id;
 		}
+		
+		
+	}
+	
+public class Other implements SecureIdContainer {
+		
+		@TrustAssertion(idFor = Other.class)
+		private Long code;
+		private String desc;
+		
+		public Other( Long code, String desc) {
+			this.code = code;
+			this.desc = desc;
+		}
+
+		public Long getCode() {
+			return code;
+		}
+
+		public void setCode(Long code) {
+			this.code = code;
+		}
+
+		public String getDesc() {
+			return desc;
+		}
+
+		public void setDesc(String desc) {
+			this.desc = desc;
+		}
+		
 		
 		
 	}

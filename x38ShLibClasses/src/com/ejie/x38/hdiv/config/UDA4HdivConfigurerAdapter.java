@@ -14,6 +14,8 @@ import org.hdiv.ee.validator.ValidationTargetType;
 import org.hdiv.listener.InitListener;
 import org.hdiv.services.EntityStateRecorder;
 import org.hdiv.services.LinkProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -34,8 +36,16 @@ import com.hdivsecurity.services.config.ServicesConfig.IdProtectionType;
 import com.hdivsecurity.services.config.ServicesConfig.ServerSideHypermedia;
 import com.hdivsecurity.services.config.ServicesSecurityConfigBuilder;
 
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.CtMethod;
+import javassist.CtNewMethod;
+import javassist.LoaderClassPath;
+
 @ComponentScan(basePackages = "com.ejie.x38.hdiv")
 public abstract class UDA4HdivConfigurerAdapter extends HdivServicesSecurityConfigurerAdapter {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(UDA4HdivConfigurerAdapter.class);
 	
 	@Autowired
 	private RequestMappingHandlerMapping handler;
@@ -47,6 +57,7 @@ public abstract class UDA4HdivConfigurerAdapter extends HdivServicesSecurityConf
 	@PostConstruct
 	public void init() {
 		UDASecureResourceProcesor.registerEntityStateRecorder(entityStateRecorder);
+		transformClasses();
 	}
 
 	@Bean
@@ -187,9 +198,39 @@ public abstract class UDA4HdivConfigurerAdapter extends HdivServicesSecurityConf
 		return dinamicLinkProvider;
 	};
 
+	@SuppressWarnings("unchecked")
 	@Bean
-	public List<LinkProvider> linkProviders() {
-		return Arrays.asList((LinkProvider) linkProvider());
+	public List<LinkProvider<Link>> linkProviders() {
+		return Arrays.asList((LinkProvider<Link>) linkProvider());
 	};
+	
+	public void transformClasses() {
+		try {
+			ClassPool classPool = ClassPool.getDefault();
+			Class<?> tag = Class.forName("org.springframework.web.servlet.tags.form.HiddenInputTag");
+			classPool.appendClassPath(new LoaderClassPath(tag.getClassLoader()));
+			CtClass ctClass = classPool.get("org.springframework.web.servlet.tags.form.HiddenInputTag");
+			String strMethod = " public void setDynamicAttribute( String uri, String localName, Object value) throws javax.servlet.jsp.JspException {" //
+								+ "		org.springframework.web.servlet.support.RequestContext ctx = (org.springframework.web.servlet.support.RequestContext) this.pageContext.getAttribute(REQUEST_CONTEXT_PAGE_ATTRIBUTE);"//
+								+ "		if(\"value\".equals(localName)) {"//
+								+ "			if (ctx != null) {"//
+								+ "				org.springframework.web.servlet.support.RequestDataValueProcessor processor = ctx.getRequestDataValueProcessor();"//
+								+ "				javax.servlet.ServletRequest request = this.pageContext.getRequest();"//
+								+ "				if (processor != null && (request instanceof javax.servlet.http.HttpServletRequest)) {"//
+								+ "					processor.processFormFieldValue((javax.servlet.http.HttpServletRequest) request, getPath(), String.valueOf(value), \"hidden\");"//
+								+ "				}"//
+								+ "			}"//
+								+ "		}"//
+								+ "		super.setDynamicAttribute(uri, localName, value);"//
+								+ "	}";
+			
+			CtMethod newmethod = CtNewMethod.make(strMethod,ctClass);
+			ctClass.addMethod(newmethod);
+			ctClass.writeFile();
+			ctClass.toClass();
+		}catch(Exception e ) {
+			LOGGER.error("Cannot transform classes. ", e);
+		}
+	}
 
 }
