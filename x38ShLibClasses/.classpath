@@ -55,7 +55,6 @@
 	<classpathentry kind="lib" path="lib/javax.servlet-api-3.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/javax.ws.rs-api-2.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/jboss-logging-3.3.0.Final.jar"/>
-	<classpathentry kind="lib" path="lib/jcl-over-slf4j-1.7.25.jar"/>
 	<classpathentry kind="lib" path="lib/jdbcdslog-1.0.5.jar"/>
 	<classpathentry kind="lib" path="lib/jetty-util-6.1.26.jar"/>
 	<classpathentry kind="lib" path="lib/json-lib-2.3-jdk15.jar"/>
@@ -70,8 +69,6 @@
 	<classpathentry kind="lib" path="lib/poi-3.7.jar"/>
 	<classpathentry kind="lib" path="lib/poi-ooxml-3.7.jar"/>
 	<classpathentry kind="lib" path="lib/poi-ooxml-schemas-3.7.jar"/>
-	<classpathentry kind="lib" path="lib/slf4j-api-1.7.25.jar"/>
-	<classpathentry kind="lib" path="lib/slf4j-ext-1.7.25.jar"/>
 	<classpathentry kind="lib" path="lib/snappy-java-1.0.5.jar"/>
 	<classpathentry kind="lib" path="lib/spring-aop-4.3.22.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/spring-beans-4.3.22.RELEASE.jar"/>
@@ -130,5 +127,8 @@
 	<classpathentry kind="lib" path="lib/jaxrs-api-2.1.0.GA.jar"/>
 	<classpathentry kind="lib" path="lib/metrics-core-3.0.2.jar"/>
 	<classpathentry kind="lib" path="lib/resteasy-jaxrs-2.1.0.GA.jar"/>
+	<classpathentry kind="lib" path="lib/jcl-over-slf4j-1.7.30.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-api-1.7.30.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-ext-1.7.30.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
