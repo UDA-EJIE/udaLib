@@ -226,7 +226,7 @@ public abstract class UDA4HdivConfigurerAdapter extends HdivServicesSecurityConf
 			
 			CtMethod newmethod = CtNewMethod.make(strMethod,ctClass);
 			ctClass.addMethod(newmethod);
-			ctClass.writeFile();
+			//ctClass.writeFile();
 			ctClass.toClass();
 		}catch(Exception e ) {
 			LOGGER.error("Cannot transform classes. ", e);
