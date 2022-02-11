@@ -53,38 +53,34 @@ public abstract class ResponseLinkProcesor {
 		}
 		
 		if (result instanceof Resource) {
-			int currentIndex = addResource(udaLinkResources, result, false, null, parentIndex);
+			
 			Object content = ((Resource<?>)result).getContent();
-			if(content != null) {
-				checkFields(content, deep + 1, udaLinkResources, currentIndex);	
+			if(content instanceof Resource) {
+				content = ((Resource<?>)result).getContent();
+				fillResources( ((Resource<?>)result).getContent(), deep, udaLinkResources, false, parentIndex);
+			}else {
+				int currentIndex = addResource(udaLinkResources, result, false, null, parentIndex);
+				if(content != null) {
+					checkFields(content, deep + 1, udaLinkResources, currentIndex);	
+				}
 			}
 		}else if (result instanceof SecureIdentifiable<?> ) {
 			SecureClassInfo identifiableInfo = new SecureClassInfo(ID, GET_ID, result.getClass());
 			
 			int currentIndex = addResource(udaLinkResources, result, isSubEntity, Arrays.asList(identifiableInfo), parentIndex);
 			checkFields(result, deep + 1, udaLinkResources, currentIndex);
-			//result = updateOnSecureIdentifiableFound(result, identifiableInfo);
 			
 		}else if (result instanceof SecureIdContainer) {
 			
 			List<SecureClassInfo> identificatorInfo = getIdentificatorInfo(result);
 			int currentIndex = addResource(udaLinkResources, result, isSubEntity, identificatorInfo, parentIndex);
 			checkFields(result, deep + 1, udaLinkResources, currentIndex);
-			//result = updateOnSecureIdContainerFound(result, identificatorInfo);
 			
 		}else if (result instanceof Iterable) {
 			List<Object> objects = new ArrayList<Object>();
 			for (Object o : (Iterable<?>) result) {
 				objects.add(fillResources(o, deep + 1, udaLinkResources, isSubEntity, parentIndex));
 			}
-//			if(result instanceof Collection) {
-//				try {
-//					((Collection<Object>) result).clear();
-//					((Collection<Object>) result).addAll(objects);
-//				}catch(Exception e) {
-//					LOGGER.error("Response objects cannot be reasigned");
-//				}
-//			}
 		}else if (result instanceof Map) {
 			for (Entry<Object, Object> entry : ((Map<Object, Object>) result).entrySet()) {
 				((Map<Object, Object>) result).put(entry.getKey(), fillResources(entry.getValue(), deep + 1, udaLinkResources, isSubEntity, parentIndex));
