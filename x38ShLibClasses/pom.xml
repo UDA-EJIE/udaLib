@@ -676,8 +676,6 @@
 		<!-- FIN PIF 1.4 -->
 	</dependencies>
 
-	<repositories></repositories>
-
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<testSourceDirectory>test-integration</testSourceDirectory>
@@ -710,7 +708,7 @@
 							<goal>copy-dependencies</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>./lib</outputDirectory>
+							<outputDirectory>${user.dir}/lib</outputDirectory>
 							<overWriteReleases>false</overWriteReleases>
 							<overWriteSnapshots>true</overWriteSnapshots>
 							<excludeTransitive>false</excludeTransitive>
