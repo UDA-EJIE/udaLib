@@ -244,18 +244,6 @@
 			<artifactId>logback-classic</artifactId>
 			<version>${org.logback.version}</version>
 		</dependency>
-		<!-- Jdbcdslog -->
-		<dependency>
-		    <groupId>com.googlecode.usc</groupId>
-		    <artifactId>jdbcdslog</artifactId>
-		    <version>1.0.5</version>
-		    <exclusions>
-				<exclusion>
-					<groupId>slf4j</groupId>
-					<artifactId>slf4j-api</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
 
 		<!-- Hibernate Validator -->
 		<dependency>
