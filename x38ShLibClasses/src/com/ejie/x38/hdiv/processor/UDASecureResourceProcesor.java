@@ -78,9 +78,10 @@ public class UDASecureResourceProcesor {
 		return new Resource<Object>(entity, new ArrayList<Link>());
 	}
 
-	@SuppressWarnings("unchecked")
 	private static List<Resource<Object>> processLinks(final List<Object> entities, final List<ReferencedObject> subEntities, final Class<?> controller,
 			final DinamicLinkProvider linkProvider) {
+		
+		LOGGER.debug("Processing links to {} entities and {} subentities", entities.size(), subEntities.size());
 
 		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 		List<UDALinkMappingInfo> allowInfoList = methodLinkDiscoverer.getMethodLinkInfo(request);
@@ -99,7 +100,8 @@ public class UDASecureResourceProcesor {
 					Object parent = entities.get(Integer.valueOf(entity.getRef()));
 					if(parent instanceof Resource) {
 						for(Resource<Object> subentityResurce : processEntity(entity.getEntity(), request, allowInfoList, requestStr, urlTemplatesMap, true)) {
-							((Resource<Object>)parent).add(subentityResurce.getLinks());
+							// is this line needed?
+							//((Resource<Object>)parent).add(subentityResurce.getLinks());
 							for(SecureClassInfo secureClassInfo : entity.getSecureClassInfo()){
 								try {
 									Object entityObject =  entity.getEntity();
@@ -126,7 +128,7 @@ public class UDASecureResourceProcesor {
 	static void addEntityLink(final List<Link> links, final Object entityObject,
 			final String propertyName,final String idValue, Class<?> targetedClass, HttpServletRequest request) throws Exception {
 
-		if(links != null && !links.isEmpty() && entityStateRecorder != null) {
+		if(links != null && !links.isEmpty() && idValue != null && entityStateRecorder != null) {
 			entityStateRecorder.registerEntity(links, targetedClass, idValue, propertyName, HDIVUtil.getRequestContext(request));
 			
 		}
@@ -243,27 +245,38 @@ public class UDASecureResourceProcesor {
 			// Replace mapping with entity values
 			for (String mapping : allowInfo.getEntityMappingInfo().getMappings()) {
 				// Replace each segment by entity value;
-				Link link = new Link(revolveURL(mapping, entityToProcces, urlTemplatesMap, requestStr), allowInfo.getName());
-				LOGGER.debug("Allowed link to entity: " + link);
-				entityLinks.add(
-						new MethodAwareLink(link,
-								allowInfo.getMethodForLinkCondition()));
+				try {
+					Link link = new Link(revolveURL(mapping, entityToProcces, urlTemplatesMap, requestStr, true), allowInfo.getName());
+					LOGGER.debug("Allowed link to entity: " + link);
+					entityLinks.add(
+							new MethodAwareLink(link,
+									allowInfo.getMethodForLinkCondition()));
+				}catch(NoSuchMethodException e){
+					//Nothing to do
+				}
 			}
 			
 			// Static links
 			for (String mapping : allowInfo.getStaticMappingInfo().getMappings()) {
 				//Need to resolve some urls that has NON id parameter as path variable
-				Link link = new Link(revolveURL(mapping, entityToProcces, urlTemplatesMap, requestStr), allowInfo.getName());
-				LOGGER.debug("Allowed static link: " + link);
-				entityLinks.add(
-						new MethodAwareLink(link, allowInfo.getMethodForLinkCondition()));
+				try {
+					Link link = new Link(revolveURL(mapping, entityToProcces, urlTemplatesMap, requestStr, false), allowInfo.getName());
+					LOGGER.debug("Allowed static link: " + link);
+					entityLinks.add(
+							new MethodAwareLink(link, allowInfo.getMethodForLinkCondition()));
+				}catch(NoSuchMethodException e){
+					//Nothing to do
+					//revolveURL does not thow exception at this point
+				}
 			}
 		}
+		
+		LOGGER.debug("AllowedEntityLinks count for {} : {}", allowInfo.getName(), entityLinks.size());
 		return entityLinks;
 
 	}
 	
-	private static String revolveURL(String mapping, final Object entityToProcces, final Map<String, Map<String, Map<Class<?>,Method>>> urlTemplatesMap, String requestStr) {
+	private static String revolveURL(String mapping, final Object entityToProcces, final Map<String, Map<String, Map<Class<?>,Method>>> urlTemplatesMap, String requestStr, boolean throwExc) throws NoSuchMethodException {
 		LOGGER.debug("Evaluate mapping: " + mapping);
 		Map<String, Object> templateValuesMap = new HashMap<String, Object>();
 
@@ -283,14 +296,14 @@ public class UDASecureResourceProcesor {
 						segment = segment.substring(1, segment.length() - 1);
 					}
 				
-					templateValuesMap.put(segment, getTemplateValuesFromEntity(entityToProcces, addSegmentMethodIfNeeded(entityToProcces, segment , segments), segment));
+					templateValuesMap.put(segment, getTemplateValuesFromEntity(entityToProcces, addSegmentMethodIfNeeded(entityToProcces, segment , segments), segment, throwExc));
 				}
 			}
 			urlTemplatesMap.put(mapping, segments);
 		}
 		else {
 			
-			templateValuesMap = getEntityValueMapFromTemplates(entityToProcces, segments, templateValuesMap);
+			templateValuesMap = getEntityValueMapFromTemplates(entityToProcces, segments, templateValuesMap, throwExc);
 		}
 
 		// Replace each segment by entity value;
@@ -329,17 +342,17 @@ public class UDASecureResourceProcesor {
 	}
 
 	private static <T> Map<String, Object> getEntityValueMapFromTemplates(final Object entity, final Map<String, Map<Class<?>,Method>> segments,
-			final Map<String, Object> map) {
+			final Map<String, Object> map, boolean throwExc) throws NoSuchMethodException {
 
 		for (String segment : new ArrayList<String>(segments.keySet())) {
 			Method method = addSegmentMethodIfNeeded(entity, segment , segments);
-			map.put(segment, getTemplateValuesFromEntity(entity, method, segment));
+			map.put(segment, getTemplateValuesFromEntity(entity, method, segment, throwExc));
 		}
 
 		return map;
 	}
 
-	private static <T> Object getTemplateValuesFromEntity(final Object entity, final Method segmentMethod, final String segmentName) {
+	private static <T> Object getTemplateValuesFromEntity(final Object entity, final Method segmentMethod, final String segmentName, boolean throwExc) throws NoSuchMethodException {
 
 		Object value = null;
 		try {
@@ -351,8 +364,12 @@ public class UDASecureResourceProcesor {
 			}
 		}
 		catch (Exception e) {
-			value = "{" + segmentName + "}";
+			
 			LOGGER.error("No method " + segmentMethod.getName() + " found for entity class " + entity.getClass());
+			value = "{" + segmentName + "}";
+			if(throwExc) {
+				throw new NoSuchMethodException((String)value);
+			}
 		}
 		return value;
 
