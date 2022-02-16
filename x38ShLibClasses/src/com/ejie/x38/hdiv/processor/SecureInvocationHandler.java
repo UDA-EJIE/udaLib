@@ -1,9 +1,10 @@
 package com.ejie.x38.hdiv.processor;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 
 import org.hdiv.services.EntityStateRecorder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.Link;
 
 import com.ejie.x38.hdiv.controller.model.SecureClassInfo;
@@ -12,6 +13,8 @@ import javassist.util.proxy.MethodHandler;
 
 public class SecureInvocationHandler implements MethodHandler {
  
+	private static final Logger LOGGER = LoggerFactory.getLogger(SecureInvocationHandler.class);
+	
     private final Object invocationTarget;
     private SecureClassInfo[] secureClassInfoList = null;
     private EntityStateRecorder<Link> entityStateRecorder;
@@ -28,8 +31,7 @@ public class SecureInvocationHandler implements MethodHandler {
 	    	try {
 	    		return entityStateRecorder.ofuscate(value, info.getTargetClass(), info.getParamName());
 	    	}catch(Throwable e) {
-	    		System.out.println("cannot ofuscate value of method");
-	    		e.printStackTrace();
+	    		LOGGER.error("cannot ofuscate value of method", e);
 	    	}
     	}
     	return value;
@@ -37,10 +39,7 @@ public class SecureInvocationHandler implements MethodHandler {
 
 	@Override
 	public Object invoke(Object proxy, Method method, Method proceed, Object[] args) throws Throwable {
-		System.out.println(String.format("Calling method %s with args: %s",
-                method.getName(), Arrays.toString(args)));
-        
-        if(secureClassInfoList != null) {
+		if(secureClassInfoList != null) {
         	for(SecureClassInfo info : secureClassInfoList) {
             	if(method.getName().equals(info.getMethodName())) {
 	        		return invokeProxy(method, args, info);
