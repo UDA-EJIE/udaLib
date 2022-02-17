@@ -1,22 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE project>
-<project name="x38ShLibClasses" default="mavenRunDependencies" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+<project name="x38ShLibClasses" default="mavenRunDependencies">
 	
+	<!-- Permite el uso de variables de entorno -->
+	<property environment="env" />
+	<property name="outputDirectory" value="lib/" />
+	<property name="mavenCommand" value="${env.M2_HOME}/bin/mvn.bat" />
+	<property name="mavenSettings" value="${env.M2_HOME}/conf/settings-nexus3.xml" />
 	<property name="baseDir" value="./"/>
 	<property name="srcDir" value="./src"/>
 	<property name="destDir" value="./target"/>
 	<property name="buildDir" value="./target/classes"/>
-	<property name="version" value="5.0.3-SNAPSHOT"/>
+	<property name="version" value="5.0.3-RC3"/>
 	
+	<!-- Obtener dependencias -->
 	<target name="mavenRunDependencies" description="Resuelve las dependencias del proyecto desde Maven">
-		<echo>/Users/xaldama/workspace/apache-ant-1.9.7</echo>
-		<path id="maven-ant-tasks.classpath" path="/Users/xaldama/workspace/apache-ant-1.9.7/lib/maven-ant-tasks-2.1.1.jar" />
-		<typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="antlib:org.apache.maven.artifact.ant" classpathref="maven-ant-tasks.classpath" />	
-		<property environment="env" />
-		<artifact:dependencies settingsFile="/opt/apache-maven-3.3.9/conf/settings.xml"/>
-		<artifact:mvn pom="pom.xml" mavenHome="/opt/apache-maven-3.3.9" fork="true">
-			<arg value="package"/>
-		</artifact:mvn>
+		<exec executable="${mavenCommand}">
+			<arg value="-s"/>
+			<arg value="${mavenSettings}"/>
+			<arg value="-f"/>
+			<arg value="pom.xml"/>
+			<arg value="dependency:copy-dependencies"/>
+			<arg value="-DoutputDirectory=${outputDirectory}"/>
+		</exec>
 	</target>
 	
 	<target name="createJars" description="Genera los diferentes jar de x38">
