@@ -30,11 +30,11 @@ import com.ejie.x38.hdiv.controller.utils.DinamicLinkProvider;
 import com.ejie.x38.hdiv.controller.utils.MethodLinkDiscoverer;
 import com.ejie.x38.hdiv.controller.utils.MethodMappingDiscoverer;
 import com.ejie.x38.hdiv.processor.UDASecureResourceProcesor;
-import com.hdivsecurity.services.config.EnableHdiv4ServicesSecurityConfiguration.SupportedValidators;
 import com.hdivsecurity.services.config.HdivServicesSecurityConfigurerAdapter;
 import com.hdivsecurity.services.config.ServicesConfig.IdProtectionType;
 import com.hdivsecurity.services.config.ServicesConfig.ServerSideHypermedia;
 import com.hdivsecurity.services.config.ServicesSecurityConfigBuilder;
+import com.hdivsecurity.services.config.SupportedValidators;
 
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -115,6 +115,16 @@ public abstract class UDA4HdivConfigurerAdapter extends HdivServicesSecurityConf
 		builder.validationSupport(SupportedValidators.JSONFORM, SupportedValidators.HTMLFORM);
 
 		builder.allowPartialSubEntities(true);
+		
+		String errorPage = getErrorPage();
+		if(errorPage != null) {
+			builder.errorPage(errorPage);
+		}
+		
+	}
+	
+	protected String getErrorPage() {
+		return null;
 	}
 
 	public abstract void addCustomExclusions(final ExclusionRegistry registry);
