@@ -5,13 +5,13 @@
 	<groupId>com.ejie.x38</groupId>
 	<artifactId>x38ShLibClasses</artifactId>
 	<packaging>jar</packaging>
-	<version>5.0.3-RC3</version>
+	<version>5.0.3-RC5</version>
 	<name>x38ShLibClasses</name>
 	<url>http://www.ejie.eus</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<hdivsecurity.version>2.6.3-RC1</hdivsecurity.version>
+		<hdivsecurity.version>2.6.6-RC1</hdivsecurity.version>
 		<org.hdiv.version>2.8.27</org.hdiv.version>
 		<org.hdiv.ee.version>3.5.2</org.hdiv.ee.version>
 		<org.springframework.version>4.3.22.RELEASE</org.springframework.version>
