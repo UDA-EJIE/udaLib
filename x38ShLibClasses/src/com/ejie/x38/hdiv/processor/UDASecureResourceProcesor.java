@@ -336,7 +336,7 @@ public class UDASecureResourceProcesor {
 			return entityClass.getMethod("get" + segment.substring(0, 1).toUpperCase() + segment.substring(1));
 		}
 		catch (Exception e) {
-			LOGGER.error("No getter method found for " + segment + " attribute of class " + entityClass.getName());
+			LOGGER.debug("No getter method found for " + segment + " attribute of class " + entityClass.getName());
 			return null;
 		}
 	}
