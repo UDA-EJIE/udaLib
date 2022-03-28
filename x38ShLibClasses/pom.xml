@@ -11,9 +11,9 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<hdivsecurity.version>2.6.3-RC1</hdivsecurity.version>
-		<org.hdiv.version>2.8.27</org.hdiv.version>
-		<org.hdiv.ee.version>3.5.2</org.hdiv.ee.version>
+		<hdivsecurity.version>2.6.6</hdivsecurity.version>
+		<org.hdiv.ee.version>2.8.27</org.hdiv.ee.version>
+		<org.hdiv.ce.version>3.5.2</org.hdiv.ce.version>
 		<org.springframework.version>4.3.22.RELEASE</org.springframework.version>
 		<org.springframework.security.version>4.2.11.RELEASE</org.springframework.security.version>
 		<org.logback.version>1.2.3</org.logback.version>
@@ -123,37 +123,37 @@
 		<dependency>
 			<groupId>org.hdiv</groupId>
 			<artifactId>hdiv-config</artifactId>
-			<version>${org.hdiv.ee.version}</version>
+			<version>${org.hdiv.ce.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hdiv</groupId>
 			<artifactId>hdiv-core</artifactId>
-			<version>${org.hdiv.ee.version}</version>
+			<version>${org.hdiv.ce.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hdiv</groupId>
 			<artifactId>hdiv-services</artifactId>
-			<version>${org.hdiv.ee.version}</version>
+			<version>${org.hdiv.ce.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hdiv.ee</groupId>
 			<artifactId>hdiv-ee-discovery-core</artifactId>
-			<version>${org.hdiv.version}</version>
+			<version>${org.hdiv.ee.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hdiv.ee</groupId>
 			<artifactId>hdiv-ee-commons</artifactId>
-			<version>${org.hdiv.version}</version>
+			<version>${org.hdiv.ee.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hdiv.ee</groupId>
 			<artifactId>hdiv-ee-config</artifactId>
-			<version>${org.hdiv.version}</version>
+			<version>${org.hdiv.ee.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hdiv.ee</groupId>
 			<artifactId>hdiv-ee-spring-mvc</artifactId>
-			<version>${org.hdiv.version}</version>
+			<version>${org.hdiv.ee.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javassist</groupId>
