@@ -64,7 +64,6 @@
 	<classpathentry kind="lib" path="lib/hdiv-ee-spring-mvc-2.8.27.jar"/>
 	<classpathentry kind="lib" path="lib/hdiv-ee-ssl-2.6.6.jar"/>
 	<classpathentry kind="lib" path="lib/hdiv-ee-ssl-jdk6-1.0.0.jar"/>
-	<classpathentry kind="lib" path="lib/hdiv-for-services-hateoas0-2.6.6-RC1.jar"/>
 	<classpathentry kind="lib" path="lib/hdiv-jstl-taglibs-1.2-3.5.0.jar"/>
 	<classpathentry kind="lib" path="lib/hdiv-services-3.5.2.jar"/>
 	<classpathentry kind="lib" path="lib/hdiv-spring-mvc-3.5.0.jar"/>
@@ -139,5 +138,6 @@
 	<classpathentry kind="lib" path="lib/y31c-1.5-impl.jar"/>
 	<classpathentry kind="lib" path="lib/logback-classic-1.2.11.jar"/>
 	<classpathentry kind="lib" path="lib/logback-core-1.2.11.jar"/>
+	<classpathentry kind="lib" path="lib/hdiv-for-services-hateoas0-2.6.6.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
