@@ -79,7 +79,7 @@ public class RemoteEJBFactoryImpl implements RemoteEJBFactory {
 				ht.put(Context.SECURITY_CREDENTIALS, password == null ? "" : password);
 			}
 			Environment env = new Environment();
-			env.setDelegateEnvironment(ht);
+			//env.setDelegateEnvironment(ht);
 			return env.getInitialContext();
 		}catch(Exception e){
 			logger.error("Failed to initialize InitialContext with error: "+StackTraceManager.getStackTrace(e));

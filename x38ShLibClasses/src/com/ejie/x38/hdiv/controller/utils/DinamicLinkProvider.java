@@ -2,11 +2,11 @@ package com.ejie.x38.hdiv.controller.utils;
 
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -14,10 +14,10 @@ import javax.servlet.http.HttpSession;
 import org.hdiv.services.LinkProvider;
 import org.springframework.hateoas.Link;
 
-public class DinamicLinkProvider implements LinkProvider {
+public class DinamicLinkProvider implements LinkProvider<Link> {
 
-	private final Map<String, Set<Link>> linksMap = new HashMap<String, Set<Link>>();
-
+	private final Map<String, Set<Link>> linksMap = new ConcurrentHashMap<String, Set<Link>>();
+	
 	private final List<Link> staticLinks;
 
 	public DinamicLinkProvider(final List<Link> staticLinks) {

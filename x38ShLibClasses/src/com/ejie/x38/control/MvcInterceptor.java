@@ -78,40 +78,51 @@ public class MvcInterceptor extends HandlerInterceptorAdapter{
      * Método que se ejecuta antes del método del Controller
      */
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-       
-        Locale locale = null;
-
-        if (portalCookie==null){
-            //Parametro cambio idioma
-            String languageParam = request.getParameter(paramName);
-            if (languageParam!=null && availableLangs.contains(languageParam)){
-                locale = new Locale(languageParam);
-            } else {
-            //Cookies
-                String cookieName = ((CookieLocaleResolver)RequestContextUtils.getLocaleResolver(request)).getCookieName();
-                Cookie cookie = getLanguageCookie(request.getCookies(), cookieName, Arrays.asList(availableLangs.trim().split("\\s*,\\s*")));
-                if (cookie!=null){
-                    locale = new Locale(cookie.getValue());
-                } else {
-                    locale = new Locale(defaultLanguage);
-                }
-            }
-        } else {
-            //Idioma controlado por el portal
-            Cookie[] cookies = request.getCookies();
-            String cookieValue = "";
+    	// Asignar valor por defecto.
+    	Locale locale = new Locale(defaultLanguage);
+    	// Obtener cookies de la sesión.
+        Cookie[] cookies = request.getCookies();
+        // Indica si se usará la cookie del portal.
+        boolean usesPortalCookie = false;
+        
+        if (portalCookie != null && cookies != null) {
+            // Idioma controlado por el portal.
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals(portalCookie)){
-                    cookieValue = cookie.getValue();
+                	String cookieValue = cookie.getValue();
+                    // Comprobar si la variable cookieValue contiene algún valor, en caso negativo, se mantiene el valor por defecto.
+                    if (cookieValue != null && !cookieValue.isEmpty()) {
+                    	String portalCookieValue = cookieValue.substring((cookieValue.indexOf("_") + 1));
+                    	// Verificar si el idioma obtenido está entre los soportados.
+                    	if (availableLangs.contains(portalCookieValue)) {
+                        	locale = new Locale(portalCookieValue);
+                        	usesPortalCookie = true;                    		
+                    	}
+                    }
                     break;
                 }
             }
-            locale = new Locale(cookieValue.substring((cookieValue.indexOf("_")+1)));
+        } 
+
+        if (!usesPortalCookie) {
+            // Obtención a partir del parámetro de cambio de idioma.
+            String languageParam = request.getParameter(paramName);
+            if (languageParam != null && availableLangs.contains(languageParam)){
+                locale = new Locale(languageParam);
+            } else {
+            	// Obtención a partir de la cookie de idioma de la sesión.
+                String cookieName = ((CookieLocaleResolver) RequestContextUtils.getLocaleResolver(request)).getCookieName();
+                Cookie cookie = getLanguageCookie(request.getCookies(), cookieName, Arrays.asList(availableLangs.trim().split("\\s*,\\s*")));
+                if (cookie != null){
+                    locale = new Locale(cookie.getValue());
+                }
+            }
         }
        
-        //Modificación de la Locale y Cookie
+        // Modificación de la Locale y Cookie.
         LocaleContextHolder.setLocale(locale);
-        ((CookieLocaleResolver)RequestContextUtils.getLocaleResolver(request)).setLocale(request, response, locale); //Sobreescribir cookie
+        // Sobreescribir cookie.
+        ((CookieLocaleResolver) RequestContextUtils.getLocaleResolver(request)).setLocale(request, response, locale);
 
         return true;
     }
