@@ -6,6 +6,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
@@ -47,6 +48,18 @@ public class HtmlResponseWrapper extends HttpServletResponseWrapper {
                 public void close() throws IOException {
                     capture.close();
                 }
+
+				@Override
+				public boolean isReady() {
+					// TODO Auto-generated method stub
+					return false;
+				}
+
+				@Override
+				public void setWriteListener(WriteListener arg0) {
+					// TODO Auto-generated method stub
+					
+				}
 
             };
         }
