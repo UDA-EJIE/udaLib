@@ -85,12 +85,6 @@
 		</property>
 	</bean>
 
-	<!-- Configurar MVC -->
-	<bean
-		class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
-		<property name="order" value="1" />
-	</bean>
-
 	<!-- Permite la subida de ficheros -->
 	<bean id="multipartResolver"
 		class="com.ejie.x38.util.UdaMultipartResolver">
