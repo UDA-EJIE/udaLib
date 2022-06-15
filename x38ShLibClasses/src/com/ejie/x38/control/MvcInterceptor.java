@@ -126,6 +126,8 @@ public class MvcInterceptor extends HandlerInterceptorAdapter{
         cookie.setLocale(request, response, locale);
         // Gestionar la securización.
         cookie.setCookieSecure("https".equals(request.getScheme()));
+        // Establecer política SameSite.
+        cookie.setCookiePath("/; SameSite=Lax;");
 
         return true;
     }
