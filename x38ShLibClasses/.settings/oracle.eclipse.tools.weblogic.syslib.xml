@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <system-libraries>
-    <library javadoc="http://docs.oracle.com/javaee/6/api/" path="server/lib/weblogic.jar"/>
+    <library javadoc="http://docs.oracle.com/javaee/5/api/" path="server/lib/api.jar"/>
     <library javadoc="http://docs.oracle.com/cd/E23943_01/apirefs.1111/e13941" path="server/lib/wls-api.jar"/>
-    <library path="%ORACLE_COMMON_MODULES_DIR%/javax.persistence.jar"/>
+    <library path="%MODULES_DIR%/javax.persistence_1.1.0.0_2-0.jar"/>
 </system-libraries>
