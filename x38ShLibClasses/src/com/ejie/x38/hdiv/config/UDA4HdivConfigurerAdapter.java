@@ -146,11 +146,12 @@ public abstract class UDA4HdivConfigurerAdapter extends HdivServicesSecurityConf
 		registry.addRule("numeric").acceptedPattern("^[0-9]+$");
 		registry.addRule("text").acceptedPattern("[a-zA-Z0-9@.\\-_~]*$").rejectedPattern("(\\s|\\S)*(--)(\\s|\\S)*");
 		registry.addRule("fulltext").acceptedPattern("[a-zA-Z0-9@.\\-_\\:~]*$").rejectedPattern("(\\s|\\S)*(--)(\\s|\\S)*");
+		registry.addRule("fulltextWhitespaces").acceptedPattern("[a-zA-Z0-9@.,\\-_\\:~ ]*$").rejectedPattern("(\\s|\\S)*(--)(\\s|\\S)*");
 		registry.addRule("valueList").acceptedPattern("\\[([^()])*\\]");
 		registry.addRule("url").acceptedPattern("^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
 		registry.addRule("partialUrl").acceptedPattern("[a-zA-Z0-9@.\\-_\\/]*$").rejectedPattern("(\\s|\\S)*(--)(\\s|\\S)*");
 		registry.addRule("boolean").acceptedPattern("(\\W|^)(true|false)(\\W|$)");
-		registry.addRule("order").acceptedPattern("(\\W|^)(asc|desc)(\\W|$)");
+		registry.addRule("order").acceptedPattern("(\\W|^)(asc|desc| ,asc| ,desc)*(\\W|$)");
 		registry.addRule("locale").acceptedPattern("(\\W|^)(es|eu|en|fr)(\\W|$)");
 
 		addCustomRules(registry);
@@ -179,13 +180,14 @@ public abstract class UDA4HdivConfigurerAdapter extends HdivServicesSecurityConf
 				.rules("boolean").target(ValidationTargetType.CLIENT_PARAMETERS);
 		validationConfigurer.addValidation("/.*")
 				.forParameters("search.defaultSearchInfoCol.name", "search.defaultSearchInfoCol.index", "search.defaultSearchInfoCol.width",
-						"search.validate.rules..*", "sidx", "core.pkToken", "core.pkNames")
+						"search.validate.rules..*", "core.pkToken", "core.pkNames")
 				.rules("text").target(ValidationTargetType.CLIENT_PARAMETERS);
 		validationConfigurer.addValidation("/.*").forParameters("_", "nd", "rows", "page", "search.transitionConfig.duration", "draw",
 				"length", "multiselection.numSelected").rules("numeric").target(ValidationTargetType.CLIENT_PARAMETERS);
 		validationConfigurer.addValidation("/.*").forParameters("search.url").rules("partialUrl")
 				.target(ValidationTargetType.CLIENT_PARAMETERS);
 
+		validationConfigurer.addValidation("/.*").forParameters("sidx").rules("fulltextWhitespaces").target(ValidationTargetType.CLIENT_PARAMETERS);
 		validationConfigurer.addValidation("/.*").forParameters("sord").rules("order").target(ValidationTargetType.CLIENT_PARAMETERS);
 		validationConfigurer.addValidation("/.*").forParameters("columns").rules("valueList").target(ValidationTargetType.CLIENT_PARAMETERS)
 				.disableDefaults();
