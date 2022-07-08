@@ -145,6 +145,7 @@ public abstract class UDA4HdivConfigurerAdapter extends HdivServicesSecurityConf
 	public final void addRules(final RuleRegistry registry) {
 		registry.addRule("numeric").acceptedPattern("^[0-9]+$");
 		registry.addRule("text").acceptedPattern("[a-zA-Z0-9@.\\-_~]*$").rejectedPattern("(\\s|\\S)*(--)(\\s|\\S)*");
+		registry.addRule("textWhitespaces").acceptedPattern("[a-zA-Z0-9@.\\-_~ ]*$").rejectedPattern("(\\s|\\S)*(--)(\\s|\\S)*");
 		registry.addRule("fulltext").acceptedPattern("[a-zA-Z0-9@.,\\-_\\:~]*$").rejectedPattern("(\\s|\\S)*(--)(\\s|\\S)*");
 		registry.addRule("fulltextWhitespaces").acceptedPattern("[a-zA-Z0-9@.,\\-_\\:~ ]*$").rejectedPattern("(\\s|\\S)*(--)(\\s|\\S)*");
 		registry.addRule("valueList").acceptedPattern("\\[([^()])*\\]");
