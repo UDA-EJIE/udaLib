@@ -35,60 +35,80 @@ import org.springframework.web.context.WebApplicationContext;
  */
 public class WebContextParameterManager implements ApplicationContextAware {
 
-	private static Logger logger =  LoggerFactory.getLogger("com.ejie.x38.util.WebContextParameterManager");
-	
+	private static Logger logger = LoggerFactory.getLogger("com.ejie.x38.util.WebContextParameterManager");
+
 	@Autowired
 	private WebApplicationContext webApplicationContext;
-	
+
 	@PostConstruct
-	public void init(){
-		Properties props = new Properties();
+	public void init() {
+		Properties appProperties = new Properties();
 		logger.info("Loads the application context parameters");
-		StaticsContainer.webAppName = webApplicationContext.getServletContext().getInitParameter("webAppName");
-		logger.info("The applications name is: "+StaticsContainer.webAppName);
-		StaticsContainer.webId = webApplicationContext.getId();
-		logger.info("The applications Id is: "+StaticsContainer.webId);
-		
-		try{
-			logger.debug("Loading properties from: "+StaticsContainer.webAppName+"/"+StaticsContainer.webAppName+".properties");
-			InputStream in = this.getClass().getClassLoader().getResourceAsStream(StaticsContainer.webAppName+"/"+StaticsContainer.webAppName+".properties");
-			props.load(in);
-			in.close();
-		}catch(Exception e){
+
+		StaticsContainer.setWebAppName(webApplicationContext.getServletContext().getInitParameter("webAppName"));
+		logger.info("The applications name is: " + StaticsContainer.getWebAppName());
+
+		StaticsContainer.setWebId(webApplicationContext.getId());
+		logger.info("The applications Id is: " + StaticsContainer.getWebId());
+
+		try {
+			logger.debug("Loading properties from: " + StaticsContainer.getWebAppName() + "/"
+					+ StaticsContainer.getWebAppName() + ".properties");
+			InputStream propertiesStream = this.getClass().getClassLoader().getResourceAsStream(
+					StaticsContainer.getWebAppName() + "/" + StaticsContainer.getWebAppName() + ".properties");
+			appProperties.load(propertiesStream);
+			propertiesStream.close();
+		} catch (Exception e) {
 			logger.error(StackTraceManager.getStackTrace(e));
 		}
-		
-		logger.info("WARs specific Static Content URL is: "+props.getProperty("statics.path"));
-		StaticsContainer.staticsUrl = props.getProperty("statics.path");
-//		logger.debug("WARs default layout is: "+props.getProperty("statics.layout"));
-//		StaticsContainer.layout = props.getProperty("statics.layout");
-//		logger.debug("WARs default language is: "+props.getProperty("statics.language"));
-//		StaticsContainer.language = props.getProperty("statics.language");
-		logger.info("Applications Model Package is: "+"com.ejie."+StaticsContainer.webAppName+".model.");
-		StaticsContainer.modelPackageName = "com.ejie."+StaticsContainer.webAppName+".model.";
-		logger.info("The URL to access the security provider of the application (\"XLNets\") is: "+props.getProperty("xlnets.path"));
-		StaticsContainer.loginUrl = props.getProperty("xlnets.path");
-		if(props.getProperty("xlnets.inPortal") != null && ((props.getProperty("xlnets.inPortal")).toLowerCase()).equals("true")){
-			logger.info("The application "+StaticsContainer.webAppName+" is integrated in the portals of lote3");
-			StaticsContainer.aplicInPortal = true;
+
+		StaticsContainer.setStaticsUrl(appProperties.getProperty("statics.path"));
+		logger.info("WARs specific Static Content URL is: " + StaticsContainer.getStaticsUrl());
+
+		StaticsContainer.setModelPackageName("com.ejie." + StaticsContainer.getWebAppName() + ".model.");
+		logger.info("Applications Model Package is: " + StaticsContainer.getModelPackageName() + ".model.");
+
+		StaticsContainer.setLoginUrl(appProperties.getProperty("xlnets.path"));
+		logger.info("The URL to access the security provider of the application (\"XLNets\") is: "
+				+ StaticsContainer.getLoginUrl());
+
+		if (appProperties.getProperty("xlnets.inPortal") != null
+				&& ((appProperties.getProperty("xlnets.inPortal")).toLowerCase()).equals("true")) {
+			StaticsContainer.setAplicInPortal(true);
+			logger.info(
+					"The application " + StaticsContainer.getWebAppName() + " is integrated in the portals of lote3");
 		} else {
-			logger.info("The application "+StaticsContainer.webAppName+" isn't integrated in the portals of lote3");
-			StaticsContainer.aplicInPortal = false;
+			StaticsContainer.setAplicInPortal(false);
+			logger.info("The application " + StaticsContainer.getWebAppName()
+					+ " isn't integrated in the portals of lote3");
 		}
-		if (StaticsContainer.loginUrl==null){
+
+		if (StaticsContainer.getLoginUrl() == null) {
 			logger.error("Login URL is not Set!");
 		}
-		String weblogicInstance = System.getProperty("weblogic.Name");
-		logger.info("The WebLogic Instance Name is: "+weblogicInstance);
-		StaticsContainer.weblogicInstance = weblogicInstance;
+
+		StaticsContainer.setWeblogicInstance(System.getProperty("weblogic.Name"));
+		logger.info("The WebLogic Instance Name is: " + StaticsContainer.getWeblogicInstance());
+
+		if (appProperties.getProperty("cookie.rootPath") != null
+				&& ((appProperties.getProperty("cookie.rootPath")).toLowerCase()).equals("true")) {
+			StaticsContainer.setCookiePathRoot(true);
+			logger.info("The cookie path is " + StaticsContainer.isCookiePathRoot());
+		}
+
+		if (appProperties.getProperty("cookie.secure") != null
+				&& ((appProperties.getProperty("cookie.secure")).toLowerCase()).equals("true")) {
+			StaticsContainer.setCookieSecure(true);
+			logger.info("The cookie secure value is " + StaticsContainer.isCookieSecure());
+		}
 	}
 
-	//Getters & Setters	
+	// Getters & Setters
 	public WebApplicationContext getWebApplicationContext() {
 		return webApplicationContext;
 	}
 
 	public void setApplicationContext(ApplicationContext context) throws BeansException {
-		webApplicationContext =(WebApplicationContext) context;
+		webApplicationContext = (WebApplicationContext) context;
 	}
 }
