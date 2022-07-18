@@ -31,6 +31,8 @@ public class StaticsContainer {
 	public static String weblogicInstance;
 	public static String layout;
 	public static String language;
+	public static boolean cookiePathRoot;
+	public static boolean cookieSecure;
 
 	public static String getWebAppName() {
 		return webAppName;
@@ -102,6 +104,22 @@ public class StaticsContainer {
 
 	public static void setLanguage(String language) {
 		StaticsContainer.language = language;
+	}
+
+	public static boolean isCookiePathRoot() {
+		return cookiePathRoot;
+	}
+
+	public static void setCookiePathRoot(boolean cookiePathRoot) {
+		StaticsContainer.cookiePathRoot = cookiePathRoot;
+	}
+
+	public static boolean isCookieSecure() {
+		return cookieSecure;
+	}
+
+	public static void setCookieSecure(boolean cookieSecure) {
+		StaticsContainer.cookieSecure = cookieSecure;
 	}
 
 }
