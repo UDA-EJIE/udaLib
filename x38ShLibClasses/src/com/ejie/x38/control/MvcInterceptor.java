@@ -33,6 +33,8 @@ import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
+import com.ejie.x38.util.StaticsContainer;
+
 /**
  *
  * Interceptor de UDA que se encarga de lo siguiente:
@@ -127,9 +129,11 @@ public class MvcInterceptor extends HandlerInterceptorAdapter{
         // Permite su acceso desde JavaScript.
         cookieLanguage.setCookieHttpOnly(false);
         // Gestionar la securización.
-        cookieLanguage.setCookieSecure("https".equals(request.getScheme()));
+        cookieLanguage.setCookieSecure(StaticsContainer.isCookieSecure());
         // Establecer política SameSite.
-        cookieLanguage.setCookiePath(webApplicationContext.getServletContext().getContextPath() + "; SameSite=Lax;");
+        cookieLanguage.setCookiePath(
+        		(StaticsContainer.isCookiePathRoot() ? "/" : webApplicationContext.getServletContext().getContextPath())
+					+ "; SameSite=Lax;");
 
         return true;
     }
