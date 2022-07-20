@@ -31,4 +31,95 @@ public class StaticsContainer {
 	public static String weblogicInstance;
 	public static String layout;
 	public static String language;
+	public static boolean cookiePathRoot;
+	public static boolean cookieSecure;
+
+	public static String getWebAppName() {
+		return webAppName;
+	}
+
+	public static void setWebAppName(String webAppName) {
+		StaticsContainer.webAppName = webAppName;
+	}
+
+	public static String getWebId() {
+		return webId;
+	}
+
+	public static void setWebId(String webId) {
+		StaticsContainer.webId = webId;
+	}
+
+	public static String getStaticsUrl() {
+		return staticsUrl;
+	}
+
+	public static void setStaticsUrl(String staticsUrl) {
+		StaticsContainer.staticsUrl = staticsUrl;
+	}
+
+	public static String getModelPackageName() {
+		return modelPackageName;
+	}
+
+	public static void setModelPackageName(String modelPackageName) {
+		StaticsContainer.modelPackageName = modelPackageName;
+	}
+
+	public static String getLoginUrl() {
+		return loginUrl;
+	}
+
+	public static void setLoginUrl(String loginUrl) {
+		StaticsContainer.loginUrl = loginUrl;
+	}
+
+	public static boolean isAplicInPortal() {
+		return aplicInPortal;
+	}
+
+	public static void setAplicInPortal(boolean aplicInPortal) {
+		StaticsContainer.aplicInPortal = aplicInPortal;
+	}
+
+	public static String getWeblogicInstance() {
+		return weblogicInstance;
+	}
+
+	public static void setWeblogicInstance(String weblogicInstance) {
+		StaticsContainer.weblogicInstance = weblogicInstance;
+	}
+
+	public static String getLayout() {
+		return layout;
+	}
+
+	public static void setLayout(String layout) {
+		StaticsContainer.layout = layout;
+	}
+
+	public static String getLanguage() {
+		return language;
+	}
+
+	public static void setLanguage(String language) {
+		StaticsContainer.language = language;
+	}
+
+	public static boolean isCookiePathRoot() {
+		return cookiePathRoot;
+	}
+
+	public static void setCookiePathRoot(boolean cookiePathRoot) {
+		StaticsContainer.cookiePathRoot = cookiePathRoot;
+	}
+
+	public static boolean isCookieSecure() {
+		return cookieSecure;
+	}
+
+	public static void setCookieSecure(boolean cookieSecure) {
+		StaticsContainer.cookieSecure = cookieSecure;
+	}
+
 }

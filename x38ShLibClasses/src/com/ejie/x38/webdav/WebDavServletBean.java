@@ -10,30 +10,24 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ejie.x38.webdav.fromcatalina.MD5Encoder;
 import com.ejie.x38.webdav.locking.IResourceLocks;
 
 public class WebDavServletBean extends HttpServlet {
 
-    /**
+	private static final long serialVersionUID = -4486300132003239385L;
+
+	/**
      * MD5 message digest provider.
      */
-    protected static MessageDigest MD5_HELPER;
-
-    /**
-     * The MD5 helper object for this class.
-     */
-    protected static final MD5Encoder MD5_ENCODER = new MD5Encoder();
+    protected static MessageDigest SHA512_HELPER;
 
     protected IResourceLocks _resLocks;
     private IWebdavStore _store;
     private HashMap<String, IMethodExecutor> _methodMap = new HashMap<String, IMethodExecutor>();
 
     public WebDavServletBean() {
-//        _resLocks = new ResourceLocks();
-
         try {
-            MD5_HELPER = MessageDigest.getInstance("MD5");
+        	SHA512_HELPER = MessageDigest.getInstance("SHA-512");
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException();
         }

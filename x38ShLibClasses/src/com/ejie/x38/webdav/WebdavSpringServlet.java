@@ -58,13 +58,13 @@ public class WebdavSpringServlet implements HttpRequestHandler {
     
     private HashMap<String, IMethodExecutor> _methodMap = new HashMap<String, IMethodExecutor>();
     
-    protected static MessageDigest MD5_HELPER;
+    protected static MessageDigest SHA512_HELPER;
     
     @PostConstruct
     public void init() throws ServletException {
 
     	try {
-            MD5_HELPER = MessageDigest.getInstance("MD5");
+    		SHA512_HELPER = MessageDigest.getInstance("SHA-512");
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException();
         }
