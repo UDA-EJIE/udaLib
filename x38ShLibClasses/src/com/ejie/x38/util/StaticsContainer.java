@@ -33,6 +33,7 @@ public class StaticsContainer {
 	public static String language;
 	public static boolean cookiePathRoot;
 	public static boolean cookieSecure;
+	public static boolean inheritableLocalContext;
 
 	public static String getWebAppName() {
 		return webAppName;
@@ -120,6 +121,14 @@ public class StaticsContainer {
 
 	public static void setCookieSecure(boolean cookieSecure) {
 		StaticsContainer.cookieSecure = cookieSecure;
+	}
+
+	public static boolean isInheritableLocalContext() {
+		return inheritableLocalContext;
+	}
+
+	public static void setInheritableLocalContext(boolean inheritableLocalContext) {
+		StaticsContainer.inheritableLocalContext = inheritableLocalContext;
 	}
 
 }

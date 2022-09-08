@@ -122,7 +122,7 @@ public class MvcInterceptor extends HandlerInterceptorAdapter{
         }
        
         // Modificación de la Locale y Cookie.
-        LocaleContextHolder.setLocale(locale);
+        LocaleContextHolder.setLocale(locale, StaticsContainer.isInheritableLocalContext());
         // Sobrescribir cookie de idioma.
         CookieLocaleResolver cookieLanguage = (CookieLocaleResolver) RequestContextUtils.getLocaleResolver(request);
         cookieLanguage.setLocale(request, response, locale);
