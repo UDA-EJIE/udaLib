@@ -86,13 +86,13 @@ public class PerimetralSecurityWrapperOAMImpl implements
 		}
 		
 		//Gets param OAM request
-		String name = httpRequest.getParameter("HTTP_NAME"); 
-		String surname = httpRequest.getParameter("HTTP_SURNAME"); 
-		String fullname = httpRequest.getParameter("HTTP_FULLNAME"); 
-		String username = httpRequest.getParameter("HTTP_USERNAME"); 
-		String nif = httpRequest.getParameter("HTTP_NIF"); 
-		String position = httpRequest.getParameter("HTTP_POSITION"); 
-		String groups = httpRequest.getParameter("HTTP_GROUPS"); 
+		String name = httpRequest.getHeader("HTTP_NAME"); 
+		String surname = httpRequest.getHeader("HTTP_SURNAME"); 
+		String fullname = httpRequest.getHeader("HTTP_FULLNAME"); 
+		String username = httpRequest.getHeader("HTTP_USERNAME"); 
+		String nif = httpRequest.getHeader("HTTP_NIF"); 
+		String position = httpRequest.getHeader("HTTP_POSITION"); 
+		String groups = httpRequest.getHeader("HTTP_GROUPS"); 
 		
 		if(name != null && surname != null && fullname != null && username != null && nif != null && position != null && groups != null) {
 			return "true";
