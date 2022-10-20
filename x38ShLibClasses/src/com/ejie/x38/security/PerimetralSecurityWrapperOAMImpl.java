@@ -15,8 +15,8 @@
 */
 package com.ejie.x38.security;
 
+import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
@@ -70,8 +70,8 @@ public class PerimetralSecurityWrapperOAMImpl implements
 	}
 
 	public synchronized String validateSession(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws SecurityException {
-
-		String udaXLNetsSessionId = getXlnetsUserId(httpRequest);
+		Date date = new Date();
+		String udaXLNetsSessionId = String.valueOf(date.getTime());
 
 		// Getting Authentication credentials
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -96,6 +96,11 @@ public class PerimetralSecurityWrapperOAMImpl implements
 		
 		if(name != null && surname != null && fullname != null && username != null && nif != null && position != null && groups != null) {
 			return "true";
+		}else {
+			httpSession.setAttribute("name", name);
+			httpSession.setAttribute("surname", surname);
+			httpSession.setAttribute("fullName", fullname);
+			httpSession.setAttribute("HTTP_GROUPS", groups);
 		}
 		
 		if (credentials != null) {
@@ -287,14 +292,21 @@ public class PerimetralSecurityWrapperOAMImpl implements
 
 	}
 
-	@SuppressWarnings("unchecked")
 	public Vector<String> getUserInstances(HttpServletRequest httpRequest) {
-		Vector<String> userInstances = null;
-
-		userInstances = (Vector<String>) httpRequest.getSession(false).getAttribute("userProfiles");
+		Vector<String> userInstances = new Vector<String>();
+		//Bucle para oam.
+		if(httpRequest.getSession(false).getAttribute("HTTP_GROUPS") != null) {
+			String groups = (String) httpRequest.getSession(false).getAttribute("HTTP_GROUPS");
+			String[] listaGroups = groups.split(",");
+			if(listaGroups != null) {
+				for(int i=0;i < listaGroups.length ;i++ ) {
+					userInstances.add(listaGroups[i]);
+				}
+			}
+		}
 
 		// Returning UserInstances
-		httpRequest.getSession(false).removeAttribute("userProfiles");
+		httpRequest.getSession(false).removeAttribute("HTTP_GROUPS");
 
 		logger.trace("Connected UserConnectedUidSession is: " + userInstances);
 		return userInstances;
@@ -400,6 +412,14 @@ public class PerimetralSecurityWrapperOAMImpl implements
 		Document xmlSesion = null;
 		HttpSession httpSession = httpRequest.getSession(false);
 		HashMap<String, String> userInfo = null;
+		
+		httpSession.setAttribute("name", (String) httpSession.getAttribute("name"));
+		httpSession.setAttribute("surname", (String) httpSession.getAttribute("surname"));
+		httpSession.setAttribute("fullName", (String) httpSession.getAttribute("fullName"));
+		httpSession.setAttribute("HTTP_GROUPS", (String) httpSession.getAttribute("HTTP_GROUPS"));
+		if(httpSession != null) {
+			return true;
+		}
 
 		N38API n38Api;
 		n38Api = XlnetCore.getN38API(httpRequest);
@@ -537,8 +557,9 @@ public class PerimetralSecurityWrapperOAMImpl implements
 		httpSession.setAttribute("nif", XlnetCore.getParameterSession(n38Api, N38API.NOMBRE_DNI));
 		policy = XlnetCore.getParameterSession(n38Api, N38API.NOMBRE_N38CERTIFICADOPOLITICAS);
 		httpSession.setAttribute("policy", policy);
-
-		if (!(policy.toLowerCase().equals("no"))) {
+		UserName = (String) httpSession.getAttribute("name");
+		httpSession.setAttribute("isCertificate", "false");
+	/*	if (!(policy.toLowerCase().equals("no"))) {
 			httpSession.setAttribute("isCertificate", "true");
 		} else {
 			httpSession.setAttribute("isCertificate", "false");
@@ -608,7 +629,7 @@ public class PerimetralSecurityWrapperOAMImpl implements
 			httpSession.removeAttribute("serialNumber");
 
 			httpSession.setAttribute("userProfiles", userprofile);
-		}
+		}*/
 
 		httpSession.setAttribute("destroySessionSecuritySystem", this.destroySessionSecuritySystem);
 
