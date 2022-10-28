@@ -1,40 +1,60 @@
 package com.ejie.x38.hdiv.config;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
+import org.hdiv.config.HDIVConfig;
+import org.hdiv.config.annotation.EnableHdivWebSecurity;
 import org.hdiv.config.annotation.ExclusionRegistry;
+import org.hdiv.config.annotation.LongLivingPagesRegistry;
 import org.hdiv.config.annotation.RuleRegistry;
-import org.hdiv.ee.config.annotation.ValidationConfigurer;
-import org.hdiv.ee.validator.ValidationTargetType;
+import org.hdiv.config.annotation.ValidationConfigurer;
+import org.hdiv.config.annotation.builders.SecurityConfigBuilder;
+import org.hdiv.config.annotation.configuration.HdivWebSecurityConfigurer;
+import org.hdiv.dataComposer.DataComposerFactory;
+import org.hdiv.dataValidator.IDataValidator;
+import org.hdiv.filter.IValidationHelper;
+import org.hdiv.filter.ValidatorHelperRequest;
 import org.hdiv.listener.InitListener;
+import org.hdiv.services.CustomSecureConverter;
 import org.hdiv.services.EntityStateRecorder;
 import org.hdiv.services.LinkProvider;
+import org.hdiv.session.ISession;
+import org.hdiv.state.StateUtil;
+import org.hdiv.state.scope.StateScopeManager;
+import org.hdiv.urlProcessor.BasicUrlProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Primary;
 import org.springframework.hateoas.Link;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import com.ejie.x38.hdiv.aspect.LinkResourcesAspect;
+import com.ejie.x38.hdiv.config.EjieValidationConfigurer.EjieValidationConfig.EjieEditableValidationConfigurer;
 import com.ejie.x38.hdiv.controller.utils.DinamicLinkProvider;
 import com.ejie.x38.hdiv.controller.utils.MethodLinkDiscoverer;
 import com.ejie.x38.hdiv.controller.utils.MethodMappingDiscoverer;
+import com.ejie.x38.hdiv.filter.EjieValidatorHelperRequest;
 import com.ejie.x38.hdiv.processor.UDASecureResourceProcesor;
-import com.hdivsecurity.services.config.HdivServicesSecurityConfigurerAdapter;
-import com.hdivsecurity.services.config.ServicesConfig.IdProtectionType;
-import com.hdivsecurity.services.config.ServicesConfig.ServerSideHypermedia;
-import com.hdivsecurity.services.config.ServicesSecurityConfigBuilder;
-import com.hdivsecurity.services.config.SupportedValidators;
+import com.ejie.x38.hdiv.protection.IdProtectionDataManager;
+import com.ejie.x38.hdiv.protection.UserSessionIdProtectionDataManager;
+import com.ejie.x38.serialization.EjieSecureModule;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -43,7 +63,8 @@ import javassist.CtNewMethod;
 import javassist.LoaderClassPath;
 
 @ComponentScan(basePackages = "com.ejie.x38.hdiv")
-public abstract class UDA4HdivConfigurerAdapter extends HdivServicesSecurityConfigurerAdapter {
+@EnableHdivWebSecurity
+public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfigurer {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(UDA4HdivConfigurerAdapter.class);
 	
@@ -51,15 +72,57 @@ public abstract class UDA4HdivConfigurerAdapter extends HdivServicesSecurityConf
 	private RequestMappingHandlerMapping handler;
 	
 	@Autowired
+	private StateUtil stateUtil;
+
+	@Autowired
+	private HDIVConfig config;
+
+	@Autowired
+	private ISession session;
+
+	@Autowired
+	private IDataValidator dataValidator;
+
+	@Autowired
+	private BasicUrlProcessor basicUrlProcessor;
+
+	@Autowired
+	private DataComposerFactory dataComposerFactory;
+
+	@Autowired
+	private StateScopeManager stateScopeManager;
+	
+	@Autowired
 	@Lazy
 	private EntityStateRecorder<Link> entityStateRecorder;
+	
+	@Autowired
+	private ApplicationContext appContext;
 	
 	@PostConstruct
 	public void init() {
 		UDASecureResourceProcesor.registerEntityStateRecorder(entityStateRecorder);
 		transformClasses();
+		configureSerializer();
 	}
+	
+	@Bean
+	@Primary
+	public IValidationHelper ejieRequestValidationHelper() {
 
+		ValidatorHelperRequest validatorHelperRequest = new EjieValidatorHelperRequest();
+		validatorHelperRequest.setStateUtil(stateUtil);
+		validatorHelperRequest.setHdivConfig(config);
+		validatorHelperRequest.setSession(session);
+		validatorHelperRequest.setDataValidator(dataValidator);
+		validatorHelperRequest.setUrlProcessor(basicUrlProcessor);
+		validatorHelperRequest.setDataComposerFactory(dataComposerFactory);
+		validatorHelperRequest.setStateScopeManager(stateScopeManager);
+		((EjieValidatorHelperRequest)validatorHelperRequest).setIdProtectionDataManager(idProtectionDataManager());
+		validatorHelperRequest.init();
+		return validatorHelperRequest;
+	}
+	
 	@Bean
 	public MethodMappingDiscoverer MethodMappingDiscoverer() {
 
@@ -79,7 +142,8 @@ public abstract class UDA4HdivConfigurerAdapter extends HdivServicesSecurityConf
 
 		MethodLinkDiscoverer mld = new MethodLinkDiscoverer();
 		UDASecureResourceProcesor.registerMethodLinkDiscoverer(mld);
-
+		UDASecureResourceProcesor.registerIdProtectionDataManager(idProtectionDataManager());
+		
 		return mld;
 	};
 
@@ -102,19 +166,12 @@ public abstract class UDA4HdivConfigurerAdapter extends HdivServicesSecurityConf
 	protected abstract String getDashboardPass();
 
 	@Override
-	public final void configure(final ServicesSecurityConfigBuilder builder) {
+	public final void configure(final SecurityConfigBuilder builder) {
 
 		builder.confidentiality(false).sessionExpired().homePage(getHomePage()).loginPage(getLoginPage());
 		builder.showErrorPageOnEditableValidation(true);
 		builder.cookiesIntegrity(false);
 		builder.cookiesConfidentiality(false);
-		builder.idProtection(IdProtectionType.PLAINTEXT_HID);
-		builder.serverSideHypermedia(ServerSideHypermedia.COMPLETE);
-		builder.dashboardUser(getDashboardUser()).dashboardPass(getDashboardPass());
-
-		builder.validationSupport(SupportedValidators.JSONFORM, SupportedValidators.HTMLFORM);
-
-		builder.allowPartialSubEntities(true);
 		
 		String errorPage = getErrorPage();
 		if(errorPage != null) {
@@ -132,9 +189,9 @@ public abstract class UDA4HdivConfigurerAdapter extends HdivServicesSecurityConf
 	@Override
 	public final void addExclusions(final ExclusionRegistry registry) {
 		registry.addUrlExclusions("/scripts/.*", "/styles/.*", "/fonts/.*", "/error", "/*.gif");
-		registry.addUrlExclusions("", getHomePage(), getLoginPage()).method("GET");
+		registry.addUrlExclusions("", getHomePage(), getLoginPage(), "/hdiv-devtool").method("GET");
 		registry.addUrlExclusions("/audit").method("POST");
-		registry.addParamExclusions("hdiv-http-method");
+		registry.addParamExclusions("hdiv-http-method", "actionType", "_");
 		registry.addUrlExclusions("/.*/search");
 		addCustomExclusions(registry);
 	}
@@ -146,7 +203,7 @@ public abstract class UDA4HdivConfigurerAdapter extends HdivServicesSecurityConf
 		registry.addRule("numeric").acceptedPattern("^[0-9]+$");
 		registry.addRule("text").acceptedPattern("[a-zA-Z0-9@.\\-_~]*$").rejectedPattern("(\\s|\\S)*(--)(\\s|\\S)*");
 		registry.addRule("textWhitespaces").acceptedPattern("[a-zA-Z0-9@.\\-_~ ]*$").rejectedPattern("(\\s|\\S)*(--)(\\s|\\S)*");
-		registry.addRule("fulltext").acceptedPattern("[a-zA-Z0-9@.,\\-_\\:~]*$").rejectedPattern("(\\s|\\S)*(--)(\\s|\\S)*");
+		registry.addRule("fulltext").acceptedPattern("[a-zA-Z0-9@.,\\-_\\:~\\$]*$").rejectedPattern("(\\s|\\S)*(--)(\\s|\\S)*");
 		registry.addRule("fulltextWhitespaces").acceptedPattern("[a-zA-Z0-9@.,\\-_\\:~ ]*$").rejectedPattern("(\\s|\\S)*(--)(\\s|\\S)*");
 		registry.addRule("valueList").acceptedPattern("\\[([^()])*\\]");
 		registry.addRule("url").acceptedPattern("^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
@@ -163,44 +220,52 @@ public abstract class UDA4HdivConfigurerAdapter extends HdivServicesSecurityConf
 	}
 
 	@Override
-	public final void configureEditableValidation(final ValidationConfigurer validationConfigurer) {
+	public final void configureEditableValidation(ValidationConfigurer validationConfigurer) {
+		
+		EjieValidationConfigurer ejieValidationConfigurer = new EjieValidationConfigurer(validationConfigurer);
+		
+		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*")
+				.forParameters("multiselection.selectedIds", "multiselection.lastSelectedId", "multiselection.deselectedIds", "seeker.selectedIds")
+				.rules("fulltext"))
+				.setAsClientParameter(true).disableDefaults();
 
-		validationConfigurer.addValidation("/.*")
-				.forParameters("multiselection.selectedIds", "multiselection.lastSelectedId", "multiselection.deselectedIds", "seeker.selectedIds").rules("fulltext")
-				.target(ValidationTargetType.CLIENT_PARAMETERS).disableDefaults();
-
-		validationConfigurer.addValidation("/.*")
-				.forParameters("columns\\[.*", "order\\[.*", "search.value", "search.regex", "start",
+		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*")
+				.forParameters("columns.data", "columns.name", "columns\\[.*", "order\\[.*", "search.value", "search.regex", "start",
 						"multiselection.selectedRowsPerPage\\[.*", "multiselection.*", "multiselection.accion",
 						"multiselection.internalFeedback.*", "multiselection.internalFeedback.msgFeedBack")
-				.rules("text").target(ValidationTargetType.CLIENT_PARAMETERS).disableDefaults();
+				.rules("text")).setAsClientParameter(true).disableDefaults();
 
-		validationConfigurer
-				.addValidation("/.*").forParameters("search.autosearch", "search.defaultSearchInfoCol.editable",
-						"search.defaultSearchInfoCol.search", "search.searchOnEnter")
-				.rules("boolean").target(ValidationTargetType.CLIENT_PARAMETERS);
-		validationConfigurer.addValidation("/.*")
+		((EjieEditableValidationConfigurer) ejieValidationConfigurer
+				.addValidation("/.*").forParameters("columns.searchable", "columns.orderable", "search.autosearch", "search.defaultSearchInfoCol.editable",
+						"search.defaultSearchInfoCol.search", "search.searchOnEnter", "columns.search.regex")
+				.rules("boolean")).setAsClientParameter(true);
+		
+		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*")
 				.forParameters("search.defaultSearchInfoCol.name", "search.defaultSearchInfoCol.index", "search.defaultSearchInfoCol.width",
-						"search.validate.rules..*", "core.pkToken", "core.pkNames")
-				.rules("text").target(ValidationTargetType.CLIENT_PARAMETERS);
-		validationConfigurer.addValidation("/.*").forParameters("_", "nd", "rows", "page", "search.transitionConfig.duration", "draw",
-				"length", "multiselection.numSelected").rules("numeric").target(ValidationTargetType.CLIENT_PARAMETERS);
-		validationConfigurer.addValidation("/.*").forParameters("search.url").rules("partialUrl")
-				.target(ValidationTargetType.CLIENT_PARAMETERS);
+						"search.validate.rules.*", "core.pkToken", "core.pkNames", "columns.search.value")
+				.rules("text")).setAsClientParameter(true);
+		
+		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*").forParameters("_", "nd", "rows", "page", "search.transitionConfig.duration", "draw",
+				"length", "multiselection.numSelected", "order.column").rules("numeric")).setAsClientParameter(true);
+		
+		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*").forParameters("search.url").rules("partialUrl"))
+				.setAsClientParameter(true);
 
-		validationConfigurer.addValidation("/.*").forParameters("sidx").rules("fulltextWhitespaces").target(ValidationTargetType.CLIENT_PARAMETERS);
-		validationConfigurer.addValidation("/.*").forParameters("sord").rules("order").target(ValidationTargetType.CLIENT_PARAMETERS);
-		validationConfigurer.addValidation("/.*").forParameters("columns").rules("valueList").target(ValidationTargetType.CLIENT_PARAMETERS)
+		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*").forParameters("sidx").rules("fulltextWhitespaces")).setAsClientParameter(true);
+		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*").forParameters("sord", "order.dir").rules("order")).setAsClientParameter(true);
+		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*").forParameters("columns").rules("valueList")).setAsClientParameter(true)
 				.disableDefaults();
 
-		validationConfigurer.addValidation(getLoginPage()).forParameters("userNames").disableDefaults();
+		ejieValidationConfigurer.addValidation(getLoginPage()).forParameters("userNames").disableDefaults();
 		
-		validationConfigurer.addValidation("/.*").forParameters("locale").rules("locale").target(ValidationTargetType.CLIENT_PARAMETERS);
+		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*").forParameters("locale").rules("locale")).setAsClientParameter(true);
 
-		customConfigureEditableValidation(validationConfigurer);
+		customConfigureEditableValidation(ejieValidationConfigurer);
 
-		validationConfigurer.addValidation("/.*");
-
+		ejieValidationConfigurer.addValidation("/.*");
+		
+		ejieValidationConfigurer.consolidate();
+	
 	}
 
 	protected abstract List<Link> getStaticLinks();
@@ -239,11 +304,66 @@ public abstract class UDA4HdivConfigurerAdapter extends HdivServicesSecurityConf
 			
 			CtMethod newmethod = CtNewMethod.make(strMethod,ctClass);
 			ctClass.addMethod(newmethod);
-			//ctClass.writeFile();
 			ctClass.toClass();
 		}catch(Exception e ) {
 			LOGGER.error("Cannot transform classes. ", e);
 		}
+	}
+	
+	@Override
+	public void addLongLivingPages(LongLivingPagesRegistry arg0) {
+	}
+	
+	@Bean
+	@Primary
+	public ObjectMapper objectMapper() {
+	    return new ObjectMapper().registerModule(new EjieSecureModule(idProtectionDataManager()));
+	}
+	
+	@Bean 
+	public IdProtectionDataManager idProtectionDataManager() {
+		return new UserSessionIdProtectionDataManager();
+	}
+	
+	private void configureSerializer() {
+		try {
+			Map<String, AbstractJackson2HttpMessageConverter> beans = appContext.getBeansOfType(AbstractJackson2HttpMessageConverter.class);
+			processBeans(beans.values(), false);
+		}
+		catch (Exception e) {
+			LOGGER.error("Cannot configure serializers. ", e);
+		}
+	}
+
+	private void processBeans(final Collection<? extends HttpMessageConverter<?>> beans, final boolean force) {
+		List<AbstractJackson2HttpMessageConverter> candidates = new ArrayList<AbstractJackson2HttpMessageConverter>();
+
+		try {
+			for (HttpMessageConverter<?> c : beans) {
+				if (c instanceof AbstractJackson2HttpMessageConverter) {
+					AbstractJackson2HttpMessageConverter bean = (AbstractJackson2HttpMessageConverter) c;
+					if (bean instanceof CustomSecureConverter) {
+						for (ObjectMapper om : ((CustomSecureConverter) bean).getObjectMappers()) {
+							doConfigureObjectMapper(om);
+							candidates.add(bean);
+						}
+					}
+					else {
+						doConfigureObjectMapper(bean.getObjectMapper());
+						candidates.add(bean);
+					}
+				}
+			}
+		}
+		catch (Exception e) {
+			LOGGER.error("Cannot process MessageConverter beans. ", e);
+		}
+	}
+	
+	protected ObjectMapper doConfigureObjectMapper(final ObjectMapper objectMapper) {
+
+		objectMapper.registerModule(new EjieSecureModule(idProtectionDataManager()));
+		return objectMapper;
 	}
 
 }

@@ -197,9 +197,5 @@ public abstract class ResponseLinkProcesor {
 		}
 		return false;
 	}
-	
-//	protected abstract Object updateOnSecureIdentifiableFound(Object object, SecureClassInfo identifiableInfo);
-//	
-//	protected abstract Object updateOnSecureIdContainerFound(Object object, List<SecureClassInfo> identifiableInfo);
 
 }

@@ -5,25 +5,15 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.Date;
-
-import javax.validation.constraints.NotNull;
 
 import org.hdiv.services.SecureIdContainer;
 import org.hdiv.services.SecureIdentifiable;
 import org.hdiv.services.TrustAssertion;
-import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.NotBlank;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class HdivSecureSerializerTest {

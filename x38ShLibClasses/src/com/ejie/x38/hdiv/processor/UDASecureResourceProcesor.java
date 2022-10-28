@@ -1,20 +1,27 @@
 package com.ejie.x38.hdiv.processor;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.hdiv.services.EntityStateRecorder;
+import org.hdiv.services.SecureIdContainer;
+import org.hdiv.services.SecureIdentifiable;
+import org.hdiv.services.TrustAssertion;
 import org.hdiv.util.HDIVUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.util.UriComponents;
@@ -28,15 +35,19 @@ import com.ejie.x38.hdiv.controller.model.UDALinkMappingInfo;
 import com.ejie.x38.hdiv.controller.model.UDALinkResources;
 import com.ejie.x38.hdiv.controller.utils.DinamicLinkProvider;
 import com.ejie.x38.hdiv.controller.utils.MethodLinkDiscoverer;
-import com.hdivsecurity.services.affordance.MethodAwareLink;
+import com.ejie.x38.hdiv.protection.IdProtectionDataManager;
 
 public class UDASecureResourceProcesor {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(UDASecureResourceProcesor.class);
+	
+	private static final Map<Class<?>, Map<Class<?>, Field>> IDENTIFIABLE_FIELDS = new ConcurrentHashMap<Class<?>, Map<Class<?>, Field>>();
 
 	private static MethodLinkDiscoverer methodLinkDiscoverer;
 
 	private static EntityStateRecorder<Link> entityStateRecorder;
+	
+	private static IdProtectionDataManager idProtectionDataManager;
 	
 	public static void registerMethodLinkDiscoverer(final MethodLinkDiscoverer methodLinkDiscoverer) {
 		UDASecureResourceProcesor.methodLinkDiscoverer = methodLinkDiscoverer;
@@ -44,6 +55,10 @@ public class UDASecureResourceProcesor {
 	
 	public static void registerEntityStateRecorder(final EntityStateRecorder<Link> entityStateRecorder) {
 		UDASecureResourceProcesor.entityStateRecorder = entityStateRecorder;
+	}
+	
+	public static void registerIdProtectionDataManager(final IdProtectionDataManager idProtectionDataManager) {
+		UDASecureResourceProcesor.idProtectionDataManager = idProtectionDataManager;
 	}
 
 	public static Resource<Object> asResource(final Object entity, final Class<?> controller) {
@@ -69,8 +84,8 @@ public class UDASecureResourceProcesor {
 		
 		if (allowInfoList != null) {
 			Map<String, Map<String, Map<Class<?>,Method>>> urlTemplatesMap = new HashMap<String, Map<String, Map<Class<?>,Method>>>();
-			String requestStr = getBaseUrl(request).toString();
-			List<Resource<Object>> resources = processEntity(entity, request, allowInfoList, requestStr, urlTemplatesMap, false);
+			//String requestStr = getBaseUrl(request).toString();
+			List<Resource<Object>> resources = processEntity(entity, request, allowInfoList, request.getContextPath(), urlTemplatesMap, false);
 			if(!resources.isEmpty() ) {
 				return resources.get(0);
 			}
@@ -89,7 +104,7 @@ public class UDASecureResourceProcesor {
 		List<Resource<Object>> resources = new ArrayList<Resource<Object>>();
 
 		if (allowInfoList != null) {
-			String requestStr = getBaseUrl(request).toString();
+			String requestStr = request.getContextPath();
 			if (entities != null && !entities.isEmpty()) {
 				resources = processEntities(entities, false, request, allowInfoList, requestStr);
 			}
@@ -101,7 +116,6 @@ public class UDASecureResourceProcesor {
 					if(parent instanceof Resource) {
 						for(Resource<Object> subentityResurce : processEntity(entity.getEntity(), request, allowInfoList, requestStr, urlTemplatesMap, true)) {
 							// is this line needed?
-							//((Resource<Object>)parent).add(subentityResurce.getLinks());
 							for(SecureClassInfo secureClassInfo : entity.getSecureClassInfo()){
 								try {
 									Object entityObject =  entity.getEntity();
@@ -120,9 +134,7 @@ public class UDASecureResourceProcesor {
 				processStaticLinks(request, allowInfoList, requestStr, linkProvider);
 			}
 		}
-
 		return resources;
-
 	}
 	
 	static void addEntityLink(final List<Link> links, final Object entityObject,
@@ -132,28 +144,6 @@ public class UDASecureResourceProcesor {
 			entityStateRecorder.registerEntity(links, targetedClass, idValue, propertyName, HDIVUtil.getRequestContext(request));
 			
 		}
-	}
-	
-	private static StringBuilder getBaseUrl(final HttpServletRequest request) {
-
-		StringBuilder url = new StringBuilder();
-		String scheme = request.getScheme();
-		int port = request.getServerPort();
-		if (port < 0) {
-			port = 80; // Work around java.net.URL bug
-		}
-
-		url.append(scheme);
-		url.append("://");
-		url.append(request.getServerName());
-		if (scheme.equals("http") && port != 80 || scheme.equals("https") && port != 443) {
-			url.append(':');
-			url.append(port);
-		}
-
-		url.append(request.getContextPath());
-		
-		return url;
 	}
 
 	private static <T> void processStaticLinks(final HttpServletRequest request, final List<UDALinkMappingInfo> allowInfoList,
@@ -165,13 +155,13 @@ public class UDASecureResourceProcesor {
 			if (allowedForEntity(null, udaMappingInfo.getName(), staticMappingInfo, request)) {
 				Link link;
 				for (String linkUrl : staticMappingInfo.getMappings()) {
-					link = new Link(requestStr + linkUrl, udaMappingInfo.getName());
+					link = buildLink(requestStr + linkUrl, udaMappingInfo.getName(), udaMappingInfo.getMethodForLinkCondition());
 					LOGGER.debug("Allowed static link: " + link);
-					links.add(new MethodAwareLink(link,
-							udaMappingInfo.getMethodForLinkCondition()));
+					links.add(link);
 				}
 			}
 		}
+		registerStaticLinks(links);
 		linkProvider.addLinks(links, request);
 	}
 
@@ -231,6 +221,8 @@ public class UDASecureResourceProcesor {
 		else {
 			resources.add(new Resource<Object>(entity, entityLinks));
 		}
+		
+		registerEntityLinks(entityLinks, entityToProcces);
 
 		return resources;
 	}
@@ -246,11 +238,9 @@ public class UDASecureResourceProcesor {
 			for (String mapping : allowInfo.getEntityMappingInfo().getMappings()) {
 				// Replace each segment by entity value;
 				try {
-					Link link = new Link(revolveURL(mapping, entityToProcces, urlTemplatesMap, requestStr, true), allowInfo.getName());
+					Link link = buildLink(revolveURL(mapping, entityToProcces, urlTemplatesMap, requestStr, true), allowInfo.getName(), allowInfo.getMethodForLinkCondition());
 					LOGGER.debug("Allowed link to entity: " + link);
-					entityLinks.add(
-							new MethodAwareLink(link,
-									allowInfo.getMethodForLinkCondition()));
+					entityLinks.add(link);
 				}catch(NoSuchMethodException e){
 					//Nothing to do
 				}
@@ -260,10 +250,9 @@ public class UDASecureResourceProcesor {
 			for (String mapping : allowInfo.getStaticMappingInfo().getMappings()) {
 				//Need to resolve some urls that has NON id parameter as path variable
 				try {
-					Link link = new Link(revolveURL(mapping, entityToProcces, urlTemplatesMap, requestStr, false), allowInfo.getName());
+					Link link = buildLink(revolveURL(mapping, entityToProcces, urlTemplatesMap, requestStr, false), allowInfo.getName(), allowInfo.getMethodForLinkCondition());
 					LOGGER.debug("Allowed static link: " + link);
-					entityLinks.add(
-							new MethodAwareLink(link, allowInfo.getMethodForLinkCondition()));
+					entityLinks.add(link);
 				}catch(NoSuchMethodException e){
 					//Nothing to do
 					//revolveURL does not thow exception at this point
@@ -391,6 +380,64 @@ public class UDASecureResourceProcesor {
 			catch (Exception e) {
 				LOGGER.error("Cannot call " + mappingInfo.getAllowerMethod());
 				return false;
+			}
+		}
+	}
+	
+	private static Link buildLink(String url, String name, List<RequestMethod> requestMethods) {
+		
+		return new Link(url, name);
+	}
+	
+	private static void registerStaticLinks(List<Link> links) {
+	
+		for(Link link : links) {
+			idProtectionDataManager.allowAction(link.getHref());
+		}
+	}
+	
+	private static void registerEntityLinks(List<Link> links, Object entity) {
+		
+		HashMap<Class<?>, String> classValues = new HashMap<Class<?>, String>();
+		if(entity instanceof SecureIdentifiable) {
+			classValues.put(entity.getClass(), String.valueOf(((SecureIdentifiable<?>)entity).getId()));
+		}else if(entity instanceof SecureIdContainer) {
+			
+			//Need to discover the secure annotated fields to get it value
+			//Store the data to minimize the use of reflection
+			Map<Class<?>, Field> identifiableData = IDENTIFIABLE_FIELDS.get(entity.getClass());
+			
+			if(identifiableData == null) {
+				identifiableData = new ConcurrentHashMap<Class<?>, Field>();
+				for (Field field : entity.getClass().getDeclaredFields()) {
+					TrustAssertion trustAssertion = field.getAnnotation(TrustAssertion.class);
+					if(trustAssertion != null && trustAssertion.idFor() != null) {
+						try {
+							field.setAccessible(true);
+							classValues.put(trustAssertion.idFor(), String.valueOf(field.get(entity)));
+							identifiableData.put(trustAssertion.idFor(), field);
+						}
+						catch (Exception e) {
+							LOGGER.error("Cannot get the secure annotated values from " + entity.getClass(), e);
+						}
+					}
+				}
+				IDENTIFIABLE_FIELDS.put(entity.getClass(), identifiableData);
+			}else {
+				for (Entry<Class<?>, Field> data : identifiableData.entrySet()) {
+					try {
+						classValues.put(data.getKey(), String.valueOf(data.getValue().get(entity)));
+					}
+					catch (Exception e) {
+						LOGGER.error("Cannot get the cached secure annotated values from " + entity.getClass(), e);
+					}
+				}
+			}
+		}
+		
+		for(Link link : links) {
+			for(Entry<Class<?>, String> classValue : classValues.entrySet()) {
+				idProtectionDataManager.allowId(link.getHref(), classValue.getKey(), classValue.getValue());
 			}
 		}
 	}
