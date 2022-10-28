@@ -42,17 +42,13 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import com.ejie.x38.hdiv.controller.model.MethodMappingInfo;
 import com.ejie.x38.hdiv.controller.model.UDALinkMappingInfo;
 import com.ejie.x38.hdiv.controller.model.UDALinkResources;
-import com.ejie.x38.hdiv.controller.utils.DinamicLinkProvider;
 import com.ejie.x38.hdiv.controller.utils.MethodLinkDiscoverer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class UDASecureResourceProcesorTest {
 
-	private DinamicLinkProvider dinamicLinkProvider;
-	
 	@Before
 	public void init() {
-		dinamicLinkProvider = new DinamicLinkProvider(null);
 		
 		HttpServletRequest request = new HttpServletRequest() {
 
@@ -475,7 +471,7 @@ public class UDASecureResourceProcesorTest {
 		String relName = "allower";
 		UDASecureResourceProcesor.registerMethodLinkDiscoverer(getMethodLinkDiscoverer(relName, false, Void.class, mappings));
 		
-		List<Resource<Object>> resorces = UDASecureResourceProcesor.processLinks(resources, getClass(), dinamicLinkProvider);
+		List<Resource<Object>> resorces = UDASecureResourceProcesor.processLinks(resources, getClass());
 		
 		assertEquals(1, resorces.size());
 		assertEquals(1, resorces.get(0).getLinks().size());
@@ -494,7 +490,7 @@ public class UDASecureResourceProcesorTest {
 		String relName = "allower";
 		UDASecureResourceProcesor.registerMethodLinkDiscoverer(getMethodLinkDiscoverer(relName, false, Void.class, mappings));
 		
-		List<Resource<Object>> resorces = UDASecureResourceProcesor.processLinks(resources, getClass(), dinamicLinkProvider);
+		List<Resource<Object>> resorces = UDASecureResourceProcesor.processLinks(resources, getClass());
 		
 		assertEquals(0, resorces.size());
 		assertEquals(1, resource.getLinks().size());
@@ -517,7 +513,7 @@ public class UDASecureResourceProcesorTest {
 		String relName = "allower";
 		UDASecureResourceProcesor.registerMethodLinkDiscoverer(getMethodLinkDiscoverer(relName, false, Void.class, mappings));
 		
-		List<Resource<Object>> resorces = UDASecureResourceProcesor.processLinks(resources, getClass(), dinamicLinkProvider);
+		List<Resource<Object>> resorces = UDASecureResourceProcesor.processLinks(resources, getClass());
 		
 		assertEquals(0, resorces.size());
 		assertEquals(1, resourceOther.getLinks().size());

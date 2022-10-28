@@ -12,11 +12,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.hdiv.services.EntityStateRecorder;
 import org.hdiv.services.SecureIdContainer;
 import org.hdiv.services.SecureIdentifiable;
 import org.hdiv.services.TrustAssertion;
-import org.hdiv.util.HDIVUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.Link;
@@ -30,10 +28,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.ejie.x38.hdiv.controller.model.LinkInfo;
 import com.ejie.x38.hdiv.controller.model.MappingInfo;
 import com.ejie.x38.hdiv.controller.model.ReferencedObject;
-import com.ejie.x38.hdiv.controller.model.SecureClassInfo;
 import com.ejie.x38.hdiv.controller.model.UDALinkMappingInfo;
 import com.ejie.x38.hdiv.controller.model.UDALinkResources;
-import com.ejie.x38.hdiv.controller.utils.DinamicLinkProvider;
 import com.ejie.x38.hdiv.controller.utils.MethodLinkDiscoverer;
 import com.ejie.x38.hdiv.protection.IdProtectionDataManager;
 
@@ -44,17 +40,11 @@ public class UDASecureResourceProcesor {
 	private static final Map<Class<?>, Map<Class<?>, Field>> IDENTIFIABLE_FIELDS = new ConcurrentHashMap<Class<?>, Map<Class<?>, Field>>();
 
 	private static MethodLinkDiscoverer methodLinkDiscoverer;
-
-	private static EntityStateRecorder<Link> entityStateRecorder;
 	
 	private static IdProtectionDataManager idProtectionDataManager;
 	
 	public static void registerMethodLinkDiscoverer(final MethodLinkDiscoverer methodLinkDiscoverer) {
 		UDASecureResourceProcesor.methodLinkDiscoverer = methodLinkDiscoverer;
-	}
-	
-	public static void registerEntityStateRecorder(final EntityStateRecorder<Link> entityStateRecorder) {
-		UDASecureResourceProcesor.entityStateRecorder = entityStateRecorder;
 	}
 	
 	public static void registerIdProtectionDataManager(final IdProtectionDataManager idProtectionDataManager) {
@@ -70,12 +60,11 @@ public class UDASecureResourceProcesor {
 	}
 
 	public static List<Resource<Object>> asResources(final List<Object> entities, final Class<?> controller) {
-		return processLinks(entities, null, controller, null);
+		return processLinks(entities, null, controller);
 	}
 	
-	public static List<Resource<Object>> processLinks(final UDALinkResources udaLinkResources, final Class<?> controller,
-			final DinamicLinkProvider linkProvider) {
-		return processLinks(udaLinkResources.getEntities(), udaLinkResources.getSubEntities(), controller, linkProvider);
+	public static List<Resource<Object>> processLinks(final UDALinkResources udaLinkResources, final Class<?> controller) {
+		return processLinks(udaLinkResources.getEntities(), udaLinkResources.getSubEntities(), controller);
 		
 	}
 	
@@ -84,7 +73,6 @@ public class UDASecureResourceProcesor {
 		
 		if (allowInfoList != null) {
 			Map<String, Map<String, Map<Class<?>,Method>>> urlTemplatesMap = new HashMap<String, Map<String, Map<Class<?>,Method>>>();
-			//String requestStr = getBaseUrl(request).toString();
 			List<Resource<Object>> resources = processEntity(entity, request, allowInfoList, request.getContextPath(), urlTemplatesMap, false);
 			if(!resources.isEmpty() ) {
 				return resources.get(0);
@@ -93,8 +81,7 @@ public class UDASecureResourceProcesor {
 		return new Resource<Object>(entity, new ArrayList<Link>());
 	}
 
-	private static List<Resource<Object>> processLinks(final List<Object> entities, final List<ReferencedObject> subEntities, final Class<?> controller,
-			final DinamicLinkProvider linkProvider) {
+	private static List<Resource<Object>> processLinks(final List<Object> entities, final List<ReferencedObject> subEntities, final Class<?> controller) {
 		
 		LOGGER.debug("Processing links to {} entities and {} subentities", entities.size(), subEntities.size());
 
@@ -108,46 +95,13 @@ public class UDASecureResourceProcesor {
 			if (entities != null && !entities.isEmpty()) {
 				resources = processEntities(entities, false, request, allowInfoList, requestStr);
 			}
-			if (subEntities != null && !subEntities.isEmpty()) {
-				Map<String, Map<String, Map<Class<?>,Method>>> urlTemplatesMap = new HashMap<String, Map<String, Map<Class<?>,Method>>>();
-				// add links to parent resource
-				for (ReferencedObject entity : subEntities) {
-					Object parent = entities.get(Integer.valueOf(entity.getRef()));
-					if(parent instanceof Resource) {
-						for(Resource<Object> subentityResurce : processEntity(entity.getEntity(), request, allowInfoList, requestStr, urlTemplatesMap, true)) {
-							// is this line needed?
-							for(SecureClassInfo secureClassInfo : entity.getSecureClassInfo()){
-								try {
-									Object entityObject =  entity.getEntity();
-									//Note: targeted class can be different from entity class 
-									Method method = entityObject.getClass().getDeclaredMethod(secureClassInfo.getMethodName());
-									addEntityLink(subentityResurce.getLinks(), entityObject, secureClassInfo.getParamName(), String.valueOf(method.invoke(entityObject)), secureClassInfo.getTargetClass(), request);
-								}catch(Exception e) {
-									LOGGER.error("Cannot add links to entity", e);
-								}	
-							}
-						}
-					}
-				}
-			}
-			if (linkProvider != null) {
-				processStaticLinks(request, allowInfoList, requestStr, linkProvider);
-			}
+			processStaticLinks(request, allowInfoList, requestStr);
 		}
 		return resources;
 	}
-	
-	static void addEntityLink(final List<Link> links, final Object entityObject,
-			final String propertyName,final String idValue, Class<?> targetedClass, HttpServletRequest request) throws Exception {
-
-		if(links != null && !links.isEmpty() && idValue != null && entityStateRecorder != null) {
-			entityStateRecorder.registerEntity(links, targetedClass, idValue, propertyName, HDIVUtil.getRequestContext(request));
-			
-		}
-	}
 
 	private static <T> void processStaticLinks(final HttpServletRequest request, final List<UDALinkMappingInfo> allowInfoList,
-			final String requestStr, final DinamicLinkProvider linkProvider) {
+			final String requestStr) {
 		List<Link> links = new ArrayList<Link>();
 		for (UDALinkMappingInfo udaMappingInfo : allowInfoList) {
 			// Check allower for the link
@@ -162,7 +116,6 @@ public class UDASecureResourceProcesor {
 			}
 		}
 		registerStaticLinks(links);
-		linkProvider.addLinks(links, request);
 	}
 
 	private static List<Resource<Object>> processEntities(final List<Object> entities, final boolean isSubEntity, final HttpServletRequest request,

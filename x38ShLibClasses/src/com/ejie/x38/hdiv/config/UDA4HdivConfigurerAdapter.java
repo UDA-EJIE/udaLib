@@ -1,7 +1,6 @@
 package com.ejie.x38.hdiv.config;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -23,8 +22,6 @@ import org.hdiv.filter.IValidationHelper;
 import org.hdiv.filter.ValidatorHelperRequest;
 import org.hdiv.listener.InitListener;
 import org.hdiv.services.CustomSecureConverter;
-import org.hdiv.services.EntityStateRecorder;
-import org.hdiv.services.LinkProvider;
 import org.hdiv.session.ISession;
 import org.hdiv.state.StateUtil;
 import org.hdiv.state.scope.StateScopeManager;
@@ -35,9 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
-import org.springframework.hateoas.Link;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter;
 import org.springframework.web.method.HandlerMethod;
@@ -46,7 +41,6 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 import com.ejie.x38.hdiv.aspect.LinkResourcesAspect;
 import com.ejie.x38.hdiv.config.EjieValidationConfigurer.EjieValidationConfig.EjieEditableValidationConfigurer;
-import com.ejie.x38.hdiv.controller.utils.DinamicLinkProvider;
 import com.ejie.x38.hdiv.controller.utils.MethodLinkDiscoverer;
 import com.ejie.x38.hdiv.controller.utils.MethodMappingDiscoverer;
 import com.ejie.x38.hdiv.filter.EjieValidatorHelperRequest;
@@ -93,15 +87,10 @@ public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfig
 	private StateScopeManager stateScopeManager;
 	
 	@Autowired
-	@Lazy
-	private EntityStateRecorder<Link> entityStateRecorder;
-	
-	@Autowired
 	private ApplicationContext appContext;
 	
 	@PostConstruct
 	public void init() {
-		UDASecureResourceProcesor.registerEntityStateRecorder(entityStateRecorder);
 		transformClasses();
 		configureSerializer();
 	}
@@ -267,20 +256,6 @@ public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfig
 		ejieValidationConfigurer.consolidate();
 	
 	}
-
-	protected abstract List<Link> getStaticLinks();
-
-	@Bean
-	public DinamicLinkProvider linkProvider() {
-		DinamicLinkProvider dinamicLinkProvider = new DinamicLinkProvider(getStaticLinks());
-		return dinamicLinkProvider;
-	};
-
-	@SuppressWarnings("unchecked")
-	@Bean
-	public List<LinkProvider<Link>> linkProviders() {
-		return Arrays.asList((LinkProvider<Link>) linkProvider());
-	};
 	
 	public void transformClasses() {
 		try {

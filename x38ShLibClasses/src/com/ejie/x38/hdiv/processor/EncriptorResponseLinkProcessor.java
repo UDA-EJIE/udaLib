@@ -9,13 +9,11 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 
 import org.hdiv.services.EntityStateRecorder;
-import org.hdiv.services.LinkProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -37,7 +35,7 @@ public class EncriptorResponseLinkProcessor extends ResponseLinkProcesor {
 	@Lazy
 	private EntityStateRecorder<Link> entityStateRecorder;
 
-	public Object checkResponseToLinks(final Object object, Class<?> controller, LinkProvider<?> linkProvider) throws Throwable {
+	public Object checkResponseToLinks(final Object object, Class<?> controller) throws Throwable {
 
 		Object processed = fillResources(object, 0, null, false, null);
 		return processed;
@@ -82,10 +80,8 @@ public class EncriptorResponseLinkProcessor extends ResponseLinkProcesor {
 	    	if(idValue != null) {
 	    		
 	    		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-				Resource<Object> resource = UDASecureResourceProcesor.getAllowedEntityResource(wrapper.getEntity(), request);
-				UDASecureResourceProcesor.addEntityLink(resource.getLinks(), resource.getContent(), identifiableInfo.getParamName(), idValue, identifiableInfo.getTargetClass(), request);
-				
-	    		return setAsProxy(wrapper, identifiableInfo);
+				UDASecureResourceProcesor.getAllowedEntityResource(wrapper.getEntity(), request);
+				return setAsProxy(wrapper, identifiableInfo);
 	    	}
 		}catch(Exception e) {
 		}
