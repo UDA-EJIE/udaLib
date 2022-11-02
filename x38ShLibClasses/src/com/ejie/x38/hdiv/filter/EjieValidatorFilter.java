@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.DefaultParameterNameDiscoverer;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerExecutionChain;
@@ -31,6 +32,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 import com.ejie.x38.hdiv.protection.IdProtectionDataManager;
 import com.ejie.x38.hdiv.util.ObfuscatorUtils;
+import com.ejie.x38.hdiv.util.Utils;
 
 public class EjieValidatorFilter extends ValidatorFilter {
 
@@ -56,7 +58,19 @@ public class EjieValidatorFilter extends ValidatorFilter {
 		
 		Map<String, String> deobfuscatedVariables = checkPathVariables(request, response);
 		String mapping = getForwardMapping(request, response, deobfuscatedVariables);
-		super.doFilterInternal(request, response, new EjieFilterChain(filterChain).setMapping(mapping));	
+		super.doFilterInternal(wrapRequest(request), response, new EjieFilterChain(filterChain).setMapping(mapping));	
+	}
+	
+	private HttpServletRequest wrapRequest(HttpServletRequest request) {
+		if(isFormRequest(request.getContentType())) {
+			return new DeobfuscatorRequest(request);
+		}
+		return request;
+	}
+	
+	private boolean isFormRequest(String contentType) {
+		MediaType requestContentType = contentType == null ? null : MediaType.valueOf(contentType);
+		return MediaType.APPLICATION_FORM_URLENCODED.isCompatibleWith(requestContentType) || MediaType.MULTIPART_FORM_DATA.isCompatibleWith(requestContentType) ;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -77,10 +91,10 @@ public class EjieValidatorFilter extends ValidatorFilter {
 					if(parameterNames != null) {
 						for (int i = 0; i<parameterNames.length; i++) {
 							String param = parameterNames[i];	
-							PathVariable pathAnnotation = (PathVariable) getAnnotation(annotations[i], PathVariable.class);
+							PathVariable pathAnnotation = (PathVariable) Utils.findOneFromAnnotations(annotations[i], PathVariable.class);
 							if(pathAnnotation != null && (pathValue.getKey().equals( param) || pathValue.getKey().equals(pathAnnotation.value()) )) {
 								//TrustAssertion trustAssertion = param.getAnnotation(TrustAssertion.class);
-								TrustAssertion trustAssertion = (TrustAssertion) getAnnotation(annotations[i], TrustAssertion.class);
+								TrustAssertion trustAssertion = (TrustAssertion) Utils.findOneFromAnnotations(annotations[i], TrustAssertion.class);
 								if(trustAssertion == null) {
 									//Throw exception
 									response.setStatus(HttpStatus.SC_UNAUTHORIZED);
@@ -104,15 +118,6 @@ public class EjieValidatorFilter extends ValidatorFilter {
 			LOGGER.error("Exception processing path variables. ", e);
 		}
 		return deobfuscatedVariables;
-	}
-	
-	private Annotation getAnnotation(Annotation[] annotations, Class<?> clazz) {
-		for(Annotation annotation : annotations) {
-			if(annotation.annotationType() == clazz) {
-				return annotation;
-			}
-		}
-		return null;
 	}
 	
 	private String getForwardMapping(HttpServletRequest request, HttpServletResponse response, Map<String, String> deobfuscatedVariables) throws ServletException, IOException {

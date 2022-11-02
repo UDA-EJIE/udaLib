@@ -8,13 +8,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.hdiv.services.SecureIdContainer;
 import org.hdiv.services.SecureIdentifiable;
-import org.hdiv.services.TrustAssertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.Link;
@@ -32,13 +30,12 @@ import com.ejie.x38.hdiv.controller.model.UDALinkMappingInfo;
 import com.ejie.x38.hdiv.controller.model.UDALinkResources;
 import com.ejie.x38.hdiv.controller.utils.MethodLinkDiscoverer;
 import com.ejie.x38.hdiv.protection.IdProtectionDataManager;
+import com.ejie.x38.hdiv.util.IdentifiableFieldDiscoverer;
 
 public class UDASecureResourceProcesor {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(UDASecureResourceProcesor.class);
 	
-	private static final Map<Class<?>, Map<Class<?>, Field>> IDENTIFIABLE_FIELDS = new ConcurrentHashMap<Class<?>, Map<Class<?>, Field>>();
-
 	private static MethodLinkDiscoverer methodLinkDiscoverer;
 	
 	private static IdProtectionDataManager idProtectionDataManager;
@@ -349,34 +346,15 @@ public class UDASecureResourceProcesor {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	private static void registerEntityLinks(List<Link> links, Object entity) {
 		
 		HashMap<Class<?>, String> classValues = new HashMap<Class<?>, String>();
 		if(entity instanceof SecureIdentifiable) {
 			classValues.put(entity.getClass(), String.valueOf(((SecureIdentifiable<?>)entity).getId()));
 		}else if(entity instanceof SecureIdContainer) {
-			
-			//Need to discover the secure annotated fields to get it value
-			//Store the data to minimize the use of reflection
-			Map<Class<?>, Field> identifiableData = IDENTIFIABLE_FIELDS.get(entity.getClass());
-			
-			if(identifiableData == null) {
-				identifiableData = new ConcurrentHashMap<Class<?>, Field>();
-				for (Field field : entity.getClass().getDeclaredFields()) {
-					TrustAssertion trustAssertion = field.getAnnotation(TrustAssertion.class);
-					if(trustAssertion != null && trustAssertion.idFor() != null) {
-						try {
-							field.setAccessible(true);
-							classValues.put(trustAssertion.idFor(), String.valueOf(field.get(entity)));
-							identifiableData.put(trustAssertion.idFor(), field);
-						}
-						catch (Exception e) {
-							LOGGER.error("Cannot get the secure annotated values from " + entity.getClass(), e);
-						}
-					}
-				}
-				IDENTIFIABLE_FIELDS.put(entity.getClass(), identifiableData);
-			}else {
+			Map<Class<?>, Field> identifiableData = IdentifiableFieldDiscoverer.getClassIdentifiableField((Class<SecureIdContainer>) entity.getClass());
+			if(identifiableData != null) {
 				for (Entry<Class<?>, Field> data : identifiableData.entrySet()) {
 					try {
 						classValues.put(data.getKey(), String.valueOf(data.getValue().get(entity)));
