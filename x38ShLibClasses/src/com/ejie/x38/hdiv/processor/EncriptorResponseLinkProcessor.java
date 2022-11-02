@@ -8,12 +8,8 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.hdiv.services.EntityStateRecorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -31,10 +27,6 @@ public class EncriptorResponseLinkProcessor extends ResponseLinkProcesor {
 	
 	private static final String GET_ID = "getId";
 	
-	@Autowired
-	@Lazy
-	private EntityStateRecorder<Link> entityStateRecorder;
-
 	public Object checkResponseToLinks(final Object object, Class<?> controller) throws Throwable {
 
 		Object processed = fillResources(object, 0, null, false, null);
@@ -95,7 +87,7 @@ public class EncriptorResponseLinkProcessor extends ResponseLinkProcesor {
 	
 	    factory.setSuperclass(originalClass);
 	
-	    factory.setHandler(new SecureInvocationHandler(wrapper, entityStateRecorder, secureClassInfo));
+	    factory.setHandler(new SecureInvocationHandler(wrapper, secureClassInfo));
 	    Class<?> proxyClass = factory.createClass();
 		try {
 		    return proxyClass.newInstance();
