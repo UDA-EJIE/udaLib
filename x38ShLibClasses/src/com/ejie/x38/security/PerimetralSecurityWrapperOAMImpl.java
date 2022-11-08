@@ -94,7 +94,7 @@ public class PerimetralSecurityWrapperOAMImpl implements
 		String position = httpRequest.getHeader("HTTP_POSITION"); 
 		String groups = httpRequest.getHeader("HTTP_GROUPS"); 
 		
-		if(name != null && surname != null && fullname != null && username != null && nif != null && position != null && groups != null) {
+		if(name == null || surname == null || fullname == null || username == null || nif != null || position == null || groups == null) {
 			return "true";
 		}else {
 			httpSession.setAttribute("name", name);
@@ -297,7 +297,7 @@ public class PerimetralSecurityWrapperOAMImpl implements
 		//Bucle para oam.
 		if(httpRequest.getSession(false).getAttribute("HTTP_GROUPS") != null) {
 			String groups = (String) httpRequest.getSession(false).getAttribute("HTTP_GROUPS");
-			String[] listaGroups = groups.split(",");
+			String[] listaGroups = groups.split(":");
 			if(listaGroups != null) {
 				for(int i=0;i < listaGroups.length ;i++ ) {
 					userInstances.add(listaGroups[i]);
