@@ -106,7 +106,7 @@ public class XlnetCore {
 		} catch (N38ParameterException e) {
 			logger.error(StackTraceManager.getStackTrace(e));
 		} catch (N38Excepcion e) {
-			logger.error(StackTraceManager.getStackTrace(e));
+			logger.error("There is no XLNetS session or current has expired (error code {})", e.getCodigo());
 		}
 		
 		return null;
