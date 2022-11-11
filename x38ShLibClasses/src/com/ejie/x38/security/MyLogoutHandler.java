@@ -15,6 +15,8 @@
 */
 package com.ejie.x38.security;
 
+import java.lang.reflect.InvocationTargetException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -70,7 +72,21 @@ public class MyLogoutHandler implements LogoutHandler {
 		if(this.invalidateUserSession){
 			Assert.notNull(request, "HttpServletRequest required");			
 			getPerimetralSecurityWrapper().logout(request, response);
-			logger.info("XLNET " +getPerimetralSecurityWrapper().getUserConnectedUidSession(request)+ " Session destroyed!");
+			try {
+				Object credentials = authentication.getCredentials();
+				Object uidSession = credentials.getClass().getMethod("getUidSession").invoke(credentials);
+				logger.info("XLNetS {} session destroyed!", (String) uidSession);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				e.printStackTrace();
+			}
 		}
 
 		//Invalidate HTTP session
