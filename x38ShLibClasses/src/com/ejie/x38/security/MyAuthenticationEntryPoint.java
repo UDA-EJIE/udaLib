@@ -96,15 +96,17 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint,
 		
 		if (isAjax && xhrRedirectOnError ){
 			
-			url = this.getUrl(xhrUnauthorizedPage != null ? xhrUnauthorizedPage : getPerimetralSecurityWrapper().getURLLogin(originalURL , isAjax), isPortal);
+			url = this.getUrlAjax(xhrUnauthorizedPage != null ? xhrUnauthorizedPage : getPerimetralSecurityWrapper().getURLLogin(originalURL , isAjax), isPortal);
 			
 			// Se detecta si es una petición AJAX
 			httpResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
 			httpResponse.setHeader("LOCATION", url);
 			
 		}else{
-		
-			url = this.getUrl(getPerimetralSecurityWrapper().getURLLogin(originalURL , isAjax), isPortal);
+			url = getPerimetralSecurityWrapper().getURLLogin(originalURL , isAjax);
+			if(isAjax){
+				url = this.getUrlAjax(url, isPortal);
+			}
 			
 			logger.info("Redirecting to next URL:" + url);
 			httpResponse.sendRedirect(url);
@@ -118,8 +120,9 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint,
 	}
 
 	// Private 
-	private String getUrl(String url, boolean isPortal){
-		return isPortal ? url.concat("&R01HNoPortal=true") : url;
+	private String getUrlAjax(String url, boolean isPortal){
+		String sep = url.indexOf('?') > -1 ? "&" : "?";
+		return isPortal ? url.concat(sep).concat("R01HNoPortal=true") : url;
 	}
 	
 	// Getters & Setters

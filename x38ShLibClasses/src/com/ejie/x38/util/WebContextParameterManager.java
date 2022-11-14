@@ -101,6 +101,12 @@ public class WebContextParameterManager implements ApplicationContextAware {
 			StaticsContainer.setCookieSecure(true);
 			logger.info("The cookie secure value is " + StaticsContainer.isCookieSecure());
 		}
+
+		if (appProperties.getProperty("locale.allowInheritance") != null
+				&& ((appProperties.getProperty("locale.allowInheritance")).toLowerCase()).equals("true")) {
+			StaticsContainer.setInheritableLocalContext(true);
+			logger.info("The local context inheritance value is " + StaticsContainer.isInheritableLocalContext());
+		}
 	}
 
 	// Getters & Setters
