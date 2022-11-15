@@ -151,8 +151,6 @@ public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfig
 
 	protected abstract String getLoginPage();
 
-	public abstract void customConfigure(final SecurityConfigBuilder builder);
-
 	@Override
 	public final void configure(final SecurityConfigBuilder builder) {
 		builder.confidentiality(false).sessionExpired().homePage(getHomePage()).loginPage(getLoginPage());
