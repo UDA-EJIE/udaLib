@@ -370,7 +370,7 @@ public class UDASecureResourceProcesorTest {
 				return false;
 			}
 
-			@Override
+			/*@Override
 			public AsyncContext getAsyncContext() {
 				// TODO Auto-generated method stub
 				return null;
@@ -440,7 +440,7 @@ public class UDASecureResourceProcesorTest {
 			public void logout() throws ServletException {
 				// TODO Auto-generated method stub
 				
-			}
+			}*/
 		}
 
 		;

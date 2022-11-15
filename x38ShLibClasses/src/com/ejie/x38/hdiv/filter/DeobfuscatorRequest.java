@@ -14,7 +14,7 @@ public class DeobfuscatorRequest extends HttpServletRequestWrapper {
 	@Override
 	public String getParameter(String name) {
 		String value = super.getParameter(name);
-		if(ObfuscatorUtils.isObfuscatedId(value) ) {
+		if(value != null && ObfuscatorUtils.isObfuscatedId(value) ) {
 			return ObfuscatorUtils.deobfuscate(value);
 		}
 		return value;

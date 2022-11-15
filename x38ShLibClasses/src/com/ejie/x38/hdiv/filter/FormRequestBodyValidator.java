@@ -71,7 +71,7 @@ public class FormRequestBodyValidator {
 			checkFormParameters(formParameters, context, errors);
 			checkExtraParameters(extraParameters, context, errors);
 		}
-		else if (paramData.get("entity").isEmpty()) {
+		else {
 			// check for an entity body
 			ValidatorError error = new ValidatorError(HDIVErrorCodes.HDIV_PARAMETER_DOES_NOT_EXIST, context.getTarget());
 			return new ValidatorHelperResult(error);

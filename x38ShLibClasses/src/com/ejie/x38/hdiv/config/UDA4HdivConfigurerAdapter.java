@@ -150,10 +150,11 @@ public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfig
 	protected abstract String getHomePage();
 
 	protected abstract String getLoginPage();
-	
+
+	public abstract void customConfigure(final SecurityConfigBuilder builder);
+
 	@Override
 	public final void configure(final SecurityConfigBuilder builder) {
-
 		builder.confidentiality(false).sessionExpired().homePage(getHomePage()).loginPage(getLoginPage());
 		builder.showErrorPageOnEditableValidation(true);
 		builder.cookiesIntegrity(false);
@@ -163,7 +164,6 @@ public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfig
 		if(errorPage != null) {
 			builder.errorPage(errorPage);
 		}
-		
 	}
 	
 	protected String getErrorPage() {
