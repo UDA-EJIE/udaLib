@@ -149,10 +149,6 @@ public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfig
 	protected abstract String getHomePage();
 
 	protected abstract String getLoginPage();
-	
-	protected abstract String getDashboardUser();
-	
-	protected abstract String getDashboardPass();
 
 	public abstract void customConfigure(final SecurityConfigBuilder builder);
 
