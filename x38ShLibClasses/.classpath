@@ -19,7 +19,13 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.7.0_80.jdk">
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/UDAWLS11Classpath"/>
+	<classpathentry kind="con" path="oracle.eclipse.tools.weblogic.lib.system">
+		<attributes>
+			<attribute name="owner.project.facets" value="#system#;jst.utility"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jrockit-jdk1.6.0_91">
 		<attributes>
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
@@ -49,6 +55,7 @@
 	<classpathentry kind="lib" path="lib/hdiv-config-3.5.2.jar"/>
 	<classpathentry kind="lib" path="lib/hdiv-core-3.5.2.jar"/>
 	<classpathentry kind="lib" path="lib/hdiv-services-3.5.2.jar"/>
+	<classpathentry kind="lib" path="lib/hdiv-spring-mvc-3.5.2.jar"/>
 	<classpathentry kind="lib" path="lib/hibernate-validator-5.4.3.Final.jar"/>
 	<classpathentry kind="lib" path="lib/httpclient-4.3.3.jar"/>
 	<classpathentry kind="lib" path="lib/httpcore-4.3.3.jar"/>
@@ -85,6 +92,7 @@
 	<classpathentry kind="lib" path="lib/spring-context-support-4.3.22.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/spring-core-4.3.22.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/spring-expression-4.3.22.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring-hateoas-0.23.0.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/spring-jdbc-4.3.22.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/spring-orm-4.3.22.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/spring-security-acl-4.2.11.RELEASE.jar"/>
@@ -110,6 +118,5 @@
 	<classpathentry kind="lib" path="lib/xz-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/y31b-1.4-ifaz.jar"/>
 	<classpathentry kind="lib" path="lib/y31c-1.5-impl.jar"/>
-	<classpathentry kind="lib" path="lib/spring-hateoas-0.23.0.RELEASE.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
