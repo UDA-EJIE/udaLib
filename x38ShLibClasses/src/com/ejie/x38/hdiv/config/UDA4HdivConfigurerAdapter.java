@@ -47,6 +47,7 @@ import com.ejie.x38.hdiv.filter.EjieValidatorHelperRequest;
 import com.ejie.x38.hdiv.processor.UDASecureResourceProcesor;
 import com.ejie.x38.hdiv.protection.IdProtectionDataManager;
 import com.ejie.x38.hdiv.protection.UserSessionIdProtectionDataManager;
+import com.ejie.x38.hdiv.util.Constants;
 import com.ejie.x38.serialization.EjieSecureModule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -150,10 +151,6 @@ public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfig
 
 	protected abstract String getLoginPage();
 	
-	protected abstract String getDashboardUser();
-	
-	protected abstract String getDashboardPass();
-
 	@Override
 	public final void configure(final SecurityConfigBuilder builder) {
 
@@ -200,7 +197,10 @@ public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfig
 		registry.addRule("boolean").acceptedPattern("(\\W|^)(true|false)(\\W|$)");
 		registry.addRule("order").acceptedPattern("(\\W|^)(asc|desc| ,asc| ,desc)*(\\W|$)");
 		registry.addRule("locale").acceptedPattern("(\\W|^)(es|eu|en|fr)(\\W|$)");
-
+		
+		//Custom rule to be used in 'modify' requests
+		registry.addRule(Constants.MODIFY_RULE_NAME);
+		
 		addCustomRules(registry);
 	}
 

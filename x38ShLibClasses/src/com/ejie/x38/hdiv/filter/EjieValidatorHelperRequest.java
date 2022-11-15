@@ -10,12 +10,14 @@ import org.hdiv.filter.ValidatorError;
 import org.hdiv.filter.ValidatorHelperRequest;
 import org.hdiv.filter.ValidatorHelperResult;
 import org.hdiv.state.IParameter;
+import org.hdiv.state.IState;
 import org.hdiv.util.HDIVErrorCodes;
 import org.hdiv.validator.EditableDataValidationProvider;
 import org.hdiv.validator.EditableDataValidationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.ejie.x38.hdiv.protection.IdProtectionDataManager;
@@ -87,8 +89,6 @@ public class EjieValidatorHelperRequest extends ValidatorHelperRequest {
 		}
 	}
 	
-	
-
 	@Override
 	public void init() {
 		super.init();
@@ -121,7 +121,7 @@ public class EjieValidatorHelperRequest extends ValidatorHelperRequest {
 		if(requestContext.getHdivState() == null) {
 			if(checkServerSideLink()) {
 				//If it is a serverside Link, do not allow parameters apart from MODIFIED_HDIV_STATE
-				if(isSimpleRequest(context)) {
+				if(isSimpleRequest(context) || checkModifyRequest(context)) {
 					return  ValidatorHelperResult.VALID;	
 				}else {
 					return new ValidatorHelperResult(new ValidatorError(HDIVErrorCodes.INVALID_PARAMETER_NAME, context.getTarget()));
@@ -139,13 +139,56 @@ public class EjieValidatorHelperRequest extends ValidatorHelperRequest {
 		Enumeration<String> parameters = requestContext.getParameterNames();
 		while (parameters.hasMoreElements()) {
 			String paramName = parameters.nextElement();
-			if(!paramName.equals(requestContext.getHdivModifyParameterName()) && !isExcludedParam(context.getTarget(), paramName)) {
+			if(!isExcludedParam(context.getTarget(), paramName)) {
 				return false;
 			}
 		}
 		return true;
 	}
-	
+				
+	private boolean checkModifyRequest(ValidationContext context) {
+		
+		boolean isValidated = false;
+		RequestContextHolder requestContext = context.getRequestContext();
+		String strState = requestContext.getParameter(requestContext.getHdivModifyParameterName());
+		
+		if(strState != null) {
+			String modifiedFormField = requestContext.getParameter(Constants.MODIFY_HDIV_STATE_FORM_FIELD_NAME);
+			IState state = stateUtil.restoreState(requestContext, strState);
+			IParameter modifiedStateParentParam = state.getParameter(modifiedFormField);
+		
+			//The parent value is one of the values given by the server. It is into the state
+			//The parameter to be modified have to be part of the state too.
+			//Parent and the parameter which wants to be modified must be not editable (select, radio,...)
+			if(StringUtils.hasText(modifiedFormField) && modifiedStateParentParam != null && !modifiedStateParentParam.isEditable() ) {
+				
+				Enumeration<String> parameters = requestContext.getParameterNames();
+				while (parameters.hasMoreElements()) {
+					String paramName = parameters.nextElement();
+					if(!isExcludedParam(context.getTarget(), paramName)) {
+						IParameter stateParentParam = state.getParameter(paramName);
+						
+						EditableDataValidationProvider provider =  hdivConfig.getEditableDataValidationProvider();
+						EditableDataValidationResult result = provider.validate(context.getTarget(), paramName, requestContext.getParameterValues(paramName), null);
+						
+						if(stateParentParam != null && !stateParentParam.isEditable() 
+							&& stateParentParam.existValue(requestContext.getParameter(paramName))
+							&& Constants.MODIFY_RULE_NAME.equals(result.getRule())) {
+							isValidated = true;
+						}else {
+							return false;
+						}
+					}
+				}
+			}
+			if(isValidated) {
+				//Reset state parameter values
+				modifiedStateParentParam.getValues().clear();
+			}
+		}
+		return isValidated;
+	}
+
 	private boolean isExcludedParam(String target, String param) {
 		return hdivConfig.isStartParameter( param) || hdivConfig.isParameterWithoutValidation(target, param);
 	}

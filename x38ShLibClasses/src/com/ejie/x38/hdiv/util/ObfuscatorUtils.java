@@ -13,7 +13,7 @@ public class ObfuscatorUtils {
 
 	public static String obfuscate(String s, Class<?> clazz) {
 		
-		if(s == null) {
+		if(s == null || clazz == null) {
 			return null;
 		}
 		

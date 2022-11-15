@@ -106,6 +106,20 @@ public class EjieValidationConfigurer extends ValidationConfigurer {
 			public boolean isClientParameter() {
 				return clientParameter;
 			}
+			
+			public EditableValidationConfigurer setModifyParameter(String parameter) {
+				//for(String modifierParam : getParameters()) {
+				List<String> params = getParameters();
+				for(int i = 0; i < params.size(); i++) {
+					String modifierParam = params.get(i);
+					params.remove(i);
+					params.add(i, Constants.MODIFIER_PARAMETER + modifierParam);
+				}
+				params.add(Constants.MODIFY_TARGET_PARAMETER + parameter);
+				rules(Constants.MODIFY_RULE_NAME);
+				return this;
+			}
+			
 		}
 		
 	}

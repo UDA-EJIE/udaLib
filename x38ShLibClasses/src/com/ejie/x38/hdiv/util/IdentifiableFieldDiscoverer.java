@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.hdiv.services.SecureIdContainer;
-import org.hdiv.services.SecureIdentifiable;
 import org.hdiv.services.TrustAssertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +21,7 @@ public class IdentifiableFieldDiscoverer {
 		
 		Map<Class<?>, Field> identifiableData = null;
 				
-		if(SecureIdentifiable.class.isAssignableFrom(clazz)) {
+		if(SecureIdContainer.class.isAssignableFrom(clazz)) {
 			//Need to discover the secure annotated fields to get it value
 			//Store the data to minimize the use of reflection
 			identifiableData = IDENTIFIABLE_FIELDS.get(clazz);

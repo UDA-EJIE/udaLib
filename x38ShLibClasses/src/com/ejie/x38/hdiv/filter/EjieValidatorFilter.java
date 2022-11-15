@@ -58,7 +58,7 @@ public class EjieValidatorFilter extends ValidatorFilter {
 		
 		Map<String, String> deobfuscatedVariables = checkPathVariables(request, response);
 		String mapping = getForwardMapping(request, response, deobfuscatedVariables);
-		super.doFilterInternal(wrapRequest(request), response, new EjieFilterChain(filterChain).setMapping(mapping));	
+		super.doFilterInternal(request, response, new EjieFilterChain(filterChain).setMapping(mapping));	
 	}
 	
 	private HttpServletRequest wrapRequest(HttpServletRequest request) {
@@ -93,7 +93,6 @@ public class EjieValidatorFilter extends ValidatorFilter {
 							String param = parameterNames[i];	
 							PathVariable pathAnnotation = (PathVariable) Utils.findOneFromAnnotations(annotations[i], PathVariable.class);
 							if(pathAnnotation != null && (pathValue.getKey().equals( param) || pathValue.getKey().equals(pathAnnotation.value()) )) {
-								//TrustAssertion trustAssertion = param.getAnnotation(TrustAssertion.class);
 								TrustAssertion trustAssertion = (TrustAssertion) Utils.findOneFromAnnotations(annotations[i], TrustAssertion.class);
 								if(trustAssertion == null) {
 									//Throw exception
@@ -159,7 +158,7 @@ public class EjieValidatorFilter extends ValidatorFilter {
 				request.getRequestDispatcher(mapping).forward(request, response);
 				mapping = null;
 			}else {
-				filterChain.doFilter(request, response);
+				filterChain.doFilter(wrapRequest((HttpServletRequest)request), response);
 			}
 		}
 		
