@@ -39,6 +39,11 @@
 			<version>${org.hdiv.ce.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.hdiv</groupId>
+			<artifactId>hdiv-spring-mvc</artifactId>
+			<version>${org.hdiv.ce.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>javassist</groupId>
 			<artifactId>javassist</artifactId>
 			<version>3.6.0.GA</version>
