@@ -113,7 +113,8 @@ public class EjieValidatorHelperRequest extends ValidatorHelperRequest {
 				}
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				LOGGER.error("Exception validating body.", e);
+				throw new RuntimeException(e);
 			}
 		}
 		

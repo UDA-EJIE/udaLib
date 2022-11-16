@@ -19,6 +19,7 @@ import org.hdiv.config.annotation.configuration.HdivWebSecurityConfigurer;
 import org.hdiv.dataComposer.DataComposerFactory;
 import org.hdiv.dataValidator.IDataValidator;
 import org.hdiv.filter.IValidationHelper;
+import org.hdiv.filter.ValidatorErrorHandler;
 import org.hdiv.filter.ValidatorHelperRequest;
 import org.hdiv.listener.InitListener;
 import org.hdiv.services.CustomSecureConverter;
@@ -43,6 +44,7 @@ import com.ejie.x38.hdiv.aspect.LinkResourcesAspect;
 import com.ejie.x38.hdiv.config.EjieValidationConfigurer.EjieValidationConfig.EjieEditableValidationConfigurer;
 import com.ejie.x38.hdiv.controller.utils.MethodLinkDiscoverer;
 import com.ejie.x38.hdiv.controller.utils.MethodMappingDiscoverer;
+import com.ejie.x38.hdiv.error.EjieValidationErrorHander;
 import com.ejie.x38.hdiv.filter.EjieValidatorHelperRequest;
 import com.ejie.x38.hdiv.processor.UDASecureResourceProcesor;
 import com.ejie.x38.hdiv.protection.IdProtectionDataManager;
@@ -298,6 +300,12 @@ public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfig
 	@Bean 
 	public IdProtectionDataManager idProtectionDataManager() {
 		return new UserSessionIdProtectionDataManager();
+	}
+	
+	@Bean
+	@Primary
+	public ValidatorErrorHandler validatorErrorHandler() {
+		return new EjieValidationErrorHander(config);
 	}
 	
 	private void configureSerializer() {
