@@ -13,7 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.ejie.x38.serialization.CustomSerializer;
+import com.ejie.x38.serialization.CustomizedCustomSerializer;
 import com.ejie.x38.serialization.ThreadSafeCache;
 import com.ejie.x38.test.model.Coche;
 import com.ejie.x38.test.model.Empleado;
@@ -44,7 +44,7 @@ public class TestCustomSerializer {
 
 	/**
 	 * Test method for
-	 * {@link com.ejie.x38.serialization.CustomSerializer#serialize(java.lang.Object, com.fasterxml.jackson.core.JsonGenerator, com.fasterxml.jackson.databind.SerializerProvider)}.
+	 * {@link com.ejie.x38.serialization.CustomizedCustomSerializer#serialize(java.lang.Object, com.fasterxml.jackson.core.JsonGenerator, com.fasterxml.jackson.databind.SerializerProvider)}.
 	 */
 	@Test
 	public final void testSerialize() {
@@ -111,7 +111,7 @@ public class TestCustomSerializer {
 
 		try {
 			jsonGenerator = jsonFactory.createGenerator(jsonWriter);
-			new CustomSerializer().serialize(crx5, jsonGenerator, serializerProvider);
+			new CustomizedCustomSerializer().serialize(crx5, jsonGenerator, serializerProvider);
 		} catch (Exception e) {
 			fail("Exception serializando con el CustomSerializer");
 		} finally {

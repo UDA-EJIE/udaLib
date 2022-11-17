@@ -23,6 +23,7 @@ import org.hdiv.filter.ValidatorErrorHandler;
 import org.hdiv.filter.ValidatorHelperRequest;
 import org.hdiv.listener.InitListener;
 import org.hdiv.services.CustomSecureConverter;
+import org.hdiv.services.CustomSecureSerializer;
 import org.hdiv.session.ISession;
 import org.hdiv.state.StateUtil;
 import org.hdiv.state.scope.StateScopeManager;
@@ -51,6 +52,7 @@ import com.ejie.x38.hdiv.protection.IdProtectionDataManager;
 import com.ejie.x38.hdiv.protection.UserSessionIdProtectionDataManager;
 import com.ejie.x38.hdiv.util.Constants;
 import com.ejie.x38.serialization.EjieSecureModule;
+import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javassist.ClassPool;
@@ -310,6 +312,9 @@ public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfig
 		try {
 			Map<String, AbstractJackson2HttpMessageConverter> beans = appContext.getBeansOfType(AbstractJackson2HttpMessageConverter.class);
 			processBeans(beans.values(), false);
+			
+			Map<String, CustomSecureSerializer> serialyzers = appContext.getBeansOfType(CustomSecureSerializer.class);
+			processSerializers(serialyzers.values());
 		}
 		catch (Exception e) {
 			LOGGER.error("Cannot configure serializers. ", e);
@@ -340,6 +345,15 @@ public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfig
 			LOGGER.error("Cannot process MessageConverter beans. ", e);
 		}
 	}
+	
+	private void processSerializers(final Collection<CustomSecureSerializer> serialyzers) {
+		JsonSerializer<Object> secureSerializer = new EjieSecureModule.SecureIdSerializer();
+		if (serialyzers != null) {
+			for (CustomSecureSerializer customSecureSerializer : serialyzers) {
+				customSecureSerializer.setDelegatedSerializer(secureSerializer);
+			}
+		}
+	}	
 	
 	protected ObjectMapper doConfigureObjectMapper(final ObjectMapper objectMapper) {
 

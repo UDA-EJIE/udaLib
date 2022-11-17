@@ -3,20 +3,29 @@ package com.ejie.x38.serialization;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.hdiv.services.CustomSecureConverter;
 import org.hdiv.services.SecureIdContainer;
 import org.hdiv.services.SecureIdentifiable;
 import org.hdiv.services.TrustAssertion;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.hateoas.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpOutputMessage;
+import org.springframework.http.MediaType;
 
 import com.ejie.x38.dto.TableRequestDto;
 import com.ejie.x38.hdiv.protection.IdProtectionDataManager;
@@ -201,6 +210,47 @@ public class EjieSecureSerializerTest {
 		node.remove("nid");
 		node.remove("id");
 		mapper.readValue(mapper.writeValueAsString(node), MultiPk.class);
+	}
+	
+	@Test
+	public void testDepartamentoResourceSerialize() throws JsonProcessingException, IOException {
+
+		UdaMappingJackson2HttpMessageConverter messageConverter = new UdaMappingJackson2HttpMessageConverter();
+		messageConverter.initialize();
+		
+		for (ObjectMapper om : messageConverter.getObjectMappers()) {
+			om.registerModule(new EjieSecureModule(idProtectionDataManager));
+		}
+		
+		ThreadSafeCache.addValue("RUP", "null");
+		ThreadSafeCache.addValue("label", "descEu");
+		ThreadSafeCache.addValue("value", "code");
+		ThreadSafeCache.addValue("type", "css");
+		
+		List<Resource<Departamento>> departs = new ArrayList<Resource<Departamento>>();
+		departs.add(new Resource<Departamento>(new Departamento(new BigDecimal(1), "descEs_1", "descEus_1", "css_1")));
+		departs.add(new Resource<Departamento>(new Departamento(new BigDecimal(2), "descEs_2", "descEus_2", "css_2")));
+		
+		final OutputStream output = new ByteArrayOutputStream(); 
+		
+		messageConverter.writeInternal(departs, new HttpOutputMessage() {
+			
+			@Override
+			public HttpHeaders getHeaders() {
+				HttpHeaders headers = new HttpHeaders();
+				headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+				return headers;
+			}
+			
+			@Override
+			public OutputStream getBody() throws IOException {
+				return output;
+			}
+		});
+		
+		String serial = output.toString();
+		assertTrue(serial.contains("\"nid\":\"1\""));
+		assertTrue(serial.contains("\"value\":\"cSa-n8bn-6fP-Xn0btWbdtEbSw-unht0EtanwES-:$:-r\""));
 	}
 	
 	@Test
