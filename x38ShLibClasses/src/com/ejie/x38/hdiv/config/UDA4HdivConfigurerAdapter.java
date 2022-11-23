@@ -21,6 +21,7 @@ import org.hdiv.dataValidator.IDataValidator;
 import org.hdiv.filter.IValidationHelper;
 import org.hdiv.filter.ValidatorErrorHandler;
 import org.hdiv.filter.ValidatorHelperRequest;
+import org.hdiv.idGenerator.UidGenerator;
 import org.hdiv.listener.InitListener;
 import org.hdiv.services.CustomSecureConverter;
 import org.hdiv.services.CustomSecureSerializer;
@@ -45,6 +46,7 @@ import com.ejie.x38.hdiv.aspect.LinkResourcesAspect;
 import com.ejie.x38.hdiv.config.EjieValidationConfigurer.EjieValidationConfig.EjieEditableValidationConfigurer;
 import com.ejie.x38.hdiv.controller.utils.MethodLinkDiscoverer;
 import com.ejie.x38.hdiv.controller.utils.MethodMappingDiscoverer;
+import com.ejie.x38.hdiv.datacomposer.EjieDataComposerFactory;
 import com.ejie.x38.hdiv.error.EjieValidationErrorHander;
 import com.ejie.x38.hdiv.filter.EjieValidatorHelperRequest;
 import com.ejie.x38.hdiv.processor.UDASecureResourceProcesor;
@@ -86,18 +88,30 @@ public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfig
 	private BasicUrlProcessor basicUrlProcessor;
 
 	@Autowired
-	private DataComposerFactory dataComposerFactory;
-
-	@Autowired
 	private StateScopeManager stateScopeManager;
 	
 	@Autowired
 	private ApplicationContext appContext;
 	
+	@Autowired
+	private UidGenerator uidGenerator;
+	
 	@PostConstruct
 	public void init() {
 		transformClasses();
 		configureSerializer();
+	}
+	
+	@Bean
+	@Primary
+	public DataComposerFactory dataComposerFactory() {
+		DataComposerFactory dataComposerFactory = new EjieDataComposerFactory();
+		dataComposerFactory.setConfig(config);
+		dataComposerFactory.setSession(session);
+		dataComposerFactory.setStateUtil(stateUtil);
+		dataComposerFactory.setUidGenerator(uidGenerator);
+		dataComposerFactory.setStateScopeManager(stateScopeManager);
+		return dataComposerFactory;
 	}
 	
 	@Bean
@@ -110,7 +124,7 @@ public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfig
 		validatorHelperRequest.setSession(session);
 		validatorHelperRequest.setDataValidator(dataValidator);
 		validatorHelperRequest.setUrlProcessor(basicUrlProcessor);
-		validatorHelperRequest.setDataComposerFactory(dataComposerFactory);
+		validatorHelperRequest.setDataComposerFactory(dataComposerFactory());
 		validatorHelperRequest.setStateScopeManager(stateScopeManager);
 		((EjieValidatorHelperRequest)validatorHelperRequest).setIdProtectionDataManager(idProtectionDataManager());
 		validatorHelperRequest.init();

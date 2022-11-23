@@ -26,6 +26,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.AbstractMappingJacksonResponseBodyAdvice;
 
+import com.ejie.x38.hdiv.datacomposer.EjieDataComposerMemory;
 import com.ejie.x38.hdiv.util.Constants;
 import com.ejie.x38.hdiv.util.IdentifiableFieldDiscoverer;
 import com.ejie.x38.hdiv.util.ObfuscatorUtils;
@@ -54,7 +55,7 @@ public class StateComposeAdvice extends AbstractMappingJacksonResponseBodyAdvice
 		if (isModifyRequest(origReq)){
 			
 			IDataComposer dataComposer = HDIVUtil.getDataComposer(origReq);
-			if (dataComposer == null) {
+			if (dataComposer == null && !(dataComposer instanceof EjieDataComposerMemory)) {
 				// Url not processed by Hdiv Filter
 				return;
 			}
@@ -104,7 +105,7 @@ public class StateComposeAdvice extends AbstractMappingJacksonResponseBodyAdvice
 							value = field.get(suggestInstance);
 						}
 						if(value != null) {
-							dataComposer.compose(updateField, ObfuscatorUtils.obfuscate(String.valueOf(value), valueClass), false);
+							((EjieDataComposerMemory)dataComposer).resetAndCompose(updateField, ObfuscatorUtils.obfuscate(String.valueOf(value), valueClass), false);
 						}
 					}catch(Exception e) {
 						LOGGER.error("Cannot add value from " + option + " to State", e);
