@@ -70,6 +70,7 @@ public class StateComposeAdvice extends AbstractMappingJacksonResponseBodyAdvice
 	
 				Field field = null;
 				
+				boolean isFirst = true;
 				for (Object option : values) {
 					Object suggestInstance;
 					Class<?> valueClass = null;
@@ -105,7 +106,12 @@ public class StateComposeAdvice extends AbstractMappingJacksonResponseBodyAdvice
 							value = field.get(suggestInstance);
 						}
 						if(value != null) {
-							((EjieDataComposerMemory)dataComposer).resetAndCompose(updateField, ObfuscatorUtils.obfuscate(String.valueOf(value), valueClass), false);
+							if(isFirst) {
+								((EjieDataComposerMemory)dataComposer).resetAndCompose(updateField, ObfuscatorUtils.obfuscate(String.valueOf(value), valueClass), false);
+								isFirst = false;
+							}else {
+								dataComposer.compose(updateField, ObfuscatorUtils.obfuscate(String.valueOf(value), valueClass), false);
+							}
 						}
 					}catch(Exception e) {
 						LOGGER.error("Cannot add value from " + option + " to State", e);
