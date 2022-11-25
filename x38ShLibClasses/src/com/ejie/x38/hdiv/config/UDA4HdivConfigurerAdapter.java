@@ -215,7 +215,7 @@ public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfig
 		registry.addRule("locale").acceptedPattern("(\\W|^)(es|eu|en|fr)(\\W|$)");
 		
 		//Custom rule to be used in 'modify' requests
-		registry.addRule(Constants.MODIFY_RULE_NAME);
+		registry.addRule(Constants.MODIFY_RULE_NAME).rejectedPattern("-");
 		
 		addCustomRules(registry);
 	}

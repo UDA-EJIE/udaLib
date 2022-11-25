@@ -30,7 +30,7 @@ public class LinkResourcesAspect extends ResponseLinkProcesor {
 		try {
 			fillSecurityContext();
 		}catch(Exception e) {
-			LOGGER.error("Cannot load security context from session", e);
+			LOGGER.debug("Cannot load security context from session");
 		}
 		
 		Object result = joinPoint.proceed();

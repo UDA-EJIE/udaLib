@@ -15,7 +15,11 @@ public class EjieDataComposerMemory extends DataComposerMemory {
 		IState state = getStates().peek();
 
 		IParameter parameter = state.getParameter(parameterName);
-		parameter.getValues().clear();
+		try {
+			parameter.getValues().clear();
+		} catch (Exception e) {
+			// No action needed.
+		}
 		
 		return super.compose(parameterName, value, editable);
 	}	

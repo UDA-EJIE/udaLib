@@ -52,7 +52,7 @@ public class StateComposeAdvice extends AbstractMappingJacksonResponseBodyAdvice
 		ServletServerHttpRequest req = (ServletServerHttpRequest) request;
 		HttpServletRequest origReq = req.getServletRequest();
 		
-		if (isModifyRequest(origReq)){
+		if (bodyContainer != null && isModifyRequest(origReq)){
 			
 			IDataComposer dataComposer = HDIVUtil.getDataComposer(origReq);
 			if (dataComposer == null && !(dataComposer instanceof EjieDataComposerMemory)) {
@@ -60,7 +60,7 @@ public class StateComposeAdvice extends AbstractMappingJacksonResponseBodyAdvice
 				return;
 			}
 			
-			String updateField = (String) origReq.getAttribute(Constants.MODIFY_HDIV_STATE_FORM_FIELD_NAME);
+			String updateField = (String) origReq.getParameter(Constants.MODIFY_HDIV_STATE_FORM_FIELD_NAME);
 			if (!StringUtils.hasText(updateField)) {
 				return;
 			}
@@ -69,11 +69,11 @@ public class StateComposeAdvice extends AbstractMappingJacksonResponseBodyAdvice
 				List<?> values = (List<?>) bodyContainer.getValue();
 	
 				Field field = null;
+				Class<?> valueClass = null;
 				
 				boolean isFirst = true;
 				for (Object option : values) {
 					Object suggestInstance;
-					Class<?> valueClass = null;
 					try {
 						
 						if (option instanceof Resource<?>) {

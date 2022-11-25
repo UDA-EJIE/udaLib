@@ -112,20 +112,7 @@ public class EjieValidationErrorHander implements ValidatorErrorHandler {
 			handleValidatorError(ctx, ((ValidationErrorException) exception).getResult().getErrors());
 		}
 		else {
-
-			checkCustomErrorPage(ctx);
-
-			ErrorResponse error = new ErrorResponse(responseErrorMessage, Collections.<ValidatorError>emptyList());
-			try {
-				ctx.getResponse().setStatus(responseErrorCode);
-				ctx.getResponse().setContentType(MediaType.APPLICATION_JSON.toString());
-				ctx.getResponse().setCharacterEncoding("UTF-8");
-
-				ctx.getResponse().getWriter().write(objectMapper.writeValueAsString(error));
-			}
-			catch (IOException e) {
-				throw new IllegalStateException("Fail sending error code", e);
-			}
+			LOG.error("Error al validar la petición {}", ctx.getRequestURI());
 		}
 	}
 

@@ -32,6 +32,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJacksonValue;
 
 import com.ejie.x38.util.StackTraceManager;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -150,12 +151,19 @@ public class UdaMappingJackson2HttpMessageConverter extends
 		JsonEncoding encoding = getEncoding(outputMessage.getHeaders().getContentType());
 		JsonGenerator jsonGenerator = getUdaObjectMapper().getFactory().createGenerator(outputMessage.getBody(), encoding);
 		try {
+			Object responseValue;
+			if (object != null && object instanceof MappingJacksonValue) {
+				responseValue = ((MappingJacksonValue) object).getValue();
+			} else {
+				responseValue = object;
+			}
+			
 			if (!ThreadSafeCache.getMap().isEmpty() && ThreadSafeCache.getMap().keySet().contains("RUP")) {
 				logger.info("UDA's Serialization Mechanism is being triggered.");
-				getUdaObjectMapper().writeValue(jsonGenerator, object);
+				getUdaObjectMapper().writeValue(jsonGenerator, responseValue);
 			} else {
 				logger.info("Spring's Default Object Mapper searialization is being triggered.");
-				super.writeInternal(object, outputMessage);
+				super.writeInternal(responseValue, outputMessage);
 			}
 		} catch (Exception ex) {
 			logger.error(StackTraceManager.getStackTrace(ex));

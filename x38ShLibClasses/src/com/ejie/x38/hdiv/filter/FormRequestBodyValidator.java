@@ -62,19 +62,21 @@ public class FormRequestBodyValidator {
 		
 		JsonNode json = getRequestBody(context);
 
-		paramData = getParametersFromJson(paramData, json, "", false);
-
-		final Map<String, List<String>> formParameters = paramData.get("form");
-		final Map<String, List<String>> extraParameters = paramData.get("extra");
-	
-		if (!formParameters.isEmpty() || !extraParameters.isEmpty()) {
-			checkFormParameters(formParameters, context, errors);
-			checkExtraParameters(extraParameters, context, errors);
-		}
-		else {
-			// check for an entity body
-			ValidatorError error = new ValidatorError(HDIVErrorCodes.HDIV_PARAMETER_DOES_NOT_EXIST, context.getTarget());
-			return new ValidatorHelperResult(error);
+		if (json != null) {
+			paramData = getParametersFromJson(paramData, json, "", false);
+			
+			final Map<String, List<String>> formParameters = paramData.get("form");
+			final Map<String, List<String>> extraParameters = paramData.get("extra");
+		
+			if (!formParameters.isEmpty() || !extraParameters.isEmpty()) {
+				checkFormParameters(formParameters, context, errors);
+				checkExtraParameters(extraParameters, context, errors);
+			}
+			else {
+				// check for an entity body
+				ValidatorError error = new ValidatorError(HDIVErrorCodes.HDIV_PARAMETER_DOES_NOT_EXIST, context.getTarget());
+				return new ValidatorHelperResult(error);
+			}
 		}
 		
 		return errors.isEmpty() ? ValidatorHelperResult.VALID : new ValidatorHelperResult(errors);
