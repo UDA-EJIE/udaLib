@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.DefaultParameterNameDiscoverer;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerExecutionChain;
@@ -62,15 +61,7 @@ public class EjieValidatorFilter extends ValidatorFilter {
 	}
 	
 	private HttpServletRequest wrapRequest(HttpServletRequest request) {
-		if(isFormRequest(request.getContentType())) {
-			return new DeobfuscatorRequest(request);
-		}
-		return request;
-	}
-	
-	private boolean isFormRequest(String contentType) {
-		MediaType requestContentType = contentType == null ? null : MediaType.valueOf(contentType);
-		return MediaType.APPLICATION_FORM_URLENCODED.isCompatibleWith(requestContentType) || MediaType.MULTIPART_FORM_DATA.isCompatibleWith(requestContentType) ;
+		return new DeobfuscatorRequest(request);
 	}
 	
 	@SuppressWarnings("unchecked")
