@@ -52,6 +52,8 @@ import com.ejie.x38.hdiv.filter.EjieValidatorHelperRequest;
 import com.ejie.x38.hdiv.processor.UDASecureResourceProcesor;
 import com.ejie.x38.hdiv.protection.IdProtectionDataManager;
 import com.ejie.x38.hdiv.protection.UserSessionIdProtectionDataManager;
+import com.ejie.x38.hdiv.transformer.ClassTransformer;
+import com.ejie.x38.hdiv.transformer.TransformerFactory;
 import com.ejie.x38.hdiv.util.Constants;
 import com.ejie.x38.serialization.EjieSecureModule;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -98,7 +100,6 @@ public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfig
 	
 	@PostConstruct
 	public void init() {
-		transformClasses();
 		configureSerializer();
 	}
 	
@@ -165,6 +166,11 @@ public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfig
 		return new InitListener();
 	}
 
+	@Bean
+    public TransformerFactory transformerFactory(final ApplicationContext context) {
+        return new TransformerFactory(context.getBeansOfType(ClassTransformer.class).values()).doTransform();
+    }
+	 
 	protected abstract String getHomePage();
 
 	protected abstract String getLoginPage();
@@ -308,7 +314,7 @@ public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfig
 	@Bean
 	@Primary
 	public ObjectMapper objectMapper() {
-	    return new ObjectMapper().registerModule(new EjieSecureModule(idProtectionDataManager()));
+	    return new ObjectMapper().registerModule(new EjieSecureModule(idProtectionDataManager(), config));
 	}
 	
 	@Bean 
@@ -371,7 +377,7 @@ public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfig
 	
 	protected ObjectMapper doConfigureObjectMapper(final ObjectMapper objectMapper) {
 
-		objectMapper.registerModule(new EjieSecureModule(idProtectionDataManager()));
+		objectMapper.registerModule(new EjieSecureModule(idProtectionDataManager(), config));
 		return objectMapper;
 	}
 
