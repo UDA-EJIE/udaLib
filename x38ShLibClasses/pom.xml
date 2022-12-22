@@ -19,52 +19,9 @@
 		<org.apache.tiles.version>3.0.8</org.apache.tiles.version>
 		<org.jackson.version>2.7.9.5</org.jackson.version>
 		<eclipselink.version>2.3.0</eclipselink.version>
-		<udalib.path>/Users/xaldama/app/EJIE/aplic/udaLib</udalib.path>
 	</properties>
 
 	<dependencies>
-	
-		<dependency>
-		    <groupId>com.ejie.n38c</groupId>
-		    <artifactId>n38c</artifactId>
-		    <version>1.0</version>
-		</dependency>
-		<dependency>
-		    <groupId>com.ejie.n38a</groupId>
-		    <artifactId>n38a</artifactId>
-		    <version>1.0</version>
-		</dependency>
-		<dependency>
-		    <groupId>com.ejie.n38i</groupId>
-		    <artifactId>n38i</artifactId>
-		    <version>1.0</version>
-		</dependency>
-		<dependency>
-		    <groupId>com.ejie.n38n</groupId>
-		    <artifactId>n38n</artifactId>
-		    <version>1.0</version>
-		</dependency>
-		<dependency>
-		    <groupId>javax.interceptor</groupId>
-		    <artifactId>javax.interceptor-api</artifactId>
-		    <version>1.2.2</version>
-		</dependency>
-		<dependency>
-		    <groupId>javax.persistence</groupId>
-		    <artifactId>javax.persistence-api</artifactId>
-		    <version>2.2</version>
-		</dependency>
-		<dependency>
-		    <groupId>com.oravle.wls</groupId>
-		    <artifactId>wls-api</artifactId>
-		    <version>10.3.6</version>
-		</dependency>
-		<dependency>
-		    <groupId>com.oracle</groupId>
-		    <artifactId>weblogic</artifactId>
-		    <version>10.3.6</version>
-		</dependency>
-
 		<!-- Hdiv -->
 		<dependency>
 			<groupId>org.hdiv</groupId>
@@ -95,17 +52,6 @@
 			<groupId>commons-dbcp</groupId>
 			<artifactId>commons-dbcp</artifactId>
 			<version>1.2.2</version>
-		</dependency>
-		<dependency>
-		    <groupId>junit</groupId>
-		    <artifactId>junit</artifactId>
-		    <version>4.12</version>
-		    <scope>test</scope>
-		</dependency>
-		<dependency>
-		    <groupId>com.sun.mail</groupId>
-		    <artifactId>javax.mail</artifactId>
-		    <version>1.6.2</version>
 		</dependency>
 		
 		<!-- Spring -->
@@ -176,12 +122,11 @@
 			<version>${org.springframework.version}</version>
 			<scope>test</scope>
 		</dependency>
-	
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<version>3.0.1</version>
-			<scope>provided</scope>
+			<scope>test</scope>
 		</dependency>
 
 		<!-- TILES -->
@@ -659,7 +604,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
 		</plugins>
 	</build>
 </project>
