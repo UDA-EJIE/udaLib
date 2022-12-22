@@ -12,7 +12,10 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 public class UserSessionIdProtectionDataManager implements IdProtectionDataManager{
 	
-	private static final String SECURE_ID_MAP_ATTR_NAME = "SECURE_ID_MAP"; 
+	//Id maps
+	private static final String SECURE_ID_MAP_ATTR_NAME = "SECURE_ID_MAP";
+	
+	//URL and id by class map
 	private static final String SERVER_SIDE_MAP_ATTR_NAME = "SERVER_SIDE_MAP"; 
 	
 	@SuppressWarnings("unchecked")

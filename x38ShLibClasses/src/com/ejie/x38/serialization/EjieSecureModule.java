@@ -5,12 +5,18 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.hdiv.config.HDIVConfig;
 import org.hdiv.services.AnyEntity;
 import org.hdiv.services.SecureIdentifiable;
 import org.hdiv.services.TrustAssertion;
+import org.hdiv.util.Method;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.Resource;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.ejie.x38.hdiv.protection.IdProtectionDataManager;
 import com.ejie.x38.hdiv.util.ObfuscatorUtils;
@@ -50,7 +56,9 @@ public class EjieSecureModule extends SimpleModule {
 	
 	private TrustAssertionAnnotationIntrospector trustAssertionAnnotationIntrospector;
 	
-	public EjieSecureModule(IdProtectionDataManager idProtectionManager) {
+	private static HDIVConfig hdivConfig;
+	
+	public EjieSecureModule(IdProtectionDataManager idProtectionManager, HDIVConfig hdivConfig) {
 		super("ejie-secure-module", new Version(1, 0, 0, null, "com.ejie.x38.serialization", "x38"));
 		trustAssertionAnnotationIntrospector = new TrustAssertionAnnotationIntrospector();
 		
@@ -62,14 +70,26 @@ public class EjieSecureModule extends SimpleModule {
 			}
 		}
 		
+		if(hdivConfig != null) {
+			if(EjieSecureModule.hdivConfig == null) {
+				EjieSecureModule.hdivConfig = hdivConfig;	
+			}else {
+				logger.debug("Hdiv config is already defined, using the existing one.");
+			}
+		}
+				
 	}
 	
 	public EjieSecureModule() {
-		this(null);
+		this(null, null);
 	}
 	
 	public static void setIdProtectionDataManager(IdProtectionDataManager idProtectionManager) {
 		idProtectionDataManager = idProtectionManager;
+	}
+	
+	public static void setHdivConfig(HDIVConfig hdivConfig) {
+		EjieSecureModule.hdivConfig = hdivConfig;
 	}
 
 	@Override
@@ -225,25 +245,40 @@ public class EjieSecureModule extends SimpleModule {
 		private Object getDeobfuscatedValue(JsonParser parser, Class<?> expectedClass) throws IOException {
 			
 			String value = parser.getText();
-			Class<?> parseClass = ObfuscatorUtils.getClass(value);
-			
-			if(expectedClass != AnyEntity.class && expectedClass != parseClass) {
-				throw new RuntimeException("Incorrect identifier");
+			String nid;
+			try {
+				Class<?> parseClass = ObfuscatorUtils.getClass(value);
+				
+				if(expectedClass != AnyEntity.class && expectedClass != parseClass) {
+					throw new RuntimeException("Incorrect identifier");
+				}
+				
+				nid = ObfuscatorUtils.deobfuscate(value);
+				if(!idProtectionDataManager.isAllowedSecureId(parseClass, nid)) {
+					throw new RuntimeException("Not allowed identifier");
+				}
+			}catch(RuntimeException e){
+				if(isStartPage()) {
+					nid = value;
+				}else {
+					throw e;
+				}
 			}
-			
-			String nid = ObfuscatorUtils.deobfuscate(value);
-			if(!idProtectionDataManager.isAllowedSecureId(parseClass, nid)) {
-				throw new RuntimeException("Not allowed identifier");
-			}
-			
 			return nid;
 		}
 
+		private boolean isStartPage() {
+			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+			return hdivConfig.isStartPage(request.getRequestURI(), Method.secureValueOf(request.getMethod()));
+		}
+		
 		@Override
 		public JsonDeserializer<?> createContextual(DeserializationContext context, BeanProperty beanProperty) throws JsonMappingException {
 			return new SecureIdDeserializer(beanProperty);
 		}
 	}
+	
+	
 	
 	public class TrustAssertionAnnotationIntrospector extends JacksonAnnotationIntrospector {
 		

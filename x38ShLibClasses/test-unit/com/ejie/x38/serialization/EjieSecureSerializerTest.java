@@ -47,7 +47,7 @@ public class EjieSecureSerializerTest {
 		
 		EjieSecureModule.setIdProtectionDataManager(idProtectionDataManager);
 		mapper = new ObjectMapper();
-		mapper.registerModule(new EjieSecureModule(idProtectionDataManager));
+		mapper.registerModule(new EjieSecureModule(idProtectionDataManager, null));
 	}
 	
 	
@@ -219,7 +219,7 @@ public class EjieSecureSerializerTest {
 		messageConverter.initialize();
 		
 		for (ObjectMapper om : messageConverter.getObjectMappers()) {
-			om.registerModule(new EjieSecureModule(idProtectionDataManager));
+			om.registerModule(new EjieSecureModule(idProtectionDataManager, null));
 		}
 		
 		ThreadSafeCache.addValue("RUP", "null");
