@@ -271,6 +271,15 @@ public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfig
 		ejieValidationConfigurer.addValidation(getLoginPage()).forParameters("userNames").disableDefaults();
 		
 		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*").forParameters("locale").rules("locale")).setAsClientParameter(true);
+		
+		// Formularios de edición
+		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*").forParameters("actionType").rules("method")).setAsClientParameter(true);
+		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*").forParameters("tableID").rules("text")).setAsClientParameter(true);
+		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*").forParameters("enableMultipart").rules("boolean")).setAsClientParameter(true);
+		
+		// Autocomplete
+		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*").forParameters("q").rules("fulltextWhitespaces")).setAsClientParameter(true);
+		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*").forParameters("c").rules("boolean")).setAsClientParameter(true);
 
 		customConfigureEditableValidation(ejieValidationConfigurer);
 
