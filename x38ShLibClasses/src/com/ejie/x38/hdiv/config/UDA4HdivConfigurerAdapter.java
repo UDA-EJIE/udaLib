@@ -199,8 +199,8 @@ public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfig
 		registry.addUrlExclusions("/scripts/.*", "/styles/.*", "/fonts/.*", "/error", "/*.gif");
 		registry.addUrlExclusions("", getHomePage(), getLoginPage(), "/hdiv-devtool").method("GET");
 		registry.addUrlExclusions("/audit").method("POST");
-		registry.addParamExclusions("hdiv-http-method", "actionType", "_");
 		registry.addUrlExclusions("/.*/search");
+		registry.addParamExclusions("_", "MODIFY_FORM_FIELD_NAME", "_MODIFY_HDIV_STATE_");
 		addCustomExclusions(registry);
 	}
 
