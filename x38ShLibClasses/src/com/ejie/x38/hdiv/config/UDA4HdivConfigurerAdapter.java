@@ -219,6 +219,7 @@ public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfig
 		registry.addRule("boolean").acceptedPattern("(\\W|^)(true|false)(\\W|$)");
 		registry.addRule("order").acceptedPattern("(\\W|^)(asc|desc| ,asc| ,desc)*(\\W|$)");
 		registry.addRule("locale").acceptedPattern("(\\W|^)(es|eu|en|fr)(\\W|$)");
+		registry.addRule("method").acceptedPattern("(\\W|^)(GET|HEAD|POST|PUT|DELETE|CONNECT|OPTIONS|TRACE|PATCH)(\\W|$)");
 		
 		//Custom rule to be used in 'modify' requests
 		registry.addRule(Constants.MODIFY_RULE_NAME).rejectedPattern("-");
