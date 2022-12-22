@@ -280,34 +280,6 @@ public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfig
 	
 	}
 	
-	public void transformClasses() {
-		try {
-			ClassPool classPool = ClassPool.getDefault();
-			Class<?> tag = Class.forName("org.springframework.web.servlet.tags.form.HiddenInputTag");
-			classPool.appendClassPath(new LoaderClassPath(tag.getClassLoader()));
-			CtClass ctClass = classPool.get("org.springframework.web.servlet.tags.form.HiddenInputTag");
-			String strMethod = " public void setDynamicAttribute( String uri, String localName, Object value) throws javax.servlet.jsp.JspException {" //
-								+ "		org.springframework.web.servlet.support.RequestContext ctx = (org.springframework.web.servlet.support.RequestContext) this.pageContext.getAttribute(REQUEST_CONTEXT_PAGE_ATTRIBUTE);"//
-								+ "		if(\"value\".equals(localName)) {"//
-								+ "			if (ctx != null) {"//
-								+ "				org.springframework.web.servlet.support.RequestDataValueProcessor processor = ctx.getRequestDataValueProcessor();"//
-								+ "				javax.servlet.ServletRequest request = this.pageContext.getRequest();"//
-								+ "				if (processor != null && (request instanceof javax.servlet.http.HttpServletRequest)) {"//
-								+ "					processor.processFormFieldValue((javax.servlet.http.HttpServletRequest) request, getPath(), String.valueOf(value), \"hidden\");"//
-								+ "				}"//
-								+ "			}"//
-								+ "		}"//
-								+ "		super.setDynamicAttribute(uri, localName, value);"//
-								+ "	}";
-			
-			CtMethod newmethod = CtNewMethod.make(strMethod,ctClass);
-			ctClass.addMethod(newmethod);
-			ctClass.toClass();
-		}catch(Exception e ) {
-			LOGGER.error("Cannot transform classes. ", e);
-		}
-	}
-	
 	@Override
 	public void addLongLivingPages(LongLivingPagesRegistry arg0) {
 	}

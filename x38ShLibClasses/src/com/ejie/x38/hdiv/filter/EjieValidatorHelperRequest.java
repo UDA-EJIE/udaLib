@@ -142,7 +142,7 @@ public class EjieValidatorHelperRequest extends ValidatorHelperRequest {
 		Enumeration<String> parameters = requestContext.getParameterNames();
 		while (parameters.hasMoreElements()) {
 			String paramName = parameters.nextElement();
-			if(!isExcludedParam(context.getTarget(), paramName)) {
+			if(!isExcludedParam(context.getTarget(), paramName) && ValidatorHelperResult.VALID != validateExtraParameter(requestContext, null, null, null, null, null, context.getTarget(), paramName) ) {
 				return false;
 			}
 		}

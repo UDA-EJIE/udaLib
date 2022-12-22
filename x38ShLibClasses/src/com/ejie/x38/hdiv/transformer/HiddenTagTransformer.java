@@ -2,6 +2,7 @@ package com.ejie.x38.hdiv.transformer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -9,6 +10,7 @@ import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.LoaderClassPath;
 
+@Component
 public class HiddenTagTransformer implements ClassTransformer {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(HiddenTagTransformer.class);
@@ -20,6 +22,9 @@ public class HiddenTagTransformer implements ClassTransformer {
 			Class<?> tag = Class.forName("org.springframework.web.servlet.tags.form.HiddenInputTag");
 			classPool.appendClassPath(new LoaderClassPath(tag.getClassLoader()));
 			CtClass ctClass = classPool.get("org.springframework.web.servlet.tags.form.HiddenInputTag");
+			if (ctClass.isFrozen()) {
+				ctClass.defrost();
+			}
 			String strMethod = " public void setDynamicAttribute( String uri, String localName, Object value) throws javax.servlet.jsp.JspException {" //
 								+ "		org.springframework.web.servlet.support.RequestContext ctx = (org.springframework.web.servlet.support.RequestContext) this.pageContext.getAttribute(REQUEST_CONTEXT_PAGE_ATTRIBUTE);"//
 								+ "		if(\"value\".equals(localName)) {"//

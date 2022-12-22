@@ -26,6 +26,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.AbstractMappingJacksonResponseBodyAdvice;
 
+import com.ejie.x38.generic.model.SelectGeneric;
 import com.ejie.x38.hdiv.datacomposer.EjieDataComposerMemory;
 import com.ejie.x38.hdiv.util.Constants;
 import com.ejie.x38.hdiv.util.IdentifiableFieldDiscoverer;
@@ -83,13 +84,22 @@ public class StateComposeAdvice extends AbstractMappingJacksonResponseBodyAdvice
 						}
 					
 						Object value = null;
-						if (!(suggestInstance instanceof SecureIdContainer)) {
+						if (!(suggestInstance instanceof SecureIdContainer || suggestInstance instanceof SelectGeneric)) {
 							return;
 						}
-						if(suggestInstance instanceof SecureIdentifiable<?>) {
+						if(suggestInstance instanceof SelectGeneric) {
+							if(isFirst) {
+								((EjieDataComposerMemory)dataComposer).resetAndCompose(updateField, ((SelectGeneric)suggestInstance).getId(), false);
+								isFirst = false;
+							}else {
+								dataComposer.compose(updateField, ((SelectGeneric)suggestInstance).getId(), false);
+							}
+						}
+						else if(suggestInstance instanceof SecureIdentifiable<?>) {
 							value = ((SecureIdentifiable<?>)suggestInstance).getId();
 							valueClass = suggestInstance.getClass();
-						}else if(field == null) {
+						}
+						else if(field == null) {
 							Map<Class<?>,Field> secureFieldMap = IdentifiableFieldDiscoverer.getClassIdentifiableField((Class<SecureIdContainer>) suggestInstance.getClass());
 							if(secureFieldMap != null) {
 								if(secureFieldMap.size() == 1) {
