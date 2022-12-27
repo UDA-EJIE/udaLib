@@ -59,12 +59,6 @@ import com.ejie.x38.serialization.EjieSecureModule;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.CtMethod;
-import javassist.CtNewMethod;
-import javassist.LoaderClassPath;
-
 @ComponentScan(basePackages = "com.ejie.x38.hdiv")
 @EnableHdivWebSecurity
 public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfigurer {
