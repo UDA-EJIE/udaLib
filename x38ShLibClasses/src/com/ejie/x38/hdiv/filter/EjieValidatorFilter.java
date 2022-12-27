@@ -78,7 +78,7 @@ public class EjieValidatorFilter extends ValidatorFilter {
 				Annotation [][] annotations = method.getParameterAnnotations();
 				
 				for(Entry<String, String> pathValue : uriTemplateVars.entrySet()) {
-					String[] parameterNames = parameterNameDiscoverer.getParameterNames(method);;
+					String[] parameterNames = parameterNameDiscoverer.getParameterNames(method);
 					if(parameterNames != null) {
 						for (int i = 0; i<parameterNames.length; i++) {
 							String param = parameterNames[i];	
