@@ -1,2 +1,2 @@
-Manifest-Version: 4.3.2-RELEASE
+Manifest-Version: 4.4.0-RELEASE
 
