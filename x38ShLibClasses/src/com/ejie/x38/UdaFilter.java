@@ -66,6 +66,7 @@ public class UdaFilter extends DelegatingFilterProxy {
 					Pattern.CASE_INSENSITIVE).matcher(httpServletRequest.getHeader("referer")).find();
 		} else {
 			refersFromSecuritySystem = false;
+			logger.debug("Referer is null. If a value was expected, check if the protocol is still the same.");
 		}
 
 		try {
