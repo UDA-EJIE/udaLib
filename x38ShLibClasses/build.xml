@@ -6,7 +6,7 @@
 	<property name="srcDir" value="./src"/>
 	<property name="destDir" value="./target"/>
 	<property name="buildDir" value="./bin"/>
-	<property name="version" value="2.4.12-RELEASE"/>
+	<property name="version" value="2.5.0-RELEASE"/>
 	
 	<target name="mavenRunDependencies" description="Resuelve las dependencias del proyecto desde Maven">
 		<echo>${ant.home}</echo>
