@@ -70,14 +70,12 @@
 	<classpathentry kind="lib" path="lib/hibernate-validator-5.4.3.Final.jar"/>
 	<classpathentry kind="lib" path="lib/httpclient-4.3.3.jar"/>
 	<classpathentry kind="lib" path="lib/httpcore-4.3.3.jar"/>
-	<classpathentry kind="lib" path="lib/itext-2.1.7.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-annotations-2.9.10.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-core-2.9.10.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-core-asl-1.9.13.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-databind-2.9.10.8.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-datatype-hibernate4-2.6.7.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-mapper-asl-1.9.13.jar"/>
-	<classpathentry kind="lib" path="lib/jasperreports-4.7.1.jar"/>
 	<classpathentry kind="lib" path="lib/javassist-3.6.0.GA.jar"/>
 	<classpathentry kind="lib" path="lib/javax.servlet-api-3.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/javax.ws.rs-api-2.0.1.jar"/>
@@ -96,9 +94,6 @@
 	<classpathentry kind="lib" path="lib/mongo-java-driver-2.6.3.jar"/>
 	<classpathentry kind="lib" path="lib/odfdom-java-0.8.7.jar"/>
 	<classpathentry kind="lib" path="lib/paranamer-2.3.jar"/>
-	<classpathentry kind="lib" path="lib/poi-3.7.jar"/>
-	<classpathentry kind="lib" path="lib/poi-ooxml-3.7.jar"/>
-	<classpathentry kind="lib" path="lib/poi-ooxml-schemas-3.7.jar"/>
 	<classpathentry kind="lib" path="lib/resteasy-jaxrs-2.1.0.GA.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.7.30.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-ext-1.7.30.jar"/>
