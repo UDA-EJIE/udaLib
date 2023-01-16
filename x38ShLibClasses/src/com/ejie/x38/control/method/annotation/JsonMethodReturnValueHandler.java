@@ -130,9 +130,9 @@ public class JsonMethodReturnValueHandler implements HandlerMethodReturnValueHan
     
     private JsonEncoding getJsonEncoding(MediaType contentType)
     {
-        if(contentType != null && contentType.getCharSet() != null)
+        if(contentType != null && contentType.getCharset() != null)
         {
-            Charset charset = contentType.getCharSet();
+            Charset charset = contentType.getCharset();
             JsonEncoding ajsonencoding[];
             int j = (ajsonencoding = JsonEncoding.values()).length;
             for(int i = 0; i < j; i++)
