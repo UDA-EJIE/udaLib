@@ -159,7 +159,7 @@ public final class ObjectConversionManager {
      * @return The converted Double value.
      */
     public static Double bigDecimalToDouble(BigDecimal value) {
-        return new Double(value.doubleValue());
+        return Double.valueOf(value.doubleValue());
     }
 
     /**

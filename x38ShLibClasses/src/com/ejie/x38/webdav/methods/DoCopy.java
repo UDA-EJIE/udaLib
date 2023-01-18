@@ -330,16 +330,16 @@ public class DoCopy extends AbstractMethod {
                                 resp);
                     }
                 } catch (AccessDeniedException e) {
-                    errorList.put(destinationPath + children[i], new Integer(
+                    errorList.put(destinationPath + children[i], Integer.valueOf(
                             WebdavStatus.SC_FORBIDDEN));
                 } catch (ObjectNotFoundException e) {
-                    errorList.put(destinationPath + children[i], new Integer(
+                    errorList.put(destinationPath + children[i], Integer.valueOf(
                             WebdavStatus.SC_NOT_FOUND));
                 } catch (ObjectAlreadyExistsException e) {
-                    errorList.put(destinationPath + children[i], new Integer(
+                    errorList.put(destinationPath + children[i], Integer.valueOf(
                             WebdavStatus.SC_CONFLICT));
                 } catch (WebdavException e) {
-                    errorList.put(destinationPath + children[i], new Integer(
+                    errorList.put(destinationPath + children[i], Integer.valueOf(
                             WebdavStatus.SC_INTERNAL_SERVER_ERROR));
                 }
             }

@@ -70,7 +70,7 @@ public class WebdavSpringServlet implements HttpRequestHandler {
         }
         
         if (this.noContentLengthHeaders==null){
-        	this.noContentLengthHeaders = new Integer(0);
+        	this.noContentLengthHeaders = Integer.valueOf(0);
         }
     	
         if (this.lazyFolderCreationOnPut==null){

@@ -16,7 +16,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.hdiv.services.CustomSecureConverter;
 import org.hdiv.services.SecureIdContainer;
 import org.hdiv.services.SecureIdentifiable;
 import org.hdiv.services.TrustAssertion;
@@ -238,7 +237,7 @@ public class EjieSecureSerializerTest {
 			@Override
 			public HttpHeaders getHeaders() {
 				HttpHeaders headers = new HttpHeaders();
-				headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+				headers.setContentType(MediaType.APPLICATION_JSON);
 				return headers;
 			}
 			

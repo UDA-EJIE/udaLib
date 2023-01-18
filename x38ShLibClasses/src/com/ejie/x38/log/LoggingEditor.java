@@ -311,7 +311,7 @@ public class LoggingEditor {
 		resultado.setRows(resulList);
 		resultado.setRecords(listalogs.size());
 		resultado.setPage(tableRequestDto.getPage().toString());
-		resultado.setTotal(new Long(listalogs.size()), new Long(tableRequestDto.getRows()));
+		resultado.setTotal(Long.valueOf(listalogs.size()), Long.valueOf(tableRequestDto.getRows()));
 		
 		// Guardar número de filas por página, número de la página actual y filtrado para poder obtenerlo en el siguiente filtrado
 		lastRowsNumber = tableRequestDto.getRows().intValue();
