@@ -151,39 +151,6 @@ public class LoggingEditor {
 		return loggers;
 	}
 	
-	/**
-	 * Devuelve todos los loggers configurados.
-	 * 
-	 * @param logContext Contexto del log.
-	 * @param showAll Devuelve todos los loggers, no solo los configurados.
-	 * 
-	 * @return List<LogModel>
-	 */
-	@Deprecated
-	public static List<LogModel> getLoggers(final LoggerContext logContext, final boolean showAll) {
-		final LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
-		final List<LogModel> loggers = new ArrayList<LogModel>();
-		LogModel aux;
-		
-		for (ch.qos.logback.classic.Logger log : lc.getLoggerList()) {
-			if(showAll == false) {
-				if(log.getLevel() != null || hasAppenders(log)) {
-					aux = new LogModel();
-					aux.setLevelLog(log.getEffectiveLevel().toString());
-					aux.setNameLog(log.getName());
-					loggers.add(aux);
-				}
-			} else {
-				aux = new LogModel();
-				aux.setLevelLog(log.getEffectiveLevel().toString());
-				aux.setNameLog(log.getName());
-				loggers.add(aux);
-			}
-		}
-
-		return loggers;
-	}
-	
 	/** 
 	 * Comprueba si el logger seleccionado tiene appender.
 	 * 
@@ -350,57 +317,6 @@ public class LoggingEditor {
 		lastRowsNumber = tableRequestDto.getRows().intValue();
 		lastPageNumber = tableRequestDto.getPage().intValue();
 		lastFilterLogModel = filterLogModel;
-		
-		return resultado;
-	}
-	
-	/** 
-	 * Devuelve los logs filtrados.
-	 *
-	 * @param filterLogModel Filtro a aplicar enviado por el cliente.
-	 * 
-	 * @return TableResourceResponseDto<LogModel>
-	 */
-	@Deprecated
-	public static TableResourceResponseDto<LogModel> getLoggersFiltered(LogModel filterLogModel) {
-		TableResourceResponseDto<LogModel> resultado = new TableResourceResponseDto<LogModel>();
-		List<LogModel> listalogs = getLoggers(false);
-		List<LogModel> resulList= new ArrayList<LogModel>();
-		LogModel model;
-		
-		for (int i = 0; i < listalogs.size(); i++) {	
-			if (filterLogModel.getLevelLog() == null && filterLogModel.getNameLog() == null) {
-				model = new LogModel();						
-				model.setNameLog(listalogs.get(i).getNameLog());
-				model.setLevelLog(listalogs.get(i).getLevelLog());
-				resulList.add(model);
-			} else if (filterLogModel.getLevelLog() != null && filterLogModel.getNameLog() == null) {
-				if(filterLogModel.getLevelLog().equalsIgnoreCase(listalogs.get(i).getLevelLog())) {
-					model = new LogModel();						
-					model.setNameLog(listalogs.get(i).getNameLog());
-					model.setLevelLog(listalogs.get(i).getLevelLog());
-					resulList.add(model);
-				}
-			} else if (filterLogModel.getLevelLog() == null && filterLogModel.getNameLog() != null) {
-				if (listalogs.get(i).getNameLog().toLowerCase().contains(filterLogModel.getNameLog().toLowerCase()) || listalogs.get(i).getNameLog().toLowerCase().contains(filterLogModel.getNameLog().toLowerCase())) {
-					model = new LogModel();						
-					model.setNameLog(listalogs.get(i).getNameLog());
-					model.setLevelLog(listalogs.get(i).getLevelLog());
-					resulList.add(model);
-				}	
-			} else if (filterLogModel.getLevelLog() != null && filterLogModel.getNameLog() != null) {
-				if (listalogs.get(i).getNameLog().toLowerCase().contains(filterLogModel.getNameLog().toLowerCase()) && filterLogModel.getLevelLog().equalsIgnoreCase(listalogs.get(i).getLevelLog())) {
-					model = new LogModel();						
-					model.setNameLog(listalogs.get(i).getNameLog());
-					model.setLevelLog(listalogs.get(i).getLevelLog());
-					resulList.add(model);
-				}
-			}
-		}			
-		
-		resultado.setRows(resulList);
-		resultado.setRecords(resulList.size());
-		resultado.setTotal(new Long(resulList.size()), new Long(resulList.size()));
 		
 		return resultado;
 	}
