@@ -2,6 +2,7 @@ package com.ejie.x38.generic.model;
 
 /** Entidad que permite construir la estructura necesaria para los componentes autocomplete y combo.
  * @since 5.0.0
+ * @deprecated
 */
 public class AutocompleteComboGenericPOJO implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
