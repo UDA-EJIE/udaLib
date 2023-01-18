@@ -17,7 +17,6 @@ package com.ejie.x38.util;
 
 import java.io.IOException;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
