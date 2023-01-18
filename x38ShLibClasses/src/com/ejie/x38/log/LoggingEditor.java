@@ -17,8 +17,8 @@ import org.springframework.stereotype.Service;
 import com.ejie.x38.dto.TableRequestDto;
 import com.ejie.x38.dto.TableResourceResponseDto;
 import com.ejie.x38.dto.TableRowDto;
-import com.ejie.x38.generic.model.AutocompleteComboGenericPOJO;
-import com.ejie.x38.generic.model.AutocompleteComboPKsPOJO;
+import com.ejie.x38.generic.model.SelectGeneric;
+import com.ejie.x38.generic.model.SelectGenericPKs;
 import com.ejie.x38.log.model.LogModel;
 import com.ejie.x38.util.ResourceUtils;
 
@@ -326,11 +326,11 @@ public class LoggingEditor {
 	 *
 	 * @param q String enviado por el cliente para la bússqueda de resultados.
 	 * 
-	 * @return List<Resource<AutocompleteComboPKsPOJO>>
+	 * @return List<Resource<SelectGenericPKs>>
 	 */
-	public static List<Resource<AutocompleteComboPKsPOJO>> getNames(String q) {		
+	public static List<Resource<SelectGenericPKs>> getNames(String q) {		
 		List<LogModel> listalogs = getLoggers(true);
-		List<AutocompleteComboPKsPOJO> columnValues = new ArrayList<AutocompleteComboPKsPOJO>();
+		List<SelectGenericPKs> columnValues = new ArrayList<SelectGenericPKs>();
 		
 		if(q != null) {
 			q = Normalizer.normalize(q, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
@@ -344,7 +344,7 @@ public class LoggingEditor {
 				name = Normalizer.normalize(name, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
 				
 				if (q.equals("") || name.indexOf(q) >= 0) {
-					columnValues.add(new AutocompleteComboPKsPOJO(name, name));
+					columnValues.add(new SelectGenericPKs(name, name));
 				}
 			}
 		}
@@ -355,15 +355,15 @@ public class LoggingEditor {
 	/** 
 	 * Devuelve los niveles disponibles.
 	 *
-	 * @return List<Resource<AutocompleteComboGenericPOJO>>
+	 * @return List<Resource<SelectGeneric>>
 	 */
-	public static List<Resource<AutocompleteComboGenericPOJO>> getLevels() {		
-		List<AutocompleteComboGenericPOJO> columnValues = new ArrayList<AutocompleteComboGenericPOJO>();
-		columnValues.add(new AutocompleteComboGenericPOJO("TRACE", "TRACE"));
-		columnValues.add(new AutocompleteComboGenericPOJO("DEBUG", "DEBUG"));
-		columnValues.add(new AutocompleteComboGenericPOJO("INFO", "INFO"));
-		columnValues.add(new AutocompleteComboGenericPOJO("WARN", "WARN"));
-		columnValues.add(new AutocompleteComboGenericPOJO("ERROR", "ERROR"));
+	public static List<Resource<SelectGeneric>> getLevels() {		
+		List<SelectGeneric> columnValues = new ArrayList<SelectGeneric>();
+		columnValues.add(new SelectGeneric("TRACE", "TRACE"));
+		columnValues.add(new SelectGeneric("DEBUG", "DEBUG"));
+		columnValues.add(new SelectGeneric("INFO", "INFO"));
+		columnValues.add(new SelectGeneric("WARN", "WARN"));
+		columnValues.add(new SelectGeneric("ERROR", "ERROR"));
 		
 		return ResourceUtils.fromListToResource(columnValues);
 	}
