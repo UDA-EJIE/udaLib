@@ -61,7 +61,6 @@ public class SelectTagTransformer implements ClassTransformer {
 								 + "	}"
 								 + "} ");
 			ctClass.toClass();
-			ctClass.writeFile("/Users/xaldama/Documents/EJIE/temp");
 		}
 	}
 	
@@ -83,7 +82,6 @@ public class SelectTagTransformer implements ClassTransformer {
 			}
 		}
 		ctClass.toClass();
-		ctClass.writeFile("/Users/xaldama/Documents/EJIE/temp");
 	}
 	
 	

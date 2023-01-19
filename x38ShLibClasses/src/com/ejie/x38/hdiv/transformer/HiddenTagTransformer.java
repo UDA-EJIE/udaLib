@@ -40,7 +40,6 @@ public class HiddenTagTransformer implements ClassTransformer {
 				CtMethod newmethod = CtNewMethod.make(strMethod,ctClass);
 				ctClass.addMethod(newmethod);
 				ctClass.toClass();
-				ctClass.writeFile("/Users/xaldama/Documents/EJIE/temp");
 				LOGGER.info("HiddenTagTransformer transformed");
 			}else {
 				LOGGER.info("HiddenTagTransformer transformed already");
