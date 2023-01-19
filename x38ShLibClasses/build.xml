@@ -93,7 +93,7 @@
 		
 		<echo>Generando ${destDir}/x38ShLibClasses-hdiv-${version}.jar ...</echo>
 		<jar destfile="${destDir}/x38ShLibClasses-hdiv-${version}.jar">
-			<fileset dir="${buildDir}" includes="com/ejie/x38/hdiv/** LICENSE.txt NOTICE.txt" />
+			<fileset dir="${buildDir}" includes="com/ejie/x38/hdiv/** org/springframework/web/servlet/tags/form/SelectOptionWriter* LICENSE.txt NOTICE.txt" />
 			<fileset dir="${baseDir}" includes="build.xml pom.xml" />
 			<manifest>
 		      	<attribute name="Main-Class" value=""/>
