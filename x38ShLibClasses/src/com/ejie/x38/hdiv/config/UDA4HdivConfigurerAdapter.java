@@ -41,6 +41,8 @@ import org.springframework.http.converter.json.AbstractJackson2HttpMessageConver
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.servlet.support.RequestDataValueProcessor;
+import org.springframework.web.servlet.tags.form.SelectOptionWriter;
 
 import com.ejie.x38.hdiv.aspect.LinkResourcesAspect;
 import com.ejie.x38.hdiv.config.EjieValidationConfigurer.EjieValidationConfig.EjieEditableValidationConfigurer;
@@ -92,9 +94,13 @@ public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfig
 	@Autowired
 	private UidGenerator uidGenerator;
 	
+	@Autowired
+	private RequestDataValueProcessor requestDataValueProcessor;
+	
 	@PostConstruct
 	public void init() {
 		configureSerializer();
+		SelectOptionWriter.setRequestDataValueProcessor(requestDataValueProcessor);
 	}
 	
 	@Bean
