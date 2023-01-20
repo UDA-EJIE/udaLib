@@ -15,7 +15,9 @@
 */
 package com.ejie.x38;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
@@ -49,6 +51,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class UdaFilter extends DelegatingFilterProxy {
 
 	private static final Logger logger = LoggerFactory.getLogger(UdaFilter.class);
+	private static final String validationPattern = "[\\p{L}0-9\\.,\\-\\+_:~\\(\\)\\\\/¿\\?@&%#\\$\\* ]*$";
 
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) {
 
@@ -64,13 +67,14 @@ public class UdaFilter extends DelegatingFilterProxy {
 							+ "|(?:desant01\\.|pruebasnt01\\.)?jakina.ejgvdns"
 							+ "|sargune(?:\\.sb|\\.des|\\.pru)?\\.(?:euskadi|ejgv\\.euskalsarea)?\\.eus",
 					Pattern.CASE_INSENSITIVE).matcher(httpServletRequest.getHeader("referer")).find();
+			logger.debug("Referer is {} and the pattern result is {}", httpServletRequest.getHeader("referer"), refersFromSecuritySystem);
 		} else {
 			refersFromSecuritySystem = false;
 			logger.debug("Referer is null. If a value was expected, check if the protocol is still the same.");
 		}
 
 		try {
-			logger.debug("New request with UDA identificator " + ThreadStorageManager.getCurrentThreadId() + " has started");
+			logger.debug("New request with UDA identificator {} has started", ThreadStorageManager.getCurrentThreadId());
 
 			if (httpServletRequest.getHeader("RUP") != null) {
 				ThreadSafeCache.addValue("RUP", "RUP");
@@ -89,25 +93,35 @@ public class UdaFilter extends DelegatingFilterProxy {
 				// Esta gestión es necesaria para disponer de los datos una vez se obtenga una credencial válida a través del sistema de seguridad.
 				if (SecurityContextHolder.getContext().getAuthentication() == null && !refersFromSecuritySystem) {
 					Map<String, String[]> extraParams = new HashMap<String, String[]>();
-					boolean validated = true;
 
 					// Validar parámetros recibidos para evitar un "Trust boundary".
 					for (Map.Entry<String, String[]> entry : ((Map<String, String[]>) httpServletRequest.getParameterMap()).entrySet()) {
-						for (String entryValue : entry.getValue()) {
-							if (!entryValue.matches("[a-zA-Z0-9@\\.,\\-_:~\\(\\) ]*$")) {
-								validated = !validated;
-								break;
-							} else {
+						if (entry.getValue().length > 1) {
+							List<String> values = new ArrayList<String>();
+							for (int index = 0; index < entry.getValue().length; index++) {
+								if (entry.getValue()[index].matches(validationPattern)) {
+									values.add(entry.getValue()[index]);
+									logger.debug("Added parameter with key {} and value {} from index {}", entry.getKey(), entry.getValue()[index], index);
+								} else {
+									logger.debug(
+											"Parameter with key {} and value {} in index {} does not match the pattern",
+											entry.getKey(), entry.getValue()[index], index);
+								}
+							}
+							extraParams.put(entry.getKey(), values.toArray(new String[0]));
+						} else {
+							if (entry.getValue()[0].matches(validationPattern)) {
 								extraParams.put(entry.getKey(), entry.getValue());
+								logger.debug("Added parameter with key {} and value {}", entry.getKey(), entry.getValue()[0]);
+							} else {
+								logger.debug("Parameter with key {} and value {} does not match the pattern", entry.getKey(), entry.getValue()[0]);
 							}
 						}
 					}
 
-					// En caso de ser validados, se guardan en sesión para disponer de ellos una vez se obtenga la credencial.
-					if (validated) {
-						httpServletRequest.getSession().setAttribute("REQUESTED_PARAMS", extraParams);
-						httpServletRequest.getSession().setAttribute("REQUEST_METHOD", httpServletRequest.getMethod());
-					}
+					// Se guardan los parámetros en sesión para disponer de ellos una vez se obtenga la credencial.
+					httpServletRequest.getSession().setAttribute("REQUESTED_PARAMS", extraParams);
+					httpServletRequest.getSession().setAttribute("REQUEST_METHOD", httpServletRequest.getMethod());
 				}
 			}
 
@@ -117,16 +131,20 @@ public class UdaFilter extends DelegatingFilterProxy {
 					&& httpServletRequest.getSession().getAttribute("REQUEST_METHOD") != null
 					&& !httpServletRequest.getSession().getAttribute("REQUEST_METHOD").equals("GET")
 					&& refersFromSecuritySystem) {
+				logger.debug(
+							"Request will be wrapped using WrappedRequest because both REQUESTED_PARAMS and REQUEST_METHOD (with {} value) exist in session",
+							httpServletRequest.getSession().getAttribute("REQUEST_METHOD"));
 				filterChain.doFilter(
 						new WrappedRequest(httpServletRequest,
 								(Map<String, String[]>) httpServletRequest.getSession().getAttribute("REQUESTED_PARAMS"),
 								httpServletRequest.getSession().getAttribute("REQUEST_METHOD").toString()),
 						response);
 			} else {
+				logger.debug("Request won't be wrapped");
 				filterChain.doFilter(request, response);
 			}
 
-			logger.debug("Request with UDA identificator " + ThreadStorageManager.getCurrentThreadId() + " has ended");
+			logger.debug("Request with UDA identificator {} has ended", ThreadStorageManager.getCurrentThreadId());
 		} catch (Exception exception) {
 			logger.error(StackTraceManager.getStackTrace(exception));
 
