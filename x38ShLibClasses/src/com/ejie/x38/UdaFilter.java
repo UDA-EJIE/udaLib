@@ -101,11 +101,12 @@ public class UdaFilter extends DelegatingFilterProxy {
 							for (int index = 0; index < entry.getValue().length; index++) {
 								if (entry.getValue()[index].matches(validationPattern)) {
 									values.add(entry.getValue()[index]);
-									logger.debug("Added parameter with key {} and value {} from index {}", entry.getKey(), entry.getValue()[index], index);
+									logger.debug("Added parameter with key {} and value {} from index {}",
+											new Object[] { entry.getKey(), entry.getValue()[index], index });
 								} else {
 									logger.debug(
 											"Parameter with key {} and value {} in index {} does not match the pattern",
-											entry.getKey(), entry.getValue()[index], index);
+											new Object[] { entry.getKey(), entry.getValue()[index], index });
 								}
 							}
 							extraParams.put(entry.getKey(), values.toArray(new String[0]));
