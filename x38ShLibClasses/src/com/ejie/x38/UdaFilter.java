@@ -28,6 +28,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,7 +38,6 @@ import com.ejie.x38.serialization.ThreadSafeCache;
 import com.ejie.x38.util.StackTraceManager;
 import com.ejie.x38.util.ThreadStorageManager;
 import com.ejie.x38.util.WrappedRequest;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Filtro principal que cumple las siguientes funciones:
