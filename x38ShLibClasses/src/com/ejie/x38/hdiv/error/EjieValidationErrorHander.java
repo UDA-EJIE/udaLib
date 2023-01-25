@@ -1,7 +1,6 @@
 package com.ejie.x38.hdiv.error;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
