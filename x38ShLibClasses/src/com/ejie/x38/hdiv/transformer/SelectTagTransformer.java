@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
+import javassist.CtNewMethod;
 import javassist.LoaderClassPath;
 
 @Component
@@ -27,6 +28,14 @@ public class SelectTagTransformer implements ClassTransformer {
 		
 		CtClass ctClass = classPool.get("org.springframework.web.servlet.tags.form.SelectTag");
 		if (!ctClass.isFrozen()) {
+			
+			String strMethod = " protected String getName() throws javax.servlet.jsp.JspException {" //
+						  	 + "	return super.getName();"//
+						  	 + " }";
+
+			CtMethod newmethod = CtNewMethod.make(strMethod,ctClass);
+			ctClass.addMethod(newmethod);
+	
 			CtMethod modifyedMethod = ctClass.getDeclaredMethod("writeTagContent");
 			modifyedMethod.setBody("{"
 								 + "    $1.startTag(\"select\");"
@@ -60,8 +69,8 @@ public class SelectTagTransformer implements ClassTransformer {
 								 + "		return EVAL_BODY_INCLUDE;"
 								 + "	}"
 								 + "} ");
+
 			ctClass.toClass();
-			ctClass.writeFile("/Users/xaldama/Documents/EJIE/temp");
 		}
 	}
 	
@@ -83,9 +92,7 @@ public class SelectTagTransformer implements ClassTransformer {
 			}
 		}
 		ctClass.toClass();
-		ctClass.writeFile("/Users/xaldama/Documents/EJIE/temp");
 	}
-	
 	
 	@Override
 	public void transform() {
