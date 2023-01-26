@@ -26,7 +26,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.AbstractMappingJacksonResponseBodyAdvice;
 
-import com.ejie.x38.generic.model.SelectGeneric;
+import com.ejie.x38.generic.model.ComposableInputData;
 import com.ejie.x38.hdiv.datacomposer.EjieDataComposerMemory;
 import com.ejie.x38.hdiv.util.Constants;
 import com.ejie.x38.hdiv.util.IdentifiableFieldDiscoverer;
@@ -84,15 +84,15 @@ public class StateComposeAdvice extends AbstractMappingJacksonResponseBodyAdvice
 						}
 					
 						Object value = null;
-						if (!(suggestInstance instanceof SecureIdContainer || suggestInstance instanceof SelectGeneric)) {
+						if (!(suggestInstance instanceof SecureIdContainer || suggestInstance instanceof ComposableInputData)) {
 							return;
 						}
-						if(suggestInstance instanceof SelectGeneric) {
+						if(suggestInstance instanceof ComposableInputData) {
 							if(isFirst) {
-								((EjieDataComposerMemory)dataComposer).resetAndCompose(updateField, ((SelectGeneric)suggestInstance).getId(), false);
+								((EjieDataComposerMemory)dataComposer).resetAndCompose(updateField, ((ComposableInputData)suggestInstance).getComposableData(), false);
 								isFirst = false;
 							}else {
-								dataComposer.compose(updateField, ((SelectGeneric)suggestInstance).getId(), false);
+								dataComposer.compose(updateField, ((ComposableInputData)suggestInstance).getComposableData(), false);
 							}
 						}
 						else if(suggestInstance instanceof SecureIdentifiable<?>) {
