@@ -8,6 +8,7 @@ import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.LoaderClassPath;
+import javassist.bytecode.DuplicateMemberException;
 
 @Component
 public class OptionTagTransformer implements ClassTransformer {
@@ -30,8 +31,10 @@ public class OptionTagTransformer implements ClassTransformer {
 				LOGGER.info("OptionTagTransformer transformed already");
 			}
 			
-		}catch(Exception e ) {
-			LOGGER.error("Cannot transform class OptionTag. ", e);
+		} catch (DuplicateMemberException e) {
+			LOGGER.debug("Cannot transform class OptionTagTransformer. ", e.getMessage());
+		} catch (Exception e) {
+			LOGGER.error("Cannot transform class OptionTagTransformer. ", e);
 		}
 	}
 	

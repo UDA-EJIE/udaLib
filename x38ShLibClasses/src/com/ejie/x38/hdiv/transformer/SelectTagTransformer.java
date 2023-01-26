@@ -9,6 +9,7 @@ import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.LoaderClassPath;
+import javassist.bytecode.DuplicateMemberException;
 
 @Component
 public class SelectTagTransformer implements ClassTransformer {
@@ -96,10 +97,11 @@ public class SelectTagTransformer implements ClassTransformer {
 	
 	@Override
 	public void transform() {
-		
 		try {
 			tryTransform();
-		}catch(Exception e ) {
+		} catch (DuplicateMemberException e) {
+			LOGGER.debug("Cannot transform class SelectTagTransformer. ", e.getMessage());
+		} catch (Exception e) {
 			LOGGER.error("Cannot transform class SelectTagTransformer. ", e);
 		}
 	}

@@ -9,6 +9,7 @@ import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.LoaderClassPath;
+import javassist.bytecode.DuplicateMemberException;
 
 @Component
 public class HiddenTagTransformer implements ClassTransformer {
@@ -45,8 +46,10 @@ public class HiddenTagTransformer implements ClassTransformer {
 				LOGGER.info("HiddenTagTransformer transformed already");
 			}
 			
-		}catch(Exception e ) {
-			LOGGER.error("Cannot transform class HiddenInputTag. ", e);
+		} catch (DuplicateMemberException e) {
+			LOGGER.debug("Cannot transform class HiddenTagTransformer. ", e.getMessage());
+		} catch (Exception e) {
+			LOGGER.error("Cannot transform class HiddenTagTransformer. ", e);
 		}
 	}
 	
