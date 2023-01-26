@@ -274,6 +274,7 @@ public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfig
 		
 		// Formularios de edición
 		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*").forParameters("actionType").rules("method")).setAsClientParameter(true);
+		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*").forParameters("pkValue").rules("fulltext")).setAsClientParameter(true);
 		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*").forParameters("tableID").rules("text")).setAsClientParameter(true);
 		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*").forParameters("enableMultipart").rules("boolean")).setAsClientParameter(true);
 		
