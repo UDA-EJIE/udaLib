@@ -4,7 +4,7 @@ package com.ejie.x38.generic.model;
  * @since 5.0.0
  * @deprecated
 */
-public class AutocompleteComboGenericPOJO implements java.io.Serializable {
+public class AutocompleteComboGenericPOJO implements java.io.Serializable, ComposableInputData {
 	private static final long serialVersionUID = 1L;
 	
 	private String value;
@@ -68,5 +68,10 @@ public class AutocompleteComboGenericPOJO implements java.io.Serializable {
 	 */
 	public void setStyle(String style) {
 		this.style = style;
+	}
+
+	@Override
+	public String getComposableData() {
+		return value;
 	}
 }

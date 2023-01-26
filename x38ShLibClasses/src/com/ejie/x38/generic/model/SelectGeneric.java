@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /** Entidad que permite construir la estructura necesaria para el componente select.
  * @since 5.2.0
 */
-public class SelectGeneric implements java.io.Serializable {
+public class SelectGeneric implements java.io.Serializable, ComposableInputData {
 	private static final long serialVersionUID = 1L;
 	
 	private String id;
@@ -75,5 +75,10 @@ public class SelectGeneric implements java.io.Serializable {
 
 	public void setStyle(String style) {
 		this.style = style;
+	}
+
+	@Override
+	public String getComposableData() {
+		return id;
 	}
 }
