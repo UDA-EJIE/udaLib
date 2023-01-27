@@ -46,6 +46,8 @@ public class FormRequestBodyValidator {
 	
 	private StateUtil stateUtil;
 	
+	private List<String> validatedParams = new ArrayList<String>();
+	
 	public FormRequestBodyValidator(HDIVConfig hdivConfig, StateUtil stateUtil) {
 		config = hdivConfig; 
 		this.stateUtil = stateUtil;
@@ -79,7 +81,7 @@ public class FormRequestBodyValidator {
 			}
 		}
 		
-		return errors.isEmpty() ? ValidatorHelperResult.VALID : new ValidatorHelperResult(errors);
+		return errors.isEmpty() ? EjieValidatorHelperResult.VALID.markAsValidated(validatedParams) : new ValidatorHelperResult(errors);
 	}
 	
 	public JsonNode getRequestBody(final ValidationContext context) throws JsonProcessingException, IOException {
@@ -183,6 +185,8 @@ public class FormRequestBodyValidator {
 				
 				if(!excludedFromValidation(config, target, parameterName)) {	
 					validateExtraParameter(target, parameterName, parameter.getValue(), errors);
+				} else {
+					markAsValidated(parameterName);
 				}
 			}
 		}
@@ -194,11 +198,16 @@ public class FormRequestBodyValidator {
 
 		LOGGER.debug("Validate {} param as non editable ", parameterFullName);
 		List<String> posibleValues = stateParam.getValues();
+		boolean valid = true;
 		for (String value : bodyParameters.getValue()) {
 			if (!posibleValues.contains(value)) {
 				errors.add(new ValidatorError(HDIVErrorCodes.INVALID_PARAMETER_VALUE, parameterName, value));
+				valid = false;
 				break;
 			}
+		}
+		if (valid) {
+			markAsValidated(parameterName);
 		}
 	}
 
@@ -274,6 +283,8 @@ public class FormRequestBodyValidator {
 		EditableDataValidationResult result = config.getEditableDataValidationProvider().validate(Constants.CLIENT_PARAMETERS+target, parameter, values.toArray(new String[0]), null);
 		if(result != EditableDataValidationResult.VALID) {
 			errors.add(new ValidatorError(HDIVErrorCodes.INVALID_PARAMETER_NAME, target, parameter));
+		} else {
+			markAsValidated(parameter);
 		}
 	}
 	
@@ -282,7 +293,13 @@ public class FormRequestBodyValidator {
 		EditableDataValidationResult result = config.getEditableDataValidationProvider().validate(target, parameter, values.toArray(new String[0]), null);
 		if (!result.isValid()) {
 			errors.add(new ValidatorError(HDIVErrorCodes.INVALID_PARAMETER_VALUE, target, parameter));
+		} else {
+			markAsValidated(parameter);
 		}
+	}
+	
+	private void markAsValidated(String paramName) {
+		validatedParams.add(paramName);
 	}
 
 }

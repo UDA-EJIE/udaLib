@@ -1,8 +1,13 @@
 package com.ejie.x38.hdiv.filter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.hdiv.context.RequestContextHolder;
 import org.hdiv.filter.ValidationContext;
@@ -28,6 +33,8 @@ import com.ejie.x38.hdiv.util.Constants;
 public class EjieValidatorHelperRequest extends ValidatorHelperRequest {
 
 	private static Logger LOGGER = LoggerFactory.getLogger(ValidatorHelperRequest.class);
+	
+	private static final String VALIDATED_PARAMS = "VALIDATED_PARAMS";
 	
 	private FormRequestBodyValidator formRequestBodyValidator;
 	
@@ -112,6 +119,8 @@ public class EjieValidatorHelperRequest extends ValidatorHelperRequest {
 				ValidatorHelperResult formValidationResult = formRequestBodyValidator.validateBody(context);
 				if(!formValidationResult.isValid() ) {
 					return formValidationResult;
+				} else if (formValidationResult instanceof EjieValidatorHelperResult) {
+					requestContext.getRequest().setAttribute(VALIDATED_PARAMS, ((EjieValidatorHelperResult) formValidationResult).getValidatedParams());
 				}
 			}
 			catch (Exception e) {
@@ -215,6 +224,86 @@ public class EjieValidatorHelperRequest extends ValidatorHelperRequest {
 	private boolean isJsonRequest(String contentType) {
 		MediaType requestContentType = contentType == null ? null : MediaType.valueOf(contentType);
 		return MediaType.APPLICATION_JSON.isCompatibleWith(requestContentType);
+	}
+	
+	/**
+	 * Check if all required parameters are received in <code>request</code>.
+	 *
+	 * @param request HttpServletRequest to validate
+	 * @param state IState The restored state for this url
+	 * @param target Part of the url that represents the target action
+	 * @param stateParams Url params from State
+	 * @return valid result if all required parameters are received. False in otherwise.
+	 */
+	@SuppressWarnings("unchecked")
+	protected ValidatorHelperResult allRequiredParametersReceived(final RequestContextHolder request, final IState state,
+			final String target, final Map<String, String[]> stateParams) {
+
+		List<String> requiredParameters = state.getRequiredParams(hdivConfig.getEditableFieldsRequiredByDefault());
+		Set<String> requiredParams = stateParams.keySet();
+
+		Enumeration<?> requestParameters = request.getParameterNames();
+
+		Set<String> required = new HashSet<String>();
+		required.addAll(requiredParameters);
+		required.addAll(requiredParams);
+		
+		List<String> validatedParams = (List<String>) request.getAttribute(VALIDATED_PARAMS);
+		if (validatedParams != null) {
+			required.removeAll(validatedParams);
+		}
+
+		while (requestParameters.hasMoreElements()) {
+
+			String currentParameter = (String) requestParameters.nextElement();
+
+			required.remove(currentParameter);
+
+			// If multiple parameters are received, it is possible to pass this
+			// verification without checking all the request parameters.
+			if (required.isEmpty()) {
+				return ValidatorHelperResult.VALID;
+			}
+		}
+
+		// Fix for IBM Websphere different behavior with parameters without values.
+		// For example, param1=val1&param2
+		// This kind of parameters are excluded from request.getParameterNames() API.
+		// http://www.ibm.com/support/docview.wss?uid=swg1PM35450
+		if (!required.isEmpty()) {
+			Iterator<String> it = required.iterator();
+			while (it.hasNext()) {
+				String req = it.next();
+				if (isNoValueParameter(request, req)) {
+					it.remove();
+				}
+			}
+		}
+
+		return validateMissingParameters(request, state, target, stateParams, new ArrayList<String>(required));
+	}
+	
+	/**
+	 * Check if the given parameter doesn't have values looking in the query string.
+	 * 
+	 * @param request HttpServletRequest instance
+	 * @param parameter Parameter name
+	 * @return true if the parameter does't have value
+	 */
+	private boolean isNoValueParameter(final RequestContextHolder request, final String parameter) {
+
+		String queryString = request.getQueryString();
+		if (queryString == null) {
+			return false;
+		}
+
+		String[] parts = queryString.split("&");
+		if (parts.length == 0) {
+			return false;
+		}
+
+		List<String> partsList = Arrays.asList(parts);
+		return partsList.contains(parameter);
 	}
 	
 }
