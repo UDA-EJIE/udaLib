@@ -12,9 +12,9 @@ import javassist.bytecode.DuplicateMemberException;
 
 @Component
 public class OptionTagTransformer implements ClassTransformer {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(OptionTagTransformer.class);
-	
+
 	@Override
 	public void transform() {
 		try {
@@ -22,20 +22,19 @@ public class OptionTagTransformer implements ClassTransformer {
 			Class<?> tag = Class.forName("org.springframework.web.servlet.tags.form.OptionTag");
 			classPool.appendClassPath(new LoaderClassPath(tag.getClassLoader()));
 			CtClass ctClass = classPool.get("org.springframework.web.servlet.tags.form.OptionTag");
-			if (!ctClass.isFrozen()) {
-				CtMethod modifyedMethod = ctClass.getDeclaredMethod("assertUnderSelectTag");
-				modifyedMethod.setBody("{}");
-				ctClass.toClass();
-				LOGGER.info("OptionTagTransformer transformed");
-			}else {
-				LOGGER.info("OptionTagTransformer transformed already");
+			if (ctClass.isFrozen()) {
+				ctClass.defrost();
 			}
-			
+			CtMethod modifyedMethod = ctClass.getDeclaredMethod("assertUnderSelectTag");
+			modifyedMethod.setBody("{}");
+			ctClass.toClass();
+			LOGGER.info("OptionTagTransformer transformed");
+
 		} catch (DuplicateMemberException e) {
 			LOGGER.debug("Cannot transform class OptionTagTransformer. ", e.getMessage());
 		} catch (Exception e) {
 			LOGGER.error("Cannot transform class OptionTagTransformer. ", e);
 		}
 	}
-	
+
 }
