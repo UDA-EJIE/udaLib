@@ -292,6 +292,10 @@ public class EjieValidatorHelperRequest extends ValidatorHelperRequest {
 	 */
 	private boolean isNoValueParameter(final RequestContextHolder request, final String parameter) {
 
+		if(parameter.startsWith("_")) {
+			return true;
+		}
+		
 		String queryString = request.getQueryString();
 		if (queryString == null) {
 			return false;
