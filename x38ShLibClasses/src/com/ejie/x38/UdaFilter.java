@@ -206,6 +206,7 @@ public class UdaFilter extends DelegatingFilterProxy {
 			if (refersFromSecuritySystem) {
 				httpServletRequest.getSession().removeAttribute("REQUESTED_PARAMS");
 				httpServletRequest.getSession().removeAttribute("REQUEST_METHOD");
+				logger.debug("Eliminados los atributos REQUESTED_PARAMS y REQUEST_METHOD porque ya han sido usados.");
 			}
 		}
 	}
