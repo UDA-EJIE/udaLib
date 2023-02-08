@@ -89,7 +89,6 @@ public class HiddenInputTag extends AbstractHtmlElementTag {
 
 	
 	public void setDynamicAttribute( String uri, String localName, Object value) throws javax.servlet.jsp.JspException {
-			System.out.println("***************XAS************setDynamicAttribute");
 			org.springframework.web.servlet.support.RequestContext ctx = (org.springframework.web.servlet.support.RequestContext) this.pageContext.getAttribute(REQUEST_CONTEXT_PAGE_ATTRIBUTE);
 			if("value".equals(localName)) {
 				if (ctx != null) {
