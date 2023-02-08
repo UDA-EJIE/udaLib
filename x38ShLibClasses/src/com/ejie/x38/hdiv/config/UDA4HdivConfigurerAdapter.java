@@ -41,8 +41,6 @@ import org.springframework.http.converter.json.AbstractJackson2HttpMessageConver
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
-import org.springframework.web.servlet.support.RequestDataValueProcessor;
-import org.springframework.web.servlet.tags.form.SelectOptionWriter;
 
 import com.ejie.x38.hdiv.aspect.LinkResourcesAspect;
 import com.ejie.x38.hdiv.config.EjieValidationConfigurer.EjieValidationConfig.EjieEditableValidationConfigurer;
@@ -54,8 +52,6 @@ import com.ejie.x38.hdiv.filter.EjieValidatorHelperRequest;
 import com.ejie.x38.hdiv.processor.UDASecureResourceProcesor;
 import com.ejie.x38.hdiv.protection.IdProtectionDataManager;
 import com.ejie.x38.hdiv.protection.UserSessionIdProtectionDataManager;
-import com.ejie.x38.hdiv.transformer.ClassTransformer;
-import com.ejie.x38.hdiv.transformer.TransformerFactory;
 import com.ejie.x38.hdiv.util.Constants;
 import com.ejie.x38.serialization.EjieSecureModule;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -94,13 +90,9 @@ public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfig
 	@Autowired
 	private UidGenerator uidGenerator;
 	
-	@Autowired
-	private RequestDataValueProcessor requestDataValueProcessor;
-	
 	@PostConstruct
 	public void init() {
 		configureSerializer();
-		SelectOptionWriter.setRequestDataValueProcessor(requestDataValueProcessor);
 	}
 	
 	@Bean
@@ -165,11 +157,6 @@ public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfig
 	public InitListener initListener() {
 		return new InitListener();
 	}
-
-	@Bean
-    public TransformerFactory transformerFactory(final ApplicationContext context) {
-        return new TransformerFactory(context.getBeansOfType(ClassTransformer.class).values()).doTransform();
-    }
 	 
 	protected abstract String getHomePage();
 
