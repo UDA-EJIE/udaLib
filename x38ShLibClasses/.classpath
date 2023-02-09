@@ -26,11 +26,15 @@
 			<attribute name="owner.project.facets" value="#system#;jst.utility"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_91">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jrockit-jdk1.6.0_91">
 		<attributes>
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry combineaccessrules="false" kind="src" path="/hdiv-config"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/hdiv-core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/hdiv-services"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/hdiv-spring-mvc"/>
 	<classpathentry kind="lib" path="lib/aopalliance-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/aspectjweaver-1.8.13.jar"/>
 	<classpathentry kind="lib" path="lib/avro-1.7.7.jar"/>
@@ -63,6 +67,7 @@
 	<classpathentry kind="lib" path="lib/jackson-databind-2.7.9.5.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-mapper-asl-1.9.13.jar"/>
 	<classpathentry kind="lib" path="lib/jasperreports-4.7.1.jar"/>
+	<classpathentry kind="lib" path="lib/javassist-3.29.2-GA.jar"/>
 	<classpathentry kind="lib" path="lib/javax.servlet-api-3.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/javax.ws.rs-api-2.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/jboss-logging-3.3.0.Final.jar"/>
@@ -114,10 +119,5 @@
 	<classpathentry kind="lib" path="lib/xz-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/y31b-1.4-ifaz.jar"/>
 	<classpathentry kind="lib" path="lib/y31c-1.5-impl.jar"/>
-	<classpathentry kind="lib" path="lib/hdiv-config-3.5.2.jar"/>
-	<classpathentry kind="lib" path="lib/hdiv-core-3.5.2.jar"/>
-	<classpathentry kind="lib" path="lib/hdiv-services-3.5.2.jar"/>
-	<classpathentry kind="lib" path="lib/hdiv-spring-mvc-3.5.2.jar"/>
-	<classpathentry kind="lib" path="lib/javassist-3.29.2-GA.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
