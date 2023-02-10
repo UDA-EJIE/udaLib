@@ -7,6 +7,7 @@
 	<description>Custom x38 Form Tag Library</description>
 	<tlib-version>1.0</tlib-version>
 	<short-name>x38</short-name>
+	<uri>http://ejie.eus/tags/x38-form</uri>
 	
 	<tag>
 		<description>Renders an HTML 'form' tag and exposes a binding path to inner tags
