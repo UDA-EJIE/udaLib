@@ -2,6 +2,7 @@ package com.ejie.x38.serialization;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -211,18 +212,19 @@ public class EjieSecureModule extends SimpleModule {
 				clazz = ((AnnotatedClass) beanProperty.getMember().getTypeContext()).getRawType();
 			}
 			
+			Class<?> propertyClass = beanProperty.getType().getRawClass();
+			
 			if(JsonToken.START_ARRAY == parser.getCurrentToken()) {
 				
 				List<Object> baseArray;
-				Class<?> collectionClass = beanProperty.getType().getRawClass();
 				boolean isArray = false;
-				if (List.class.isAssignableFrom(collectionClass)) {
+				if (List.class.isAssignableFrom(propertyClass)) {
 					//It is a list
-					if(collectionClass.isInterface()) {
+					if(propertyClass.isInterface()) {
 						baseArray = new ArrayList<Object>();
 					}else {
 						try {
-							baseArray = (List<Object>) collectionClass.newInstance();
+							baseArray = (List<Object>) propertyClass.newInstance();
 						}catch(Exception e) {
 							baseArray = new ArrayList<Object>();
 						}
@@ -234,15 +236,15 @@ public class EjieSecureModule extends SimpleModule {
 				}
 				
 				while(parser.nextToken() != JsonToken.END_ARRAY) {
-					baseArray.add(getDeobfuscatedValue(parser, clazz));
+					baseArray.add(inferredTypeValue(getDeobfuscatedValue(parser, clazz)));
 				}
 				return isArray ? baseArray.toArray() : baseArray;
 			}else {
-				return getDeobfuscatedValue(parser, clazz);
+				return parseFromString(getDeobfuscatedValue(parser, clazz), propertyClass);
 			}
 		}
 		
-		private Object getDeobfuscatedValue(JsonParser parser, Class<?> expectedClass) throws IOException {
+		private String getDeobfuscatedValue(JsonParser parser, Class<?> expectedClass) throws IOException {
 			
 			String value = parser.getText();
 			String nid;
@@ -265,6 +267,27 @@ public class EjieSecureModule extends SimpleModule {
 				}
 			}
 			return nid;
+		}
+		
+		private Object parseFromString(String value, Class<?> clazz) {
+			if (clazz.equals(Integer.class)) {
+				return Integer.valueOf(value);
+			} else if (clazz.equals(BigDecimal.class)) {
+				return new BigDecimal(value);
+			} else if (clazz.equals(Long.class)) {
+				return Long.valueOf(value);
+			} else if (clazz.equals(Double.class)) {
+				return Double.valueOf(value);
+			}
+			return value;
+		}
+
+		private Object inferredTypeValue(String value) {
+			try {
+				return Integer.valueOf(value);
+			} catch (Exception ex) {
+				return value;
+			}
 		}
 
 		private boolean isStartPage() {
