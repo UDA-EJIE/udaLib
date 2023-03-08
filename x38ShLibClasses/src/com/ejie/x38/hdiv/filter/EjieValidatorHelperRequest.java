@@ -183,7 +183,7 @@ public class EjieValidatorHelperRequest extends ValidatorHelperRequest {
 					Enumeration<String> parameters = requestContext.getParameterNames();
 					while (parameters.hasMoreElements()) {
 						String paramName = parameters.nextElement();
-						if(!isExcludedParam(context.getTarget(), paramName) && !requestContext.getHdivModifyParameterName().equals(paramName) && !Constants.MODIFY_HDIV_STATE_FORM_FIELD_NAME.equals(paramName)) {
+						if(!isExcludedParam(context.getTarget(), paramName) && !requestContext.getHdivModifyParameterName().equals(paramName) && !Constants.MODIFY_HDIV_STATE_FORM_FIELD_NAME.equals(paramName) && ValidatorHelperResult.VALID != validateExtraParameter(requestContext, null, null, null, null, null, context.getTarget(), paramName)) {
 							IParameter stateParentParam = state.getParameter(paramName);
 							
 							if(stateParentParam != null && !stateParentParam.isEditable() 
