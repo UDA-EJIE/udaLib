@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.Resource;
 
-import com.ejie.x38.hdiv.controller.model.ReferencedObject;
 import com.ejie.x38.hdiv.controller.model.SecureClassInfo;
 import com.ejie.x38.hdiv.controller.model.UDALinkResources;
 
@@ -142,7 +141,7 @@ public abstract class ResponseLinkProcesor {
 	
 	protected int addResource(UDALinkResources udaLinkResources, Object resource, boolean isSubEntity, List<SecureClassInfo> secureClassInfo, Integer parentIndex) {
 		if(isSubEntity) {
-			udaLinkResources.getSubEntities().add(new ReferencedObject(String.valueOf(parentIndex), resource, secureClassInfo));
+			udaLinkResources.getSubEntities().add(resource);
 			return parentIndex;
 		}else {
 			udaLinkResources.getEntities().add(resource);

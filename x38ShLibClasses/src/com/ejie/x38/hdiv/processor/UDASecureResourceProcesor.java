@@ -25,7 +25,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.ejie.x38.hdiv.controller.model.LinkInfo;
 import com.ejie.x38.hdiv.controller.model.MappingInfo;
-import com.ejie.x38.hdiv.controller.model.ReferencedObject;
 import com.ejie.x38.hdiv.controller.model.UDALinkMappingInfo;
 import com.ejie.x38.hdiv.controller.model.UDALinkResources;
 import com.ejie.x38.hdiv.controller.utils.MethodLinkDiscoverer;
@@ -78,7 +77,7 @@ public class UDASecureResourceProcesor {
 		return new Resource<Object>(entity, new ArrayList<Link>());
 	}
 
-	private static List<Resource<Object>> processLinks(final List<Object> entities, final List<ReferencedObject> subEntities, final Class<?> controller) {
+	private static List<Resource<Object>> processLinks(final List<Object> entities, final List<Object> subEntities, final Class<?> controller) {
 		
 		LOGGER.debug("Processing links to {} entities and {} subentities", entities.size(), subEntities.size());
 
@@ -91,6 +90,9 @@ public class UDASecureResourceProcesor {
 			String requestStr = request.getContextPath();
 			if (entities != null && !entities.isEmpty()) {
 				resources = processEntities(entities, false, request, allowInfoList, requestStr);
+			}
+			if (subEntities != null && !subEntities.isEmpty()) {
+				resources = processEntities(subEntities, true, request, allowInfoList, requestStr);
 			}
 			processStaticLinks(request, allowInfoList, requestStr);
 		}
