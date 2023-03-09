@@ -236,7 +236,7 @@ public class EjieSecureModule extends SimpleModule {
 				}
 				
 				while(parser.nextToken() != JsonToken.END_ARRAY) {
-					baseArray.add(inferredTypeValue(getDeobfuscatedValue(parser, clazz)));
+					baseArray.add(getDeobfuscatedValue(parser, clazz));
 				}
 				return isArray ? baseArray.toArray() : baseArray;
 			}else {
@@ -280,14 +280,6 @@ public class EjieSecureModule extends SimpleModule {
 				return Double.valueOf(value);
 			}
 			return value;
-		}
-
-		private Object inferredTypeValue(String value) {
-			try {
-				return Integer.valueOf(value);
-			} catch (Exception ex) {
-				return value;
-			}
 		}
 
 		private boolean isStartPage() {
