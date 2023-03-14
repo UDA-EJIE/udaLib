@@ -67,7 +67,9 @@ public class EjieValidationErrorHander implements ValidatorErrorHandler {
 					}
 				}
 			}
-
+			
+			ErrorResponse errorResponse = new ErrorResponse(responseErrorMessage, errors);
+			ctx.getRequest().setAttribute("VALIDATION_ERROR", errorResponse);
 			checkCustomErrorPage(ctx);
 
 			ValidatorError methodNotAllowedError = null;

@@ -133,10 +133,11 @@ public class EjieValidatorHelperRequest extends ValidatorHelperRequest {
 		if(requestContext.getHdivState() == null) {
 			if(checkServerSideLink()) {
 				//If it is a serverside Link, do not allow parameters apart from MODIFIED_HDIV_STATE
-				if(isSimpleRequest(context) || checkModifyRequest(context)) {
+				String validarParamRequest = validarParamRequest(context);
+				if(validarParamRequest == null) {
 					return  ValidatorHelperResult.VALID;	
 				}else {
-					return new ValidatorHelperResult(new ValidatorError(HDIVErrorCodes.INVALID_PARAMETER_NAME, context.getTarget()));
+					return new ValidatorHelperResult(new ValidatorError(HDIVErrorCodes.INVALID_PARAMETER_NAME, context.getTarget(),validarParamRequest));
 				}
 			}else {
 				return new ValidatorHelperResult(new ValidatorError(HDIVErrorCodes.INVALID_ACTION, context.getTarget()));
@@ -146,19 +147,30 @@ public class EjieValidatorHelperRequest extends ValidatorHelperRequest {
 		return super.preValidate(context);
 	}
 	
-	private boolean isSimpleRequest(ValidationContext context) {
+	private String validarParamRequest(ValidationContext context) {
+		String paramSimple  = isSimpleRequest(context);
+		String paramCheck  = checkModifyRequest(context);
+		if(paramSimple == null || paramCheck == null) {
+			return null;
+		}else if(paramSimple != null) {
+			return paramSimple;
+		}
+
+		return paramCheck;
+	}
+	private String isSimpleRequest(ValidationContext context) {
 		RequestContextHolder requestContext = context.getRequestContext();
 		Enumeration<String> parameters = requestContext.getParameterNames();
 		while (parameters.hasMoreElements()) {
 			String paramName = parameters.nextElement();
 			if(!isExcludedParam(context.getTarget(), paramName) && ValidatorHelperResult.VALID != validateExtraParameter(requestContext, null, null, null, null, null, context.getTarget(), paramName) ) {
-				return false;
+				return paramName;
 			}
 		}
-		return true;
+		return null;
 	}
 				
-	private boolean checkModifyRequest(ValidationContext context) {
+	private String checkModifyRequest(ValidationContext context) {
 		
 		boolean isValidated = false;
 		RequestContextHolder requestContext = context.getRequestContext();
@@ -191,14 +203,14 @@ public class EjieValidatorHelperRequest extends ValidatorHelperRequest {
 								&& isValidByRule(Constants.MODIFY_RULE_NAME, provider, Constants.MODIFY_TARGET_PARAMETER + paramName, requestContext.getParameterValues(paramName), context)) {
 								isValidated = true;
 							}else {
-								return false;
+								return paramName;
 							}
 						}
 					}
 				}
 			}
 		}
-		return isValidated;
+		return null;
 	}
 	
 	private boolean isValidByRule(String validationId, EditableDataValidationProvider provider, String paramName, String[] paramValues, ValidationContext context) {
