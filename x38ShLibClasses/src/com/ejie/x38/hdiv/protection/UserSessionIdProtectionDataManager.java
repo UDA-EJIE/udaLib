@@ -3,6 +3,7 @@ package com.ejie.x38.hdiv.protection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -61,10 +62,12 @@ public class UserSessionIdProtectionDataManager implements IdProtectionDataManag
 		Map<String, Map<Class<?>, HashSet<String>>> serverSideURLMap = (Map<String, Map<Class<?>, HashSet<String>>>) request.getSession().getAttribute(SERVER_SIDE_MAP_ATTR_NAME);
 		
 		if(serverSideURLMap != null) {
-			Map<Class<?>, HashSet<String>> secureEntities = serverSideURLMap.get(request.getRequestURI());
-			if(secureEntities != null) {
-				HashSet<String> allowedIds = secureEntities.get(clazz);
-				return allowedIds != null && allowedIds.contains(nId);
+			String requestURI = request.getRequestURI();
+			for (Entry<String, Map<Class<?>, HashSet<String>>> url : serverSideURLMap.entrySet()) {
+				if (url.getValue() != null && requestURI.matches(url.getKey())) {
+					HashSet<String> allowedIds = url.getValue().get(clazz);
+					return allowedIds != null && allowedIds.contains(nId);
+				}
 			}
 		}
 		

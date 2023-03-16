@@ -190,7 +190,7 @@ public class UDASecureResourceProcesor {
 			for (String mapping : allowInfo.getEntityMappingInfo().getMappings()) {
 				// Replace each segment by entity value;
 				try {
-					Link link = buildLink(revolveURL(mapping, entityToProcces, urlTemplatesMap, requestStr, true), allowInfo.getName(), allowInfo.getMethodForLinkCondition());
+					Link link = buildLink(revolveURL(mapping, entityToProcces, urlTemplatesMap, requestStr, true, allowInfo.getEntityMappingInfo()), allowInfo.getName(), allowInfo.getMethodForLinkCondition());
 					LOGGER.debug("Allowed link to entity: " + link);
 					entityLinks.add(link);
 				}catch(NoSuchMethodException e){
@@ -202,7 +202,7 @@ public class UDASecureResourceProcesor {
 			for (String mapping : allowInfo.getStaticMappingInfo().getMappings()) {
 				//Need to resolve some urls that has NON id parameter as path variable
 				try {
-					Link link = buildLink(revolveURL(mapping, entityToProcces, urlTemplatesMap, requestStr, false), allowInfo.getName(), allowInfo.getMethodForLinkCondition());
+					Link link = buildLink(revolveURL(mapping, entityToProcces, urlTemplatesMap, requestStr, false, allowInfo.getStaticMappingInfo()), allowInfo.getName(), allowInfo.getMethodForLinkCondition());
 					LOGGER.debug("Allowed static link: " + link);
 					entityLinks.add(link);
 				}catch(NoSuchMethodException e){
@@ -217,7 +217,7 @@ public class UDASecureResourceProcesor {
 
 	}
 	
-	private static String revolveURL(String mapping, final Object entityToProcces, final Map<String, Map<String, Map<Class<?>,Method>>> urlTemplatesMap, String requestStr, boolean throwExc) throws NoSuchMethodException {
+	private static String revolveURL(String mapping, final Object entityToProcces, final Map<String, Map<String, Map<Class<?>,Method>>> urlTemplatesMap, String requestStr, boolean throwExc, final MappingInfo<?> mappingInfo) throws NoSuchMethodException {
 		LOGGER.debug("Evaluate mapping: " + mapping);
 		Map<String, Object> templateValuesMap = new HashMap<String, Object>();
 
@@ -237,14 +237,14 @@ public class UDASecureResourceProcesor {
 						segment = segment.substring(1, segment.length() - 1);
 					}
 				
-					templateValuesMap.put(segment, getTemplateValuesFromEntity(entityToProcces, addSegmentMethodIfNeeded(entityToProcces, segment , segments), segment, throwExc));
+					templateValuesMap.put(segment, getTemplateValuesFromEntity(entityToProcces, addSegmentMethodIfNeeded(entityToProcces, segment , segments), segment, throwExc, mappingInfo));
 				}
 			}
 			urlTemplatesMap.put(mapping, segments);
 		}
 		else {
 			
-			templateValuesMap = getEntityValueMapFromTemplates(entityToProcces, segments, templateValuesMap, throwExc);
+			templateValuesMap = getEntityValueMapFromTemplates(entityToProcces, segments, templateValuesMap, throwExc, mappingInfo);
 		}
 
 		// Replace each segment by entity value;
@@ -283,22 +283,25 @@ public class UDASecureResourceProcesor {
 	}
 
 	private static <T> Map<String, Object> getEntityValueMapFromTemplates(final Object entity, final Map<String, Map<Class<?>,Method>> segments,
-			final Map<String, Object> map, boolean throwExc) throws NoSuchMethodException {
+			final Map<String, Object> map, boolean throwExc, final MappingInfo<?> mappingInfo) throws NoSuchMethodException {
 
 		for (String segment : new ArrayList<String>(segments.keySet())) {
 			Method method = addSegmentMethodIfNeeded(entity, segment , segments);
-			map.put(segment, getTemplateValuesFromEntity(entity, method, segment, throwExc));
+			map.put(segment, getTemplateValuesFromEntity(entity, method, segment, throwExc, mappingInfo));
 		}
 
 		return map;
 	}
 
-	private static <T> Object getTemplateValuesFromEntity(final Object entity, final Method segmentMethod, final String segmentName, boolean throwExc) throws NoSuchMethodException {
+	private static <T> Object getTemplateValuesFromEntity(final Object entity, final Method segmentMethod, final String segmentName, boolean throwExc, final MappingInfo<?> mappingInfo) throws NoSuchMethodException {
 
 		Object value = null;
 		try {
 			if (segmentMethod != null) {
 				value = segmentMethod.invoke(entity);
+			}
+			else if (mappingInfo.isNotEntityParam(segmentName)) {
+				value = "(\\S+)";
 			}
 			else {
 				value = "{" + segmentName + "}";
