@@ -161,22 +161,30 @@ public class EjieSecureModule extends SimpleModule {
 				throws IOException, JsonProcessingException {
 			if(provider != null) {
 				if(value != null) {
-					Class<?> clazz;
-					TrustAssertion trustAssertion = beanProperty.getAnnotation(TrustAssertion.class);
-					if(trustAssertion != null && trustAssertion.idFor() != null) {
-						clazz = trustAssertion.idFor();
-					}else {
-						clazz = ((AnnotatedClass) beanProperty.getMember().getTypeContext()).getRawType();
+					try {
+						Class<?> clazz;
+						TrustAssertion trustAssertion = beanProperty.getAnnotation(TrustAssertion.class);
+						if (trustAssertion != null && trustAssertion.idFor() != null) {
+							clazz = trustAssertion.idFor();
+						} else {
+							if (null != beanProperty.getMember()) {
+								clazz = ((AnnotatedClass) beanProperty.getMember().getTypeContext()).getRawType();
+							} else {
+								clazz = Class.forName(beanProperty.getMetadata().getDefaultValue());
+							}
+						}
+						
+						String sValue = value.toString();
+						
+						idProtectionDataManager.storeSecureId(clazz, sValue);
+						
+						String secureId = ObfuscatorUtils.obfuscate(sValue, clazz);
+						
+						provider.findValueSerializer(String.class).serialize(secureId, gen, provider);
+						gen.writeStringField(SecureIdentifiable.NID_PROPERTY, sValue);
+					} catch (ClassNotFoundException e) {
+						e.printStackTrace();
 					}
-					
-					String sValue = value.toString();
-					
-					idProtectionDataManager.storeSecureId(clazz, sValue);
-					
-					String secureId = ObfuscatorUtils.obfuscate(sValue, clazz);
-					
-					provider.findValueSerializer(String.class).serialize(secureId, gen, provider);
-					gen.writeStringField(SecureIdentifiable.NID_PROPERTY, sValue);
 				}else {
 					provider.findValueSerializer(beanProperty.getType(), beanProperty).serialize(value, gen, provider);
 				}
