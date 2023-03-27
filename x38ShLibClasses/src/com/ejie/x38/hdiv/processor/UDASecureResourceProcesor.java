@@ -193,7 +193,7 @@ public class UDASecureResourceProcesor {
 					Link link = buildLink(revolveURL(mapping, entityToProcces, urlTemplatesMap, requestStr, true, allowInfo.getEntityMappingInfo()), allowInfo.getName(), allowInfo.getMethodForLinkCondition());
 					LOGGER.debug("Allowed link to entity: " + link);
 					entityLinks.add(link);
-				}catch(NoSuchMethodException e){
+				}catch(Exception e){
 					//Nothing to do
 				}
 			}
@@ -205,7 +205,7 @@ public class UDASecureResourceProcesor {
 					Link link = buildLink(revolveURL(mapping, entityToProcces, urlTemplatesMap, requestStr, false, allowInfo.getStaticMappingInfo()), allowInfo.getName(), allowInfo.getMethodForLinkCondition());
 					LOGGER.debug("Allowed static link: " + link);
 					entityLinks.add(link);
-				}catch(NoSuchMethodException e){
+				}catch(Exception e){
 					//Nothing to do
 					//revolveURL does not thow exception at this point
 				}
@@ -303,17 +303,19 @@ public class UDASecureResourceProcesor {
 			else if (mappingInfo.isNotEntityParam(segmentName)) {
 				value = "(\\S+)";
 			}
-			else {
+			else if (throwExc) {
+				throw new NoSuchMethodException((String)value);
+			} else {
 				value = "{" + segmentName + "}";
 			}
 		}
 		catch (Exception e) {
 			
 			LOGGER.error("No method " + segmentMethod.getName() + " found for entity class " + entity.getClass());
-			value = "{" + segmentName + "}";
 			if(throwExc) {
 				throw new NoSuchMethodException((String)value);
 			}
+			value = "{" + segmentName + "}";
 		}
 		return value;
 

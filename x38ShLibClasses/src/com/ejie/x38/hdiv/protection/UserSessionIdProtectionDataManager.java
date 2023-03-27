@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.PatternSyntaxException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -64,9 +65,13 @@ public class UserSessionIdProtectionDataManager implements IdProtectionDataManag
 		if(serverSideURLMap != null) {
 			String requestURI = request.getRequestURI();
 			for (Entry<String, Map<Class<?>, HashSet<String>>> url : serverSideURLMap.entrySet()) {
-				if (url.getValue() != null && requestURI.matches(url.getKey())) {
-					HashSet<String> allowedIds = url.getValue().get(clazz);
-					return allowedIds != null && allowedIds.contains(nId);
+				try {
+					if (url.getValue() != null && requestURI.matches(url.getKey())) {
+						HashSet<String> allowedIds = url.getValue().get(clazz);
+						return allowedIds != null && allowedIds.contains(nId);
+					}
+				} catch (PatternSyntaxException e) {
+					// Nothing to do
 				}
 			}
 		}
@@ -79,8 +84,15 @@ public class UserSessionIdProtectionDataManager implements IdProtectionDataManag
 	public boolean isAllowedAction(HttpServletRequest request) {
 		
 		Map<String, Map<Class<?>, HashSet<String>>> serverSideURLMap = (Map<String, Map<Class<?>, HashSet<String>>>) request.getSession().getAttribute(SERVER_SIDE_MAP_ATTR_NAME);
-		//Concat HttpMethod: to the stored url to protect against verb tampering
-		return serverSideURLMap != null && serverSideURLMap.containsKey(request.getRequestURI());
+		
+		if(serverSideURLMap != null) {
+			String requestURI = request.getRequestURI();
+			if (getServerSideURLMap(serverSideURLMap, requestURI) != null) {
+				return true;
+			}
+		}
+		
+		return false;
 		
 	}
 	
@@ -133,11 +145,31 @@ public class UserSessionIdProtectionDataManager implements IdProtectionDataManag
 			serverSideURLMap = new HashMap<String, Map<Class<?>, HashSet<String>>>();
 			session.setAttribute(SERVER_SIDE_MAP_ATTR_NAME, serverSideURLMap);
 		}
-		Map<Class<?>, HashSet<String>> allowedClassMap = serverSideURLMap.get(url);
+		Map<Class<?>, HashSet<String>> allowedClassMap = getServerSideURLMap(serverSideURLMap, url);
 		if(allowedClassMap != null) {
 			serverSideURLMap.put(toRemapURL, allowedClassMap);
-			serverSideURLMap.remove(url);//????Do we really need this? It is to save memory
+			//serverSideURLMap.remove(url);//????Do we really need this? It is to save memory
 		}
+	}
+	
+	private Map<Class<?>, HashSet<String>> getServerSideURLMap (Map<String, Map<Class<?>, HashSet<String>>> serverSideURLMap, String requestURI) {
+		
+		if (serverSideURLMap.containsKey(requestURI)) {
+			return serverSideURLMap.get(requestURI);
+		} else {
+			for (Entry<String, Map<Class<?>, HashSet<String>>> url : serverSideURLMap.entrySet()) {
+				try {
+					if (url.getValue() != null && requestURI.matches(url.getKey())) {
+						return url.getValue();
+					}
+				} catch (PatternSyntaxException e) {
+					
+				}
+			}
+			
+			return null;
+		}
+		
 	}
 	
 	private HttpSession getSession() {

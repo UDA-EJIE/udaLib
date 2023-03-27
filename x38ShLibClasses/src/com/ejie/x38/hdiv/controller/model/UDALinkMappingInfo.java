@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.util.UriComponentsBuilder;
 
 public class UDALinkMappingInfo {
 
@@ -77,7 +78,7 @@ public class UDALinkMappingInfo {
 		
 		for (String mapping : mappings.getMappings()) {
 			int pathVariableCount = StringUtils.countOccurrencesOf(mapping, "{");
-			noEntityParams.addAll(getParametersNoEntityAnnotation(mappings.getParameters()));
+			noEntityParams.addAll(getParametersNoEntityAnnotation(mappings.getParameters(), mapping));
 			if (pathVariableCount > 0 && noEntityParams.size() < pathVariableCount) {
 				// Template mapping
 				entityMapping.add(mapping);
@@ -119,12 +120,29 @@ public class UDALinkMappingInfo {
 		methodCondition = mappings.getMethodCondition();
 	}
 	
-	private Set<String> getParametersNoEntityAnnotation(final MethodParameter[] parameters) {
+	private List<String> getPathVariableNamesFromMapping(String mapping) {
+		List<String> pathVariableNames = new ArrayList<String>();
+		for (String segment : UriComponentsBuilder.fromUriString(mapping).build().getPathSegments()) {
+			if (segment.startsWith("{")) {
+				pathVariableNames.add(segment.substring(1, segment.length() - 1));
+			}
+		}
+		return pathVariableNames;
+	}
+	
+	private Set<String> getParametersNoEntityAnnotation(final MethodParameter[] parameters, final String mapping) {
 		Set<String> noEntityParams = new HashSet<String>();
-		for(MethodParameter param: parameters ) {
+		List<String> pathVariableNames = getPathVariableNamesFromMapping(mapping);
+		
+		int count = 0;
+		for (int i = 0;i < parameters.length;i++) {
+			MethodParameter param = parameters[i];
 			TrustAssertion annotation = param.getParameterAnnotation(TrustAssertion.class);
-			if(annotation != null && annotation.idFor() == NoEntity.class) {
-				noEntityParams.add(param.getParameterName());
+			if (annotation != null) {
+				if(annotation.idFor() == NoEntity.class) {
+					noEntityParams.add(pathVariableNames.get(count));
+				}
+				count++;
 			}
 		}
 		return noEntityParams;
