@@ -36,6 +36,11 @@ public class EjieValidationErrorHander implements ValidatorErrorHandler {
 	private final ObjectMapper objectMapper;
 	
 	private final HDIVConfig config;
+	
+	private boolean isJsonRequest(String contentType) {
+		MediaType requestContentType = contentType == null ? null : MediaType.valueOf(contentType);
+		return MediaType.APPLICATION_JSON.isCompatibleWith(requestContentType);
+	}
 
 	@Autowired
 	public EjieValidationErrorHander(final HDIVConfig config) {
@@ -96,7 +101,7 @@ public class EjieValidationErrorHander implements ValidatorErrorHandler {
 
 	@SuppressWarnings("deprecation")
 	private void checkCustomErrorPage(final RequestContextHolder ctx) {
-		if (config.getErrorPage() != null) {
+		if (config.getErrorPage() != null && !isJsonRequest(ctx.getContentType())) {
 			try {
 				ctx.getRequest().getRequestDispatcher(config.getErrorPage()).forward(ctx.getRequest(), ctx.getResponse());
 			}
