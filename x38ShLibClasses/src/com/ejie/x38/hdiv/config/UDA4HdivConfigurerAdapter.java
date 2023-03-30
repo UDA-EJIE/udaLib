@@ -252,12 +252,15 @@ public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfig
 
 		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*").forParameters("sidx").rules("fulltextWhitespaces")).setAsClientParameter(true);
 		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*").forParameters("sord", "order.dir").rules("order")).setAsClientParameter(true);
-		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*").forParameters("columns").rules("valueList")).setAsClientParameter(true)
-				.disableDefaults();
 
 		ejieValidationConfigurer.addValidation(getLoginPage()).forParameters("userNames").disableDefaults();
 		
 		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*").forParameters("locale").rules("locale")).setAsClientParameter(true);
+		
+		// Exportación de la tabla
+		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*").forParameters("columns", "columnsName").rules("text")).setAsClientParameter(true);
+		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*").forParameters("reportsParams.*").rules("text")).setAsClientParameter(true);
+		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*").forParameters("clipboardReport").rules("boolean")).setAsClientParameter(true);
 		
 		// Formularios de edición
 		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*").forParameters("actionType").rules("method")).setAsClientParameter(true);
