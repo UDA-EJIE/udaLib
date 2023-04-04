@@ -11,7 +11,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<org.hdiv.ce.version>3.5.2</org.hdiv.ce.version>
+		<com.ejie.hdiv.version>4.0.0</com.ejie.hdiv.version>
 		<org.springframework.version>4.3.22.RELEASE</org.springframework.version>
 		<org.springframework.security.version>4.2.11.RELEASE</org.springframework.security.version>
 		<org.logback.version>1.2.11</org.logback.version>
@@ -24,24 +24,24 @@
 	<dependencies>
 		<!-- Hdiv -->
 		<dependency>
-			<groupId>org.hdiv</groupId>
+			<groupId>com.ejie.hdiv</groupId>
 			<artifactId>hdiv-config</artifactId>
-			<version>${org.hdiv.ce.version}</version>
+			<version>${com.ejie.hdiv.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.hdiv</groupId>
+			<groupId>com.ejie.hdiv</groupId>
 			<artifactId>hdiv-core</artifactId>
-			<version>${org.hdiv.ce.version}</version>
+			<version>${com.ejie.hdiv.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.hdiv</groupId>
+			<groupId>com.ejie.hdiv</groupId>
 			<artifactId>hdiv-services</artifactId>
-			<version>${org.hdiv.ce.version}</version>
+			<version>${com.ejie.hdiv.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.hdiv</groupId>
+			<groupId>com.ejie.hdiv</groupId>
 			<artifactId>hdiv-spring-mvc</artifactId>
-			<version>${org.hdiv.ce.version}</version>
+			<version>${com.ejie.hdiv.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.javassist</groupId>
