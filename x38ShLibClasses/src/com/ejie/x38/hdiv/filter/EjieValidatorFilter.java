@@ -28,6 +28,7 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.util.ContentCachingRequestWrapper;
 
 import com.ejie.x38.hdiv.protection.IdProtectionDataManager;
 import com.ejie.x38.hdiv.util.ObfuscatorUtils;
@@ -57,7 +58,9 @@ public class EjieValidatorFilter extends ValidatorFilter {
 		
 		Map<String, String> deobfuscatedVariables = checkPathVariables(request, response);
 		String mapping = getForwardMapping(request, response, deobfuscatedVariables);
-		super.doFilterInternal(request, response, new EjieFilterChain(filterChain).setMapping(mapping));	
+		EjieRequestWrapper wRequest = new EjieRequestWrapper(request);
+		super.doFilterInternal(wRequest, response, new EjieFilterChain(filterChain).setMapping(mapping));
+		wRequest.cleanup();
 	}
 	
 	private HttpServletRequest wrapRequest(HttpServletRequest request) {

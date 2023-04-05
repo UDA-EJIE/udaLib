@@ -26,15 +26,12 @@
 			<attribute name="owner.project.facets" value="#system#;jst.utility"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jrockit-jdk1.6.0_91">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.7.0_80.jdk">
 		<attributes>
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry combineaccessrules="false" kind="src" path="/hdiv-config"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/hdiv-core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/hdiv-services"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/hdiv-spring-mvc"/>
 	<classpathentry kind="lib" path="lib/aopalliance-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/aspectjweaver-1.8.13.jar"/>
 	<classpathentry kind="lib" path="lib/avro-1.7.7.jar"/>
@@ -119,5 +116,8 @@
 	<classpathentry kind="lib" path="lib/xz-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/y31b-1.4-ifaz.jar"/>
 	<classpathentry kind="lib" path="lib/y31c-1.5-impl.jar"/>
+	<classpathentry kind="lib" path="lib/hdiv-config-3.5.2.jar"/>
+	<classpathentry kind="lib" path="lib/hdiv-core-3.5.2.jar"/>
+	<classpathentry kind="lib" path="lib/hdiv-spring-mvc-3.5.2.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
