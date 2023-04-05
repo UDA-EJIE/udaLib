@@ -2,6 +2,7 @@ package com.ejie.x38.hdiv.filter;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -12,7 +13,7 @@ import java.io.OutputStream;
 
 import org.apache.commons.io.IOUtils;
 
-public class CacheInputStream implements AutoCloseable {
+public class CacheInputStream implements Closeable {
 
 	public static final int MAX_SIZE = 1024 * 1024;
 
