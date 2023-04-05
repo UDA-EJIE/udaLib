@@ -2,12 +2,11 @@ package com.ejie.x38.hdiv.processor;
 
 import java.lang.reflect.Method;
 
-import org.hdiv.services.EntityStateRecorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.hateoas.Link;
 
 import com.ejie.x38.hdiv.controller.model.SecureClassInfo;
+import com.ejie.x38.hdiv.util.ObfuscatorUtils;
 
 import javassist.util.proxy.MethodHandler;
 
@@ -17,19 +16,17 @@ public class SecureInvocationHandler implements MethodHandler {
 	
     private final Object invocationTarget;
     private SecureClassInfo[] secureClassInfoList = null;
-    private EntityStateRecorder<Link> entityStateRecorder;
     
-    public SecureInvocationHandler(Object invocationTarget, EntityStateRecorder<Link> entityStateRecorder, SecureClassInfo... secureClassInfo) {
+    public SecureInvocationHandler(Object invocationTarget, SecureClassInfo... secureClassInfo) {
         this.invocationTarget = invocationTarget;
        	this.secureClassInfoList = secureClassInfo;
-       	this.entityStateRecorder = entityStateRecorder;
     }
 
     private Object invokeProxy(Method method, Object[] args, SecureClassInfo info) throws Throwable {
     	Object value = method.invoke(invocationTarget, args);
     	if(value != null) {
 	    	try {
-	    		return entityStateRecorder.ofuscate(value, info.getTargetClass(), info.getParamName());
+	    		return ObfuscatorUtils.obfuscate(String.valueOf(value), info.getTargetClass());
 	    	}catch(Throwable e) {
 	    		LOGGER.error("cannot ofuscate value of method", e);
 	    	}

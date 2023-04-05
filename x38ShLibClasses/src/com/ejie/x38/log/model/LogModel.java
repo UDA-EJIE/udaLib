@@ -16,6 +16,11 @@ public class LogModel implements java.io.Serializable, SecureIdContainer {
 		super();
 	}
 
+	public LogModel(String nameLog) {
+		super();
+		this.nameLog = nameLog;
+	}
+
 	public LogModel(String nameLog, String levelLog) {
 		super();
 		this.nameLog = nameLog;

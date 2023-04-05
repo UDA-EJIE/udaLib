@@ -6,19 +6,19 @@ import java.util.List;
 public class UDALinkResources {
 
 	List<Object> entities = new ArrayList<Object>();
-	List<ReferencedObject> subEntities = new ArrayList<ReferencedObject>();
+	List<Object> subEntities = new ArrayList<Object>();
 	
 	public List<Object> getEntities() {
 		return entities;
 	}
-	public List<ReferencedObject> getSubEntities() {
+	public List<Object> getSubEntities() {
 		return subEntities;
 	}
 	
 	public void addAllEntities(List<Object> entities) {
 		this.entities.addAll(entities);;
 	}
-	public void addAllSubEntities(List<ReferencedObject> subEntities) {
+	public void addAllSubEntities(List<Object> subEntities) {
 		this.subEntities.addAll(subEntities);
 	}
 	
