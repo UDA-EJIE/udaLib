@@ -257,6 +257,9 @@ public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfig
 		
 		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*").forParameters("locale").rules("locale")).setAsClientParameter(true);
 		
+		// Eliminación de la tabla
+		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*").forParameters("deleteAll").rules("boolean")).setAsClientParameter(true);
+		
 		// Exportación de la tabla
 		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*").forParameters("columns", "columnsName").rules("text")).setAsClientParameter(true);
 		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*").forParameters("reportsParams.*").rules("text")).setAsClientParameter(true);
