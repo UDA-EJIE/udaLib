@@ -589,7 +589,7 @@ public class TableManager implements java.io.Serializable{
 	/*
 	 * SELECCION MULTIPLE
 	 */
-	public static <T> StringBuilder getSelectMultipleQuery(TableRequestDto tableRequestDto, Class<T> clazz, List<Object> paramList, String... pkList){
+	public static <T> StringBuilder getSelectMultipleQuery(TableRequestDto tableRequestDto, Class<T> clazz, List<Object> paramList, String[] orderByWhiteList, String... pkList){
 
 		String pkStr = (TableManager.strArrayToCommaSeparatedStr(pkList)).toUpperCase();
 
@@ -628,6 +628,8 @@ public class TableManager implements java.io.Serializable{
 			
 			selectQuery.deleteCharAt(selectQuery.length()-1);
 			selectQuery.append(")");
+			
+			selectQuery.append(getOrderBy(tableRequestDto, false, orderByWhiteList));
 		}
 
 		return selectQuery;
