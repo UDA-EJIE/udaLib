@@ -8,11 +8,11 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.hdiv.config.HDIVConfig;
-import org.hdiv.services.AnyEntity;
-import org.hdiv.services.SecureIdentifiable;
-import org.hdiv.services.TrustAssertion;
-import org.hdiv.util.Method;
+import com.ejie.hdiv.config.HDIVConfig;
+import com.ejie.hdiv.services.AnyEntity;
+import com.ejie.hdiv.services.SecureIdentifiable;
+import com.ejie.hdiv.services.TrustAssertion;
+import com.ejie.hdiv.util.Method;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.Resource;

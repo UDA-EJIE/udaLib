@@ -2,7 +2,7 @@ package com.ejie.x38.hdiv.error;
 
 import java.util.List;
 
-import org.hdiv.filter.ValidatorError;
+import com.ejie.hdiv.filter.ValidatorError;
 
 public class ErrorResponse {
 

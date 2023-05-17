@@ -15,10 +15,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.HttpStatus;
-import org.hdiv.filter.ValidatorFilter;
-import org.hdiv.services.NoEntity;
-import org.hdiv.services.TrustAssertion;
-import org.hdiv.util.HDIVUtil;
+import com.ejie.hdiv.filter.ValidatorFilter;
+import com.ejie.hdiv.services.NoEntity;
+import com.ejie.hdiv.services.TrustAssertion;
+import com.ejie.hdiv.util.HDIVUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;

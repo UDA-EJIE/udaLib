@@ -29,9 +29,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
-import org.hdiv.services.SecureIdContainer;
-import org.hdiv.services.SecureIdentifiable;
-import org.hdiv.services.TrustAssertion;
+import com.ejie.hdiv.services.SecureIdContainer;
+import com.ejie.hdiv.services.SecureIdentifiable;
+import com.ejie.hdiv.services.TrustAssertion;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.hateoas.Resource;

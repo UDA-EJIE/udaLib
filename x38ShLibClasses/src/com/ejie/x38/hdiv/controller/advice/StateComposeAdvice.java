@@ -7,11 +7,11 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.hdiv.config.HDIVConfig;
-import org.hdiv.dataComposer.IDataComposer;
-import org.hdiv.services.SecureIdContainer;
-import org.hdiv.services.SecureIdentifiable;
-import org.hdiv.util.HDIVUtil;
+import com.ejie.hdiv.config.HDIVConfig;
+import com.ejie.hdiv.dataComposer.IDataComposer;
+import com.ejie.hdiv.services.SecureIdContainer;
+import com.ejie.hdiv.services.SecureIdentifiable;
+import com.ejie.hdiv.util.HDIVUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

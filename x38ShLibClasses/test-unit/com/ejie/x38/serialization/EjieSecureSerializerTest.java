@@ -16,10 +16,10 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.hdiv.services.CustomSecureConverter;
-import org.hdiv.services.SecureIdContainer;
-import org.hdiv.services.SecureIdentifiable;
-import org.hdiv.services.TrustAssertion;
+import com.ejie.hdiv.services.CustomSecureConverter;
+import com.ejie.hdiv.services.SecureIdContainer;
+import com.ejie.hdiv.services.SecureIdentifiable;
+import com.ejie.hdiv.services.TrustAssertion;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.hateoas.Resource;

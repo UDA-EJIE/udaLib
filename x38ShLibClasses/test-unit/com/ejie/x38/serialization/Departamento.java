@@ -18,8 +18,8 @@ package com.ejie.x38.serialization;
 
 import java.math.BigDecimal;
 
-import org.hdiv.services.SecureIdContainer;
-import org.hdiv.services.TrustAssertion;
+import com.ejie.hdiv.services.SecureIdContainer;
+import com.ejie.hdiv.services.TrustAssertion;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 

@@ -15,10 +15,10 @@
  */
 package com.ejie.x38.hdiv.datacomposer;
 
-import org.hdiv.context.RequestContextHolder;
-import org.hdiv.dataComposer.DataComposerFactory;
-import org.hdiv.dataComposer.DataComposerMemory;
-import org.hdiv.dataComposer.IDataComposer;
+import com.ejie.hdiv.context.RequestContextHolder;
+import com.ejie.hdiv.dataComposer.DataComposerFactory;
+import com.ejie.hdiv.dataComposer.DataComposerMemory;
+import com.ejie.hdiv.dataComposer.IDataComposer;
 
 public class EjieDataComposerFactory extends DataComposerFactory {
 

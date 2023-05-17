@@ -1,9 +1,9 @@
 package com.ejie.x38.hdiv.datacomposer;
 
-import org.hdiv.context.RequestContextHolder;
-import org.hdiv.dataComposer.DataComposerMemory;
-import org.hdiv.state.IParameter;
-import org.hdiv.state.IState;
+import com.ejie.hdiv.context.RequestContextHolder;
+import com.ejie.hdiv.dataComposer.DataComposerMemory;
+import com.ejie.hdiv.state.IParameter;
+import com.ejie.hdiv.state.IState;
 
 public class EjieDataComposerMemory extends DataComposerMemory {
 	
