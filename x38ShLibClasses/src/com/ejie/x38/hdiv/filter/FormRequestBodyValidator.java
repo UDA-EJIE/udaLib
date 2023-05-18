@@ -137,7 +137,8 @@ public class FormRequestBodyValidator {
 				parameters.remove(config.getStateParameterName());
 				
 				Iterator<Entry<String, List<String>>> parameterIterator = parameters.entrySet().iterator();
-
+				
+				String target = context.getTarget();
 				while (parameterIterator.hasNext()) {
 					
 					Entry<String, List<String>> parameter = parameterIterator.next();
@@ -155,14 +156,14 @@ public class FormRequestBodyValidator {
 							// Check for a entity type param or check if no validation required
 							if (!isEntityPart(state, parameterName, context)) {
 								// Add as extra value to be validated as CLIENT PARAMETER
-								validateExtraParameter(parameterName, parameterFullName, parameter.getValue(), errors);
+								validateExtraParameter(target, parameterName, parameter.getValue(), errors);
 								LOGGER.debug("Validate {} param as client parameter ", parameterFullName);
 							}
 						}
 						else if(param.isEditable()) {
-							validateEditableParameter(parameterName, parameterFullName, parameter.getValue(), errors);
+							validateEditableParameter(target, parameterName, parameter.getValue(), errors);
 						}else if (!param.getValues().isEmpty() && parameter.getValue() != null) {
-							validateNonEditable(param, parameter, parameterName, parameterFullName, errors);
+							validateNonEditable(target, param, parameter, parameterName, parameterFullName, errors);
 						}
 
 					}
@@ -192,7 +193,7 @@ public class FormRequestBodyValidator {
 		}
 	}
 
-	private void validateNonEditable(final IParameter stateParam, final Entry<String, List<String>> bodyParameters,
+	private void validateNonEditable(String target, final IParameter stateParam, final Entry<String, List<String>> bodyParameters,
 			final String parameterName,
 			final String parameterFullName, List<ValidatorError> errors) {
 
@@ -201,7 +202,7 @@ public class FormRequestBodyValidator {
 		boolean valid = true;
 		for (String value : bodyParameters.getValue()) {
 			if (!posibleValues.contains(value)) {
-				errors.add(new ValidatorError(HDIVErrorCodes.INVALID_PARAMETER_VALUE, parameterName, value));
+				errors.add(new ValidatorError(HDIVErrorCodes.INVALID_PARAMETER_VALUE, target, parameterName, value));
 				valid = false;
 				break;
 			}
