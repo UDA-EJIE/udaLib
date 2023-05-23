@@ -3,7 +3,7 @@ package com.ejie.x38.hdiv.filter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hdiv.filter.ValidatorHelperResult;
+import com.ejie.hdiv.filter.ValidatorHelperResult;
 
 public class EjieValidatorHelperResult extends ValidatorHelperResult {
 

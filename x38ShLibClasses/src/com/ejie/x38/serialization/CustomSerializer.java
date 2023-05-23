@@ -18,7 +18,7 @@ package com.ejie.x38.serialization;
 import java.io.IOException;
 import java.util.Map.Entry;
 
-import org.hdiv.services.CustomSecureSerializer;
+import com.ejie.hdiv.services.CustomSecureSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;

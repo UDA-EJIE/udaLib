@@ -589,6 +589,7 @@ public class TableManager implements java.io.Serializable{
 	/*
 	 * SELECCION MULTIPLE
 	 */
+	@Deprecated
 	public static <T> StringBuilder getSelectMultipleQuery(TableRequestDto tableRequestDto, Class<T> clazz, List<Object> paramList, String... pkList){
 
 		String pkStr = (TableManager.strArrayToCommaSeparatedStr(pkList)).toUpperCase();
@@ -628,6 +629,53 @@ public class TableManager implements java.io.Serializable{
 			
 			selectQuery.deleteCharAt(selectQuery.length()-1);
 			selectQuery.append(")");
+		}
+
+		return selectQuery;
+
+	}
+	
+	public static <T> StringBuilder getSelectMultipleQuery(TableRequestDto tableRequestDto, Class<T> clazz, List<Object> paramList, String[] orderByWhiteList, String... pkList){
+
+		String pkStr = (TableManager.strArrayToCommaSeparatedStr(pkList)).toUpperCase();
+
+		StringBuilder selectQuery = new StringBuilder();
+		
+		if(!tableRequestDto.getMultiselection().getSelectedIds().isEmpty()) {
+			selectQuery.append(" AND (").append(pkStr).append(") ")
+				.append(tableRequestDto.getMultiselection().getSelectedAll()? "NOT":"").append(" IN (");
+			
+			// Comprobar si la lista de parámetros recibida es la misma que la aportada en pkList.
+			// Cabe decir que en los casos en los que las claves primarias sean compuestas esta condición nunca será afirmativa ya que siempre diferirán los valores recibidos y aportados.
+			if (tableRequestDto.getCore().getPkNames().size() != pkList.length && !tableRequestDto.getMultiselection().getSelectedIds().get(0).contains(Constants.PK_TOKEN)) {
+				TableManager.logger.info("[getSelectMultipleQuery] : La lista de parámetros recibida no es la misma que la aportada");
+			}
+			
+			for (T selectedBean : tableRequestDto.getMultiselection().getSelected(clazz)) {
+				selectQuery.append("(");
+				for (String pk : pkList) {
+					selectQuery.append("?").append(",");
+					
+					try {
+						// Se obtiene el valor de la pk declarada.
+						paramList.add(getCampoByIntrospection(clazz, selectedBean, pk.replace("_", "")));
+					} catch (IllegalAccessException e) {
+						TableManager.logger.error(e.getMessage(), e);
+					} catch (InvocationTargetException e) {
+						TableManager.logger.error(e.getMessage(), e);
+					} catch (IntrospectionException e) {
+						TableManager.logger.error(e.getMessage(), e);
+					}
+				}
+
+				selectQuery.deleteCharAt(selectQuery.length()-1);
+				selectQuery.append("),");
+			}
+			
+			selectQuery.deleteCharAt(selectQuery.length()-1);
+			selectQuery.append(")");
+			
+			selectQuery.append(getOrderBy(tableRequestDto, false, orderByWhiteList));
 		}
 
 		return selectQuery;

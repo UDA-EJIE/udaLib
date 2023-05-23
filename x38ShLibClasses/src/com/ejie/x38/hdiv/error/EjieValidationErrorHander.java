@@ -5,11 +5,11 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.hdiv.config.HDIVConfig;
-import org.hdiv.context.RequestContextHolder;
-import org.hdiv.filter.ValidationErrorException;
-import org.hdiv.filter.ValidatorError;
-import org.hdiv.filter.ValidatorErrorHandler;
+import com.ejie.hdiv.config.HDIVConfig;
+import com.ejie.hdiv.context.RequestContextHolder;
+import com.ejie.hdiv.filter.ValidationErrorException;
+import com.ejie.hdiv.filter.ValidatorError;
+import com.ejie.hdiv.filter.ValidatorErrorHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

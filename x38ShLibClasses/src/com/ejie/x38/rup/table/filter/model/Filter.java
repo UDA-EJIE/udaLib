@@ -1,7 +1,7 @@
 package com.ejie.x38.rup.table.filter.model;
 
-import org.hdiv.services.SecureIdContainer;
-import org.hdiv.services.TrustAssertion;
+import com.ejie.hdiv.services.SecureIdContainer;
+import com.ejie.hdiv.services.TrustAssertion;
 
 public class Filter implements java.io.Serializable, SecureIdContainer {
 

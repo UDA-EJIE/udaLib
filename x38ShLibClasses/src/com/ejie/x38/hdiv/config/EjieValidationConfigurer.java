@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-import org.hdiv.config.annotation.ValidationConfigurer;
-import org.hdiv.config.annotation.ValidationConfigurer.ValidationConfig.EditableValidationConfigurer;
+import com.ejie.hdiv.config.annotation.ValidationConfigurer;
+import com.ejie.hdiv.config.annotation.ValidationConfigurer.ValidationConfig.EditableValidationConfigurer;
 
 import com.ejie.x38.hdiv.util.Constants;
 

@@ -1,8 +1,8 @@
 package com.ejie.x38.log.model;
 
 import org.apache.commons.lang.ObjectUtils;
-import org.hdiv.services.SecureIdContainer;
-import org.hdiv.services.TrustAssertion;
+import com.ejie.hdiv.services.SecureIdContainer;
+import com.ejie.hdiv.services.TrustAssertion;
 
 public class LogModel implements java.io.Serializable, SecureIdContainer {
 	private static final long serialVersionUID = 1L;

@@ -4,8 +4,8 @@ import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.hdiv.services.SecureIdContainer;
-import org.hdiv.services.TrustAssertion;
+import com.ejie.hdiv.services.SecureIdContainer;
+import com.ejie.hdiv.services.TrustAssertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,22 +1,22 @@
 /*
- * Copyright 2012 E.J.I.E., S.A.
- *
- * Licencia con arreglo a la EUPL, VersiÃƒÂ³n 1.1 exclusivamente (la Ã‚Â«LicenciaÃ‚Â»);
- * Solo podrÃƒÂ¡ usarse esta obra si se respeta la Licencia.
- * Puede obtenerse una copia de la Licencia en
- *
- * http://ec.europa.eu/idabc/eupl.html
- *
- * Salvo cuando lo exija la legislaciÃƒÂ³n aplicable o se acuerde por escrito,
- * el programa distribuido con arreglo a la Licencia se distribuye Ã‚Â«TAL CUALÃ‚Â»,
- * SIN GARANTÃƒï¿½AS NI CONDICIONES DE NINGÃƒÅ¡N TIPO, ni expresas ni implÃƒÂ­citas.
- * VÃƒÂ©ase la Licencia en el idioma concreto que rige los permisos y limitaciones
- * que establece la Licencia.
- */
+* Copyright 2022 E.J.I.E., S.A.
+*
+* Licencia con arreglo a la EUPL, Versión 1.1 exclusivamente (la «Licencia»);
+* Solo podrá usarse esta obra si se respeta la Licencia.
+* Puede obtenerse una copia de la Licencia en
+*
+* http://ec.europa.eu/idabc/eupl.html
+*
+* Salvo cuando lo exija la legislación aplicable o se acuerde por escrito,
+* el programa distribuido con arreglo a la Licencia se distribuye «TAL CUAL»,
+* SIN GARANTÍAS NI CONDICIONES DE NINGÚN TIPO, ni expresas ni implícitas.
+* Véase la Licencia en el idioma concreto que rige los permisos y limitaciones
+* que establece la Licencia.
+*/
 package com.ejie.x38.security;
 
+import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
@@ -48,11 +48,11 @@ import n38i.exe.N38ParameterException;
  * @author UDA
  *
  */
-public class PerimetralSecurityWrapperN38Impl implements
+public class PerimetralSecurityWrapperOAMImpl implements
 		PerimetralSecurityWrapper {
 
 	private static final Logger logger = LoggerFactory
-			.getLogger(PerimetralSecurityWrapperN38Impl.class);
+			.getLogger(PerimetralSecurityWrapperOAMImpl.class);
 
 	private Long xlnetCachingPeriod = new Long(0);
 	private String xlnetsDomain = null;
@@ -66,14 +66,14 @@ public class PerimetralSecurityWrapperN38Impl implements
 	private String specificCredentialsName = null;
 	private Object specificCredentials = null;
 
-	public PerimetralSecurityWrapperN38Impl() {
+	public PerimetralSecurityWrapperOAMImpl() {
 		this.anonymousProfile.put("position", "udaAnonymousPosition");
 		this.anonymousProfile.put("userProfiles", "udaAnonymousProfile");
 	}
 
 	public synchronized String validateSession(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws SecurityException {
-
-		String udaXLNetsSessionId = getXlnetsUserId(httpRequest);
+		Date date = new Date();
+		String udaXLNetsSessionId = String.valueOf(date.getTime());
 
 		// Getting Authentication credentials
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -86,7 +86,25 @@ public class PerimetralSecurityWrapperN38Impl implements
 		if (authentication != null) {
 			credentials = (Credentials) authentication.getCredentials();
 		}
-
+		
+		//Gets param OAM request
+		String name = httpRequest.getHeader("HTTP_NAME"); 
+		String surname = httpRequest.getHeader("HTTP_SURNAME"); 
+		String fullname = httpRequest.getHeader("HTTP_FULLNAME"); 
+		String username = httpRequest.getHeader("HTTP_USERNAME"); 
+		String nif = httpRequest.getHeader("HTTP_NIF"); 
+		String position = httpRequest.getHeader("HTTP_POSITION"); 
+		String groups = httpRequest.getHeader("HTTP_GROUPS"); 
+		
+		if(name == null || surname == null || fullname == null || username == null || nif != null || position == null || groups == null) {
+			return "true";
+		}else {
+			httpSession.setAttribute("name", name);
+			httpSession.setAttribute("surname", surname);
+			httpSession.setAttribute("fullName", fullname);
+			httpSession.setAttribute("HTTP_GROUPS", groups);
+		}
+		
 		if (credentials != null) {
 			if (udaXLNetsSessionId != null) {
 
@@ -209,6 +227,7 @@ public class PerimetralSecurityWrapperN38Impl implements
 		Document xmlSesion;
 
 		if (isCertificate) {
+			n38Api = XlnetCore.getN38API(httpRequest);
 			xmlSesion = XlnetCore.getN38ItemSesion(n38Api);
 			userData = XlnetCore.getN38SubjectCert(xmlSesion);
 		}
@@ -230,7 +249,7 @@ public class PerimetralSecurityWrapperN38Impl implements
 					userData.put("surname", userInfo.get("surname"));
 					userData.put("fullName", userInfo.get("fullName"));
 					httpSession.setAttribute("fullName", userInfo.get("fullName"));
-
+	
 				} else {
 					// User isn't in the XLNets's LDap: certificado o juego de barcos
 					userData.put("name", userData.get("GIVENNAME"));
@@ -241,7 +260,7 @@ public class PerimetralSecurityWrapperN38Impl implements
 					userData.put("fullName", userData.get("CN"));
 					httpSession.setAttribute("fullName", userData.get("CN"));
 				}
-
+	
 				xmlSesion = null;
 				userInfo = null;
 			} catch (N38ParameterException e) {
@@ -283,14 +302,21 @@ public class PerimetralSecurityWrapperN38Impl implements
 
 	}
 
-	@SuppressWarnings("unchecked")
 	public Vector<String> getUserInstances(HttpServletRequest httpRequest) {
-		Vector<String> userInstances = null;
-
-		userInstances = (Vector<String>) httpRequest.getSession(false).getAttribute("userProfiles");
+		Vector<String> userInstances = new Vector<String>();
+		//Bucle para oam.
+		if(httpRequest.getSession(false).getAttribute("HTTP_GROUPS") != null) {
+			String groups = (String) httpRequest.getSession(false).getAttribute("HTTP_GROUPS");
+			String[] listaGroups = groups.split(":");
+			if(listaGroups != null) {
+				for(int i=0;i < listaGroups.length ;i++ ) {
+					userInstances.add(listaGroups[i]);
+				}
+			}
+		}
 
 		// Returning UserInstances
-		httpRequest.getSession(false).removeAttribute("userProfiles");
+		httpRequest.getSession(false).removeAttribute("HTTP_GROUPS");
 
 		logger.trace("Connected UserConnectedUidSession is: " + userInstances);
 		return userInstances;
@@ -396,9 +422,16 @@ public class PerimetralSecurityWrapperN38Impl implements
 		Document xmlSesion = null;
 		HttpSession httpSession = httpRequest.getSession(false);
 		HashMap<String, String> userInfo = null;
+		
+		httpSession.setAttribute("name", (String) httpSession.getAttribute("name"));
+		httpSession.setAttribute("surname", (String) httpSession.getAttribute("surname"));
+		httpSession.setAttribute("fullName", (String) httpSession.getAttribute("fullName"));
+		httpSession.setAttribute("HTTP_GROUPS", (String) httpSession.getAttribute("HTTP_GROUPS"));
+		if(httpSession != null) {
+			return true;
+		}
 
 		N38API n38Api = XlnetCore.getN38API(httpRequest);
-		n38Api = XlnetCore.getN38API(httpRequest);
 
 		if (n38Api != null) {
 			logger.info("Validating the session of XLNets!");
@@ -534,8 +567,10 @@ public class PerimetralSecurityWrapperN38Impl implements
 		httpSession.setAttribute("nif", XlnetCore.getParameterSession(n38Api, N38API.NOMBRE_DNI));
 		policy = XlnetCore.getParameterSession(n38Api, N38API.NOMBRE_N38CERTIFICADOPOLITICAS);
 		httpSession.setAttribute("policy", policy);
-
-		if (!(policy.toLowerCase().equals("no"))) {
+		UserName = (String) httpSession.getAttribute("name");
+		httpSession.setAttribute("isCertificate", "false");
+		
+		/*if (!(policy.toLowerCase().equals("no"))) {
 			httpSession.setAttribute("isCertificate", "true");
 		} else {
 			httpSession.setAttribute("isCertificate", "false");
@@ -615,7 +650,7 @@ public class PerimetralSecurityWrapperN38Impl implements
 		} catch (N38Excepcion e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 
 		httpSession.setAttribute("destroySessionSecuritySystem", this.destroySessionSecuritySystem);
 

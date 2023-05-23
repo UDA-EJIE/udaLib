@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.hdiv.services.SecureIdContainer;
-import org.hdiv.services.SecureIdentifiable;
-import org.hdiv.services.TrustAssertion;
+import com.ejie.hdiv.services.SecureIdContainer;
+import com.ejie.hdiv.services.SecureIdentifiable;
+import com.ejie.hdiv.services.TrustAssertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.Resource;
