@@ -21,7 +21,7 @@ public class ObfuscatorUtils {
 		
 	}
 	
-	private static StringBuilder translate(String literal, String source, String tarjet) {
+	private static StringBuilder translate(String literal, String source, String target) {
 		StringBuilder result = new StringBuilder();
 		
 		for (int i=0;i<literal.length();i++) {
@@ -30,7 +30,7 @@ public class ObfuscatorUtils {
 	        if(index == -1) {
 	        	result.append(c);
 	        }else {
-	        	result.append(tarjet.charAt(index));	
+	        	result.append(target.charAt(index));	
 	        }  
 	    }
 	    
