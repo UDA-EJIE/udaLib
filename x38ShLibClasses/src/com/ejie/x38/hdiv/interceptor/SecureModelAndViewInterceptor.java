@@ -6,11 +6,9 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hdiv.services.LinkProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -23,10 +21,6 @@ public class SecureModelAndViewInterceptor extends HandlerInterceptorAdapter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SecureModelAndViewInterceptor.class);
 
-	@Autowired
-	@Lazy
-	private LinkProvider<?> linkProvider;
-	
 	@Autowired
 	private EncriptorResponseLinkProcessor responseLinkProcessor;
 	
@@ -44,7 +38,7 @@ public class SecureModelAndViewInterceptor extends HandlerInterceptorAdapter {
 			try {
 				Object value = modelObject.getValue();
 				if(value instanceof IdentifiableModelWrapper || value instanceof Iterable || value instanceof Map) {
-					modelAndView.addObject(modelObject.getKey(), responseLinkProcessor.checkResponseToLinks(modelObject.getValue(), handler.getClass(), linkProvider));
+					modelAndView.addObject(modelObject.getKey(), responseLinkProcessor.checkResponseToLinks(modelObject.getValue(), handler.getClass()));
 				}
 			}
 			catch (Throwable e) {

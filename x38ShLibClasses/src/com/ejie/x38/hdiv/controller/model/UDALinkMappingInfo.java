@@ -8,13 +8,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.hdiv.services.NoEntity;
-import org.hdiv.services.TrustAssertion;
+import com.ejie.hdiv.services.NoEntity;
+import com.ejie.hdiv.services.TrustAssertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.util.UriComponentsBuilder;
 
 public class UDALinkMappingInfo {
 
@@ -66,16 +67,19 @@ public class UDALinkMappingInfo {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void setMappingInfo(final Class<?> allower, final MethodMappingInfo mappings) {
 
-		Set<String> staticMapping = new HashSet<String>();
-		Set<String> entityMapping = new HashSet<String>();
-
 		if(mappings == null) {
 			LOGGER.debug("No mappings found for allower " + allower.getName());
 			return;
 		}
+
+		Set<String> staticMapping = new HashSet<String>();
+		Set<String> entityMapping = new HashSet<String>();
+		Set<String> noEntityParams = new HashSet<String>();
+		
 		for (String mapping : mappings.getMappings()) {
 			int pathVariableCount = StringUtils.countOccurrencesOf(mapping, "{");
-			if (pathVariableCount > 0 && getParametersNoEntityAnnotationCount(mappings.getParameters()) < pathVariableCount) {
+			noEntityParams.addAll(getParametersNoEntityAnnotation(mappings.getParameters(), mapping));
+			if (pathVariableCount > 0 && noEntityParams.size() < pathVariableCount) {
 				// Template mapping
 				entityMapping.add(mapping);
 			}
@@ -111,20 +115,37 @@ public class UDALinkMappingInfo {
 			}
 		}
 
-		entityMappingInfo = new MappingInfo(allowMethod, entityMapping);
-		staticMappingInfo = new MappingInfo(allowMethod, staticMapping);
+		entityMappingInfo = new MappingInfo(allowMethod, entityMapping, noEntityParams);
+		staticMappingInfo = new MappingInfo(allowMethod, staticMapping, noEntityParams);
 		methodCondition = mappings.getMethodCondition();
 	}
 	
-	private int getParametersNoEntityAnnotationCount(final MethodParameter[] parameters) {
+	private List<String> getPathVariableNamesFromMapping(String mapping) {
+		List<String> pathVariableNames = new ArrayList<String>();
+		for (String segment : UriComponentsBuilder.fromUriString(mapping).build().getPathSegments()) {
+			if (segment.startsWith("{")) {
+				pathVariableNames.add(segment.substring(1, segment.length() - 1));
+			}
+		}
+		return pathVariableNames;
+	}
+	
+	private Set<String> getParametersNoEntityAnnotation(final MethodParameter[] parameters, final String mapping) {
+		Set<String> noEntityParams = new HashSet<String>();
+		List<String> pathVariableNames = getPathVariableNamesFromMapping(mapping);
+		
 		int count = 0;
-		for(MethodParameter param: parameters ) {
+		for (int i = 0;i < parameters.length;i++) {
+			MethodParameter param = parameters[i];
 			TrustAssertion annotation = param.getParameterAnnotation(TrustAssertion.class);
-			if(annotation != null && annotation.idFor() == NoEntity.class) {
+			if (annotation != null) {
+				if(annotation.idFor() == NoEntity.class) {
+					noEntityParams.add(pathVariableNames.get(count));
+				}
 				count++;
 			}
 		}
-		return count;
+		return noEntityParams;
 	}
 
 }

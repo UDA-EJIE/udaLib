@@ -1,7 +1,7 @@
 package com.ejie.x38.rup.table.filter.model;
 
-import org.hdiv.services.SecureIdContainer;
-import org.hdiv.services.TrustAssertion;
+import com.ejie.hdiv.services.SecureIdContainer;
+import com.ejie.hdiv.services.TrustAssertion;
 
 public class Filter implements java.io.Serializable, SecureIdContainer {
 
@@ -15,6 +15,31 @@ public class Filter implements java.io.Serializable, SecureIdContainer {
 	private boolean filterDefault;
 	private String filterValue;
 	private String filterFeedback;
+
+	public Filter() {
+		super();
+	}
+
+	public Filter(String filterSelector, String filterUser, String filterName, boolean filterDefault, String filterValue, String filterFeedback) {
+		super();
+		this.filterSelector = filterSelector;
+		this.filterUser = filterUser;
+		this.filterName = filterName;
+		this.filterDefault = filterDefault;
+		this.filterValue = filterValue;
+		this.filterFeedback = filterFeedback;
+	}
+
+	public Filter(int filterId, String filterSelector, String filterUser, String filterName, boolean filterDefault, String filterValue, String filterFeedback) {
+		super();
+		this.filterId = filterId;
+		this.filterSelector = filterSelector;
+		this.filterUser = filterUser;
+		this.filterName = filterName;
+		this.filterDefault = filterDefault;
+		this.filterValue = filterValue;
+		this.filterFeedback = filterFeedback;
+	}
 
 	public int getFilterId() {
 		return filterId;

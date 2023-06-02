@@ -3,7 +3,7 @@ package com.ejie.x38.dto;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.hdiv.services.SecureIdContainer;
+import com.ejie.hdiv.services.SecureIdContainer;
 import org.springframework.hateoas.Resource;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

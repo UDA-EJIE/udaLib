@@ -10,18 +10,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.hdiv.services.LinkProvider;
-import org.hdiv.services.SecureIdContainer;
-import org.hdiv.services.SecureIdentifiable;
-import org.hdiv.services.TrustAssertion;
+import com.ejie.hdiv.services.SecureIdContainer;
+import com.ejie.hdiv.services.SecureIdentifiable;
+import com.ejie.hdiv.services.TrustAssertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.Resource;
 
-import com.ejie.x38.hdiv.controller.model.ReferencedObject;
 import com.ejie.x38.hdiv.controller.model.SecureClassInfo;
 import com.ejie.x38.hdiv.controller.model.UDALinkResources;
-import com.ejie.x38.hdiv.controller.utils.DinamicLinkProvider;
 
 public abstract class ResponseLinkProcesor {
 
@@ -37,11 +34,11 @@ public abstract class ResponseLinkProcesor {
 	
 	private static final String GET_ID = "getId";
 
-	public Object checkResponseToLinks(final Object object, Class<?> controller, LinkProvider<?> linkProvider) throws Throwable {
+	public Object checkResponseToLinks(final Object object, Class<?> controller) throws Throwable {
 
 			UDALinkResources udaLinkResources = new UDALinkResources();
 			Object processed = fillResources(object, 0, udaLinkResources, false, null);
-			UDASecureResourceProcesor.processLinks(udaLinkResources, controller, (DinamicLinkProvider) linkProvider);
+			UDASecureResourceProcesor.processLinks(udaLinkResources, controller);
 			return processed;
 	}
 
@@ -144,7 +141,7 @@ public abstract class ResponseLinkProcesor {
 	
 	protected int addResource(UDALinkResources udaLinkResources, Object resource, boolean isSubEntity, List<SecureClassInfo> secureClassInfo, Integer parentIndex) {
 		if(isSubEntity) {
-			udaLinkResources.getSubEntities().add(new ReferencedObject(String.valueOf(parentIndex), resource, secureClassInfo));
+			udaLinkResources.getSubEntities().add(resource);
 			return parentIndex;
 		}else {
 			udaLinkResources.getEntities().add(resource);
@@ -197,9 +194,5 @@ public abstract class ResponseLinkProcesor {
 		}
 		return false;
 	}
-	
-//	protected abstract Object updateOnSecureIdentifiableFound(Object object, SecureClassInfo identifiableInfo);
-//	
-//	protected abstract Object updateOnSecureIdContainerFound(Object object, List<SecureClassInfo> identifiableInfo);
 
 }

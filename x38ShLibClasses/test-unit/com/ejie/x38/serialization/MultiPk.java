@@ -2,7 +2,7 @@ package com.ejie.x38.serialization;
 
 import java.math.BigDecimal;
 
-import org.hdiv.services.SecureIdentifiable;
+import com.ejie.hdiv.services.SecureIdentifiable;
 
 import com.ejie.x38.util.Constants;
 
