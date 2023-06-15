@@ -2,9 +2,9 @@ package com.ejie.x38.hdiv.util;
 
 public class ObfuscatorUtils {
 
-	private static final String SOURCE="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	private static final String SOURCE="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-,_/<#$>&€=;+|";
 	
-	private static final String TARGET="tQc5nAijb8ZWawShs0XEzDC6RdFoVuT9GeBY4gHpNlU3J2vkxMIm1rKfO7LqPy";
+	private static final String TARGET="tQc5nAijb8ZWawShs0XEzDC6RdFoVuT9GeBY4gHpNlU3J2vkxMIm1rKfO7LqPy-,_/<#$>&€=;+|~";
 	
 	private static final String SPLIT_TOKEN="-:$:-";
 	
