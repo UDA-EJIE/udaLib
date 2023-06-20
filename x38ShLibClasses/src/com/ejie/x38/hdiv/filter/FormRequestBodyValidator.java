@@ -283,7 +283,7 @@ public class FormRequestBodyValidator {
 		
 		EditableDataValidationResult result = config.getEditableDataValidationProvider().validate(Constants.CLIENT_PARAMETERS+target, parameter, values.toArray(new String[0]), null);
 		if(result != EditableDataValidationResult.VALID) {
-			errors.add(new ValidatorError(HDIVErrorCodes.INVALID_PARAMETER_NAME, target, parameter));
+			errors.add(new ValidatorError(HDIVErrorCodes.INVALID_PARAMETER_NAME, target, parameter, values.size() == 1 ? values.get(0) : values.toString()));
 		} else {
 			markAsValidated(parameter);
 		}
@@ -293,7 +293,7 @@ public class FormRequestBodyValidator {
 		
 		EditableDataValidationResult result = config.getEditableDataValidationProvider().validate(target, parameter, values.toArray(new String[0]), null);
 		if (!result.isValid()) {
-			errors.add(new ValidatorError(HDIVErrorCodes.INVALID_PARAMETER_VALUE, target, parameter));
+			errors.add(new ValidatorError(HDIVErrorCodes.INVALID_PARAMETER_VALUE, target, parameter, values.size() == 1 ? values.get(0) : values.toString()));
 		} else {
 			markAsValidated(parameter);
 		}
