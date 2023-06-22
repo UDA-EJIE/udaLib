@@ -16,9 +16,12 @@
 package com.ejie.x38.serialization;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import com.ejie.hdiv.services.CustomSecureSerializer;
+import com.fasterxml.jackson.databind.JsonSerializer;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
@@ -41,14 +44,14 @@ public class CustomSerializer extends CustomSecureSerializer {
 	 * mapa de parametros almacenado en el thread.
 	 */
 	@Override
-	protected void writeBody(final Object obj) {
+	protected void writeBody(final Object obj, Map<String, JsonSerializer<Object>> secureIdSerializer) {
 
 		BeanWrapper beanWrapper = new BeanWrapperImpl(obj);
 		for (Entry<?, ?> entry : ThreadSafeCache.getMap().entrySet()) {
 			String propertyName = (String) entry.getValue();
 			if (beanWrapper.isReadableProperty(propertyName)) {
 				try {
-					writeField(beanWrapper, (String) entry.getKey(), propertyName, true);
+					writeField(beanWrapper, (String) entry.getKey(), propertyName, true, secureIdSerializer);
 				}
 				catch (IOException e) {
 					logger.error("Error serializing object", e);
