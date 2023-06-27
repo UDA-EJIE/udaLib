@@ -15,10 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.HttpStatus;
-import com.ejie.hdiv.filter.ValidatorFilter;
-import com.ejie.hdiv.services.NoEntity;
-import com.ejie.hdiv.services.TrustAssertion;
-import com.ejie.hdiv.util.HDIVUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -28,8 +24,11 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
-import org.springframework.web.util.ContentCachingRequestWrapper;
 
+import com.ejie.hdiv.filter.ValidatorFilter;
+import com.ejie.hdiv.services.NoEntity;
+import com.ejie.hdiv.services.TrustAssertion;
+import com.ejie.hdiv.util.HDIVUtil;
 import com.ejie.x38.hdiv.protection.IdProtectionDataManager;
 import com.ejie.x38.hdiv.util.ObfuscatorUtils;
 import com.ejie.x38.hdiv.util.Utils;
