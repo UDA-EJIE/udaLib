@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.Hashtable;
 
 import org.slf4j.MDC;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -109,7 +111,13 @@ public class LogLayout extends LayoutBase<ILoggingEvent>{
 				} else {
 					//Get the data of the user credentials.
 					try{
-						Credentials = (Credentials) SecurityContextHolder.getContext().getAuthentication().getCredentials();
+						final SecurityContext securityContext = SecurityContextHolder.getContext();
+						if (securityContext != null) {
+							final Authentication authentication = securityContext.getAuthentication();
+							if (authentication != null) {
+								Credentials = (Credentials) authentication.getCredentials();
+							}
+						}
 					} catch(Exception e) {
 						if (!(e instanceof java.lang.NullPointerException)){
 							throw new LogbackException("System error logs. Error accessing the security context.",e);
