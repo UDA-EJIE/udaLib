@@ -11,7 +11,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<com.ejie.hdiv.ce.version>5.0.0-RELEASE</com.ejie.hdiv.ce.version>
+		<com.ejie.hdiv.ce.version>5.0.1-RELEASE</com.ejie.hdiv.ce.version>
 		<org.springframework.version>4.3.22.RELEASE</org.springframework.version>
 		<org.springframework.security.version>4.2.11.RELEASE</org.springframework.security.version>
 		<org.logback.version>1.2.11</org.logback.version>
