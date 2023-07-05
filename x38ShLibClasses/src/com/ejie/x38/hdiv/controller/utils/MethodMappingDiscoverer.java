@@ -7,6 +7,8 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
@@ -16,6 +18,8 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import com.ejie.x38.hdiv.controller.model.MethodMappingInfo;
 
 public class MethodMappingDiscoverer {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(MethodMappingDiscoverer.class);
 
 	private final Map<String, MethodMappingInfo> methodMappings = new HashMap<String, MethodMappingInfo>();
 
@@ -48,6 +52,7 @@ public class MethodMappingDiscoverer {
 			}
 		}
 		catch (Exception e) {
+			LOGGER.error("{}", e.getMessage());
 		}
 		return method;
 	}
