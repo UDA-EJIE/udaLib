@@ -27,6 +27,7 @@ import javax.mail.internet.MimeUtility;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
@@ -254,6 +255,18 @@ public class PerimetralSecurityWrapperOAMImpl implements
     @Override
     public void logout(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
         try {
+            //Invalidate HTTP session
+            HttpSession httpSession = httpRequest.getSession(false);
+            if (httpSession != null) {
+                //Cleaning the User Session of Weblogic
+                try {
+                    logger.info("Session " + httpSession.getId() + " invalidated!");
+                    httpSession.invalidate();
+                } catch (IllegalStateException e) {
+                    logger.info("The user session isn't valid, it is not necessary delete it");
+                }
+            }
+
             httpResponse.sendRedirect(httpRequest.getHeader(HTTP_LOGOUT));
         } catch (IOException e) {
             throw new RuntimeException(e);
