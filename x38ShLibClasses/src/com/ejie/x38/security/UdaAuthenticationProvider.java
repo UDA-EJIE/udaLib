@@ -15,6 +15,7 @@
 */
 package com.ejie.x38.security;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -63,7 +64,9 @@ public class UdaAuthenticationProvider implements AuthenticationProvider,
 		}
 		logger.trace("Authentication class [" + authentication.getClass()+ "] is supported.");
 
-		if (authentication.getPrincipal() == null) {
+		final Object principal = authentication.getPrincipal();
+		if ( principal == null ||
+				(principal instanceof String && StringUtils.isEmpty((String) principal))) {
 			logger.trace("No pre-authenticated principal found in request.");
 			if (throwExceptionWhenTokenRejected) {
 				throw new BadCredentialsException(
@@ -86,7 +89,7 @@ public class UdaAuthenticationProvider implements AuthenticationProvider,
 				.loadUserDetails(authentication);
 
 		PreAuthenticatedAuthenticationToken result = new PreAuthenticatedAuthenticationToken(
-				authentication.getPrincipal(), authentication.getCredentials(),
+				principal, authentication.getCredentials(),
 				userDetails.getAuthorities());
 
 		result.setDetails(authentication.getDetails());
