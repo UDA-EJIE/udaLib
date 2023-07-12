@@ -142,7 +142,7 @@ public class PerimetralSecurityWrapperOAMImpl implements
     }
 
     public Vector<String> getUserInstances(HttpServletRequest httpRequest) {
-        Vector<String> userInstances = new Vector<>();
+        Vector<String> userInstances = new Vector<String>();
         Authentication authentication = null;
 
         // Getting Authentication credentials
