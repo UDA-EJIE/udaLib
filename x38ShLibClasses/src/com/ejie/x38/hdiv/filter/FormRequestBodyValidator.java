@@ -282,7 +282,7 @@ public class FormRequestBodyValidator {
 	private void validateExtraParameter(String target, String parameter, List<String> values, List<ValidatorError> errors) {
 		
 		EditableDataValidationResult result = config.getEditableDataValidationProvider().validate(Constants.CLIENT_PARAMETERS+target, parameter, values.toArray(new String[0]), null);
-		if(result != EditableDataValidationResult.VALID) {
+		if(!result.isValid()) {
 			errors.add(new ValidatorError(HDIVErrorCodes.INVALID_PARAMETER_NAME, target, parameter, values.size() == 1 ? values.get(0) : values.toString()));
 		} else {
 			markAsValidated(parameter);
