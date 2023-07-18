@@ -186,7 +186,6 @@ public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfig
 		registry.addUrlExclusions("/scripts/.*", "/styles/.*", "/fonts/.*", "/error", "/*.gif");
 		registry.addUrlExclusions("", getHomePage(), getLoginPage()).method("GET");
 		registry.addUrlExclusions("/audit").method("POST");
-		registry.addUrlExclusions("/.*/search");
 		registry.addParamExclusions("_", "exception_trace", "exception_message", "MODIFY_FORM_FIELD_NAME", "_MODIFY_HDIV_STATE_");
 		addCustomExclusions(registry);
 	}
@@ -222,6 +221,11 @@ public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfig
 	public final void configureEditableValidation(ValidationConfigurer validationConfigurer) {
 		
 		EjieValidationConfigurer ejieValidationConfigurer = new EjieValidationConfigurer(validationConfigurer);
+		
+		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*/search")
+				.forParameters("search.*")
+				.rules("fulltextWhitespaces"))
+				.setAsClientParameter(true).disableDefaults();
 		
 		((EjieEditableValidationConfigurer) ejieValidationConfigurer.addValidation("/.*")
 				.forParameters("multiselection.selectedIds", "multiselection.lastSelectedId", "multiselection.deselectedIds", "seeker.selectedIds")
