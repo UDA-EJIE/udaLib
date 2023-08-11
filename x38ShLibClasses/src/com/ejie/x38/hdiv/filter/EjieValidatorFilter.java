@@ -93,8 +93,11 @@ public class EjieValidatorFilter extends ValidatorFilter {
 								}else {
 									//Check obfuscated value type and param type match
 									Class<?> pathVariableClass = trustAssertion.idFor();
-									if(pathVariableClass != null  && ObfuscatorUtils.getClass(pathValue.getValue()) == pathVariableClass) {
-										deobfuscatedVariables.put(pathValue.getValue(), ObfuscatorUtils.deobfuscate(pathValue.getValue()));
+									Class<?> pathVariableClassExtend = pathVariableClass.getSuperclass();// mirar si viene de extend
+									if(pathVariableClass != null  && 
+										(ObfuscatorUtils.getClass(pathValue.getValue()) == pathVariableClass) || 
+										pathVariableClassExtend != null && ObfuscatorUtils.getClass(pathValue.getValue()) == pathVariableClassExtend) {
+											deobfuscatedVariables.put(pathValue.getValue(), ObfuscatorUtils.deobfuscate(pathValue.getValue()));
 									}else if(pathVariableClass != NoEntity.class){
 										//Throw exception
 										response.setStatus(HttpStatus.SC_UNAUTHORIZED);
