@@ -26,9 +26,10 @@ public class IdentifiableFieldDiscoverer {
 			//Store the data to minimize the use of reflection
 			identifiableData = IDENTIFIABLE_FIELDS.get(clazz);
 			
-			if(identifiableData == null) {
+			if(identifiableData == null || (identifiableData.size() == 0 && clazz.getSuperclass() != null)) {
 				identifiableData = new ConcurrentHashMap<Class<?>, Field>();
-				for (Field field : clazz.getDeclaredFields()) {
+				Field[] fields = identifiableData == null ? clazz.getDeclaredFields() : clazz.getSuperclass().getDeclaredFields();
+				for (Field field : fields) {
 					TrustAssertion trustAssertion = field.getAnnotation(TrustAssertion.class);
 					if(trustAssertion != null && trustAssertion.idFor() != null) {
 						try {
