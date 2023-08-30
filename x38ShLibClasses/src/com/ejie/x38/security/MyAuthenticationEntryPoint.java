@@ -16,6 +16,7 @@
 package com.ejie.x38.security;
 
 import java.io.IOException;
+import java.net.URL;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -106,6 +107,10 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint,
 			url = getPerimetralSecurityWrapper().getURLLogin(originalURL , isAjax);
 			if(isAjax){
 				url = this.getUrlAjax(url, isPortal);
+			}
+			
+			if (!url.matches("^https?://.*$")) {
+				url = new URL(httpRequest.getScheme(), httpRequest.getServerName(), httpRequest.getServerPort(), url).toString();
 			}
 			
 			logger.info("Redirecting to next URL:" + url);
