@@ -190,9 +190,21 @@ public  class PreAuthenticateProcessingFilter extends
 	
 	private synchronized boolean isReloadData(HttpServletRequest httpRequest, Long currentThreadId){
 		HttpSession session = httpRequest.getSession(false);
-		Long reloadDataId = (Long)session.getAttribute("reloadData");
+		Long reloadDataId = null;
 		
-		if(session != null && session.getAttribute("reloadData") !=null && currentThreadId.equals(reloadDataId)){
+		logger.debug("The value of reloadData session attribute is {}", session.getAttribute("reloadData"));
+		
+		try {
+			reloadDataId = (Long) session.getAttribute("reloadData");
+		} catch (ClassCastException classCastException) {
+			try {
+				reloadDataId = Long.parseLong(session.getAttribute("reloadData").toString());
+			} catch (NumberFormatException numberFormatException) {
+				return false;
+			}
+		}
+		
+		if(session != null && session.getAttribute("reloadData") != null && currentThreadId.equals(reloadDataId)){
 //			if(httpRequest.getHeaders("X-Requested-With").hasMoreElements()){
 //				stockUdaSecurityPadlocks.setAllowedAccessThread(session.getId(), ThreadStorageManager.getCurrentThreadId());
 //			}
