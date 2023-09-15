@@ -226,9 +226,9 @@ public class PerimetralSecurityWrapperMockImpl implements
 		
 		while ( usersIterator.hasNext() ){
 			auxObject = new HashMap<String, String>();
-			user = usersIterator.next();			
-			auxObject.put("i18nCaption", (String)user.get("fullName"));
-			auxObject.put("value", (String)user.get("userName"));
+			user = usersIterator.next();
+			auxObject.put("text", (String)user.get("fullName"));
+			auxObject.put("id", (String)user.get("userName"));
 			
 			usersNames.add(auxObject);
 		}
