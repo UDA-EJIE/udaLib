@@ -15,24 +15,22 @@
  */
 package com.ejie.x38.security;
 
-import n38c.exe.N38API;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.w3c.dom.Document;
-
-import javax.mail.internet.MimeUtility;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Vector;
+
+import javax.mail.internet.MimeUtility;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * @author UDA
@@ -371,44 +369,6 @@ public class PerimetralSecurityWrapperOAMImpl implements
         } catch (UnsupportedEncodingException e) {
             logger.error("Error decoding from OAM '" + headerValue + "'");
             throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Logout of XLNETS (if session is open)
-     *
-     * @param httpRequest  HttpServletRequest con la Request
-     * @param httpResponse HttpServletResponse con la response
-     */
-    private void logoutN38(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
-        N38API n38Api = XlnetCore.getN38API(httpRequest);
-        if (n38Api == null) {
-            return;
-        }
-
-        Document xmlSesion = XlnetCore.getN38ItemSesion(n38Api);
-        if (XlnetCore.isXlnetSessionContainingErrors(xmlSesion)
-                || XlnetCore.isXlnetSessionContainingWarnings(xmlSesion)) {
-            return;
-        }
-
-        String xlnetsDomain = XlnetCore.getN38DominioComunCookie(xmlSesion);
-        if (xlnetsDomain == null) {
-            return;
-        }
-
-        Cookie[] requestCookies = httpRequest.getCookies();
-        if (requestCookies == null) {
-            return;
-        }
-
-        for (Cookie cookie : requestCookies) {
-            if (cookie.getName().split("n38").length > 1) {
-                cookie.setDomain(xlnetsDomain);
-                cookie.setMaxAge(0);
-                cookie.setPath("/");
-                httpResponse.addCookie(cookie);
-            }
         }
     }
 }
