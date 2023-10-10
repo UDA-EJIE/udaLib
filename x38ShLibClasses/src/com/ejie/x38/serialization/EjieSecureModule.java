@@ -269,7 +269,7 @@ public class EjieSecureModule extends SimpleModule {
 				}
 			}catch(RuntimeException e){
 				if(isStartPage()) {
-					nid = value;
+					nid = ObfuscatorUtils.deobfuscate(value);
 				}else {
 					throw e;
 				}
@@ -292,7 +292,7 @@ public class EjieSecureModule extends SimpleModule {
 
 		private boolean isStartPage() {
 			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-			return hdivConfig.isStartPage(request.getRequestURI(), Method.secureValueOf(request.getMethod()));
+			return hdivConfig.isStartPage(request.getRequestURI().substring(request.getContextPath().length()), Method.secureValueOf(request.getMethod()));
 		}
 		
 		@Override
