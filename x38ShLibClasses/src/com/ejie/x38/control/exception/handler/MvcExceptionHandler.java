@@ -48,7 +48,6 @@ public class MvcExceptionHandler {
 
 	}
 	
-	
 	/**
 	 * Gestor de las excepciones NO-AJAX para los handlers
 	 * @param exception
@@ -60,6 +59,29 @@ public class MvcExceptionHandler {
 		//Non-AJAX request
 		ModelAndView modelAndView = new ModelAndView();
 		modelAndView.setViewName("error");
+		modelAndView.addObject("exception_name", exception.getClass().getName());
+		modelAndView.addObject("exception_message", exception.getMessage());
+		StringBuilder sbTrace = new StringBuilder();
+		for (StackTraceElement trace : exception.getStackTrace()) {
+			sbTrace.append(trace.toString()).append("</br>");
+		}
+		modelAndView.addObject("exception_trace", sbTrace);
+		return modelAndView;
+	}
+	
+	/**
+	 * Gestor de las excepciones por acceso denegado.
+	 * @param exception
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	public static ModelAndView handleAccessDenied(Exception exception, HttpServletRequest request, HttpServletResponse response){
+		request.setAttribute("SPRING_SECURITY_403_EXCEPTION", exception);
+		response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+		
+		ModelAndView modelAndView = new ModelAndView();
+		modelAndView.setViewName("accessDenied");
 		modelAndView.addObject("exception_name", exception.getClass().getName());
 		modelAndView.addObject("exception_message", exception.getMessage());
 		StringBuilder sbTrace = new StringBuilder();
