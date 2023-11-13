@@ -6,6 +6,7 @@ import java.nio.charset.Charset;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.ejie.x38.util.IframeXHREmulationUtils;
@@ -23,14 +24,16 @@ public class MvcExceptionHandlerHelper {
 			
 			return null;
 			
-		}else if (this.isAjax(request)) {
+		} else if (this.isAjax(request)) {
 			//AJAX request;
 
 			response.setContentLength(content.getBytes(Charset.forName(response.getCharacterEncoding())).length);
 			this.writeToResponse(response, content, statusCode);
 			
 			return null;
-		}else{
+		} else if(ex.getClass().equals(AccessDeniedException.class)) {
+			return MvcExceptionHandler.handleAccessDenied(ex, request, response);
+		} else{
 			//Non-AJAX request
 			return MvcExceptionHandler.handle(ex, request, response);
 		}
