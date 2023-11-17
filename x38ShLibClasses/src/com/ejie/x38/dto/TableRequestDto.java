@@ -170,21 +170,85 @@ public class TableRequestDto implements java.io.Serializable{
 	}
 	
 	public class Multiselection {
-		private List<String> selectedIds;
+		private String accion;
+		private List<String> deselectedIds;
+		private List<String> deselectedRowsPerPage;
+		private String lastSelectedId;
+		private Integer numSelected;
 		private Boolean selectedAll;
-		
+		private List<String> selectedIds;
+		private List<String> selectedRowsPerPage;
+
 		private Class<? extends Object> clazz;
-		
+
+		public String getAccion() {
+			return accion;
+		}
+
+		public void setAccion(String accion) {
+			this.accion = accion;
+		}
+
+		public List<String> getDeselectedIds() {
+			return deselectedIds;
+		}
+
+		public void setDeselectedIds(List<String> deselectedIds) {
+			this.deselectedIds = deselectedIds;
+		}
+
+		public List<String> getDeselectedRowsPerPage() {
+			return deselectedRowsPerPage;
+		}
+
+		public void setDeselectedRowsPerPage(List<String> deselectedRowsPerPage) {
+			this.deselectedRowsPerPage = deselectedRowsPerPage;
+		}
+
+		public String getLastSelectedId() {
+			return lastSelectedId;
+		}
+
+		public void setLastSelectedId(String lastSelectedId) {
+			this.lastSelectedId = lastSelectedId;
+		}
+
+		public Integer getNumSelected() {
+			return numSelected;
+		}
+
+		public void setNumSelected(Integer numSelected) {
+			this.numSelected = numSelected;
+		}
+
+		public Boolean getSelectedAll() {
+			if (selectedAll == null) {
+				selectedAll = false;
+			}
+			return selectedAll;
+		}
+
+		public void setSelectedAll(Boolean selectedAll) {
+			this.selectedAll = selectedAll;
+		}
 
 		public List<String> getSelectedIds() {
 			return selectedIds;
 		}
+
 		public void setSelectedIds(List<String> selectedIds) {
 			this.selectedIds = selectedIds;
 		}
-		
-		
-		public List<? extends Object> getSelected(){
+
+		public List<String> getSelectedRowsPerPage() {
+			return selectedRowsPerPage;
+		}
+
+		public void setSelectedRowsPerPage(List<String> selectedRowsPerPage) {
+			this.selectedRowsPerPage = selectedRowsPerPage;
+		}
+
+		public List<? extends Object> getSelected() {
 			return this.getSelected(this.clazz);
 		}
 		
@@ -207,16 +271,6 @@ public class TableRequestDto implements java.io.Serializable{
 			}
 			
 			return selectedIdsList;
-		}
-		
-		public Boolean getSelectedAll() {
-			if (selectedAll == null) {
-				selectedAll = false;
-			}
-			return selectedAll;
-		}
-		public void setSelectedAll(Boolean selectedAll) {
-			this.selectedAll = selectedAll;
 		}
 		
 		@SuppressWarnings("unchecked")
