@@ -168,6 +168,7 @@ public abstract class UDA4HdivConfigurerAdapter implements HdivWebSecurityConfig
 		builder.showErrorPageOnEditableValidation(true);
 		builder.cookiesIntegrity(false);
 		builder.cookiesConfidentiality(false);
+		builder.maxPagesPerSession(10);
 		
 		String errorPage = getErrorPage();
 		if(errorPage != null) {
