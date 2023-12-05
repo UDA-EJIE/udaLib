@@ -143,6 +143,9 @@ public class EjieSecureModule extends SimpleModule {
         }
     }
 	
+	public static void addSecureId(Class<?> clazz,String sValue ) {
+		idProtectionDataManager.storeSecureId(clazz, sValue);
+	}
 	
 	
 	public static class SecureIdSerializer extends JsonSerializer<Object> implements ContextualSerializer {
@@ -155,6 +158,7 @@ public class EjieSecureModule extends SimpleModule {
 		private SecureIdSerializer(BeanProperty beanProperty) {
 			this.beanProperty = beanProperty;
 		}
+		
 		
 		@Override
 		public void serialize(final Object value, final JsonGenerator gen, final SerializerProvider provider)

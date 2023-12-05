@@ -2,8 +2,14 @@ package com.ejie.x38.hdiv.controller.model;
 
 import java.lang.reflect.Method;
 
-public class IdentifiableModelWrapperImpl<T> implements IdentifiableModelWrapper<T> {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.ejie.x38.serialization.EjieSecureModule;
+
+public class IdentifiableModelWrapperImpl<T> implements IdentifiableModelWrapper<T> {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(IdentifiableModelWrapperImpl.class);
 	private static final String GET = "get";
 	private T entity;
 	
@@ -48,6 +54,11 @@ public class IdentifiableModelWrapperImpl<T> implements IdentifiableModelWrapper
 	}
 	
 	public IdentifiableModelWrapper<T> target(Class<?> target) {
+		try {// se añade el target, para caos sacados del controller directamente
+			EjieSecureModule.addSecureId(target, getId());
+		} catch (Exception e) {
+			LOGGER.error("Error add secure Id : " + target);
+		}
 		this.target = target;
 		return this;
 	}
