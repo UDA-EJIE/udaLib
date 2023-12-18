@@ -1,2 +1,2 @@
-Manifest-Version: 5.4.0-RELEASE
+Manifest-Version: 5.4.0-SNAPSHOT
 
