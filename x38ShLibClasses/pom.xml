@@ -620,4 +620,20 @@
 			</plugin>
 		</plugins>
 	</build>
+	
+	<distributionManagement>
+		<repository>
+			<id>in-house-app-releases</id>
+			<name>in-house-app-releases</name>
+			<layout>default</layout>
+			<url>https://bin.alm02.itbatera.euskadi.eus/repository/in-house-app-releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>in-house-app-snapshots</id>
+			<name>in-house-app-snapshots</name>
+			<layout>default</layout>
+			<url>https://bin.alm02.itbatera.euskadi.eus/repository/in-house-app-snapshots/</url>
+		</snapshotRepository>		
+	</distributionManagement>
+
 </project>
