@@ -1,4 +1,4 @@
-package com.ejie.x38.serialization;
+package com.ejie.x38.hdiv.serialization;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -6,14 +6,19 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.hateoas.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import com.ejie.hdiv.config.HDIVConfig;
 import com.ejie.hdiv.services.AnyEntity;
 import com.ejie.hdiv.services.SecureIdentifiable;
 import com.ejie.hdiv.services.TrustAssertion;
+import com.ejie.hdiv.util.Method;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.hateoas.Resource;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
 import com.ejie.x38.hdiv.protection.IdProtectionDataManager;
 import com.ejie.x38.hdiv.util.ObfuscatorUtils;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -42,212 +47,240 @@ import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 
-public class EjieNidModule extends SimpleModule {
-
-	protected final Logger logger = LoggerFactory.getLogger(EjieNidModule.class);
+public class EjieSecureModule extends SimpleModule {
+	
+	protected final Logger logger =  LoggerFactory.getLogger(EjieSecureModule.class);
 
 	private static final long serialVersionUID = -496403297394833735L;
-
+	
 	private static IdProtectionDataManager idProtectionDataManager;
-
+	
 	private TrustAssertionAnnotationIntrospector trustAssertionAnnotationIntrospector;
-
+	
 	private static HDIVConfig hdivConfig;
-
-	public EjieNidModule(IdProtectionDataManager idProtectionManager, HDIVConfig hdivConfig) {
-		super("ejie-nid-module", new Version(1, 0, 0, null, "com.ejie.x38.serialization", "x38"));
+	
+	public EjieSecureModule(IdProtectionDataManager idProtectionManager, HDIVConfig hdivConfig) {
+		super("ejie-secure-module", new Version(1, 0, 0, null, "com.ejie.x38.serialization", "x38"));
 		trustAssertionAnnotationIntrospector = new TrustAssertionAnnotationIntrospector();
-
-		if (idProtectionManager != null) {
-			if (idProtectionDataManager == null) {
-				idProtectionDataManager = idProtectionManager;
-			} else {
+		
+		if(idProtectionManager != null) {
+			if(idProtectionDataManager == null) {
+				idProtectionDataManager = idProtectionManager;	
+			}else {
 				logger.debug("Id protection data manager is already defined, using the existing one.");
 			}
 		}
-
-		if (hdivConfig != null) {
-			if (EjieNidModule.hdivConfig == null) {
-				EjieNidModule.hdivConfig = hdivConfig;
-			} else {
+		
+		if(hdivConfig != null) {
+			if(EjieSecureModule.hdivConfig == null) {
+				EjieSecureModule.hdivConfig = hdivConfig;	
+			}else {
 				logger.debug("Hdiv config is already defined, using the existing one.");
 			}
 		}
+				
 	}
-
-	public EjieNidModule() {
+	
+	public EjieSecureModule() {
 		this(null, null);
 	}
-
+	
 	public static void setIdProtectionDataManager(IdProtectionDataManager idProtectionManager) {
 		idProtectionDataManager = idProtectionManager;
 	}
-
+	
 	public static void setHdivConfig(HDIVConfig hdivConfig) {
-		EjieNidModule.hdivConfig = hdivConfig;
+		EjieSecureModule.hdivConfig = hdivConfig;
 	}
 
 	@Override
 	public void setupModule(final SetupContext context) {
 		super.setupModule(context);
-
+		
 		context.insertAnnotationIntrospector(trustAssertionAnnotationIntrospector);
 		context.setMixInAnnotations(SecureIdentifiable.class, SecureIdentifiableMixin.class);
 		context.addBeanSerializerModifier(new CustomSecureFieldSerializerModifier());
+	
 	}
 
 	private static class CustomSecureFieldSerializerModifier extends BeanSerializerModifier {
 
 		@Override
-		public JsonSerializer<?> modifySerializer(SerializationConfig config, BeanDescription beanDesc,
-				JsonSerializer<?> serializer) {
+		 public JsonSerializer<?> modifySerializer(SerializationConfig config, BeanDescription beanDesc, JsonSerializer<?> serializer) {
 			if (Resource.class.isAssignableFrom(beanDesc.getBeanClass())) {
 				return new ResourceSerializer<Object>();
 			}
 			return super.modifySerializer(config, beanDesc, serializer);
-		}
+		 }
 	}
-
-	public static class ResourceSerializer<T> extends JsonSerializer<Resource<T>> {
+	
+	public static class ResourceSerializer<T> extends JsonSerializer<Resource<T>>  {
 
 		@Override
 		public void serialize(final Resource<T> value, final JsonGenerator gen, final SerializerProvider provider)
 				throws IOException, JsonProcessingException {
 
 			if (value.getContent() != null) {
-
+	
 				JavaType type = provider.constructType(value.getContent().getClass());
 				if (type.isMapLikeType()) {
 					// need contextualization
-					provider.findValueSerializer(value.getContent().getClass(), null).serialize(value.getContent(), gen,
-							provider);
-				} else {
-					provider.findValueSerializer(value.getContent().getClass()).serialize(value.getContent(), gen,
-							provider);
+					provider.findValueSerializer(value.getContent().getClass(), null).serialize(value.getContent(), gen, provider);
+				}
+				else {
+					provider.findValueSerializer(value.getContent().getClass()).serialize(value.getContent(), gen, provider);
 				}
 			}
 		}
 	}
-
+		
 	public static class CustomBeanPropertyWriter extends BeanPropertyWriter {
-
+        
 		private static final long serialVersionUID = 7183776743358501641L;
 
 		protected CustomBeanPropertyWriter(BeanPropertyWriter base, String newFieldName) {
-			super(base, new SerializedString(newFieldName));
-		}
+            super(base, new SerializedString(newFieldName));
+        }
+    }
+	
+	public static void addSecureId(Class<?> clazz,String sValue ) {
+		idProtectionDataManager.storeSecureId(clazz, sValue);
 	}
-
+	
+	
 	public static class SecureIdSerializer extends JsonSerializer<Object> implements ContextualSerializer {
 
 		private BeanProperty beanProperty;
-
+		
 		public SecureIdSerializer() {
 		}
-
+		
 		private SecureIdSerializer(BeanProperty beanProperty) {
 			this.beanProperty = beanProperty;
 		}
-
+		
+		
 		@Override
 		public void serialize(final Object value, final JsonGenerator gen, final SerializerProvider provider)
 				throws IOException, JsonProcessingException {
-			if (provider != null) {
-				if (value != null) {
-					String sValue = value.toString();
-
-					provider.findValueSerializer(String.class).serialize(sValue, gen, provider);
-					gen.writeStringField(SecureIdentifiable.NID_PROPERTY, sValue);
-				} else {
+			if(provider != null) {
+				if(value != null) {
+					try {
+						Class<?> clazz;
+						TrustAssertion trustAssertion = beanProperty.getAnnotation(TrustAssertion.class);
+						if (trustAssertion != null && trustAssertion.idFor() != null) {
+							clazz = trustAssertion.idFor();
+						} else {
+							if (null != beanProperty.getMember()) {
+								clazz = ((AnnotatedClass) beanProperty.getMember().getTypeContext()).getRawType();
+							} else {
+								clazz = Class.forName(beanProperty.getMetadata().getDefaultValue());
+							}
+						}
+						
+						String sValue = value.toString();
+						
+						idProtectionDataManager.storeSecureId(clazz, sValue);
+						
+						String secureId = ObfuscatorUtils.obfuscate(sValue, clazz);
+						
+						provider.findValueSerializer(String.class).serialize(secureId, gen, provider);
+						gen.writeStringField(SecureIdentifiable.NID_PROPERTY, sValue);
+					} catch (ClassNotFoundException e) {
+						e.printStackTrace();
+					}
+				}else {
 					provider.findValueSerializer(beanProperty.getType(), beanProperty).serialize(value, gen, provider);
 				}
 			}
 		}
 
 		@Override
-		public JsonSerializer<?> createContextual(SerializerProvider provider, BeanProperty beanProperty)
-				throws JsonMappingException {
+		public JsonSerializer<?> createContextual(SerializerProvider provider, BeanProperty beanProperty) throws JsonMappingException {
 			return new SecureIdSerializer(beanProperty);
 		}
 	}
-
+	
 	public static class SecureIdDeserializer extends JsonDeserializer<Object> implements ContextualDeserializer {
 
 		private BeanProperty beanProperty;
-
+		
 		public SecureIdDeserializer() {
 		}
-
+		
 		private SecureIdDeserializer(BeanProperty beanProperty) {
 			this.beanProperty = beanProperty;
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public Object deserialize(JsonParser parser, DeserializationContext context)
-				throws IOException, JsonProcessingException {
-
+		public Object deserialize(JsonParser parser, DeserializationContext context) throws IOException, JsonProcessingException {
+			
 			Class<?> clazz;
 			TrustAssertion trustAssertion = beanProperty.getAnnotation(TrustAssertion.class);
-			if (trustAssertion != null && trustAssertion.idFor() != null) {
+			if(trustAssertion != null && trustAssertion.idFor() != null) {
 				clazz = trustAssertion.idFor();
-			} else {
+			}else {
 				clazz = ((AnnotatedClass) beanProperty.getMember().getTypeContext()).getRawType();
 			}
-
+			
 			Class<?> propertyClass = beanProperty.getType().getRawClass();
-
-			if (JsonToken.START_ARRAY == parser.getCurrentToken()) {
-
+			
+			if(JsonToken.START_ARRAY == parser.getCurrentToken()) {
+				
 				List<Object> baseArray;
 				boolean isArray = false;
 				if (List.class.isAssignableFrom(propertyClass)) {
-					// It is a list
-					if (propertyClass.isInterface()) {
+					//It is a list
+					if(propertyClass.isInterface()) {
 						baseArray = new ArrayList<Object>();
-					} else {
+					}else {
 						try {
 							baseArray = (List<Object>) propertyClass.newInstance();
-						} catch (Exception e) {
+						}catch(Exception e) {
 							baseArray = new ArrayList<Object>();
 						}
 					}
-				} else {
-					// Asume array. Fill as List and convert to array
+				}else {
+					//Asume array. Fill as List and convert to array
 					baseArray = new ArrayList<Object>();
-					isArray = true;
+					isArray=true;
 				}
-
-				while (parser.nextToken() != JsonToken.END_ARRAY) {
+				
+				while(parser.nextToken() != JsonToken.END_ARRAY) {
 					baseArray.add(getDeobfuscatedValue(parser, clazz));
 				}
 				return isArray ? baseArray.toArray() : baseArray;
-			} else {
+			}else {
 				return parseFromString(getDeobfuscatedValue(parser, clazz), propertyClass);
 			}
 		}
-
+		
 		private String getDeobfuscatedValue(JsonParser parser, Class<?> expectedClass) throws IOException {
-
+			
 			String value = parser.getText();
 			String nid;
 			try {
 				Class<?> parseClass = ObfuscatorUtils.getClass(value);
-
-				if (expectedClass != AnyEntity.class && expectedClass != parseClass) {
+				
+				if(expectedClass != AnyEntity.class && expectedClass != parseClass) {
 					throw new RuntimeException("Incorrect identifier");
 				}
-
+				
 				nid = ObfuscatorUtils.deobfuscate(value);
-				if (!idProtectionDataManager.isAllowedSecureId(parseClass, nid)) {
+				if(!idProtectionDataManager.isAllowedSecureId(parseClass, nid)) {
 					throw new RuntimeException("Not allowed identifier");
 				}
-			} catch (RuntimeException e) {
-				nid = value;
+			}catch(RuntimeException e){
+				if(isStartPage()) {
+					nid = ObfuscatorUtils.deobfuscate(value);
+				}else {
+					throw e;
+				}
 			}
 			return nid;
 		}
-
+		
 		private Object parseFromString(String value, Class<?> clazz) {
 			if (clazz.equals(Integer.class)) {
 				return Integer.valueOf(value);
@@ -261,15 +294,21 @@ public class EjieNidModule extends SimpleModule {
 			return value;
 		}
 
+		private boolean isStartPage() {
+			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+			return hdivConfig.isStartPage(request.getRequestURI().substring(request.getContextPath().length()), Method.secureValueOf(request.getMethod()));
+		}
+		
 		@Override
-		public JsonDeserializer<?> createContextual(DeserializationContext context, BeanProperty beanProperty)
-				throws JsonMappingException {
+		public JsonDeserializer<?> createContextual(DeserializationContext context, BeanProperty beanProperty) throws JsonMappingException {
 			return new SecureIdDeserializer(beanProperty);
 		}
 	}
-
+	
+	
+	
 	public class TrustAssertionAnnotationIntrospector extends JacksonAnnotationIntrospector {
-
+		
 		private static final long serialVersionUID = -129712771550801L;
 
 		@Override
@@ -281,18 +320,19 @@ public class EjieNidModule extends SimpleModule {
 		public Object findDeserializer(final Annotated am) {
 			return isIdentifiable(am) ? SecureIdDeserializer.class : super.findDeserializer(am);
 		}
-
+		
 		private boolean isIdentifiable(final Annotated am) {
 			TrustAssertion trustAssertion = am.getAnnotation(TrustAssertion.class);
 			return (trustAssertion != null && trustAssertion.idFor() != null);
 		}
 	}
-
+	
 	public interface SecureIdentifiableMixin<ID extends Serializable> extends SecureIdentifiable<ID> {
 
-		@JsonSerialize(using = EjieNidModule.SecureIdSerializer.class)
-		@JsonDeserialize(using = EjieNidModule.SecureIdDeserializer.class)
+		@JsonSerialize(using = EjieSecureModule.SecureIdSerializer.class)
+		@JsonDeserialize(using = EjieSecureModule.SecureIdDeserializer.class)
 		@Override
 		ID getId();
+
 	}
 }

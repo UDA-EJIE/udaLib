@@ -53,7 +53,7 @@ import com.ejie.x38.hdiv.processor.UDASecureResourceProcesor;
 import com.ejie.x38.hdiv.protection.IdProtectionDataManager;
 import com.ejie.x38.hdiv.protection.UserSessionIdProtectionDataManager;
 import com.ejie.x38.hdiv.util.Constants;
-import com.ejie.x38.serialization.EjieSecureModule;
+import com.ejie.x38.hdiv.serialization.EjieSecureModule;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

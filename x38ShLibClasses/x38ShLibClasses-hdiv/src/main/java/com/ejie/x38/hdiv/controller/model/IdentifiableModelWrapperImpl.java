@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ejie.x38.serialization.EjieSecureModule;
+import com.ejie.x38.hdiv.serialization.EjieSecureModule;
 
 public class IdentifiableModelWrapperImpl<T> implements IdentifiableModelWrapper<T> {
 	
