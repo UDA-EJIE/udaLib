@@ -3,15 +3,24 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ejie.x38</groupId>
-	<artifactId>x38ShLibClasses</artifactId>
-	<packaging>jar</packaging>
-	<version>5.4.0-RELEASE</version>
+	<artifactId>x38</artifactId>
+	<packaging>pom</packaging>
+	<version>5.4.0-SNAPSHOT</version>
 	<name>x38ShLibClasses</name>
 	<url>http://www.ejie.eus</url>
+	
+	<modules>
+		<module>x38ShLibClasses</module>
+		<module>x38ShLibClasses-cache</module>
+		<module>x38ShLibClasses-dav</module>
+		<module>x38ShLibClasses-hdiv</module>
+		<module>x38ShLibClasses-pif</module>
+		<module>x38ShLibClasses-rup</module>
+	</modules>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<com.ejie.hdiv.ce.version>5.1.0-RELEASE</com.ejie.hdiv.ce.version>
+		<com.ejie.hdiv.ce.version>5.1.0-SNAPSHOT</com.ejie.hdiv.ce.version>
 		<org.springframework.version>4.3.22.RELEASE</org.springframework.version>
 		<org.springframework.security.version>4.2.11.RELEASE</org.springframework.security.version>
 		<org.logback.version>1.2.11</org.logback.version>
