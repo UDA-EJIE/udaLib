@@ -640,45 +640,10 @@
 	</dependencies>
 
 	<build>
-		<sourceDirectory>src</sourceDirectory>
-		<testSourceDirectory>test-integration</testSourceDirectory>
-		<!-- <resources> -->
-		<!-- <resource> -->
-		<!-- <directory>src</directory> -->
-		<!-- <filtering>true</filtering> -->
-		<!-- </resource> -->
-		<!-- </resources> -->
-		<testResources>
-			<testResource>
-				<directory>test-unit</directory>
-				<filtering>true</filtering>
-			</testResource>
-			<testResource>
-				<directory>test-integration</directory>
-				<filtering>true</filtering>
-			</testResource>
-		</testResources>
-
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy-dependencies</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${user.dir}/lib</outputDirectory>
-							<overWriteReleases>false</overWriteReleases>
-							<overWriteSnapshots>true</overWriteSnapshots>
-							<excludeTransitive>false</excludeTransitive>
-							<excludeScope>provided</excludeScope>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>
