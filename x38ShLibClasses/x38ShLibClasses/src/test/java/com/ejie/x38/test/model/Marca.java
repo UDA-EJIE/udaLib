@@ -6,7 +6,7 @@ package com.ejie.x38.test.model;
 import java.io.Serializable;
 import java.util.List;
 
-import com.ejie.x38.serialization.CustomizedCustomSerializer;
+import com.ejie.x38.serialization.CustomSerializer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
@@ -52,7 +52,7 @@ public class Marca implements Serializable {
 	/**
 	 * @return the pais
 	 */
-	@JsonSerialize(using = CustomizedCustomSerializer.class)
+	@JsonSerialize(using = CustomSerializer.class)
 	public NoraPais getPais() {
 		return pais;
 	}

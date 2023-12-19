@@ -13,7 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.ejie.x38.serialization.CustomizedCustomSerializer;
+import com.ejie.x38.serialization.CustomSerializer;
 import com.ejie.x38.serialization.ThreadSafeCache;
 import com.ejie.x38.test.model.Coche;
 import com.ejie.x38.test.model.Empleado;
@@ -111,7 +111,7 @@ public class TestCustomSerializer {
 
 		try {
 			jsonGenerator = jsonFactory.createGenerator(jsonWriter);
-			new CustomizedCustomSerializer().serialize(crx5, jsonGenerator, serializerProvider);
+			new CustomSerializer().serialize(crx5, jsonGenerator, serializerProvider);
 		} catch (Exception e) {
 			fail("Exception serializando con el CustomSerializer");
 		} finally {
