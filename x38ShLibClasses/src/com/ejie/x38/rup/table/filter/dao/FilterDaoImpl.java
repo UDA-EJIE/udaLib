@@ -70,7 +70,7 @@ public class FilterDaoImpl implements FilterDao{
 					col_filterValue);
 			
 			try {
-	            // Verificar si el String es JSON antes de realizar la conversiÛn
+	            // Verificar si el String es JSON antes de realizar la conversi√≥n
 	            if (!isJson(filterValue)) {
 	            	String jsonString = convertToValidJson(filterValue);
 
@@ -433,7 +433,7 @@ public class FilterDaoImpl implements FilterDao{
         }
     }
 	
-	// MÈtodo para convertir un String a formato JSON v·lido
+	// M√©todo para convertir un String a formato JSON v√°lido
     private static String convertToValidJson(String inputString) {
         // Dividir el string en pares key:value
         String[] pairs = inputString.split(", ");
@@ -441,7 +441,7 @@ public class FilterDaoImpl implements FilterDao{
         // Crear un mapa para almacenar las claves y valores
         Map<String, String> keyValueMap = new HashMap();
 
-        // ExpresiÛn regular para identificar pares key:value
+        // Expresi√≥n regular para identificar pares key:value
         Pattern pattern = Pattern.compile("(\\w+):(\\S+)");
         for (String pair : pairs) {
             Matcher matcher = pattern.matcher(pair);
@@ -453,7 +453,7 @@ public class FilterDaoImpl implements FilterDao{
                 if (key.toLowerCase().contains("fecha")) {
                     value = convertFecha(value);
                 } else {
-                    // Agregar comillas dobles solo si el valor no est· entre comillas
+                    // Agregar comillas dobles solo si el valor no est√° entre comillas
                     if (!value.matches("\"[^\"]*\"")) {
                         value = "\"" + value + "\"";
                     }
@@ -478,7 +478,7 @@ public class FilterDaoImpl implements FilterDao{
         return jsonStringBuilder.toString();
     }
 
-    // MÈtodo para convertir fechas al formato deseado
+    // M√©todo para convertir fechas al formato deseado
     private static String convertFecha(String value) {
     	try {
             // Convertir el valor directamente a fecha
