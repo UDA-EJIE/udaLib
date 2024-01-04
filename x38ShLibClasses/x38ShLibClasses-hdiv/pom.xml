@@ -1,0 +1,25 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
+		<groupId>com.ejie.x38</groupId>
+		<artifactId>x38</artifactId>
+		<version>5.4.0-RELEASE</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>x38ShLibClasses-hdiv</artifactId>
+	<packaging>jar</packaging>
+	<name>x38ShLibClasses-hdiv</name>
+	<url>http://www.ejie.eus</url>
+	<dependencies>
+		<dependency>
+			<groupId>com.ejie.x38</groupId>
+			<artifactId>x38ShLibClasses</artifactId>
+			<version>5.4.0-RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>javax.servlet.jsp-api</artifactId>
+			<version>2.2.1</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+</project>

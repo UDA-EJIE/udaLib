@@ -1,8 +1,4 @@
-autoEnabled=false
+autoEnabled=true
 eclipse.preferences.version=1
 extraProperties=
-fileExclusions=
-idePrefixKey=
-projectKey=com.ejie.uda.lib
-serverId=integracion.eurohelp.es
-sqPrefixKey=x38ShLibClasses
+serverId=SonarQube de Desarrollo en Ejie
