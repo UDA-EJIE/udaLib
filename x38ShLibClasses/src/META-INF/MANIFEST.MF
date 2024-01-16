@@ -1,2 +1,0 @@
-Manifest-Version: 6.0.0-SNAPSHOT
-

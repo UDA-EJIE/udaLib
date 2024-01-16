@@ -3,50 +3,61 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ejie.x38</groupId>
-	<artifactId>x38ShLibClasses</artifactId>
-	<packaging>jar</packaging>
+	<artifactId>x38</artifactId>
+	<packaging>pom</packaging>
 	<version>6.0.0-SNAPSHOT</version>
-	<name>x38ShLibClasses</name>
+	<name>x38</name>
 	<url>http://www.ejie.eus</url>
+	
+	<modules>
+		<module>x38ShLibClasses</module>
+		<module>x38ShLibClasses-cache</module>
+		<module>x38ShLibClasses-dav</module>
+		<module>x38ShLibClasses-hdiv</module>
+		<module>x38ShLibClasses-pif</module>
+		<module>x38ShLibClasses-rup</module>
+	</modules>
 
 	<properties>
+		<maven.compiler.source>11</maven.compiler.source>
+		<maven.compiler.target>11</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<org.hdiv.ce.version>3.5.2</org.hdiv.ce.version>
-		<org.springframework.version>5.3.25</org.springframework.version>
-		<org.springframework.security.version>5.8.1</org.springframework.security.version>
+		<com.ejie.hdiv.ce.version>5.1.0-RELEASE</com.ejie.hdiv.ce.version>
+		<org.springframework.version>5.3.31</org.springframework.version>
+		<org.springframework.security.version>5.8.8</org.springframework.security.version>
 		<org.logback.version>1.2.11</org.logback.version>
 		<org.slf4j.version>1.7.30</org.slf4j.version>
 		<org.apache.tiles.version>3.0.8</org.apache.tiles.version>
 		<org.jackson.version>2.12.7.1</org.jackson.version>
-		<eclipselink.version>2.3.0</eclipselink.version>
+		<eclipselink.version>2.4.2</eclipselink.version>
 	</properties>
 
 	<dependencies>
 		<!-- Hdiv -->
 		<dependency>
-			<groupId>org.hdiv</groupId>
+			<groupId>com.ejie.hdiv</groupId>
 			<artifactId>hdiv-config</artifactId>
-			<version>${org.hdiv.ce.version}</version>
+			<version>${com.ejie.hdiv.ce.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.hdiv</groupId>
+			<groupId>com.ejie.hdiv</groupId>
 			<artifactId>hdiv-core</artifactId>
-			<version>${org.hdiv.ce.version}</version>
+			<version>${com.ejie.hdiv.ce.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.hdiv</groupId>
+			<groupId>com.ejie.hdiv</groupId>
 			<artifactId>hdiv-services</artifactId>
-			<version>${org.hdiv.ce.version}</version>
+			<version>${com.ejie.hdiv.ce.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.hdiv</groupId>
+			<groupId>com.ejie.hdiv</groupId>
 			<artifactId>hdiv-spring-mvc</artifactId>
-			<version>${org.hdiv.ce.version}</version>
+			<version>${com.ejie.hdiv.ce.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>javassist</groupId>
+			<groupId>org.javassist</groupId>
 			<artifactId>javassist</artifactId>
-			<version>3.6.0.GA</version>
+			<version>3.29.2-GA</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-dbcp</groupId>
@@ -122,28 +133,18 @@
 			<version>${org.springframework.version}</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>4.0.1</version>
+			<scope>provided</scope>
+		</dependency>
 		
 		<!-- JAVAX -->
 		<dependency>
 			<groupId>javax.annotation</groupId>
 			<artifactId>javax.annotation-api</artifactId>
 			<version>1.3.2</version>
-		</dependency>
-		<dependency>
-		    <groupId>javax.servlet</groupId>
-		    <artifactId>javax.servlet-api</artifactId>
-		    <version>4.0.1</version>
-		    <scope>provided</scope>
-		</dependency>
-		<dependency>
-		    <groupId>javax.interceptor</groupId>
-		    <artifactId>javax.interceptor-api</artifactId>
-		    <version>1.2.2</version>
-		</dependency>
-		<dependency>
-		    <groupId>javax.persistence</groupId>
-		    <artifactId>javax.persistence-api</artifactId>
-		    <version>2.2</version>
 		</dependency>
 		<dependency>
 		    <groupId>javax.xml.bind</groupId>
@@ -291,6 +292,99 @@
 		</dependency>
 
 		<!-- Reports -->
+		<!-- Jasper Reports -->
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports</artifactId>
+			<version>4.7.1</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.bouncycastle</groupId>
+					<artifactId>bcmail-jdk14</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>bouncycastle</groupId>
+					<artifactId>bcmail-jdk14</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.bouncycastle</groupId>
+					<artifactId>bcprov-jdk14</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>bouncycastle</groupId>
+					<artifactId>bcprov-jdk14</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.bouncycastle</groupId>
+					<artifactId>bctsp-jdk14</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.codehaus.castor</groupId>
+					<artifactId>castor</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>commons-collections</groupId>
+					<artifactId>commons-collections</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>commons-digester</groupId>
+					<artifactId>commons-digester</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>dom4j</groupId>
+					<artifactId>dom4j</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.geronimo.specs</groupId>
+					<artifactId>geronimo-stax-api_1.0_spec</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.codehaus.jackson</groupId>
+					<artifactId>jackson-core-lgpl</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.codehaus.jackson</groupId>
+					<artifactId>jackson-mapper-lgpl</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.codehaus.jackson</groupId>
+					<artifactId>jackson-core-asl</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.codehaus.jackson</groupId>
+					<artifactId>jackson-mapper-asl</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>jfree</groupId>
+					<artifactId>jcommon</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>eclipse</groupId>
+					<artifactId>jdtcore</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>jfree</groupId>
+					<artifactId>jfreechart</artifactId>
+				</exclusion>
+				<exclusion>
+					<artifactId>stax-api</artifactId>
+					<groupId>javax.xml.stream</groupId>
+				</exclusion>
+				<exclusion>
+					<groupId>xml-apis</groupId>
+					<artifactId>xml-apis</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.xmlbeans</groupId>
+					<artifactId>xmlbeans</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
 		<!-- ODF Toolkit -->
 		<dependency>
 			<groupId>org.odftoolkit</groupId>
@@ -494,50 +588,107 @@
 			<artifactId>commons-collections</artifactId>
 			<version>3.2.2</version>
 		</dependency>
+		<dependency>
+			<groupId>commons-configuration</groupId>
+			<artifactId>commons-configuration</artifactId>
+			<version>1.6</version>
+		</dependency>
 		<!-- FIN PIF 1.4 -->
+		
+		<!-- Dependencias para que funcione sin WebLogic en local -->
+		<dependency>
+			<groupId>ejie.xlnets</groupId>
+			<artifactId>n38</artifactId>
+			<version>1.0</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- 
+		<dependency>
+			<groupId>com.oracle.weblogic</groupId>
+			<artifactId>weblogic-server-pom</artifactId>
+			<version>12.2.1-4-0</version>
+			<type>pom</type>
+			<scope>provided</scope>
+		</dependency>	
+		-->
+
+		<dependency>
+			<groupId>com.oracle.weblogic</groupId>
+			<artifactId>com.oracle.weblogic.jndi</artifactId>
+			<version>12.2.1-4-0</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.oracle.weblogic</groupId>
+			<artifactId>com.oracle.weblogic.jndi.api</artifactId>
+			<version>12.2.1-4-0</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>javax.mail-api</artifactId>
+			<version>1.6.2</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.interceptor</groupId>
+			<artifactId>javax.interceptor-api</artifactId>
+			<version>1.2.2</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.persistence</groupId>
+			<artifactId>javax.persistence-api</artifactId>
+			<version>2.2</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.13.2</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- FIN Dependencias para que funcione sin WebLogic en local -->
+
 	</dependencies>
 
 	<build>
-		<sourceDirectory>src</sourceDirectory>
-		<testSourceDirectory>test-integration</testSourceDirectory>
-		<!-- <resources> -->
-		<!-- <resource> -->
-		<!-- <directory>src</directory> -->
-		<!-- <filtering>true</filtering> -->
-		<!-- </resource> -->
-		<!-- </resources> -->
-		<testResources>
-			<testResource>
-				<directory>test-unit</directory>
-				<filtering>true</filtering>
-			</testResource>
-			<testResource>
-				<directory>test-integration</directory>
-				<filtering>true</filtering>
-			</testResource>
-		</testResources>
-
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy-dependencies</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${user.dir}/lib</outputDirectory>
-							<overWriteReleases>false</overWriteReleases>
-							<overWriteSnapshots>true</overWriteSnapshots>
-							<excludeTransitive>false</excludeTransitive>
-							<excludeScope>provided</excludeScope>
-						</configuration>
-					</execution>
-				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.12.1</version>
+				<configuration>
+					<source>11</source>
+					<target>11</target>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
+	
+	<distributionManagement>
+		<repository>
+			<id>in-house-app-releases</id>
+			<name>in-house-app-releases</name>
+			<layout>default</layout>
+			<url>https://bin.alm02.itbatera.euskadi.eus/repository/in-house-app-releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>in-house-app-snapshots</id>
+			<name>in-house-app-snapshots</name>
+			<layout>default</layout>
+			<url>https://bin.alm02.itbatera.euskadi.eus/repository/in-house-app-snapshots/</url>
+		</snapshotRepository>		
+	</distributionManagement>
+
 </project>
