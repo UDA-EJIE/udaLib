@@ -40,7 +40,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
  * Boolean b = ObjectConverter.convert(o2, Boolean.class);
  * System.out.println(b); // false
  * 
- * Object o3 = new Integer(123);
+ * Object o3 = Integer.valueOf(123);
  * String s = ObjectConverter.convert(o3, String.class);
  * System.out.println(s); // 123
  * </pre>
@@ -159,7 +159,7 @@ public final class ObjectConversionManager {
      * @return The converted Double value.
      */
     public static Double bigDecimalToDouble(BigDecimal value) {
-        return new Double(value.doubleValue());
+        return Double.valueOf(value.doubleValue());
     }
 
     /**

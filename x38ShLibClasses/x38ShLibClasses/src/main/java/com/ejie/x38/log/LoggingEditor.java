@@ -229,7 +229,7 @@ public  class LoggingEditor
 		
 		resultado.setRows(resulList);
 		resultado.setRecords(resulList.size());
-		resultado.setTotal(new Long(resulList.size()), new Long(resulList.size()));
+		resultado.setTotal(Long.valueOf(resulList.size()), Long.valueOf(resulList.size()));
 		
 		
 		

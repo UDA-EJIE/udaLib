@@ -54,7 +54,7 @@ public class PerimetralSecurityWrapperN38Impl implements
 	private static final Logger logger = LoggerFactory
 			.getLogger(PerimetralSecurityWrapperN38Impl.class);
 
-	private Long xlnetCachingPeriod = new Long(0);
+	private Long xlnetCachingPeriod = Long.valueOf(0);
 	private String xlnetsDomain = null;
 	private boolean destroySessionSecuritySystem = false;
 	private String userChangeUrl = null;
@@ -682,7 +682,7 @@ public class PerimetralSecurityWrapperN38Impl implements
 			return new UserCredentials();
 		} else {
 			try {
-				return (Credentials) Class.forName(specificCredentialsName).newInstance();
+				return (Credentials) Class.forName(specificCredentialsName).getDeclaredConstructor().newInstance();
 			} catch (Exception e) {
 				logger.error("getCredentials(): The object specified to the parameter \"SpecificCredentials\" is not correct. The object has not been instantiated", e);
 				SecurityException sec = new SecurityException("getCredentials(): The object specified to the parameter \"SpecificCredentials\" is not correct. The object has not been instantiated", e.getCause());
@@ -771,7 +771,7 @@ public class PerimetralSecurityWrapperN38Impl implements
 
 		try {
 			if (specificCredentials instanceof String) {
-				specificCredentials = Class.forName((String) credentials).newInstance();
+				specificCredentials = Class.forName((String) credentials).getDeclaredConstructor().newInstance();
 			}
 			if (specificCredentials instanceof Credentials) {
 				this.specificCredentialsName = specificCredentials.getClass().getName();
