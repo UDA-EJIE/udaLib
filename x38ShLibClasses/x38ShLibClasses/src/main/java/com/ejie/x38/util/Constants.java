@@ -29,7 +29,7 @@ public class Constants {
 	public static final String CASTELLANO = "es";
 	public static final String ENGLISH = "en";
 	
-	public static final String X38_VERSION = "4.5.0-RELEASE";
+	public static final String X38_VERSION = "6.0.0-SNAPSHOT";
 	
 	public static final String PROPS_MOMO_SERVICIO = "momo.servicio";
 	public static final String PROPS_MOMO_SALIDA_ESTANDAR = "momo.doMomo.salidaEstandar";
@@ -55,7 +55,9 @@ public class Constants {
 	
 	public static final SimpleDateFormat HHMMSS_TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
 	
+	// MultiPK separator
+	public static final String PK_TOKEN = "@@@@";
 	
-	//security
-	public static final String dataNotApplicable = "N/A";
+	// Security
+	public static final String DATA_NOT_APPLICABLE = "N/A";
 }

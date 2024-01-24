@@ -125,7 +125,8 @@ public class MultiModelDeserializer extends
 					// En caso de producirse un error en el procesado del json se lanza una excepcion
 					String stackTrace = StackTraceManager.getStackTrace(cnfe);
 					logger.error(StackTraceManager.getStackTrace(cnfe));
-					throw new JsonParseException(jsonParser, stackTrace);
+					throw new JsonParseException(stackTrace,
+							entityJsonParser.getCurrentLocation());
 				}
 				
 			}

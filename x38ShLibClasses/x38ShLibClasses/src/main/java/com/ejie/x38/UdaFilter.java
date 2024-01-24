@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.DelegatingFilterProxy;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.ejie.x38.serialization.ThreadSafeCache;
 import com.ejie.x38.util.StackTraceManager;
@@ -88,7 +89,15 @@ public class UdaFilter extends DelegatingFilterProxy {
 				ThreadSafeCache.addValue("RUP_MULTI_ENTITY", "RUP_MULTI_ENTITY");
 			}
 
-			if (!httpServletRequest.getParameterMap().isEmpty()) {
+			// Determina si la sesión tiene parámetros.
+			final boolean sessionHasParams;
+			if (httpServletRequest.getParameterMap().isEmpty() || (httpServletRequest.getParameterMap().size() == 1)) {
+				sessionHasParams = false;
+			} else {
+				sessionHasParams = true;
+			}
+
+			if (sessionHasParams) {
 				// Si se cumplen las condiciones, se procederá a validar y almacenar en sesión los parámetros recibidos.
 				// Esta gestión es necesaria para disponer de los datos una vez se obtenga una credencial válida a través del sistema de seguridad.
 				if (SecurityContextHolder.getContext().getAuthentication() == null && !refersFromSecuritySystem) {
@@ -129,16 +138,33 @@ public class UdaFilter extends DelegatingFilterProxy {
 			// se procederá a insertar esos datos en la petición o en caso de ser una petición de tipo GET, en el query string de la misma.
 			if (httpServletRequest.getSession().getAttribute("REQUESTED_PARAMS") != null
 					&& httpServletRequest.getSession().getAttribute("REQUEST_METHOD") != null
-					&& !httpServletRequest.getSession().getAttribute("REQUEST_METHOD").equals("GET")
 					&& refersFromSecuritySystem) {
-				logger.debug(
+				if (httpServletRequest.getSession().getAttribute("REQUEST_METHOD").equals("GET")) {
+					UriComponentsBuilder url = UriComponentsBuilder.fromUriString(httpServletRequest.getRequestURL().toString());
+
+					for (Entry<String, String[]> entry : ((Map<String, String[]>) httpServletRequest.getSession().getAttribute("REQUESTED_PARAMS")).entrySet()) {
+						if (entry.getValue().length > 1) {
+							for (String entryValue : entry.getValue()) {
+								url.queryParam(entry.getKey(), entryValue);
+							}
+						} else {
+							url.queryParam(entry.getKey(), entry.getValue()[0]);
+						}
+					}
+
+					logger.debug("A redirection will happen because both REQUESTED_PARAMS and REQUEST_METHOD (with GET value) exist in session");
+					httpServletResponse.sendRedirect(url.build().toUriString());
+				} else {
+					logger.debug(
 							"Request will be wrapped using WrappedRequest because both REQUESTED_PARAMS and REQUEST_METHOD (with {} value) exist in session",
 							httpServletRequest.getSession().getAttribute("REQUEST_METHOD"));
-				filterChain.doFilter(
-						new WrappedRequest(httpServletRequest,
-								(Map<String, String[]>) httpServletRequest.getSession().getAttribute("REQUESTED_PARAMS"),
-								httpServletRequest.getSession().getAttribute("REQUEST_METHOD").toString()),
-						response);
+					filterChain.doFilter(
+							new WrappedRequest(httpServletRequest,
+									(Map<String, String[]>) httpServletRequest.getSession()
+											.getAttribute("REQUESTED_PARAMS"),
+									httpServletRequest.getSession().getAttribute("REQUEST_METHOD").toString()),
+							response);
+				}
 			} else {
 				logger.debug("Request won't be wrapped");
 				filterChain.doFilter(request, response);
@@ -179,6 +205,7 @@ public class UdaFilter extends DelegatingFilterProxy {
 			if (refersFromSecuritySystem) {
 				httpServletRequest.getSession().removeAttribute("REQUESTED_PARAMS");
 				httpServletRequest.getSession().removeAttribute("REQUEST_METHOD");
+				logger.debug("Eliminados los atributos REQUESTED_PARAMS y REQUEST_METHOD porque ya han sido usados.");
 			}
 		}
 	}

@@ -1,16 +1,16 @@
 /*
 * Copyright 2011 E.J.I.E., S.A.
 *
-* Licencia con arreglo a la EUPL, Versión 1.1 exclusivamente (la «Licencia»);
-* Solo podrá usarse esta obra si se respeta la Licencia.
+* Licencia con arreglo a la EUPL, VersiÃ³n 1.1 exclusivamente (la Â«LicenciaÂ»);
+* Solo podrÃ¡ usarse esta obra si se respeta la Licencia.
 * Puede obtenerse una copia de la Licencia en
 *
 * http://ec.europa.eu/idabc/eupl.html
 *
-* Salvo cuando lo exija la legislación aplicable o se acuerde por escrito,
-* el programa distribuido con arreglo a la Licencia se distribuye «TAL CUAL»,
-* SIN GARANTÍAS NI CONDICIONES DE NINGÚN TIPO, ni expresas ni implícitas.
-* Véase la Licencia en el idioma concreto que rige los permisos y limitaciones
+* Salvo cuando lo exija la legislaciÃ³n aplicable o se acuerde por escrito,
+* el programa distribuido con arreglo a la Licencia se distribuye Â«TAL CUALÂ»,
+* SIN GARANTÃ�AS NI CONDICIONES DE NINGÃšN TIPO, ni expresas ni implÃ­citas.
+* VÃ©ase la Licencia en el idioma concreto que rige los permisos y limitaciones
 * que establece la Licencia.
 */
 package com.ejie.x38.dto;
@@ -23,12 +23,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ejie.x38.dao.sql.OracleEncoder;
 import com.ejie.x38.dao.sql.error.SqlInjectionException;
+import com.ejie.x38.util.Constants;
 
 /**
  *
@@ -42,7 +44,7 @@ public class TableManager implements java.io.Serializable{
 	private static final Logger logger = LoggerFactory.getLogger(TableManager.class);
 
 	/**
-	 * PAGINACIÓN
+	 * PAGINACIÃ“N
 	 */
 	public static <T> StringBuilder getPaginationQuery(TableRequestDto pagination, StringBuilder query){
 		return getQueryForPagination(pagination, query, false, null);
@@ -62,7 +64,7 @@ public class TableManager implements java.io.Serializable{
 
 	private static boolean isInWhiteList(String[] whiteList, String text){
 
-		// Comprobamos si la cadena de ordenación contiene varios campos
+		// Comprobamos si la cadena de ordenaciÃ³n contiene varios campos
 
 
 		if (StringUtils.isBlank(text)){
@@ -127,15 +129,21 @@ public class TableManager implements java.io.Serializable{
 		//Order
 		StringBuilder orderBy = new StringBuilder();
 		if (pagination.getSidx() != null) {
+			boolean isColumnIndex = false;
+			
+			try {
+		        Integer.parseInt(pagination.getSidx());
+		        isColumnIndex = true;
+		    } catch (NumberFormatException nfe) {}
 			
 			if(pagination.getSidx().indexOf(',') >= 0) {
 				for(String sidx : pagination.getSidx().split(",")) {
-					if (orderByWhiteList != null && !TableManager.validateOrderByFields(orderByWhiteList, sidx)){
+					if (!isColumnIndex && orderByWhiteList != null && !TableManager.validateOrderByFields(orderByWhiteList, sidx)){
 						throw new SqlInjectionException("Campo no permitido");
 					}
 				}
 			} else {
-				if (orderByWhiteList != null && !TableManager.validateOrderByFields(orderByWhiteList, pagination.getSidx())){
+				if (!isColumnIndex && orderByWhiteList != null && !TableManager.validateOrderByFields(orderByWhiteList, pagination.getSidx())){
 					throw new SqlInjectionException("Campo no permitido");
 				}
 			}
@@ -278,14 +286,18 @@ public class TableManager implements java.io.Serializable{
 		sbSQL.append("\n\t").append("from (").append(query);
 		sbSQL.append("\n\t").append(TableManager.getOrderBy(tableRequestDto, false)).append(") ");
 		sbSQL.append("\n").append(") ");
+		if(tableRequestDto.getMultiselection().getSelectedAll() && tableRequestDto.getMultiselection().getSelectedIds().size() == 0){
+			return sbSQL;
+		}
 		sbSQL.append("\n").append("where ");
 
 		sbSQL.append("(").append(pkStr).append(") IN (");
 //		sbSQL.append(tableRequestDto.getMultiselection().getSelectedAll()?" NOT IN (":" IN (");
 		
-		// Comprobar si la lista de parámetros recibida es la misma que la aportada en pkList.
-		if (tableRequestDto.getCore().getPkNames().size() != pkList.length) {
-			TableManager.logger.info("[getReorderQuery] : La lista de parámetros recibida no es la misma que la aportada");
+		// Comprobar si la lista de parÃ¡metros recibida es la misma que la aportada en pkList. 
+		// Cabe decir que en los casos en los que las claves primarias sean compuestas esta condiciÃ³n nunca serÃ¡ afirmativa ya que siempre diferirÃ¡n los valores recibidos y aportados.
+		if (tableRequestDto.getCore().getPkNames().size() != pkList.length && !tableRequestDto.getMultiselection().getSelectedIds().get(0).contains(Constants.PK_TOKEN)) {
+			TableManager.logger.info("[getReorderQuery] : La lista de parÃ¡metros recibida no es la misma que la aportada");
 		}
 		
 		for (T selectedBean : tableRequestDto.getMultiselection().getSelected(clazz)) {
@@ -419,16 +431,16 @@ public class TableManager implements java.io.Serializable{
 	 */
 	
 	/**
-	 * Crea una consulta de eliminación múltiple teniendo en cuenta el filtro (en caso de haberlo).
+	 * Crea una consulta de eliminaciÃ³n mÃºltiple teniendo en cuenta el filtro (en caso de haberlo).
 	 *
 	 * @param Map<?, ?> Mapa que contiene la query where like
-	 * @param TableRequestDto Dto que contiene los parámetros de configuración propios del RUP_TABLE
+	 * @param TableRequestDto Dto que contiene los parÃ¡metros de configuraciÃ³n propios del RUP_TABLE
 	 * @param Class<T> Tipo de clase
 	 * @param String Nombre de la tabla a tratar
 	 * @param String Alias usado en la query
 	 * @param String... Strings que forman la clave primaria
 	 * 
-	 * @return StringBuilder Query que permite eliminar múltiples registros de la tabla
+	 * @return StringBuilder Query que permite eliminar mÃºltiples registros de la tabla
 	 */
 	public static <T> StringBuilder getRemoveMultipleQuery(Map<?, ?> mapaWhereLike, TableRequestDto tableRequestDto, Class<T> clazz, String table, String alias, String... pkList) {
 		String pkStr = (TableManager.strArrayToCommaSeparatedStr(pkList)).toUpperCase();
@@ -445,9 +457,10 @@ public class TableManager implements java.io.Serializable{
 		if (!tableRequestDto.getMultiselection().getSelectedIds().isEmpty()) {
 			removeQuery.append(" AND (").append(alias).append(".").append(pkStr).append(") ").append(tableRequestDto.getMultiselection().getSelectedAll() ? "NOT" : "").append(" IN (");
 			
-			// Comprobar si la lista de parámetros recibida es la misma que la aportada en pkList.
-			if (tableRequestDto.getCore().getPkNames().size() != pkList.length) {
-				TableManager.logger.info("[getRemoveMultipleQuery] : La lista de parámetros recibida no es la misma que la aportada");
+			// Comprobar si la lista de parÃ¡metros recibida es la misma que la aportada en pkList.
+			// Cabe decir que en los casos en los que las claves primarias sean compuestas esta condiciÃ³n nunca serÃ¡ afirmativa ya que siempre diferirÃ¡n los valores recibidos y aportados.
+			if (tableRequestDto.getCore().getPkNames().size() != pkList.length && !tableRequestDto.getMultiselection().getSelectedIds().get(0).contains(Constants.PK_TOKEN)) {
+				TableManager.logger.info("[getRemoveMultipleQuery] : La lista de parÃ¡metros recibida no es la misma que la aportada");
 			}
 		
 			for (T selectedBean : tableRequestDto.getMultiselection().getSelected(clazz)) {
@@ -474,11 +487,8 @@ public class TableManager implements java.io.Serializable{
 		}
 		return removeQuery;
 	}
-
-	/*
-	 * SELECCION MULTIPLE
-	 */
-	public static <T> StringBuilder getSelectMultipleQuery(TableRequestDto tableRequestDto, Class<T> clazz, List<Object> paramList, String... pkList){
+	
+	public static <T> StringBuilder getSelectMultipleQuery(TableRequestDto tableRequestDto, Class<T> clazz, List<Object> paramList, String[] orderByWhiteList, String... pkList){
 
 		String pkStr = (TableManager.strArrayToCommaSeparatedStr(pkList)).toUpperCase();
 
@@ -489,7 +499,8 @@ public class TableManager implements java.io.Serializable{
 				.append(tableRequestDto.getMultiselection().getSelectedAll()? "NOT":"").append(" IN (");
 			
 			// Comprobar si la lista de parámetros recibida es la misma que la aportada en pkList.
-			if (tableRequestDto.getCore().getPkNames().size() != pkList.length) {
+			// Cabe decir que en los casos en los que las claves primarias sean compuestas esta condición nunca será afirmativa ya que siempre diferirán los valores recibidos y aportados.
+			if (tableRequestDto.getCore().getPkNames().size() != pkList.length && !tableRequestDto.getMultiselection().getSelectedIds().get(0).contains(Constants.PK_TOKEN)) {
 				TableManager.logger.info("[getSelectMultipleQuery] : La lista de parámetros recibida no es la misma que la aportada");
 			}
 			
@@ -516,6 +527,8 @@ public class TableManager implements java.io.Serializable{
 			
 			selectQuery.deleteCharAt(selectQuery.length()-1);
 			selectQuery.append(")");
+			
+			selectQuery.append(getOrderBy(tableRequestDto, false, orderByWhiteList));
 		}
 
 		return selectQuery;

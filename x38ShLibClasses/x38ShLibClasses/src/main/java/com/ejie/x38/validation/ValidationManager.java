@@ -18,6 +18,7 @@ package com.ejie.x38.validation;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,6 +27,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -37,6 +40,11 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import javax.validation.groups.Default;
+
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.MappingJsonFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.hibernate.validator.HibernateValidator;
 import org.slf4j.Logger;
@@ -61,9 +69,6 @@ import com.ejie.x38.util.DateTimeManager;
 import com.ejie.x38.util.StackTraceManager;
 import com.ejie.x38.util.StaticsContainer;
 import com.ejie.x38.util.WebContextParameterManager;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.MappingJsonFactory;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Proporciona el API de validación de UDA. 
@@ -382,72 +387,6 @@ public class ValidationManager {
 		}
 		
 		return message;
-	}
-	
-	/**
-	 * Método utilizado por el ValidationFilter para realizar la validación de
-	 * la información enviada en la request.
-	 * 
-	 * @param bean
-	 *            Nombre del tipo del bean sobre el que se deben de validar los
-	 *            datos.
-	 * @param data
-	 *            Datos enviados en la petición.
-	 * @param locale
-	 *            Locale actual que define el idioma a utilizar en la
-	 *            internacionalización de los mensajes.
-	 * @return Texto de error que contiene los mensajes de error y que van a ser
-	 *         enviados por el ValidationFilter.
-	 */
-	@Deprecated
-	public String validateObject(String bean, String data, Locale locale){
-		try{
-			Class<?> clazz = Class.forName(StaticsContainer.modelPackageName+bean);
-			ObjectMapper mapper = new ObjectMapper();
-			Object instance = mapper.readValue(data, clazz);					
-	
-			Set<ConstraintViolation<Object>> constraintViolations = validator.validate(instance);
-			return summary(constraintViolations, bean, locale);
-		}catch (Exception e) {
-			logger.error(StackTraceManager.getStackTrace(e));
-			return "error!";
-		}
-	}
-	
-	/**
-	 * Realiza la validación del objeto indicado y envía en la response los
-	 * errores de validación que se han producido.
-	 * 
-	 * @param <T>
-	 *            Tipo del objeto que se va a validar.
-	 * @param object
-	 *            Objeto sobre el que se va a realizar la validación.
-	 * @param response
-	 *            HttpServletResponse sobre la que se van a escribir los errores
-	 *            de validación.
-	 * @return True/false dependiendo del resultado de la validación.
-	 */
-	@Deprecated
-	public <T extends Object> Boolean writeValidationErrors(T object, HttpServletResponse response){
-		
-		Set<ConstraintViolation<T>> constraintViolations = validator.validate(object);
-		
-		if (!constraintViolations.isEmpty()){
-			String summary = this.summary(constraintViolations, object.getClass().getSimpleName(), LocaleContextHolder.getLocale());
-			response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-			response.setContentType("text/javascript;charset=UTF-8");
-			response.setHeader("Cache-Control", "no-cache");
-			response.setHeader("Expires", DateTimeManager.getHttpExpiredDate());
-			try {
-				response.getWriter().write(summary);
-				return true;
-			} catch (IOException e) {
-				logger.error(StackTraceManager.getStackTrace(e));
-				return true;
-			}
-		}
-		
-		return false;
 	}
 	
 	
