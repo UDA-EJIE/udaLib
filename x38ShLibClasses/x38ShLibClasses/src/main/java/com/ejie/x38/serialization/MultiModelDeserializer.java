@@ -21,20 +21,17 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.MappingJsonFactory;
-
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ejie.x38.util.StackTraceManager;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.MappingJsonFactory;
 
 /**
  * Deserializador de Jackson que permite la deserializacion de multiples
@@ -92,8 +89,7 @@ public class MultiModelDeserializer extends
 	 */
 	@Override
 	public Map<String, Object> deserialize(JsonParser jsonParser,
-			DeserializationContext deserializationContext) throws IOException,
-			JsonProcessingException {
+			DeserializationContext deserializationContext) throws IOException {
 
 		// Creamos una JonFactory que nos permitira el procesado de los objetos JSON 
 		JsonFactory jsonFactory = new MappingJsonFactory();
@@ -115,18 +111,14 @@ public class MultiModelDeserializer extends
 				// Obtenemos el nombre de la clase Java a la que se debe de mapear la propiedad
 				String beanType = rupMultiModelMappingsNode.get(propertyName).asText();
 				// Creamos un nuevo jsonParser para procesar el json correspondiente a la entidad que se debe mapear
-				JsonParser entityJsonParser = jsonFactory.createParser(next.getValue().toString());
-				try {
+				try (JsonParser entityJsonParser = jsonFactory.createParser(next.getValue().toString());) {
 					// Se procesa el objeto json y se obtiene la instancia de la entidad correspondiente.
 					Object	obj = entityJsonParser.readValueAs(Class.forName(beanType));
 					// Se anyade la entidad en el mapa de retorno
 					mapaRetorno.put(propertyName, obj);
 				} catch (ClassNotFoundException cnfe) {
 					// En caso de producirse un error en el procesado del json se lanza una excepcion
-					String stackTrace = StackTraceManager.getStackTrace(cnfe);
 					logger.error(StackTraceManager.getStackTrace(cnfe));
-					throw new JsonParseException(stackTrace,
-							entityJsonParser.getCurrentLocation());
 				}
 				
 			}
