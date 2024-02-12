@@ -67,7 +67,7 @@ public class TableDto<T> {
 	 * @param rows
 	 *            Lista contenedora de los registros.
 	 */
-	public TableDto(Pagination pagination, Long recordNum, List<T> rows) {
+	public TableDto(TableRequestDto pagination, Long recordNum, List<T> rows) {
 		this(pagination, recordNum, null, rows);
 	}
 	
@@ -83,7 +83,7 @@ public class TableDto<T> {
 	 * @param rows
 	 *            Lista contenedora de los registros.
 	 */
-	public TableDto(Pagination pagination, Long recordNum, Long total, List<T> rows) {
+	public TableDto(TableRequestDto pagination, Long recordNum, Long total, List<T> rows) {
 		this(pagination, recordNum, total, rows, null);
 	}
 	
@@ -99,7 +99,7 @@ public class TableDto<T> {
 	 * @param reorderedSelection
 	 *            Lista con la reordenación de los registros.
 	 */
-	public TableDto(Pagination pagination, Long recordNum, List<T> rows, List<TableRowDto<T>> reorderedSelection) {
+	public TableDto(TableRequestDto pagination, Long recordNum, List<T> rows, List<TableRowDto<T>> reorderedSelection) {
 		this(pagination, recordNum, null, rows, reorderedSelection);
 	}
 
@@ -117,7 +117,7 @@ public class TableDto<T> {
 	 * @param reorderedSelection
 	 *            Lista con la reordenación de los registros.
 	 */
-	public TableDto(Pagination pagination, Long recordNum, Long total, List<T> rows, List<TableRowDto<T>> reorderedSelection) {
+	public TableDto(TableRequestDto pagination, Long recordNum, Long total, List<T> rows, List<TableRowDto<T>> reorderedSelection) {
 		super();
 		this.page = (pagination.getPage()!=null)?pagination.getPage().toString():"";
 		this.rows = rows;

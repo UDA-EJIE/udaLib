@@ -103,12 +103,12 @@ public class SearchDto<T, U> {
 	}
 	
 	/**
-	 * Devuelve un bean del tipo Pagination, con los parámetros de paginación-
+	 * Devuelve un bean del tipo TableRequestDto, con los parámetros de paginación.
 	 * 
 	 * @return Parámetros de paginación.
 	 */
-	public Pagination getPagination() {
-		return this.fromMapToBean(Pagination.class, this.filterParams);
+	public TableRequestDto getPagination() {
+		return this.fromMapToBean(TableRequestDto.class, this.filterParams);
 	}
 	
 	@SuppressWarnings("unchecked")
