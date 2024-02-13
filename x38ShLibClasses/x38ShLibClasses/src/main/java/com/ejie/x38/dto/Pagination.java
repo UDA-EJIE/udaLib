@@ -26,6 +26,7 @@ import org.springframework.beans.BeanWrapperImpl;
  * @author UDA
  *
  */
+@Deprecated
 public class Pagination<T> implements java.io.Serializable{
 
 	private static final long serialVersionUID = 2127819481595995328L;

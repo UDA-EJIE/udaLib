@@ -28,6 +28,7 @@ import org.springframework.util.StringUtils;
  * @author UDA
  *
  */
+@Deprecated
 @SuppressWarnings("rawtypes")
 public class PaginationManagerJerarquia implements java.io.Serializable{
 

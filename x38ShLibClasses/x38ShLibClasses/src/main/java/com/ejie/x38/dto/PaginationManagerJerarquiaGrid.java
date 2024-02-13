@@ -33,6 +33,7 @@ import org.springframework.util.StringUtils;
  * @author UDA
  *
  */
+@Deprecated
 @SuppressWarnings("rawtypes")
 public class PaginationManagerJerarquiaGrid implements java.io.Serializable{
 
