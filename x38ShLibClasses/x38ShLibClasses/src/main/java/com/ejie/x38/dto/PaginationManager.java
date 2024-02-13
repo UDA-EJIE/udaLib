@@ -26,6 +26,7 @@ import org.apache.commons.beanutils.BeanUtils;
  * @author UDA
  *
  */
+@Deprecated
 public class PaginationManager implements java.io.Serializable{
 
 	private static final long serialVersionUID = 2127819481595995328L;

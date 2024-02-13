@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
  * @author UDA
  *
  */
+@Deprecated
 public class JerarquiaDto<T> implements java.io.Serializable {
 	
 	private static final long serialVersionUID = 2127819481595995328L;
