@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 
 import com.ejie.x38.dao.sql.OracleEncoder;
 import com.ejie.x38.dao.sql.error.SqlInjectionException;
-import com.ejie.x38.util.Constants;
 
 /**
  *
@@ -293,12 +292,6 @@ public class TableManager implements java.io.Serializable{
 		sbSQL.append("(").append(pkStr).append(") IN (");
 //		sbSQL.append(tableRequestDto.getMultiselection().getSelectedAll()?" NOT IN (":" IN (");
 		
-		// Comprobar si la lista de parÃ¡metros recibida es la misma que la aportada en pkList. 
-		// Cabe decir que en los casos en los que las claves primarias sean compuestas esta condiciÃ³n nunca serÃ¡ afirmativa ya que siempre diferirÃ¡n los valores recibidos y aportados.
-		if (tableRequestDto.getCore().getPkNames().size() != pkList.length && !tableRequestDto.getMultiselection().getSelectedIds().get(0).contains(Constants.PK_TOKEN)) {
-			TableManager.logger.info("[getReorderQuery] : La lista de parÃ¡metros recibida no es la misma que la aportada");
-		}
-		
 		for (T selectedBean : tableRequestDto.getMultiselection().getSelected(clazz)) {
 			sbSQL.append("(");
 			for (String pk : pkList) {
@@ -455,12 +448,6 @@ public class TableManager implements java.io.Serializable{
 		
 		if (!tableRequestDto.getMultiselection().getSelectedIds().isEmpty()) {
 			removeQuery.append(" AND (").append(alias).append(".").append(pkStr).append(") ").append(tableRequestDto.getMultiselection().getSelectedAll() ? "NOT" : "").append(" IN (");
-			
-			// Comprobar si la lista de parÃ¡metros recibida es la misma que la aportada en pkList.
-			// Cabe decir que en los casos en los que las claves primarias sean compuestas esta condiciÃ³n nunca serÃ¡ afirmativa ya que siempre diferirÃ¡n los valores recibidos y aportados.
-			if (tableRequestDto.getCore().getPkNames().size() != pkList.length && !tableRequestDto.getMultiselection().getSelectedIds().get(0).contains(Constants.PK_TOKEN)) {
-				TableManager.logger.info("[getRemoveMultipleQuery] : La lista de parÃ¡metros recibida no es la misma que la aportada");
-			}
 		
 			for (T selectedBean : tableRequestDto.getMultiselection().getSelected(clazz)) {
 				removeQuery.append("(");
@@ -496,12 +483,6 @@ public class TableManager implements java.io.Serializable{
 		if(!tableRequestDto.getMultiselection().getSelectedIds().isEmpty()) {
 			selectQuery.append(" AND (").append(pkStr).append(") ")
 				.append(tableRequestDto.getMultiselection().getSelectedAll()? "NOT":"").append(" IN (");
-			
-			// Comprobar si la lista de parámetros recibida es la misma que la aportada en pkList.
-			// Cabe decir que en los casos en los que las claves primarias sean compuestas esta condición nunca será afirmativa ya que siempre diferirán los valores recibidos y aportados.
-			if (tableRequestDto.getCore().getPkNames().size() != pkList.length && !tableRequestDto.getMultiselection().getSelectedIds().get(0).contains(Constants.PK_TOKEN)) {
-				TableManager.logger.info("[getSelectMultipleQuery] : La lista de parámetros recibida no es la misma que la aportada");
-			}
 			
 			for (T selectedBean : tableRequestDto.getMultiselection().getSelected(clazz)) {
 				selectQuery.append("(");
