@@ -5,7 +5,7 @@
 	<groupId>com.ejie.x38</groupId>
 	<artifactId>x38</artifactId>
 	<packaging>pom</packaging>
-	<version>6.0.0-SNAPSHOT</version>
+	<version>6.0.0-TOMCAT-SNAPSHOT</version>
 	<name>x38</name>
 	<url>http://www.ejie.eus</url>
 
@@ -17,8 +17,8 @@
 	</modules>
 
 	<properties>
-		<maven.compiler.source>11</maven.compiler.source>
-		<maven.compiler.target>11</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<org.springframework.version>5.3.31</org.springframework.version>
 		<org.springframework.security.version>5.8.8</org.springframework.security.version>
@@ -548,8 +548,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.12.1</version>
 				<configuration>
-					<source>11</source>
-					<target>11</target>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
 		</plugins>
