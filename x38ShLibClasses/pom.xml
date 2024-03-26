@@ -482,30 +482,6 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- 
-		<dependency>
-			<groupId>com.oracle.weblogic</groupId>
-			<artifactId>weblogic-server-pom</artifactId>
-			<version>12.2.1-4-0</version>
-			<type>pom</type>
-			<scope>provided</scope>
-		</dependency>	
-		-->
-
-		<dependency>
-			<groupId>com.oracle.weblogic</groupId>
-			<artifactId>com.oracle.weblogic.jndi</artifactId>
-			<version>12.2.1-4-0</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>com.oracle.weblogic</groupId>
-			<artifactId>com.oracle.weblogic.jndi.api</artifactId>
-			<version>12.2.1-4-0</version>
-			<scope>provided</scope>
-		</dependency>
-
 		<dependency>
   			<groupId>javax.mail</groupId>
   			<artifactId>javax.mail-api</artifactId>
