@@ -52,10 +52,8 @@ public class WebContextParameterManager implements ApplicationContextAware {
 		logger.info("The applications Id is: " + StaticsContainer.getWebId());
 
 		try {
-			logger.debug("Loading properties from: " + StaticsContainer.getWebAppName() + "/"
-					+ StaticsContainer.getWebAppName() + ".properties");
-			InputStream propertiesStream = this.getClass().getClassLoader().getResourceAsStream(
-					StaticsContainer.getWebAppName() + "/" + StaticsContainer.getWebAppName() + ".properties");
+			logger.debug("Loading properties from resources: /properties/{}.properties", StaticsContainer.webAppName);
+			InputStream propertiesStream = this.getClass().getClassLoader().getResourceAsStream("/properties/" + StaticsContainer.webAppName + ".properties");
 			appProperties.load(propertiesStream);
 			propertiesStream.close();
 		} catch (Exception e) {

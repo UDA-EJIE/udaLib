@@ -90,8 +90,8 @@ public class ValidationManager {
 				Properties props = new Properties();
 				InputStream in = null;
 				try {
-					logger.debug("Loading properties from: "+StaticsContainer.webAppName+"/"+StaticsContainer.webAppName+".properties");
-					in = LogbackConfigurer.class.getClassLoader().getResourceAsStream(StaticsContainer.webAppName+"/"+StaticsContainer.webAppName+".properties");
+					logger.debug("Loading properties from resources: /properties/{}.properties", StaticsContainer.webAppName);
+					in = LogbackConfigurer.class.getClassLoader().getResourceAsStream("/properties/" + StaticsContainer.webAppName + ".properties");
 					props.load(in);
 					
 					//Creamos el traceClient
