@@ -16,6 +16,8 @@
 package com.ejie.x38.util;
 
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
@@ -85,8 +87,13 @@ public class WebContextParameterManager implements ApplicationContextAware {
 			logger.error("Login URL is not Set!");
 		}
 
-		StaticsContainer.setWeblogicInstance(System.getProperty("weblogic.Name"));
-		logger.info("The WebLogic Instance Name is: " + StaticsContainer.getWeblogicInstance());
+		try {
+			StaticsContainer.setServerInstance(InetAddress.getLocalHost().getHostName());
+			logger.info("The Server Instance is: {}", StaticsContainer.getServerInstance());
+		} catch (UnknownHostException unknownHostException) {
+			StaticsContainer.setServerInstance("N/A");
+			logger.error("Error getting server instance", unknownHostException);
+		}
 
 		if (appProperties.getProperty("cookie.rootPath") != null
 				&& ((appProperties.getProperty("cookie.rootPath")).toLowerCase()).equals("true")) {

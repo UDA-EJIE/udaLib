@@ -28,7 +28,7 @@ public class StaticsContainer {
 	public static String modelPackageName;
 	public static String loginUrl;
 	public static boolean aplicInPortal;
-	public static String weblogicInstance;
+	public static String serverInstance;
 	public static String layout;
 	public static String language;
 	public static boolean cookiePathRoot;
@@ -83,12 +83,12 @@ public class StaticsContainer {
 		StaticsContainer.aplicInPortal = aplicInPortal;
 	}
 
-	public static String getWeblogicInstance() {
-		return weblogicInstance;
+	public static String getServerInstance() {
+		return serverInstance;
 	}
 
-	public static void setWeblogicInstance(String weblogicInstance) {
-		StaticsContainer.weblogicInstance = weblogicInstance;
+	public static void setServerInstance(String serverInstance) {
+		StaticsContainer.serverInstance = serverInstance;
 	}
 
 	public static String getLayout() {

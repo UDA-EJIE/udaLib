@@ -16,6 +16,8 @@
 package com.ejie.x38.remote;
 
 import java.io.Serializable;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,11 +25,11 @@ import org.slf4j.MDC;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import ch.qos.logback.core.LogbackException;
-
 import com.ejie.x38.log.LogConstants;
 import com.ejie.x38.log.security.CurrentUserManager;
 import com.ejie.x38.security.Credentials;
+
+import ch.qos.logback.core.LogbackException;
 
 /**
  * 
@@ -74,7 +76,12 @@ public class TransactionMetadata implements Serializable{
 		this.setNoInternalAcces(LogConstants.ACCESSTYPEEJB);
 		
 		//Recovered the server instance name 
-		this.setServerInstance(System.getProperty("weblogic.Name"));
+		try {
+			this.setServerInstance(InetAddress.getLocalHost().getHostName());
+		} catch (UnknownHostException unknownHostException) {
+			this.setServerInstance("N/A");
+			logger.error("Error getting server instance", unknownHostException);
+		}
 		
 		//Http access-dependent data
 		if((MDC.get(LogConstants.NOINTERNALACCES) != null)&&((MDC.get(LogConstants.NOINTERNALACCES).equals(LogConstants.ACCESSTYPEHTTP))||(MDC.get(LogConstants.NOINTERNALACCES).equals(LogConstants.ACCESSTYPEEJB)))){
@@ -134,11 +141,11 @@ public class TransactionMetadata implements Serializable{
 			logger.info("Remote service has not received the security context of the caller server. If the application has security services, is likely to occur a exception");
 		}
 		
-		logger.info("The "+System.getProperty("weblogic.Name")+" instance receives a request remote from the instance "+this.getServerInstance()); 
+		logger.info("Server receives a remote request from the instance {}", this.getServerInstance()); 
 	}
 	
 	public void clear (){
-		logger.info("The "+System.getProperty("weblogic.Name")+" has completed the response to the request remote from the instance "+this.getServerInstance());
+		logger.info("Server has completed the response to the remote request from the instance {}", this.getServerInstance());
 		MDC.clear();
 		SecurityContextHolder.clearContext();
 	}
