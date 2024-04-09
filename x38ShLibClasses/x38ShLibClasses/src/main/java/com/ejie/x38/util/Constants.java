@@ -29,7 +29,7 @@ public class Constants {
 	public static final String CASTELLANO = "es";
 	public static final String ENGLISH = "en";
 	
-	public static final String X38_VERSION = "5.4.0-RELEASE";
+	public static final String X38_VERSION = "5.4.1-RELEASE";
 	
 	public static final String PROPS_MOMO_SERVICIO = "momo.servicio";
 	public static final String PROPS_MOMO_SALIDA_ESTANDAR = "momo.doMomo.salidaEstandar";
