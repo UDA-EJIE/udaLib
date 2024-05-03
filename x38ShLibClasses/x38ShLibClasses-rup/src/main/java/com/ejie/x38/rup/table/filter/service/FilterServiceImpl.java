@@ -7,12 +7,8 @@ import org.springframework.stereotype.Service;
 import com.ejie.x38.rup.table.filter.dao.FilterDao;
 import com.ejie.x38.rup.table.filter.model.Filter;
 
-
 @Service(value = "filterService")
-public class FilterServiceImpl implements FilterService{
-
-	
-	
+public class FilterServiceImpl implements FilterService {
 
 	private FilterDao filterDao;
 
@@ -25,116 +21,112 @@ public class FilterServiceImpl implements FilterService{
 	}
 
 	@Override
-	public Filter insert(Filter filtro) {
-		
-		//comprobar nombreRepetido
-		if (!repeatedName(filtro.getFilterSelector(), filtro.getFilterName(), filtro.getFilterUser())){
-			//comprobar predefinido
-			if (filtro.isFilterDefault()){
-				//quitar el filtro predefinido anterior
-				removeDeafultPreviousFilter(filtro.getFilterSelector(), filtro.getFilterUser());
+	public Filter insert(Filter filter) {
+		// comprobar nombreRepetido
+		if (!repeatedName(filter.getSelector(), filter.getText(), filter.getUser())) {
+			// comprobar predefinido
+			if (filter.isActive()) {
+				// quitar el filtro predefinido anterior
+				removeDeafultPreviousFilter(filter.getSelector(), filter.getUser());
 			}
-			
-			filterDao.insert(filtro);
-			filtro.setFilterFeedback("ok");
-		}else{
-			//nombre repetido
-			
-			//comprobar predefinido
-			if (filtro.isFilterDefault()){
-				//quitar el filtro predefinido anterior
-				removeDeafultPreviousFilter(filtro.getFilterSelector(), filtro.getFilterUser());
+
+			filterDao.insert(filter);
+			filter.setFeedback("ok");
+		} else {
+			// nombre repetido
+
+			// comprobar predefinido
+			if (filter.isActive()) {
+				// quitar el filtro predefinido anterior
+				removeDeafultPreviousFilter(filter.getSelector(), filter.getUser());
 			}
-			//Updateo los valores
-			//filtro.setFilterFeedback("Error, nombre repetido");
-			filterDao.update(filtro);
-			
+			// Updateo los valores
+			// filter.setFeedback("Error, nombre repetido");
+			filterDao.update(filter);
+
 		}
-		return filtro;
-			
+		return filter;
+
 	}
 
 	@Override
-	public Filter update(Filter filtro) {
-		//comprobar predefinido
-		if (filtro.isFilterDefault()){
-			//quitar el filtro predefinido anterior
-			removeDeafultPreviousFilter(filtro.getFilterSelector(), filtro.getFilterUser());
+	public Filter update(Filter filter) {
+		// comprobar predefinido
+		if (filter.isActive()) {
+			// quitar el filtro predefinido anterior
+			removeDeafultPreviousFilter(filter.getSelector(), filter.getUser());
 		}
-		filterDao.update(filtro);
-		return filtro;
+		filterDao.update(filter);
+		return filter;
 	}
 
 	@Override
-	public Filter delete(Filter filtro) {
-		//comprobar existencia
-		if( checkFilter(filtro)){
-		
-			filterDao.delete(filtro);
-		}else{
-			//no existe el elemento a borrar
-			filtro.setFilterFeedback("no_records");
+	public Filter delete(Filter filter) {
+		// comprobar existencia
+		if (checkFilter(filter)) {
+
+			filterDao.delete(filter);
+		} else {
+			// no existe el elemento a borrar
+			filter.setFeedback("no_records");
 		}
-		
-		return filtro;
+
+		return filter;
 	}
 
 	@Override
-	public Filter getBySelectorAndName(String selector, String name, String user) {
-		return filterDao.getBySelectorAndName(selector, name,user);
-	}
-	@Override
-	public Filter getById(String filterId) {
-		return filterDao.getById(filterId);
+	public Filter getBySelectorAndName(String selector, String text, String user) {
+		return filterDao.getBySelectorAndName(selector, text, user);
 	}
 
 	@Override
-	public List <Filter> getAllFilters(String selector,String user) {
-		
-		return filterDao.getAll(selector,user);
+	public Filter getById(String id) {
+		return filterDao.getById(id);
 	}
-	
-	
-	private void removeDeafultPreviousFilter(String selector, String user){
-		Filter filtro= new Filter();
-		
-		filtro=filterDao.getDefaultAsigned(selector, user);
-	
-		//borro el boolean de predefinido si existe
-		//if(filtro.size()>0)
-		if(filtro!=null)
 
-			filterDao.setDefaultAsigned(filtro.getFilterSelector(),filtro.getFilterName(), false, user);
-		
+	@Override
+	public List<Filter> getAllFilters(String selector, String user) {
+		return filterDao.getAll(selector, user);
 	}
-	
-	private boolean repeatedName(String selector,String name, String user){
-		boolean respuesta=false;
-		
-		Filter filtro= filterDao.getBySelectorAndName(selector, name,user);
-		
-		//if(filtro.size()>0)
-		if(filtro!=null)
-			respuesta=true;
-				
-			return respuesta;
+
+	private void removeDeafultPreviousFilter(String selector, String user) {
+		Filter filter = new Filter();
+
+		filter = filterDao.getDefaultAsigned(selector, user);
+
+		// borro el boolean de predefinido si existe
+		// if(filter.size()>0)
+		if (filter != null) {
+			filterDao.setDefaultAsigned(filter.getSelector(), filter.getText(), false, user);
+		}
+	}
+
+	private boolean repeatedName(String selector, String name, String user) {
+		boolean respuesta = false;
+
+		Filter filter = filterDao.getBySelectorAndName(selector, name, user);
+
+		// if(filter.size()>0)
+		if (filter != null) {
+			respuesta = true;
+		}
+
+		return respuesta;
 	}
 
 	@Override
 	public Filter getDefault(String selector, String user) {
-		
-		Filter filtro= filterDao.getDefaultAsigned(selector, user);
-		return filtro;
+		return filterDao.getDefaultAsigned(selector, user);
 	}
-	
-	private boolean checkFilter(Filter filtro){
-		boolean existe=false;
-		
-		Filter filter= filterDao.getBySelectorAndName(filtro.getFilterSelector(), filtro.getFilterName(), filtro.getFilterUser());
-		if (filter!=null){
-			existe=true;
+
+	private boolean checkFilter(Filter filter) {
+		boolean existe = false;
+
+		Filter newFilter = filterDao.getBySelectorAndName(filter.getSelector(), filter.getText(), filter.getUser());
+		if (newFilter != null) {
+			existe = true;
 		}
 		return existe;
 	}
-	
+
 }

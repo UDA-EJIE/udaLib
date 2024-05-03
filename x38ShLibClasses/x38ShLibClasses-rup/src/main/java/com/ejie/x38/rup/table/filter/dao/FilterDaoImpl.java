@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.sql.DataSource;
 
@@ -25,19 +27,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ejie.x38.rup.table.filter.model.Filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-
 @Repository
 @Transactional
-public class FilterDaoImpl implements FilterDao{
-	
-	
+public class FilterDaoImpl implements FilterDao {
 
-	private Logger logger =  LoggerFactory.getLogger(FilterDaoImpl.class);
-	
-	
+	private static final Logger logger = LoggerFactory.getLogger(FilterDaoImpl.class);
+
 	private NamedParameterJdbcTemplate jdbcTemplate;
 
 	private String db_filterTableName;
@@ -50,162 +45,148 @@ public class FilterDaoImpl implements FilterDao{
 	private String filterSeq;
 
 	private DefaultLobHandler defaultLobHandler;
-	
-	
+
 	private RowMapper<Filter> filterRowMapper = new RowMapper<Filter>() {
-		public Filter mapRow(ResultSet resultSet, int rowNum) throws SQLException
-				 {
-			
-			
+		public Filter mapRow(ResultSet resultSet, int rowNum) throws SQLException {
 
-			Filter filtro = new Filter();
-			
-			filtro.setFilterId(resultSet.getInt(col_filterId));
-			filtro.setFilterSelector(resultSet.getString(col_filterSelector));
-			filtro.setFilterName(defaultLobHandler.getClobAsString(resultSet,col_filterName));
-			filtro.setFilterUser(resultSet.getString(col_filterUser));
-			filtro.setFilterDefault(resultSet.getBoolean(col_filterDefault));
-			
-			String filterValue = defaultLobHandler.getClobAsString(resultSet,
-					col_filterValue);
-			
+			Filter filter = new Filter();
+
+			filter.setId(Integer.toString(resultSet.getInt(col_filterId)));
+			filter.setSelector(resultSet.getString(col_filterSelector));
+			filter.setText(defaultLobHandler.getClobAsString(resultSet, col_filterName));
+			filter.setUser(resultSet.getString(col_filterUser));
+			filter.setActive(resultSet.getBoolean(col_filterDefault));
+
+			String data = defaultLobHandler.getClobAsString(resultSet, col_filterValue);
+
 			try {
-	            // Verificar si el String es JSON antes de realizar la conversión
-	            if (!isJson(filterValue)) {
-	            	String jsonString = convertToValidJson(filterValue);
+				// Verificar si el String es JSON antes de realizar la conversión
+				if (!isJson(data)) {
+					String jsonString = convertToValidJson(data);
 
-	              filtro.setFilterValue(jsonString);
-	            } else {
-	               filtro.setFilterValue(filterValue); 
-	            }
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	        }	    
-			
-			
-			
-			return filtro;
+					filter.setData(jsonString);
+				} else {
+					filter.setData(data);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			return filter;
 		}
 	};
-	
-	
-	
-	
 
 	@Override
-	public Filter insert(Filter filtro)  {
+	public Filter insert(Filter filter) {
 
 		StringBuilder query = new StringBuilder();
 		query.append("SELECT ").append(filterSeq).append(".NEXTVAL FROM DUAL");
-		SqlParameterSource beanParameterSource =  new BeanPropertySqlParameterSource(filtro);
+		SqlParameterSource beanParameterSource = new BeanPropertySqlParameterSource(filter);
 
-		filtro.setFilterId(jdbcTemplate.queryForObject(query.toString(), beanParameterSource, Integer.class));
-		
-		beanParameterSource=  new BeanPropertySqlParameterSource(filtro);
+		filter.setId(jdbcTemplate.queryForObject(query.toString(), beanParameterSource, String.class));
 
-		
-		
+		beanParameterSource = new BeanPropertySqlParameterSource(filter);
+
 		query = new StringBuilder();
 		query.append("INSERT INTO ").append(db_filterTableName).append(" ");
-		query.append("(").append(col_filterId).append(",").append(col_filterSelector).append(",").append(col_filterName).append(",")
-		.append(col_filterDefault).append(",").append(col_filterValue).append(',').append(col_filterUser).append(")");
-		query.append(" VALUES (:filterId, :filterSelector, :filterName, :filterDefault, :filterValue, :filterUser)");
-		
-		
+		query.append("(").append(col_filterId).append(",").append(col_filterSelector).append(",").append(col_filterName)
+				.append(",").append(col_filterDefault).append(",").append(col_filterValue).append(',')
+				.append(col_filterUser).append(")");
+		query.append(" VALUES (:id, :selector, :text, :active, :data, :user)");
+
 		logger.debug("FilterDaoImpl.insert()");
-		logger.debug("\tSQL: " +query.toString());
-		logger.debug("\tparams: " +filtro.toString());
-		
+		logger.debug("\tSQL: " + query.toString());
+		logger.debug("\tparams: " + filter.toString());
+
 		jdbcTemplate.update(query.toString(), beanParameterSource);
-		
-		return filtro;
-		
+
+		return filter;
+
 	}
 
 	@Override
-	public Filter update(Filter filtro) {
-		
-	StringBuilder query = new StringBuilder();
-		
+	public Filter update(Filter filter) {
+
+		StringBuilder query = new StringBuilder();
+
 		query.append("UPDATE ").append(db_filterTableName).append(" ");
-		query.append(" SET ").append(col_filterDefault).append("=:filterDefault,").append(col_filterValue).append("=:filterValue");
+		query.append(" SET ").append(col_filterDefault).append("=:active,").append(col_filterValue).append("=:data");
 		query.append(" WHERE ").append(getWhereFieldsNameAndSelector());
-		
-		SqlParameterSource beanParameterSource =  new BeanPropertySqlParameterSource(filtro);
-		
+
+		SqlParameterSource beanParameterSource = new BeanPropertySqlParameterSource(filter);
+
 		logger.debug("FilterDaoImpl.update()");
-		logger.debug("\tSQL: " +query.toString());
-		logger.debug("\tparams: " +filtro.toString());
-		
+		logger.debug("\tSQL: " + query.toString());
+		logger.debug("\tparams: " + filter.toString());
+
 		jdbcTemplate.update(query.toString(), beanParameterSource);
-		return filtro;
-}
+		return filter;
+	}
 
 	@Override
-	public Filter delete(Filter filtro)  {
-		
+	public Filter delete(Filter filter) {
+
 		StringBuilder query = new StringBuilder();
-		
+
 		query.append("DELETE FROM ").append(db_filterTableName).append(" ");
 		query.append(" WHERE ").append(getWhereFieldsNameAndSelector());
-		
-		SqlParameterSource beanParameterSource =  new BeanPropertySqlParameterSource(filtro);
-		
+
+		SqlParameterSource beanParameterSource = new BeanPropertySqlParameterSource(filter);
+
 		logger.debug("FilterDaoImpl.delete()");
-		logger.debug("\tSQL: " +query.toString());
-		logger.debug("\tparams: " +filtro.toString());
-		
+		logger.debug("\tSQL: " + query.toString());
+		logger.debug("\tparams: " + filter.toString());
+
 		jdbcTemplate.update(query.toString(), beanParameterSource);
-		return filtro;
-		
+		return filter;
+
 	}
 
 	@Override
-	public Filter getBySelectorAndName(String selector, String name, String user)  {
+	public Filter getBySelectorAndName(String selector, String text, String user) {
 		StringBuilder query = new StringBuilder();
-		
+
 		query.append("SELECT ").append(getSelectFildsName());
 		query.append(" FROM ").append(db_filterTableName);
 		query.append(" WHERE ").append(getWhereFieldsNameAndSelector());
-		
-		MapSqlParameterSource mapParameterSource =  new MapSqlParameterSource();
-		mapParameterSource.addValue("filterName", name);
-		mapParameterSource.addValue("filterSelector", selector);
-		mapParameterSource.addValue("filterUser", user);
 
-		
+		MapSqlParameterSource mapParameterSource = new MapSqlParameterSource();
+		mapParameterSource.addValue("text", text);
+		mapParameterSource.addValue("selector", selector);
+		mapParameterSource.addValue("user", user);
+
 		logger.debug("FilterDaoImpl.getBySelectorAndName()");
-		logger.debug("\tSQL: " +query.toString());
-		logger.debug("\tparams: {filterName: " +name + ", filterSelector: "+selector+"}");
-		
-		//return  jdbcTemplate.queryForObject(query.toString(), mapParameterSource, filterRowMapper);
-		List<Filter> respuesta= jdbcTemplate.query(query.toString(), mapParameterSource, filterRowMapper);
-		
-		return (Filter)DataAccessUtils.uniqueResult(respuesta);
+		logger.debug("\tSQL: " + query.toString());
+		logger.debug("\tparams: {text: " + text + ", selector: " + selector + "}");
+
+		// return jdbcTemplate.queryForObject(query.toString(), mapParameterSource,
+		// filterRowMapper);
+		List<Filter> respuesta = jdbcTemplate.query(query.toString(), mapParameterSource, filterRowMapper);
+
+		return (Filter) DataAccessUtils.uniqueResult(respuesta);
 	}
-	
+
 	@Override
-	public Filter getById(String filterId)  {
+	public Filter getById(String id) {
 		StringBuilder query = new StringBuilder();
-		
+
 		query.append("SELECT ").append(getSelectFildsName());
 		query.append(" FROM ").append(db_filterTableName);
-		query.append(" WHERE ").append(col_filterId).append(":=filterId");
-		
-		MapSqlParameterSource mapParameterSource =  new MapSqlParameterSource();
-		mapParameterSource.addValue("filterId", filterId);
-		
+		query.append(" WHERE ").append(col_filterId).append(":=id");
+
+		MapSqlParameterSource mapParameterSource = new MapSqlParameterSource();
+		mapParameterSource.addValue("id", id);
+
 		logger.debug("FilterDaoImpl.getById()");
-		logger.debug("\tSQL: " +query.toString());
-		logger.debug("\tparams: {filterId: " +filterId +"}");
-		
-		//return  jdbcTemplate.queryForObject(query.toString(), mapParameterSource, filterRowMapper);
-		List<Filter> respuesta= jdbcTemplate.query(query.toString(), mapParameterSource, filterRowMapper);
-		return (Filter)DataAccessUtils.uniqueResult(respuesta);
+		logger.debug("\tSQL: " + query.toString());
+		logger.debug("\tparams: {id: " + id + "}");
+
+		// return jdbcTemplate.queryForObject(query.toString(), mapParameterSource,
+		// filterRowMapper);
+		List<Filter> respuesta = jdbcTemplate.query(query.toString(), mapParameterSource, filterRowMapper);
+		return (Filter) DataAccessUtils.uniqueResult(respuesta);
 	}
-	
-	
-	
+
 //	@Override
 //	public boolean isDefaultAsigned(String selector)
 //			 {
@@ -225,135 +206,121 @@ public class FilterDaoImpl implements FilterDao{
 //		
 //		return jdbcTemplate.queryForObject(query.toString(), mapParameterSource,Integer.class)>0;
 //	}
-	
-	
-/*	public boolean isNameRepeated(String selector, String name)
-	 {
 
-			StringBuilder query = new StringBuilder();
-	
-			query.append("SELECT count(1) ");
-			query.append(" FROM ").append(db_filterTableName);
-			query.append(" WHERE ").append(getWhereFieldsNameAndSelector());
-	
-			MapSqlParameterSource mapParameterSource =  new MapSqlParameterSource();
-			mapParameterSource.addValue("filterSelector", selector);
-			mapParameterSource.addValue("filterName", name);
+	/*
+	 * public boolean isNameRepeated(String selector, String name) {
+	 * 
+	 * StringBuilder query = new StringBuilder();
+	 * 
+	 * query.append("SELECT count(1) ");
+	 * query.append(" FROM ").append(db_filterTableName);
+	 * query.append(" WHERE ").append(getWhereFieldsNameAndSelector());
+	 * 
+	 * MapSqlParameterSource mapParameterSource = new MapSqlParameterSource();
+	 * mapParameterSource.addValue("filterSelector", selector);
+	 * mapParameterSource.addValue("filterName", name);
+	 * 
+	 * 
+	 * logger.debug("FilterDaoImpl.isNameRepeated()"); logger.debug("\tSQL: "
+	 * +query.toString());
+	 * logger.debug("\tparams: { filterSelector: "+selector+"}");
+	 * 
+	 * return jdbcTemplate.queryForObject(query.toString(),
+	 * mapParameterSource,Integer.class)>0; }
+	 */
 
-	
-			logger.debug("FilterDaoImpl.isNameRepeated()");
-			logger.debug("\tSQL: " +query.toString());
-			logger.debug("\tparams: { filterSelector: "+selector+"}");
-	
-			return jdbcTemplate.queryForObject(query.toString(), mapParameterSource,Integer.class)>0;
-	 }*/
-	
-	
-	
 	@Override
-	public void setDefaultAsigned(String selector, String name,
-			boolean pDefault, String user)  {
-		
-		StringBuilder query = new StringBuilder();
-		int pred=0;
-		query.append("UPDATE ").append(db_filterTableName).append(" ");
-		query.append("SET ").append(col_filterDefault).append("=:filterDefault");
-		query.append(" WHERE ").append(getWhereFieldsNameAndSelector());
-		
-		if (pDefault){
-			pred=1;
-		}
-		
-		MapSqlParameterSource mapParameterSource =  new MapSqlParameterSource();
-		mapParameterSource.addValue("filterDefault",pred);
-		mapParameterSource.addValue("filterSelector", selector);
-		mapParameterSource.addValue("filterName", name);
-		mapParameterSource.addValue("filterUser", user);
+	public void setDefaultAsigned(String selector, String text, boolean active, String user) {
 
-		
+		StringBuilder query = new StringBuilder();
+		int pred = 0;
+		query.append("UPDATE ").append(db_filterTableName).append(" ");
+		query.append("SET ").append(col_filterDefault).append("=:active");
+		query.append(" WHERE ").append(getWhereFieldsNameAndSelector());
+
+		if (active) {
+			pred = 1;
+		}
+
+		MapSqlParameterSource mapParameterSource = new MapSqlParameterSource();
+		mapParameterSource.addValue("active", pred);
+		mapParameterSource.addValue("selector", selector);
+		mapParameterSource.addValue("text", text);
+		mapParameterSource.addValue("user", user);
+
 		logger.debug("FilterDaoImpl.setDefaultAsigned()");
-		logger.debug("\tSQL: " +query.toString());
-		logger.debug("\tparams: {filterDefault: "+pred+" filterName: " +name+ ", filterSelector: "+selector+"}");
-		
+		logger.debug("\tSQL: " + query.toString());
+		logger.debug("\tparams: {active: " + pred + " text: " + text + ", selector: " + selector + "}");
+
 		jdbcTemplate.update(query.toString(), mapParameterSource);
 	}
 
 	@Override
-	public Filter getDefaultAsigned(String selector, String user)
-			 {
-		
+	public Filter getDefaultAsigned(String selector, String user) {
+
 		StringBuilder query = new StringBuilder();
 
-		
 		query.append("SELECT ").append(getSelectFildsName());
 		query.append(" FROM ").append(db_filterTableName);
-		query.append(" WHERE ").append(col_filterSelector).append("= :filterSelector AND ").append(col_filterUser).append("=:filterUser AND ").append(col_filterDefault).append("=1");
-		
-		MapSqlParameterSource mapParameterSource =  new MapSqlParameterSource();
-		mapParameterSource.addValue("filterSelector", selector);
-		mapParameterSource.addValue("filterUser", user);
+		query.append(" WHERE ").append(col_filterSelector).append("= :selector AND ").append(col_filterUser)
+				.append("=:user AND ").append(col_filterDefault).append("=1");
 
-		
+		MapSqlParameterSource mapParameterSource = new MapSqlParameterSource();
+		mapParameterSource.addValue("selector", selector);
+		mapParameterSource.addValue("user", user);
+
 		logger.debug("FilterDaoImpl.getDefaultAsigned()");
-		logger.debug("\tSQL: " +query.toString());
-		logger.debug("\tparams: { filterSelector: "+selector+"}");
-		logger.debug("\tparams: { filterUser: "+user+"}");
+		logger.debug("\tSQL: " + query.toString());
+		logger.debug("\tparams: { selector: " + selector + "}");
+		logger.debug("\tparams: { user: " + user + "}");
 
-		
-		//return  jdbcTemplate.queryForObject(query.toString(), mapParameterSource, filterRowMapper);
-		List<Filter> respuesta= jdbcTemplate.query(query.toString(), mapParameterSource, filterRowMapper);
-		return (Filter)DataAccessUtils.uniqueResult(respuesta);
-		
+		// return jdbcTemplate.queryForObject(query.toString(), mapParameterSource,
+		// filterRowMapper);
+		List<Filter> respuesta = jdbcTemplate.query(query.toString(), mapParameterSource, filterRowMapper);
+		return (Filter) DataAccessUtils.uniqueResult(respuesta);
+
 	}
-	
-	
 
 	@Override
-	public List<Filter> getAll(String selector, String user)  {
+	public List<Filter> getAll(String selector, String user) {
 
 		StringBuilder query = new StringBuilder();
 
 		query.append("SELECT ").append(getSelectFildsName());
 		query.append(" FROM ").append(db_filterTableName);
-		query.append(" WHERE ").append(col_filterSelector).append("= :filterSelector");
-		query.append(" AND ").append(col_filterUser).append("=:filterUser");
+		query.append(" WHERE ").append(col_filterSelector).append("= :selector");
+		query.append(" AND ").append(col_filterUser).append("=:user");
 		query.append(" ORDER BY ").append(col_filterName);
-		
-		MapSqlParameterSource mapParameterSource =  new MapSqlParameterSource();
-		mapParameterSource.addValue("filterSelector", selector);
-		mapParameterSource.addValue("filterUser", user);
 
-		
+		MapSqlParameterSource mapParameterSource = new MapSqlParameterSource();
+		mapParameterSource.addValue("selector", selector);
+		mapParameterSource.addValue("user", user);
+
 		logger.debug("FilterDaoImpl.getAll()");
-		logger.debug("\tSQL: " +query.toString());
-		logger.debug("\tparams: { filterSelector: "+selector+"}");
-		logger.debug("\tparams: { filterUser: "+user+"}");
+		logger.debug("\tSQL: " + query.toString());
+		logger.debug("\tparams: { selector: " + selector + "}");
+		logger.debug("\tparams: { user: " + user + "}");
 
-		return  jdbcTemplate.query(query.toString(), mapParameterSource, filterRowMapper);
+		return jdbcTemplate.query(query.toString(), mapParameterSource, filterRowMapper);
 	}
 
-	
-	
-	
-	
 	public void setFilterDataSource(DataSource dataSource) {
 		this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
 		this.defaultLobHandler = new DefaultLobHandler();
-
-		
 	}
 
-	
-	private String getSelectFildsName(){
-		StringBuilder select =new StringBuilder();
-			select.append(col_filterName).append(",").append(col_filterId).append(",").append(col_filterSelector).append(",").append(col_filterUser).append(",").append(col_filterValue).append(",").append(col_filterDefault);
+	private String getSelectFildsName() {
+		StringBuilder select = new StringBuilder();
+		select.append(col_filterName).append(",").append(col_filterId).append(",").append(col_filterSelector)
+				.append(",").append(col_filterUser).append(",").append(col_filterValue).append(",")
+				.append(col_filterDefault);
 		return select.toString();
 	}
-	
-	
-	private String getWhereFieldsNameAndSelector(){
-		StringBuilder text =new StringBuilder();
-		text.append(col_filterSelector).append("=:filterSelector AND ").append(col_filterName).append("=:filterName AND  ").append(col_filterUser).append("=:filterUser");
+
+	private String getWhereFieldsNameAndSelector() {
+		StringBuilder text = new StringBuilder();
+		text.append(col_filterSelector).append("=:selector AND ").append(col_filterName).append("=:text AND ")
+				.append(col_filterUser).append("=:user");
 		return text.toString();
 	}
 
@@ -420,78 +387,75 @@ public class FilterDaoImpl implements FilterDao{
 	public void setCol_filterUser(String col_filterUser) {
 		this.col_filterUser = col_filterUser;
 	}
-	
-	
-	
+
 	private static boolean isJson(String str) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.readTree(str);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-	
+		try {
+			ObjectMapper objectMapper = new ObjectMapper();
+			objectMapper.readTree(str);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
 	// Método para convertir un String a formato JSON válido
-    private static String convertToValidJson(String inputString) {
-        // Dividir el string en pares key:value
-        String[] pairs = inputString.split(", ");
+	private static String convertToValidJson(String inputString) {
+		// Dividir el string en pares key:value
+		String[] pairs = inputString.split(", ");
 
-        // Crear un mapa para almacenar las claves y valores
-        Map<String, String> keyValueMap = new HashMap();
+		// Crear un mapa para almacenar las claves y valores
+		Map<String, String> keyValueMap = new HashMap<String, String>();
 
-        // Expresión regular para identificar pares key:value
-        Pattern pattern = Pattern.compile("(\\w+):(\\S+)");
-        for (String pair : pairs) {
-            Matcher matcher = pattern.matcher(pair);
-            if (matcher.matches()) {
-                String key = matcher.group(1);
-                String value = matcher.group(2);
+		// Expresión regular para identificar pares key:value
+		Pattern pattern = Pattern.compile("(\\w+):(\\S+)");
+		for (String pair : pairs) {
+			Matcher matcher = pattern.matcher(pair);
+			if (matcher.matches()) {
+				String key = matcher.group(1);
+				String value = matcher.group(2);
 
-                // Si la clave contiene la palabra "fecha", intentar identificar el formato y convertir
-                if (key.toLowerCase().contains("fecha")) {
-                    value = convertFecha(value);
-                } else {
-                    // Agregar comillas dobles solo si el valor no está entre comillas
-                    if (!value.matches("\"[^\"]*\"")) {
-                        value = "\"" + value + "\"";
-                    }
-                }
+				// Si la clave contiene la palabra "fecha", intentar identificar el formato y
+				// convertir
+				if (key.toLowerCase().contains("fecha")) {
+					value = convertFecha(value);
+				} else {
+					// Agregar comillas dobles solo si el valor no está entre comillas
+					if (!value.matches("\"[^\"]*\"")) {
+						value = "\"" + value + "\"";
+					}
+				}
 
-                // Almacenar en el mapa
-                keyValueMap.put(key, value);
-            }
-        }
+				// Almacenar en el mapa
+				keyValueMap.put(key, value);
+			}
+		}
 
-        // Construir el JSON
-        StringBuilder jsonStringBuilder = new StringBuilder("{");
-        for (Map.Entry<String, String> entry : keyValueMap.entrySet()) {
-            jsonStringBuilder.append("\"").append(entry.getKey()).append("\":").append(entry.getValue()).append(",");
-        }
-        // Eliminar la coma final si hay al menos una entrada
-        if (!keyValueMap.isEmpty()) {
-            jsonStringBuilder.deleteCharAt(jsonStringBuilder.length() - 1);
-        }
-        jsonStringBuilder.append("}");
+		// Construir el JSON
+		StringBuilder jsonStringBuilder = new StringBuilder("{");
+		for (Map.Entry<String, String> entry : keyValueMap.entrySet()) {
+			jsonStringBuilder.append("\"").append(entry.getKey()).append("\":").append(entry.getValue()).append(",");
+		}
+		// Eliminar la coma final si hay al menos una entrada
+		if (!keyValueMap.isEmpty()) {
+			jsonStringBuilder.deleteCharAt(jsonStringBuilder.length() - 1);
+		}
+		jsonStringBuilder.append("}");
 
-        return jsonStringBuilder.toString();
-    }
+		return jsonStringBuilder.toString();
+	}
 
-    // Método para convertir fechas al formato deseado
-    private static String convertFecha(String value) {
-    	try {
-            // Convertir el valor directamente a fecha
-            long milliseconds = Long.parseLong(value);
-            Date date = new Date(milliseconds);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-            return "\"" + sdf.format(date) + "\"";
-        } catch (NumberFormatException e) {
-            // Si no se puede analizar la fecha, mantener el valor original entre comillas
-            return "\"" + value + "\"";
-        }
-    }
+	// Método para convertir fechas al formato deseado
+	private static String convertFecha(String value) {
+		try {
+			// Convertir el valor directamente a fecha
+			long milliseconds = Long.parseLong(value);
+			Date date = new Date(milliseconds);
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+			return "\"" + sdf.format(date) + "\"";
+		} catch (NumberFormatException e) {
+			// Si no se puede analizar la fecha, mantener el valor original entre comillas
+			return "\"" + value + "\"";
+		}
+	}
 
 }
-
-
