@@ -10,6 +10,7 @@ public class SelectGeneric implements java.io.Serializable {
 	
 	private String id;
 	private String text;
+	private String data;
 	private ArrayList<Object> children;
 	private String style;
 	
@@ -45,6 +46,15 @@ public class SelectGeneric implements java.io.Serializable {
 		this.style = style;
 	}
 
+	public SelectGeneric(String value, String label, String data, ArrayList<Object> children, String style) {
+		super();
+		this.id = value;
+		this.text = label;
+		this.data = data;
+		this.children = children;
+		this.style = style;
+	}
+
 	public String getId() {
 		return id;
 	}
@@ -59,6 +69,14 @@ public class SelectGeneric implements java.io.Serializable {
 
 	public void setText(String text) {
 		this.text = text;
+	}
+
+	public String getData() {
+		return data;
+	}
+
+	public void setData(String data) {
+		this.data = data;
 	}
 
 	public ArrayList<Object> getChildren() {
