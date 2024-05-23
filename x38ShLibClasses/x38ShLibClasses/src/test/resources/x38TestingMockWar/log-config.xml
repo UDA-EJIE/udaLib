@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
+
+	<bean id="udaFilter" class="com.ejie.x38.UdaFilter" />
+
+	<bean id="webContextParameterManager"
+		class="com.ejie.x38.util.WebContextParameterManager" />
+
+	<!-- Se especifica la inicializacion de los log's mediante logback -->
+	<bean id="logSystemInitializer"
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="staticMethod"
+			value="com.ejie.x38.log.LogbackConfigurer.initLogging" />
+		<property name="arguments">
+			<list>
+				<!-- Se especifica la ubicación del fichero de configuración de logback 
+					(puede ser una ruta del classpath o absoluta) -->
+				<value>classpath:x38TestingMockWar/logback.xml</value>
+				<!-- Se especifica si se desea que se pinte el estado de la configuración 
+					de logback por la salida de log correspondiente -->
+				<value>true</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="webLoggingManager"
+		class="com.ejie.x38.log.LoggingManagerImpl" />
+
+	<bean id="filterLoggingAdvice"
+		class="com.ejie.x38.log.FilterLoggingAdviceImpl">
+		<property name="loggingManager" ref="webLoggingManager" />
+	</bean>
+
+	<bean id="webMainAdvice" class="com.ejie.x38.aop.MainAdvice">
+		<property name="filterLoggingAdvice"
+			ref="filterLoggingAdvice" />
+	</bean>
+
+</beans>
