@@ -228,7 +228,7 @@ public class TableManager implements java.io.Serializable{
 
 		StringBuilder sbSQL = new StringBuilder();
 
-		sbSQL.append("\n").append("select ").append(pkStr.replaceAll("_","")).append(TableManager.getMultiselectionSelectOutter(pagination)).append("from ( ");
+		sbSQL.append("\n").append("select ").append(pkStr).append(TableManager.getMultiselectionSelectOutter(pagination)).append("from ( ");
 		sbSQL.append("\n\t").append("select SEARCH_QUERY.*").append(TableManager.getMultiselectionSelectInner(pagination));
 		sbSQL.append("\n\t").append("from (").append(query);
 			sbSQL.append("\n\t").append(TableManager.getOrderBy(pagination, false)).append(") SEARCH_QUERY ");
@@ -238,7 +238,7 @@ public class TableManager implements java.io.Serializable{
 		for (String tableAlias : tableAliases) {
 			searchSQL = searchSQL.replaceAll("(?i)"+tableAlias.trim()+"\\.", "").trim();
 		}
-		sbSQL.append("\n\t").append(searchSQL.replaceAll("_",""));
+		sbSQL.append("\n\t").append(searchSQL);
 
 		paramList.addAll(searchParamList);
 //		sbSQL.append("(").append(pkStr).append(") ");
