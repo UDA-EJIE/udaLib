@@ -533,7 +533,7 @@ public class TableManager implements java.io.Serializable{
 		Object object = selectedBean;
 		
 		for (int j = 0; j < pkFieldNames.length; j++) {
-			String pkFieldName = pkFieldNames[j];
+			String pkFieldName = pkFieldNames[j].replaceAll("_", "");
 			boolean pkOk = Boolean.FALSE;
 			
 			for (Field field : fields) {
