@@ -17,20 +17,11 @@ package com.ejie.x38.log;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.SystemPropertyUtils;
-
-import com.ejie.w43ta.clients.W43taMomoCustomMap;
-import com.ejie.w43ta.clients.W43taMomoTraceClient;
-import com.ejie.x38.util.Constants;
-import com.ejie.x38.util.StackTraceManager;
-import com.ejie.x38.util.StaticsContainer;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
