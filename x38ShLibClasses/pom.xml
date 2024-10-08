@@ -75,7 +75,7 @@
 		
 		<!-- Spring Test -->
 		<dependency>
-			<groupId>org.springframework.test</groupId>
+			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
 			<version>3.2.1.RELEASE</version>
 		</dependency>
@@ -118,16 +118,21 @@
 		    <artifactId>tiles-template</artifactId>
 		    <version>2.2.2</version>
 		</dependency>
-		
-		
+
+		<!-- HAMCREST -->
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-core</artifactId>
+			<version>1.3</version>
+		</dependency>
 		<!-- Logging -->
-			<!-- LOG4J -->
+		<!-- LOG4J -->
 		<dependency>
 		    <groupId>log4j</groupId>
 		    <artifactId>log4j</artifactId>
 		    <version>1.2.16</version>
 		</dependency>
-            <!-- SLF4J -->
+		<!-- SLF4J -->
 		<dependency>
                   <groupId>org.slf4j</groupId>
                   <artifactId>jcl-over-slf4j</artifactId>
@@ -151,7 +156,7 @@
 				</exclusion>				
 			</exclusions>			
 		 </dependency>
-            <!-- Logback -->
+		<!-- Logback -->
             <dependency>
                   <groupId>ch.qos.logback</groupId>
                   <artifactId>logback-core</artifactId>
@@ -162,9 +167,9 @@
                   <artifactId>logback-classic</artifactId>
                   <version>${org.logback.version}</version>
             </dependency>
-			<!-- Jdbcdslog -->
+		<!-- Jdbcdslog -->
 			<dependency>
-				<groupId>org</groupId>
+				<groupId>com.googlecode.usc</groupId>
 				<artifactId>jdbcdslog</artifactId>
 				<version>1.0.5</version>
 			</dependency>
@@ -189,7 +194,7 @@
 			<artifactId>aspectjweaver</artifactId>
 			<version>1.6.9</version>
 		</dependency>
-		
+
 		<!-- Apache commons fileupload -->
 		<dependency>
 			<groupId>commons-fileupload</groupId>
@@ -209,29 +214,29 @@
 				 </exclusion>
 			</exclusions>
 		</dependency>
-		
+
 		<!-- n38 -->
 		<dependency>
 			<groupId>com.ejie</groupId>
 			<artifactId>n38a</artifactId>
-			<version>1.0</version>
+			<version>1.0.0</version>
 		</dependency>		
 		<dependency>
 			<groupId>com.ejie</groupId>
 			<artifactId>n38c</artifactId>
-			<version>1.0</version>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ejie</groupId>
 			<artifactId>n38i</artifactId>
-			<version>1.0</version>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
 	      <groupId>com.ejie</groupId>
 	      <artifactId>n38n</artifactId>
-	      <version>1.0</version>
+	      <version>1.0.0</version>
 	    </dependency>
-		
+
 		<!--  EclipseLink -->
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
@@ -249,9 +254,9 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>${org.jackson.version}</version>
 		</dependency>
-		
+
 		<!-- Reports -->
-			<!-- Jasper Reports -->
+		<!-- Jasper Reports -->
 	  		<dependency>
 				<groupId>net.sf.jasperreports</groupId>
 				<artifactId>jasperreports</artifactId>
@@ -335,8 +340,8 @@
 	    			</exclusion>
 	    		</exclusions>
 			</dependency>
-			
-			<!-- ODF Toolkit -->
+
+		<!-- ODF Toolkit -->
 			<dependency>
 				<groupId>org.odftoolkit</groupId>
 				<artifactId>odfdom-java</artifactId>
@@ -353,14 +358,14 @@
 				</exclusions>
 			</dependency>
 		<!-- Fin Reports -->
-		
+
 		<!-- RSS -->
 		<dependency>
 			<groupId>net.java.dev.rome</groupId>
 			<artifactId>rome</artifactId>
 			<version>1.0.0</version>
 		</dependency>
-		
+
 		<!-- INI:HADOOP EN APLICACION UDA -->
 
 		<dependency>
@@ -451,38 +456,26 @@
 
 			</exclusions>
 		</dependency>
-
-		<dependency>
-			<groupId>com.ejie.y31b</groupId>
-			<artifactId>y31bIfaz</artifactId>
-			<version>1.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.ejie.y31c</groupId>
-			<artifactId>y31cImpl</artifactId>
-			<version>1.1</version>
-		</dependency>
 		<!-- FIN:HADOOP EN APLICACION UDA -->
-		
-		                <!-- PIF 1.4 -->
-                <dependency>
-                        <groupId>com.ejie</groupId>
-                        <artifactId>y31b</artifactId>
-                        <version>1.4</version>
-                        <classifier>ifaz</classifier>
-                </dependency>
-                <dependency>
-                        <groupId>com.ejie</groupId>
-                        <artifactId>y31c</artifactId>
-                        <version>1.4</version>
-                        <classifier>impl</classifier>
-                </dependency>
-<!--                 <dependency> -->
-<!--                   <groupId>commons-beanutils</groupId> -->
-<!--                   <artifactId>commons-beanutils</artifactId> -->
-<!--                   <version>1.6.1</version> -->
-<!--                 </dependency> -->
+
+		<!-- PIF 1.4 -->
+				<dependency>
+					<groupId>com.ejie</groupId>
+					<artifactId>y31b</artifactId>
+					<version>1.4</version>
+					<classifier>ifaz</classifier>
+				</dependency>
+				<dependency>
+					<groupId>com.ejie</groupId>
+					<artifactId>y31c</artifactId>
+					<version>1.5</version>
+					<classifier>impl</classifier>
+				</dependency>
+		<!--                 <dependency> -->
+		<!--                   <groupId>commons-beanutils</groupId> -->
+		<!--                   <artifactId>commons-beanutils</artifactId> -->
+		<!--                   <version>1.6.1</version> -->
+		<!--                 </dependency> -->
                 <dependency>
                   <groupId>commons-codec</groupId>
                   <artifactId>commons-codec</artifactId>
@@ -560,16 +553,16 @@
                   <artifactId>commons-collections</artifactId>
                   <version>3.2.2</version>
                 </dependency>
-	<!-- FIN  PIF 1.4 -->
-	
-	<!-- CRYPTIX -->
+		<!-- FIN  PIF 1.4 -->
+
+		<!-- CRYPTIX -->
 	<dependency>
 	    <groupId>cryptix</groupId>
 	    <artifactId>cryptix</artifactId>
 	    <version>3.2.0</version>
 	</dependency>
-	
-	<!-- IWS -->
+
+		<!-- IWS -->
 	<dependency>
 	    <groupId>iws</groupId>
 	    <artifactId>iws</artifactId>
@@ -577,16 +570,16 @@
 	</dependency>
 	
 	<dependency>
-      <groupId>logging-selenium</groupId>
-      <artifactId>logging-selenium</artifactId>
-      <version>1.2</version>
-    </dependency>
+		<groupId>org.seleniumhq.selenium</groupId>
+		<artifactId>selenium-server</artifactId>
+		<version>3.141.59</version>
+	</dependency>
     
     <dependency>
-      <groupId>selenium-java-client-driver</groupId>
-      <artifactId>selenium-java-client-driver</artifactId>
-      <version>1.0</version>
-    </dependency>
+	  <groupId>org.seleniumhq.selenium</groupId>
+	  <artifactId>selenium-java</artifactId>
+	  <version>3.141.59</version>
+	</dependency>
 		
 	</dependencies>
   <build>
