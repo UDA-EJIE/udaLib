@@ -579,29 +579,38 @@
 	  <artifactId>selenium-java</artifactId>
 	  <version>3.141.59</version>
 	</dependency>
-		
 	</dependencies>
-  <build>
-   <plugins>
-     <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-dependencies</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>./lib</outputDirectory>
-              <overWriteReleases>false</overWriteReleases>
-              <overWriteSnapshots>true</overWriteSnapshots>
-			  <excludeTransitive>false</excludeTransitive>			  		  
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>  
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.12.1</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>in-house-app-releases</id>
+			<name>in-house-app-releases</name>
+			<layout>default</layout>
+			<url>https://bin.alm02.itbatera.euskadi.eus/repository/in-house-app-releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>in-house-app-snapshots</id>
+			<name>in-house-app-snapshots</name>
+			<layout>default</layout>
+			<url>https://bin.alm02.itbatera.euskadi.eus/repository/in-house-app-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>
