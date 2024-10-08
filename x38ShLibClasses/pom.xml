@@ -168,11 +168,17 @@
                   <version>${org.logback.version}</version>
             </dependency>
 		<!-- Jdbcdslog -->
-			<dependency>
-				<groupId>com.googlecode.usc</groupId>
-				<artifactId>jdbcdslog</artifactId>
-				<version>1.0.5</version>
-			</dependency>
+		<dependency>
+			<groupId>com.googlecode.usc</groupId>
+			<artifactId>jdbcdslog</artifactId>
+			<version>1.0.5</version>
+			<exclusions>
+				<exclusion>
+					<groupId>slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 
 		<!-- JSR 303 with Hibernate Validator -->
 		<dependency>
