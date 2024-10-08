@@ -567,13 +567,6 @@
 	    <artifactId>cryptix</artifactId>
 	    <version>3.2.0</version>
 	</dependency>
-
-		<!-- IWS -->
-	<dependency>
-	    <groupId>iws</groupId>
-	    <artifactId>iws</artifactId>
-	    <version>1.0</version>
-	</dependency>
 	
 	<dependency>
 		<groupId>org.seleniumhq.selenium</groupId>
