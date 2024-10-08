@@ -31,4 +31,7 @@ public class StaticsContainer {
 	public static String weblogicInstance;
 	public static String layout;
 	public static String language;
+	public static boolean xhrRedirectOnError;
+	public static String xhrUnauthorizedPage;
+
 }

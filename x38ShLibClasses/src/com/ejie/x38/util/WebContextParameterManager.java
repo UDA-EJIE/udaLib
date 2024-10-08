@@ -79,6 +79,15 @@ public class WebContextParameterManager implements ApplicationContextAware {
 		String weblogicInstance = System.getProperty("weblogic.Name");
 		logger.info("The WebLogic Instance Name is: "+weblogicInstance);
 		StaticsContainer.weblogicInstance = weblogicInstance;
+
+		if (props.getProperty("xhr.redirectOnError") != null
+				&& ((props.getProperty("xhr.redirectOnError")).toLowerCase()).equals("true")) {
+			StaticsContainer.xhrRedirectOnError = true;
+		}
+
+		if (props.getProperty("xhr.unauthorizedPage") != null) {
+			StaticsContainer.xhrUnauthorizedPage = props.getProperty("xhr.unauthorizedPage");
+		}
 	}
 
 	//Getters & Setters	

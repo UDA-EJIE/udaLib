@@ -45,10 +45,6 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint,
 	private int order = Integer.MAX_VALUE;
 
 	private PerimetralSecurityWrapper perimetralSecurityWrapper;
-	
-	private String xhrUnauthorizedPage;
-	
-	private Boolean xhrRedirectOnError = false;
 
 	@Override
 	public void commence(HttpServletRequest request,
@@ -94,9 +90,18 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint,
 		
 		
 		
-		if (isAjax && xhrRedirectOnError ){
+		if (isAjax && StaticsContainer.xhrRedirectOnError){
+			if (StaticsContainer.xhrUnauthorizedPage != null && StaticsContainer.xhrUnauthorizedPage.equals("referer")) {
+				String referer = request.getHeader("Referer");
+				
+				if (referer.contains(";jsessionid=")) {
+					referer = referer.substring(0, referer.indexOf(";jsessionid="));
+				}
+				
+				StaticsContainer.xhrUnauthorizedPage = getPerimetralSecurityWrapper().getURLLogin(referer, isAjax);
+			}
 			
-			url = this.getUrl(xhrUnauthorizedPage != null ? xhrUnauthorizedPage : getPerimetralSecurityWrapper().getURLLogin(originalURL , isAjax), isPortal);
+			url = this.getUrl(StaticsContainer.xhrUnauthorizedPage != null ? StaticsContainer.xhrUnauthorizedPage : getPerimetralSecurityWrapper().getURLLogin(originalURL , isAjax), isPortal);
 			
 			// Se detecta si es una petición AJAX
 			httpResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
@@ -131,15 +136,4 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint,
 			PerimetralSecurityWrapper perimetralSecurityWrapper) {
 		this.perimetralSecurityWrapper = perimetralSecurityWrapper;
 	}
-
-	public void setXhrUnauthorizedPage(String xhrUnauthorizedPage) {
-		this.xhrUnauthorizedPage = xhrUnauthorizedPage;
-	}
-
-	public void setXhrRedirectOnError(Boolean xhrRedirectOnError) {
-		this.xhrRedirectOnError = xhrRedirectOnError;
-	}
-
-	
-	
 }
