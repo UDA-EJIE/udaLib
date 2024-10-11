@@ -5,7 +5,7 @@
 	<groupId>com.ejie.x38</groupId>
 	<artifactId>x38</artifactId>
 	<packaging>pom</packaging>
-	<version>6.0.1-SNAPSHOT</version>
+	<version>6.1.0-SNAPSHOT</version>
 	<name>x38</name>
 	<url>http://www.ejie.eus</url>
 
