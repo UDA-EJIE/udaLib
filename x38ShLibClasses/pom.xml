@@ -5,7 +5,7 @@
 	<groupId>com.ejie.x38</groupId>
 	<artifactId>x38</artifactId>
 	<packaging>pom</packaging>
-	<version>6.0.0-RELEASE</version>
+	<version>6.1.0-SNAPSHOT</version>
 	<name>x38</name>
 	<url>http://www.ejie.eus</url>
 
@@ -20,9 +20,9 @@
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<org.springframework.version>5.3.31</org.springframework.version>
+		<org.springframework.version>5.3.39</org.springframework.version>
 		<org.springframework.security.version>5.8.15</org.springframework.security.version>
-		<org.logback.version>1.2.11</org.logback.version>
+		<org.logback.version>1.2.13</org.logback.version>
 		<org.slf4j.version>1.7.30</org.slf4j.version>
 		<org.apache.tiles.version>3.0.8</org.apache.tiles.version>
 		<org.jackson.version>2.12.7.1</org.jackson.version>
@@ -426,11 +426,6 @@
 			<groupId>org.apache.hadoop</groupId>
 			<artifactId>hadoop-core-without-webhdfs</artifactId>
 			<version>1.0.3</version>
-		</dependency>
-		<dependency>
-			<groupId>com.ejie</groupId>
-			<artifactId>w43ta</artifactId>
-			<version>2.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.avro</groupId>

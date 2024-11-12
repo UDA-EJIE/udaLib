@@ -96,12 +96,6 @@ public class TableRowDto<T> {
 	public void setModel(T model) {
 		this.model = model;
 	}
-	
-	public T getModelAsResource() {
-		return model;
-	}
-	
-	
 	public void addPrimaryKey(String pkName, String pkValue){
 		this.pkMap.put(pkName, pkValue);
 	}
