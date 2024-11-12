@@ -1,2 +1,0 @@
-Manifest-Version: 3.8.0-RELEASE
-

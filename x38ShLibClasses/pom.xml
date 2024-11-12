@@ -1,13 +1,27 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.ejie.x38</groupId>
-  <artifactId>x38ShLibClasses</artifactId>
-  <packaging>jar</packaging>
-  <version>3.8.0-RELEASE</version>
-  <name>x38ShLibClasses</name>
-  <url>http://maven.apache.org</url>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.ejie.x38</groupId>
+	<artifactId>x38</artifactId>
+	<packaging>pom</packaging>
+	<version>3.9.0-RELEASE</version>
+	<name>x38</name>
+	<url>http://www.ejie.eus</url>
+
+	<modules>
+		<module>x38ShLibClasses</module>
+		<module>x38ShLibClasses-cache</module>
+		<module>x38ShLibClasses-dav</module>
+		<module>x38ShLibClasses-pif</module>
+		<module>x38ShLibClasses-rss</module>
+		<module>x38ShLibClasses-rup</module>
+	</modules>
+
 	<properties>
+		<maven.compiler.source>1.6</maven.compiler.source>
+		<maven.compiler.target>1.6</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<org.springframework.version>3.2.17.RELEASE</org.springframework.version>
 		<org.springframework.security.version>3.2.9.RELEASE</org.springframework.security.version>
 		<org.logback.version>1.1.7</org.logback.version>
@@ -16,6 +30,7 @@
 		<javax.persistence.version>2.0.1</javax.persistence.version>
 		<org.jackson.version>2.6.5</org.jackson.version>
 	</properties>
+	
 	<dependencies>
 		<!--  Spring -->
 		<dependency>
@@ -27,7 +42,7 @@
 				<exclusion>
 					<groupId>commons-logging</groupId>
 					<artifactId>commons-logging</artifactId>
-				 </exclusion>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -41,98 +56,104 @@
 			<version>${org.springframework.version}</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.springframework</groupId>
-		    <artifactId>spring-context-support</artifactId>
-		    <version>${org.springframework.version}</version>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>${org.springframework.version}</version>
 		</dependency>
-		
+
 		<!-- Spring Security -->
 		<dependency>
-		    <groupId>org.springframework.security</groupId>
-		    <artifactId>spring-security-core</artifactId>
-		    <version>${org.springframework.security.version}</version>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>${org.springframework.security.version}</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.springframework.security</groupId>
-		    <artifactId>spring-security-config</artifactId>
-		    <version>${org.springframework.security.version}</version>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>${org.springframework.security.version}</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.springframework.security</groupId>
-		    <artifactId>spring-security-acl</artifactId>
-		    <version>${org.springframework.security.version}</version>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-acl</artifactId>
+			<version>${org.springframework.security.version}</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.springframework.security</groupId>
-		    <artifactId>spring-security-web</artifactId>
-		    <version>${org.springframework.security.version}</version>
-		</dependency>	
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>${org.springframework.security.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-taglibs</artifactId>
-        	<version>${org.springframework.security.version}</version>
+			<version>${org.springframework.security.version}</version>
 		</dependency>
-		
+
 		<!-- Spring Test -->
 		<dependency>
-			<groupId>org.springframework.test</groupId>
+			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
 			<version>3.2.1.RELEASE</version>
 		</dependency>
-		
+
 		<!-- JUNIT -->
 		<dependency>
-		    <groupId>junit</groupId>
-		    <artifactId>junit</artifactId>
-		    <version>4.8.2</version>
-		    <scope>test</scope>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.2</version>
+			<scope>test</scope>
 		</dependency>
-		
+
 		<!-- TILES -->
 		<dependency>
-		    <groupId>org.apache.tiles</groupId>
-		    <artifactId>tiles-api</artifactId>
-		    <version>2.2.2</version>
+			<groupId>org.apache.tiles</groupId>
+			<artifactId>tiles-api</artifactId>
+			<version>2.2.2</version>
 		</dependency>
-		
+
 		<dependency>
-		    <groupId>org.apache.tiles</groupId>
-		    <artifactId>tiles-core</artifactId>
-		    <version>2.2.2</version>
+			<groupId>org.apache.tiles</groupId>
+			<artifactId>tiles-core</artifactId>
+			<version>2.2.2</version>
 		</dependency>
-		
+
 		<dependency>
-		    <groupId>org.apache.tiles</groupId>
-		    <artifactId>tiles-jsp</artifactId>
-		    <version>2.2.2</version>
+			<groupId>org.apache.tiles</groupId>
+			<artifactId>tiles-jsp</artifactId>
+			<version>2.2.2</version>
 		</dependency>
-		
+
 		<dependency>
-		    <groupId>org.apache.tiles</groupId>
-		    <artifactId>tiles-servlet</artifactId>
-		    <version>2.2.2</version>
+			<groupId>org.apache.tiles</groupId>
+			<artifactId>tiles-servlet</artifactId>
+			<version>2.2.2</version>
 		</dependency>
-		
+
 		<dependency>
-		    <groupId>org.apache.tiles</groupId>
-		    <artifactId>tiles-template</artifactId>
-		    <version>2.2.2</version>
+			<groupId>org.apache.tiles</groupId>
+			<artifactId>tiles-template</artifactId>
+			<version>2.2.2</version>
 		</dependency>
-		
+
+		<!-- HAMCREST -->
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-core</artifactId>
+			<version>1.3</version>
+		</dependency>
 		
 		<!-- Logging -->
-			<!-- LOG4J -->
+		<!-- LOG4J -->
 		<dependency>
-		    <groupId>log4j</groupId>
-		    <artifactId>log4j</artifactId>
-		    <version>1.2.16</version>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.16</version>
 		</dependency>
-            <!-- SLF4J -->
+		<!-- SLF4J -->
 		<dependency>
-                  <groupId>org.slf4j</groupId>
-                  <artifactId>jcl-over-slf4j</artifactId>
-                  <version>${org.slf4j.version}</version>
-                  <scope>runtime</scope>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${org.slf4j.version}</version>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -148,26 +169,32 @@
 				<exclusion>
 					<groupId>ch.qos.cal10n</groupId>
 					<artifactId>cal10n-api</artifactId>
-				</exclusion>				
-			</exclusions>			
-		 </dependency>
-            <!-- Logback -->
-            <dependency>
-                  <groupId>ch.qos.logback</groupId>
-                  <artifactId>logback-core</artifactId>
-                  <version>${org.logback.version}</version>
-            </dependency>
-            <dependency>
-                  <groupId>ch.qos.logback</groupId>
-                  <artifactId>logback-classic</artifactId>
-                  <version>${org.logback.version}</version>
-            </dependency>
-			<!-- Jdbcdslog -->
-			<dependency>
-				<groupId>org</groupId>
-				<artifactId>jdbcdslog</artifactId>
-				<version>1.0.5</version>
-			</dependency>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- Logback -->
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+			<version>${org.logback.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${org.logback.version}</version>
+		</dependency>
+		<!-- Jdbcdslog -->
+		<dependency>
+			<groupId>com.googlecode.usc</groupId>
+			<artifactId>jdbcdslog</artifactId>
+			<version>1.0.5</version>
+			<exclusions>
+				<exclusion>
+					<groupId>slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 
 		<!-- JSR 303 with Hibernate Validator -->
 		<dependency>
@@ -175,11 +202,11 @@
 			<artifactId>hibernate-validator</artifactId>
 			<version>4.3.2.Final</version>
 			<exclusions>
-		       <exclusion>
-		           <groupId>org.jboss.logging</groupId>
-		           <artifactId>jboss-logging</artifactId>
-		       </exclusion>
-   			</exclusions>
+				<exclusion>
+					<groupId>org.jboss.logging</groupId>
+					<artifactId>jboss-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 
@@ -189,49 +216,27 @@
 			<artifactId>aspectjweaver</artifactId>
 			<version>1.6.9</version>
 		</dependency>
-		
+
 		<!-- Apache commons fileupload -->
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
 			<version>1.3.2</version>
 		</dependency>
-		
+
 		<dependency>
-   			<groupId>commons-beanutils</groupId>
-   			<artifactId>commons-beanutils</artifactId>
-   			<version>1.8.0</version>
-   			<exclusions>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+			<version>1.8.0</version>
+			<exclusions>
 				<!-- Exclude Commons Logging in favor of logback -->
 				<exclusion>
 					<groupId>commons-logging</groupId>
 					<artifactId>commons-logging</artifactId>
-				 </exclusion>
+				</exclusion>
 			</exclusions>
 		</dependency>
-		
-		<!-- n38 -->
-		<dependency>
-			<groupId>com.ejie</groupId>
-			<artifactId>n38a</artifactId>
-			<version>1.0</version>
-		</dependency>		
-		<dependency>
-			<groupId>com.ejie</groupId>
-			<artifactId>n38c</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.ejie</groupId>
-			<artifactId>n38i</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<dependency>
-	      <groupId>com.ejie</groupId>
-	      <artifactId>n38n</artifactId>
-	      <version>1.0</version>
-	    </dependency>
-		
+
 		<!--  EclipseLink -->
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
@@ -249,118 +254,118 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>${org.jackson.version}</version>
 		</dependency>
-		
+
 		<!-- Reports -->
-			<!-- Jasper Reports -->
-	  		<dependency>
-				<groupId>net.sf.jasperreports</groupId>
-				<artifactId>jasperreports</artifactId>
-				<version>4.7.1</version>
-				<exclusions>
-					<exclusion>
-						<groupId>org.bouncycastle</groupId>
-						<artifactId>bcmail-jdk14</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>bouncycastle</groupId>
-						<artifactId>bcmail-jdk14</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.bouncycastle</groupId>
-						<artifactId>bcprov-jdk14</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>bouncycastle</groupId>
-						<artifactId>bcprov-jdk14</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.bouncycastle</groupId>
-						<artifactId>bctsp-jdk14</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.codehaus.castor</groupId>
-						<artifactId>castor</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>commons-collections</groupId>
-						<artifactId>commons-collections</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>commons-digester</groupId>
-	 					<artifactId>commons-digester</artifactId>
-	 				</exclusion>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>dom4j</groupId>
-	           			<artifactId>dom4j</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.apache.geronimo.specs</groupId>
-	  					<artifactId>geronimo-stax-api_1.0_spec</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.codehaus.jackson</groupId>
-						<artifactId>jackson-core-lgpl</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.codehaus.jackson</groupId>
-						<artifactId>jackson-mapper-lgpl</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>jfree</groupId>
-						<artifactId>jcommon</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>eclipse</groupId>
-						<artifactId>jdtcore</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>jfree</groupId>
-						<artifactId>jfreechart</artifactId>
-					</exclusion>
-		  			<exclusion>
-			    		<artifactId>stax-api</artifactId>
-			      		<groupId>javax.xml.stream</groupId>
-			    	</exclusion>
-			    	<exclusion>
-						<groupId>xml-apis</groupId>
-						<artifactId>xml-apis</artifactId>
-					</exclusion>
-					<exclusion>
-				 		<groupId>org.apache.xmlbeans</groupId>
-	    				<artifactId>xmlbeans</artifactId>
-	    			</exclusion>
-	    		</exclusions>
-			</dependency>
-			
-			<!-- ODF Toolkit -->
-			<dependency>
-				<groupId>org.odftoolkit</groupId>
-				<artifactId>odfdom-java</artifactId>
-	    		<version>0.8.7</version>
-	    		<exclusions>
-					<exclusion>
-						<groupId>xerces</groupId>
-	 					<artifactId>xercesImpl</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>xml-apis</groupId>
-						<artifactId>xml-apis</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
+		<!-- Jasper Reports -->
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports</artifactId>
+			<version>4.7.1</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.bouncycastle</groupId>
+					<artifactId>bcmail-jdk14</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>bouncycastle</groupId>
+					<artifactId>bcmail-jdk14</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.bouncycastle</groupId>
+					<artifactId>bcprov-jdk14</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>bouncycastle</groupId>
+					<artifactId>bcprov-jdk14</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.bouncycastle</groupId>
+					<artifactId>bctsp-jdk14</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.codehaus.castor</groupId>
+					<artifactId>castor</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>commons-collections</groupId>
+					<artifactId>commons-collections</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>commons-digester</groupId>
+					<artifactId>commons-digester</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>dom4j</groupId>
+					<artifactId>dom4j</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.geronimo.specs</groupId>
+					<artifactId>geronimo-stax-api_1.0_spec</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.codehaus.jackson</groupId>
+					<artifactId>jackson-core-lgpl</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.codehaus.jackson</groupId>
+					<artifactId>jackson-mapper-lgpl</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>jfree</groupId>
+					<artifactId>jcommon</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>eclipse</groupId>
+					<artifactId>jdtcore</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>jfree</groupId>
+					<artifactId>jfreechart</artifactId>
+				</exclusion>
+				<exclusion>
+					<artifactId>stax-api</artifactId>
+					<groupId>javax.xml.stream</groupId>
+				</exclusion>
+				<exclusion>
+					<groupId>xml-apis</groupId>
+					<artifactId>xml-apis</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.xmlbeans</groupId>
+					<artifactId>xmlbeans</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- ODF Toolkit -->
+		<dependency>
+			<groupId>org.odftoolkit</groupId>
+			<artifactId>odfdom-java</artifactId>
+			<version>0.8.7</version>
+			<exclusions>
+				<exclusion>
+					<groupId>xerces</groupId>
+					<artifactId>xercesImpl</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>xml-apis</groupId>
+					<artifactId>xml-apis</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 		<!-- Fin Reports -->
-		
+
 		<!-- RSS -->
 		<dependency>
 			<groupId>net.java.dev.rome</groupId>
 			<artifactId>rome</artifactId>
 			<version>1.0.0</version>
 		</dependency>
-		
+
 		<!-- INI:HADOOP EN APLICACION UDA -->
 
 		<dependency>
@@ -417,7 +422,7 @@
 			</exclusions>
 
 		</dependency>
-		
+
 		<dependency>
 			<groupId>net.sf.flexjson</groupId>
 			<artifactId>flexjson</artifactId>
@@ -451,175 +456,211 @@
 
 			</exclusions>
 		</dependency>
-
-		<dependency>
-			<groupId>com.ejie.y31b</groupId>
-			<artifactId>y31bIfaz</artifactId>
-			<version>1.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.ejie.y31c</groupId>
-			<artifactId>y31cImpl</artifactId>
-			<version>1.1</version>
-		</dependency>
 		<!-- FIN:HADOOP EN APLICACION UDA -->
-		
-		                <!-- PIF 1.4 -->
-                <dependency>
-                        <groupId>com.ejie</groupId>
-                        <artifactId>y31b</artifactId>
-                        <version>1.4</version>
-                        <classifier>ifaz</classifier>
-                </dependency>
-                <dependency>
-                        <groupId>com.ejie</groupId>
-                        <artifactId>y31c</artifactId>
-                        <version>1.4</version>
-                        <classifier>impl</classifier>
-                </dependency>
-<!--                 <dependency> -->
-<!--                   <groupId>commons-beanutils</groupId> -->
-<!--                   <artifactId>commons-beanutils</artifactId> -->
-<!--                   <version>1.6.1</version> -->
-<!--                 </dependency> -->
-                <dependency>
-                  <groupId>commons-codec</groupId>
-                  <artifactId>commons-codec</artifactId>
-                  <version>1.6</version>
-                </dependency>
-                <dependency>
-                  <groupId>net.sf.ezmorph</groupId>
-                  <artifactId>ezmorph</artifactId>
-                  <version>1.0.2</version>
-                  <exclusions>
-                    <exclusion>
-                        <groupId>commons-lang</groupId>
-                        <artifactId>commons-lang</artifactId>
-                    </exclusion>
-                  </exclusions>
-                </dependency>
-                <dependency>
-                  <groupId>net.sf.json-lib</groupId>
-                  <artifactId>json-lib</artifactId>
-                  <version>2.3</version>
-                  <classifier>jdk15</classifier>
-                </dependency>
-                <dependency>
-                  <groupId>org.mortbay.jetty</groupId>
-                  <artifactId>jetty-util</artifactId>
-                  <version>6.1.26</version>
-                </dependency>
-                <dependency>
-                  <groupId>javax.ws.rs</groupId>
-                  <artifactId>javax.ws.rs-api</artifactId>
-                  <version>2.0.1</version>
-                </dependency>
-                <dependency>
-                  <groupId>org.apache.hadoop</groupId>
-                  <artifactId>hadoop-core-without-webhdfs</artifactId>
-                  <version>1.0.3</version>
-                </dependency>
-                <dependency>
-                  <groupId>com.ejie</groupId>
-                  <artifactId>w43ta</artifactId>
-                  <version>2.4</version>
-                </dependency>
-                <dependency>
-                  <groupId>org.apache.avro</groupId>
-                  <artifactId>avro</artifactId>
-                  <version>1.7.7</version>
-                </dependency>
-                <dependency>
-                  <groupId>org.apache.httpcomponents</groupId>
-                  <artifactId>httpclient</artifactId>
-                  <version>4.3.3</version>
-                </dependency>
-                <dependency>
-                  <groupId>org.apache.httpcomponents</groupId>
-                  <artifactId>httpcore</artifactId>
-                  <version>4.3.3</version>
-                </dependency>
-                <dependency>
-                  <groupId>org.codehaus.jackson</groupId>
-                  <artifactId>jackson-core-asl</artifactId>
-                  <version>1.9.13</version>
-                </dependency>
-                <dependency>
-                  <groupId>org.codehaus.jackson</groupId>
-                  <artifactId>jackson-mapper-asl</artifactId>
-                  <version>1.9.13</version>
-                </dependency>
-                <dependency>
-                  <groupId>io.dropwizard.metrics</groupId>
-                  <artifactId>metrics-core</artifactId>
-                  <version>3.1.2</version>
-                </dependency>
-                <dependency>
-                  <groupId>commons-collections</groupId>
-                  <artifactId>commons-collections</artifactId>
-                  <version>3.2.2</version>
-                </dependency>
-	<!-- FIN  PIF 1.4 -->
-	
-	<!-- CRYPTIX -->
-	<dependency>
-	    <groupId>cryptix</groupId>
-	    <artifactId>cryptix</artifactId>
-	    <version>3.2.0</version>
-	</dependency>
-	
-	<!-- IWS -->
-	<dependency>
-	    <groupId>iws</groupId>
-	    <artifactId>iws</artifactId>
-	    <version>1.0</version>
-	</dependency>
-	
-	<dependency>
-      <groupId>logging-selenium</groupId>
-      <artifactId>logging-selenium</artifactId>
-      <version>1.2</version>
-    </dependency>
-    
-    <dependency>
-      <groupId>selenium-java-client-driver</groupId>
-      <artifactId>selenium-java-client-driver</artifactId>
-      <version>1.0</version>
-    </dependency>
-		
+
+		<!-- PIF 1.4 -->
+		<dependency>
+			<groupId>com.ejie</groupId>
+			<artifactId>y31b</artifactId>
+			<version>1.4</version>
+			<classifier>ifaz</classifier>
+		</dependency>
+		<dependency>
+			<groupId>com.ejie</groupId>
+			<artifactId>y31c</artifactId>
+			<version>1.5</version>
+			<classifier>impl</classifier>
+		</dependency>
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.6</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.ezmorph</groupId>
+			<artifactId>ezmorph</artifactId>
+			<version>1.0.2</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-lang</groupId>
+					<artifactId>commons-lang</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.json-lib</groupId>
+			<artifactId>json-lib</artifactId>
+			<version>2.3</version>
+			<classifier>jdk15</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.mortbay.jetty</groupId>
+			<artifactId>jetty-util</artifactId>
+			<version>6.1.26</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.ws.rs</groupId>
+			<artifactId>javax.ws.rs-api</artifactId>
+			<version>2.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-core-without-webhdfs</artifactId>
+			<version>1.0.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ejie</groupId>
+			<artifactId>w43ta</artifactId>
+			<version>2.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.avro</groupId>
+			<artifactId>avro</artifactId>
+			<version>1.7.7</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.3.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcore</artifactId>
+			<version>4.3.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-core-asl</artifactId>
+			<version>1.9.13</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+			<version>1.9.13</version>
+		</dependency>
+		<dependency>
+			<groupId>io.dropwizard.metrics</groupId>
+			<artifactId>metrics-core</artifactId>
+			<version>3.1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>3.2.2</version>
+		</dependency>
+		<!-- FIN  PIF 1.4 -->
+
+		<!-- CRYPTIX -->
+		<dependency>
+			<groupId>cryptix</groupId>
+			<artifactId>cryptix</artifactId>
+			<version>3.2.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-server</artifactId>
+			<version>3.141.59</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-java</artifactId>
+			<version>3.141.59</version>
+		</dependency>
+
+		<!-- Dependencias para que funcione sin WebLogic en local -->
+		<dependency>
+			<groupId>ejie.xlnets</groupId>
+			<artifactId>n38</artifactId>
+			<version>1.0</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- 
+		<dependency>
+			<groupId>com.oracle.weblogic</groupId>
+			<artifactId>weblogic-server-pom</artifactId>
+			<version>12.2.1-4-0</version>
+			<type>pom</type>
+			<scope>provided</scope>
+		</dependency>	
+		-->
+
+		<dependency>
+			<groupId>com.oracle.weblogic</groupId>
+			<artifactId>com.oracle.weblogic.jndi</artifactId>
+			<version>12.2.1-4-0</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.oracle.weblogic</groupId>
+			<artifactId>com.oracle.weblogic.jndi.api</artifactId>
+			<version>12.2.1-4-0</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>javax.mail-api</artifactId>
+			<version>1.6.2</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.interceptor</groupId>
+			<artifactId>javax.interceptor-api</artifactId>
+			<version>1.2</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.persistence</groupId>
+			<artifactId>javax.persistence-api</artifactId>
+			<version>2.2</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.13.2</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- FIN Dependencias para que funcione sin WebLogic en local -->
 	</dependencies>
-	<repositories>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.12.1</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<distributionManagement>
 		<repository>
-			<id>ejie</id>
-			<name>ejie</name>
-			<url>http://www.otc.ejiedes.net/archiva/repository/repoCACRep</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
+			<id>in-house-app-releases</id>
+			<name>in-house-app-releases</name>
+			<layout>default</layout>
+			<url>https://bin.alm02.itbatera.euskadi.eus/repository/in-house-app-releases/</url>
 		</repository>
-	</repositories>
-  <build>
-   <plugins>
-     <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-dependencies</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>./lib</outputDirectory>
-              <overWriteReleases>false</overWriteReleases>
-              <overWriteSnapshots>true</overWriteSnapshots>
-			  <excludeTransitive>false</excludeTransitive>			  		  
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>  
+		<snapshotRepository>
+			<id>in-house-app-snapshots</id>
+			<name>in-house-app-snapshots</name>
+			<layout>default</layout>
+			<url>https://bin.alm02.itbatera.euskadi.eus/repository/in-house-app-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>
