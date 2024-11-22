@@ -107,6 +107,15 @@ public class WebContextParameterManager implements ApplicationContextAware {
 			StaticsContainer.setInheritableLocalContext(true);
 			logger.info("The local context inheritance value is " + StaticsContainer.isInheritableLocalContext());
 		}
+
+		if (appProperties.getProperty("xhr.redirectOnError") != null
+				&& ((appProperties.getProperty("xhr.redirectOnError")).toLowerCase()).equals("true")) {
+			StaticsContainer.setXhrRedirectOnError(true);
+		}
+
+		if (appProperties.getProperty("xhr.unauthorizedPage") != null) {
+			StaticsContainer.setXhrUnauthorizedPage(appProperties.getProperty("xhr.unauthorizedPage"));
+		}
 	}
 
 	// Getters & Setters

@@ -34,6 +34,8 @@ public class StaticsContainer {
 	public static boolean cookiePathRoot;
 	public static boolean cookieSecure;
 	public static boolean inheritableLocalContext;
+	public static boolean xhrRedirectOnError;
+	public static String xhrUnauthorizedPage;
 
 	public static String getWebAppName() {
 		return webAppName;
@@ -129,6 +131,22 @@ public class StaticsContainer {
 
 	public static void setInheritableLocalContext(boolean inheritableLocalContext) {
 		StaticsContainer.inheritableLocalContext = inheritableLocalContext;
+	}
+
+	public static boolean isXhrRedirectOnError() {
+		return xhrRedirectOnError;
+	}
+
+	public static void setXhrRedirectOnError(boolean xhrRedirectOnError) {
+		StaticsContainer.xhrRedirectOnError = xhrRedirectOnError;
+	}
+
+	public static String getXhrUnauthorizedPage() {
+		return xhrUnauthorizedPage;
+	}
+
+	public static void setXhrUnauthorizedPage(String xhrUnauthorizedPage) {
+		StaticsContainer.xhrUnauthorizedPage = xhrUnauthorizedPage;
 	}
 
 }

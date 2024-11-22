@@ -46,10 +46,6 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint,
 	private int order = Integer.MAX_VALUE;
 
 	private PerimetralSecurityWrapper perimetralSecurityWrapper;
-	
-	private String xhrUnauthorizedPage;
-	
-	private Boolean xhrRedirectOnError = false;
 
 	@Override
 	public void commence(HttpServletRequest request,
@@ -93,16 +89,22 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint,
 		
 		logger.info("XLNET Session isn't valid or not created!");
 		
-		
-		
-		if (isAjax && xhrRedirectOnError ){
+		if (isAjax && StaticsContainer.isXhrRedirectOnError()){
+			if (StaticsContainer.getXhrUnauthorizedPage() != null && StaticsContainer.getXhrUnauthorizedPage().equals("referer")) {
+				String referer = request.getHeader("Referer");
+				
+				if (referer.contains(";jsessionid=")) {
+					referer = referer.substring(0, referer.indexOf(";jsessionid="));
+				}
+				
+				StaticsContainer.setXhrUnauthorizedPage(getPerimetralSecurityWrapper().getURLLogin(referer, isAjax));
+			}
 			
-			url = this.getUrlAjax(xhrUnauthorizedPage != null ? xhrUnauthorizedPage : getPerimetralSecurityWrapper().getURLLogin(originalURL , isAjax), isPortal);
+			url = this.getUrlAjax(StaticsContainer.getXhrUnauthorizedPage() != null ? StaticsContainer.getXhrUnauthorizedPage() : getPerimetralSecurityWrapper().getURLLogin(originalURL, isAjax), isPortal);
 			
 			// Se detecta si es una petición AJAX
 			httpResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
 			httpResponse.setHeader("LOCATION", url);
-			
 		}else{
 			url = getPerimetralSecurityWrapper().getURLLogin(originalURL , isAjax);
 			if(isAjax){
@@ -115,7 +117,6 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint,
 			
 			logger.info("Redirecting to next URL:" + url);
 			httpResponse.sendRedirect(url);
-			
 		}	
 	}
 
@@ -139,15 +140,4 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint,
 			PerimetralSecurityWrapper perimetralSecurityWrapper) {
 		this.perimetralSecurityWrapper = perimetralSecurityWrapper;
 	}
-
-	public void setXhrUnauthorizedPage(String xhrUnauthorizedPage) {
-		this.xhrUnauthorizedPage = xhrUnauthorizedPage;
-	}
-
-	public void setXhrRedirectOnError(Boolean xhrRedirectOnError) {
-		this.xhrRedirectOnError = xhrRedirectOnError;
-	}
-
-	
-	
 }
