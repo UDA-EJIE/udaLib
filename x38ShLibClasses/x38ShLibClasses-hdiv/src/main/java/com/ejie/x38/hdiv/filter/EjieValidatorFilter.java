@@ -55,7 +55,7 @@ public class EjieValidatorFilter extends ValidatorFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		
-		Map<String, String> deobfuscatedVariables = checkPathVariables(request, response);
+		Map<String, String> deobfuscatedVariables = new HashMap<String, String>();
 		String mapping = getForwardMapping(request, response, deobfuscatedVariables);
 		EjieRequestWrapper wRequest = new EjieRequestWrapper(request);
 		super.doFilterInternal(wRequest, response, new EjieFilterChain(filterChain).setMapping(mapping));
