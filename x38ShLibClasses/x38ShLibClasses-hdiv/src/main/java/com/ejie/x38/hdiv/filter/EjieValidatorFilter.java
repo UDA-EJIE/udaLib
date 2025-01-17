@@ -20,6 +20,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerMapping;
@@ -54,8 +56,12 @@ public class EjieValidatorFilter extends ValidatorFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		
+		super.initDependencies(request);
+
 		Map<String, String> deobfuscatedVariables = new HashMap<String, String>();
+		if (!isStartPage()) {
+			deobfuscatedVariables = checkPathVariables(request, response);
+		}
 		String mapping = getForwardMapping(request, response, deobfuscatedVariables);
 		EjieRequestWrapper wRequest = new EjieRequestWrapper(request);
 		super.doFilterInternal(wRequest, response, new EjieFilterChain(filterChain).setMapping(mapping));
@@ -128,6 +134,11 @@ public class EjieValidatorFilter extends ValidatorFilter {
 			deobfuscatedMapping = deobfuscatedMapping.replace(variable.getKey(), variable.getValue());
 		}
 		return deobfuscatedMapping;
+	}
+	
+	private boolean isStartPage() {
+		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+		return hdivConfig.isStartPage(request.getRequestURI().substring(request.getContextPath().length()), com.ejie.hdiv.util.Method.secureValueOf(request.getMethod()));
 	}
 	
 	public class EjieFilterChain implements javax.servlet.FilterChain{
