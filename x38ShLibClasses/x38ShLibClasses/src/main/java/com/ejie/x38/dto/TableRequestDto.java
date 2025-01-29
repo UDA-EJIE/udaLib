@@ -148,7 +148,7 @@ public class TableRequestDto implements java.io.Serializable{
 
 	//CLASES INTERNAS
 	
-	public class Core{
+	public static class Core{
 		private List<String> pkNames;
 		private String pkToken;
 
@@ -286,7 +286,7 @@ public class TableRequestDto implements java.io.Serializable{
 		}
 	}
 	
-	public class Jerarquia {
+	public static class Jerarquia {
 		private String token = "/";		//Separador para los tooltips
 		private String tree;			//Nombre elementos expandidos/contraídos
 		private String parentId;		//Elemento sobre el que obtener hijos/descendientes
