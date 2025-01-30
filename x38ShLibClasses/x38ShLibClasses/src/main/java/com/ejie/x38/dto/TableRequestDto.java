@@ -27,7 +27,7 @@ import org.springframework.beans.BeanWrapperImpl;
  * @author UDA
  *
  */
-public class TableRequestDto implements java.io.Serializable{
+public class TableRequestDto implements java.io.Serializable {
 
 	private static final long serialVersionUID = 2127819481595995328L;
 	
@@ -147,8 +147,8 @@ public class TableRequestDto implements java.io.Serializable{
 	}
 
 	//CLASES INTERNAS
-	
-	public static class Core{
+	public static class Core implements java.io.Serializable {
+		private static final long serialVersionUID = 6159800242594290565L;
 		private List<String> pkNames;
 		private String pkToken;
 
@@ -286,7 +286,8 @@ public class TableRequestDto implements java.io.Serializable{
 		}
 	}
 	
-	public static class Jerarquia {
+	public static class Jerarquia implements java.io.Serializable {
+		private static final long serialVersionUID = 6100719925408721192L;
 		private String token = "/";		//Separador para los tooltips
 		private String tree;			//Nombre elementos expandidos/contraídos
 		private String parentId;		//Elemento sobre el que obtener hijos/descendientes
