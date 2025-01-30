@@ -95,13 +95,12 @@ public class XlnetCore {
 	
 	public static String getN38ItemSesion(N38API n38api, String parametro) {
 		if (n38api == null)
-			throw new IllegalArgumentException(
-					"getN38ItemSesion(): The N38API input parameter can't be NULL.");
-		
+			throw new IllegalArgumentException("getN38ItemSesion(): The N38API input parameter can't be NULL.");
+
 		try {
 			String[] n38UidSesion = n38api.n38ItemSesion(parametro);
 			if (n38UidSesion != null && n38UidSesion.length > 0) {
-				logger.trace("N38ItemSesion is: "+ n38UidSesion[0]);
+				logger.trace("N38ItemSesion is: " + n38UidSesion[0]);
 				return n38UidSesion[0];
 			}
 		} catch (N38ParameterException n38ParameterException) {
@@ -113,7 +112,7 @@ public class XlnetCore {
 				logger.warn("N38 error XMLs not properly configured (can be set using \"xlnets.xmlErrorMessagesPath\" property). Obtained error code: {}", n38Excepcion.getCodigo());
 			} 
 		}
-		
+
 		return null;
 	}
 
