@@ -60,6 +60,7 @@ public class XlnetCore {
 	public static final String PATH_PUESTOUID_SUBTIPO_CN = "/n38/elementos/elemento[@subtipo='n38persona']/parametro[@id='cn']/valor";
 	public static final String PATH_PUESTOUID_SUBTIPO_GIVENNAME = "/n38/elementos/elemento[@subtipo='n38persona']/parametro[@id='givenname']/valor";
 	public static final String PATH_XMLSESION_N38PERFILES = "/n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='n38perfiles']/valor";
+	public static final String PATH_ERROR_MESSAGE = "/n38/warning/motivo";
 
 	/**
 	 * Devuelve un objeto N38API a partir del contexto de una petición Request.
@@ -103,10 +104,14 @@ public class XlnetCore {
 				logger.trace("N38ItemSesion is: "+ n38UidSesion[0]);
 				return n38UidSesion[0];
 			}
-		} catch (N38ParameterException e) {
-			logger.error(StackTraceManager.getStackTrace(e));
-		} catch (N38Excepcion e) {
-			logger.error("There is no XLNetS session or current has expired (error code {})", e.getCodigo());
+		} catch (N38ParameterException n38ParameterException) {
+			logger.error(StackTraceManager.getStackTrace(n38ParameterException));
+		} catch (N38Excepcion n38Excepcion) {
+			try {
+				logger.warn("{}", XmlManager.searchDomText(XmlManager.getErrorsDocument(n38Excepcion.getCodigo()), PATH_ERROR_MESSAGE));
+			} catch (TransformerException | NullPointerException xmlManagerException) {
+				logger.warn("N38 error XMLs not properly configured (can be set using \"xlnets.xmlErrorMessagesPath\" property). Obtained error code: {}", n38Excepcion.getCodigo());
+			} 
 		}
 		
 		return null;
@@ -283,9 +288,13 @@ public class XlnetCore {
 			result = n38Api.n38ItemSesion(param);
 		} catch (N38ParameterException e) {
 			logger.error(StackTraceManager.getStackTrace(e));
-		} catch (N38Excepcion e) {
-			logger.error(StackTraceManager.getStackTrace(e));
-		}	
+		} catch (N38Excepcion n38Excepcion) {
+			try {
+				logger.warn("{}", XmlManager.searchDomText(XmlManager.getErrorsDocument(n38Excepcion.getCodigo()), PATH_ERROR_MESSAGE));
+			} catch (TransformerException | NullPointerException xmlManagerException) {
+				logger.warn("N38 error XMLs not properly configured (can be set using \"xlnets.xmlErrorMessagesPath\" property). Obtained error code: {}", n38Excepcion.getCodigo());
+			}
+		}
 		if(result!=null && result.length>0){
 			return result[0];
 		}else{

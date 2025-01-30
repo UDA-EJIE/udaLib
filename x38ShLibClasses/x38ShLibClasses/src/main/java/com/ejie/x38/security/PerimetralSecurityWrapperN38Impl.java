@@ -25,6 +25,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.xml.transform.TransformerException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +38,7 @@ import org.w3c.dom.Document;
 import com.ejie.x38.log.LogConstants;
 import com.ejie.x38.util.StaticsContainer;
 import com.ejie.x38.util.ThreadStorageManager;
+import com.ejie.x38.util.XmlManager;
 
 import n38a.exe.N38APISesion;
 import n38c.exe.N38API;
@@ -247,9 +249,12 @@ public class PerimetralSecurityWrapperN38Impl implements
 			} catch (N38ParameterException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (N38Excepcion e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			} catch (N38Excepcion n38Excepcion) {
+				try {
+					logger.warn("{}", XmlManager.searchDomText(XmlManager.getErrorsDocument(n38Excepcion.getCodigo()), XlnetCore.PATH_ERROR_MESSAGE));
+				} catch (TransformerException | NullPointerException xmlManagerException) {
+					logger.warn("N38 error XMLs not properly configured (can be set using \"xlnets.xmlErrorMessagesPath\" property). Obtained error code: {}", n38Excepcion.getCodigo());
+				}
 			}
 		}
 
@@ -612,9 +617,12 @@ public class PerimetralSecurityWrapperN38Impl implements
 		} catch (N38ParameterException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (N38Excepcion e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (N38Excepcion n38Excepcion) {
+			try {
+				logger.warn("{}", XmlManager.searchDomText(XmlManager.getErrorsDocument(n38Excepcion.getCodigo()), XlnetCore.PATH_ERROR_MESSAGE));
+			} catch (TransformerException | NullPointerException xmlManagerException) {
+				logger.warn("N38 error XMLs not properly configured (can be set using \"xlnets.xmlErrorMessagesPath\" property). Obtained error code: {}", n38Excepcion.getCodigo());
+			}
 		}
 
 		httpSession.setAttribute("destroySessionSecuritySystem", this.destroySessionSecuritySystem);
