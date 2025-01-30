@@ -36,6 +36,8 @@ import org.springframework.web.context.WebApplicationContext;
 public class WebContextParameterManager implements ApplicationContextAware {
 
 	private static Logger logger = LoggerFactory.getLogger("com.ejie.x38.util.WebContextParameterManager");
+	
+	private static final String XLNETS_ERROR_MESSAGES_PATH = "xlnets.xmlErrorMessagesPath";
 
 	@Autowired
 	private WebApplicationContext webApplicationContext;
@@ -86,6 +88,15 @@ public class WebContextParameterManager implements ApplicationContextAware {
 		if (StaticsContainer.getLoginUrl() == null) {
 			logger.error("Login URL is not Set!");
 		}
+		
+		if (appProperties.getProperty(XLNETS_ERROR_MESSAGES_PATH) != null) {
+			if (appProperties.getProperty(XLNETS_ERROR_MESSAGES_PATH).endsWith("/")) {
+				StaticsContainer.setN38ErrorMessagesPath(appProperties.getProperty(XLNETS_ERROR_MESSAGES_PATH));
+			} else {
+				StaticsContainer.setN38ErrorMessagesPath(appProperties.getProperty(XLNETS_ERROR_MESSAGES_PATH) + "/");
+			}
+			logger.info("The path of the XLNetS message error files is: {}", StaticsContainer.getN38ErrorMessagesPath());
+		}	
 
 		StaticsContainer.setWeblogicInstance(System.getProperty("weblogic.Name"));
 		logger.info("The WebLogic Instance Name is: " + StaticsContainer.getWeblogicInstance());
