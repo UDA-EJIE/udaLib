@@ -98,7 +98,28 @@ public class XmlManager {
 			vecValores = new Vector<String>();
 		}
 		return vecValores;
-		
-	}	
+	}
+
+	/**
+	 * Función que devuelve un texto dado un XPath.
+	 * 
+	 * @param Node XML
+	 * @param String XPath
+	 * @return String Texto del nodo seleccionado con la ruta
+	 * @throws TransformerException
+	 */
+	public static String searchDomText(Node docDom, String strPath) throws TransformerException {
+		if (docDom != null && docDom.getTextContent() != null) {
+			logger.debug("Searching node [{}] in document {}", strPath, docDom.getTextContent());
+		} else {
+			logger.debug("Can't find node [{}] in empty document", strPath);
+		}
+
+		try {
+			return xPath.evaluate(strPath, docDom, XPathConstants.STRING).toString();
+		} catch (XPathExpressionException | DOMException e) {
+			throw new TransformerException(e);
+		} 
+	}
 
 }
