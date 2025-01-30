@@ -94,13 +94,12 @@ public class XlnetCore {
 	
 	public static String getN38ItemSesion(N38API n38api, String parametro) {
 		if (n38api == null)
-			throw new IllegalArgumentException(
-					"getN38ItemSesion(): The N38API input parameter can't be NULL.");
-		
+			throw new IllegalArgumentException("getN38ItemSesion(): The N38API input parameter can't be NULL.");
+
 		try {
 			String[] n38UidSesion = n38api.n38ItemSesion(parametro);
 			if (n38UidSesion != null && n38UidSesion.length > 0) {
-				logger.trace("N38ItemSesion is: "+ n38UidSesion[0]);
+				logger.trace("N38ItemSesion is: " + n38UidSesion[0]);
 				return n38UidSesion[0];
 			}
 		} catch (N38ParameterException e) {
@@ -108,7 +107,7 @@ public class XlnetCore {
 		} catch (N38Excepcion e) {
 			logger.error("There is no XLNetS session or current has expired (error code {})", e.getCodigo());
 		}
-		
+
 		return null;
 	}
 
