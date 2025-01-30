@@ -35,60 +35,58 @@ import org.w3c.dom.NodeList;
  *
  */
 public class XmlManager {
-	
-	private static final Logger logger =  LoggerFactory.getLogger(XmlManager.class);
-	
+
+	private static final Logger logger = LoggerFactory.getLogger(XmlManager.class);
+
 	private static final XPath xPath = XPathFactory.newInstance().newXPath();
 	
 	/**
-	 * Funcion que devuelve un Nodo dado un XPath.
+	 * Función que devuelve un Nodo dado un XPath.
 	 * 
 	 * @param Node XML
 	 * @param Path XPath
 	 * @return Node Nodo seleccionado con el Path
-	 * @throws TransformerException 
+	 * @throws TransformerException
 	 */
 	public static Node searchDomNode(Node docDom, String strPath) throws TransformerException {
-		if (docDom != null && docDom.getTextContent()!=null){
-			logger.debug("Searching node "+ "["+strPath+"] in document " + docDom.getTextContent());
-		}else{ 
-			logger.debug("Can't find node "+ "["+strPath+"] in empty document");
+		if (docDom != null && docDom.getTextContent() != null) {
+			logger.debug("Searching node [{}] in document {}", strPath, docDom.getTextContent());
+		} else {
+			logger.debug("Can't find node [{}] in empty document", strPath);
 		}
-			
+
 		try {
-			return (Node)xPath.evaluate(strPath, docDom, XPathConstants.NODE);
-		} catch (XPathExpressionException e) {
+			return (Node) xPath.evaluate(strPath, docDom, XPathConstants.NODE);
+		} catch (XPathExpressionException | DOMException e) {
 			throw new TransformerException(e);
-		} catch (DOMException e) {
-			throw new TransformerException(e);
-		}
-	}	
+		} 
+	}
 
 	/**
-	 * Funcion que devuelve un Vector de Strings dado un XPath.
+	 * Función que devuelve un Vector de Strings dado un XPath.
 	 * 
 	 * @param Node XML
 	 * @param Path XPath
 	 * @return Vector vector de valores seleccionados con el Path
-	 * @throws TransformerException 
-	 * @throws SecurityException Excepción de seguridad
+	 * @throws TransformerException
+	 * @throws SecurityException    Excepción de seguridad
 	 */
 	public static Vector<String> searchDomVector(Node docDom, String strPath) throws TransformerException {
 		NodeList nodeLiResultado;
-		Vector<String> vecValores = null ;
-		
+		Vector<String> vecValores = null;
+
 		try {
-			nodeLiResultado = (NodeList)xPath.evaluate(strPath, docDom, XPathConstants.NODESET);
+			nodeLiResultado = (NodeList) xPath.evaluate(strPath, docDom, XPathConstants.NODESET);
 		} catch (XPathExpressionException e) {
 			throw new TransformerException(e);
 		}
-		
+
 		if (nodeLiResultado.getLength() != 0) {
 			int x = 0;
 			vecValores = new Vector<String>();
 			for (x = 0; x < nodeLiResultado.getLength(); x++) {
 				if (nodeLiResultado.item(x).hasChildNodes()) {
-					//arrayValores.add(NodeLiResultado.item(x).getFirstChild().getNodeValue());
+					// arrayValores.add(NodeLiResultado.item(x).getFirstChild().getNodeValue());
 					vecValores.add(nodeLiResultado.item(x).getFirstChild().getNodeValue());
 				} else {
 					vecValores.add("");
