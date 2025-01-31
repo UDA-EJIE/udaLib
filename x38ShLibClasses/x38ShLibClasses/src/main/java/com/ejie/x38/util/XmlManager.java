@@ -121,8 +121,8 @@ public class XmlManager {
 		    // En Apache, esto debería ser lanzado al no permitir DOCTYPE.
 		    logger.warn("A DOCTYPE was passed into the XML document");
 		} catch (IOException e) {
-		    // XXE que apunta a un fichero inexistente.
-		    logger.error("IOException occurred, XXE may still possible: {}", e.getMessage());
+		    // Fichero inexistente. Todavía es posible un ataque por XXE.
+		    logger.debug("N38 {} error XML not found", codigo);
 		}
 	    
 	    return doc;
