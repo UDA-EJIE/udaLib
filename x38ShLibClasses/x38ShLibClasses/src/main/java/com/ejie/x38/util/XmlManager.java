@@ -15,13 +15,8 @@
 */
 package com.ejie.x38.util;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Vector;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -31,10 +26,8 @@ import javax.xml.xpath.XPathFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMException;
-import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 /**
  * 
@@ -47,87 +40,6 @@ public class XmlManager {
 
 	private static final XPath xPath = XPathFactory.newInstance().newXPath();
 	
-	private static final String DISALLOW_INLINE_DTD = "http://apache.org/xml/features/disallow-doctype-decl";
-	private static final String DISALLOW_EXTERNAL_DTD = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
-	private static final String DISALLOW_EXTERNAL_GENERAL_ENTITIES = "http://xml.org/sax/features/external-general-entities";
-	private static final String DISALLOW_EXTERNAL_PARAMETER_ENTITIES = "http://xml.org/sax/features/external-parameter-entities";
-	private static final String PARSER_CONFIGURATION_EXCEPTION_MESSAGE = "ParserConfigurationException was thrown. The feature '{}' is not supported by your XML processor.";
-	
-	private static DocumentBuilderFactory securizeFactory(DocumentBuilderFactory dbFactory) {
-		// ATENCIÓN: cada llamada a setFeature() debe estar en su propio try/catch, de lo contrario, las llamadas subsecuentes son omitidas.
-		try {
-			// Esta es la defensa principal. Si se desautorizan los DTD (DOCTYPE), se evitan casi todos los ataques a entidades XML.
-		    // https://xerces.apache.org/xerces2-j/features.html#disallow-doctype-decl (sólo Xerces 2)
-			dbFactory.setFeature(DISALLOW_INLINE_DTD, true);
-		} catch (ParserConfigurationException e) {
-		    logger.info(PARSER_CONFIGURATION_EXCEPTION_MESSAGE, DISALLOW_INLINE_DTD);
-		}
-		
-		try {
-			// No incluye DTD externos.
-		    // https://xerces.apache.org/xerces-j/features.html#load-external-dtd
-			dbFactory.setFeature(DISALLOW_EXTERNAL_DTD, false);
-		} catch (ParserConfigurationException e) {
-		    logger.info(PARSER_CONFIGURATION_EXCEPTION_MESSAGE, DISALLOW_EXTERNAL_DTD);
-		}
-		
-		try {
-			// No incluye entidades externas.
-		    // https://xerces.apache.org/xerces2-j/features.html#external-general-entities
-			dbFactory.setFeature(DISALLOW_EXTERNAL_GENERAL_ENTITIES, false);
-		} catch (ParserConfigurationException e) {
-		    logger.info(PARSER_CONFIGURATION_EXCEPTION_MESSAGE, DISALLOW_EXTERNAL_GENERAL_ENTITIES);
-		}
-		
-		try {
-			// No incluye parámetros externos.
-		    // https://xerces.apache.org/xerces2-j/features.html#external-parameter-entities
-			dbFactory.setFeature(DISALLOW_EXTERNAL_PARAMETER_ENTITIES, false);
-		} catch (ParserConfigurationException e) {
-		    logger.info(PARSER_CONFIGURATION_EXCEPTION_MESSAGE, DISALLOW_EXTERNAL_PARAMETER_ENTITIES);
-		}
-		
-		try {
-			// Incluído por recomendación del artículo de Timothy Morgan de 2014: "XML Schema, DTD, and Entity Attacks".
-		    dbFactory.setXIncludeAware(false);
-		} catch (UnsupportedOperationException e) {
-			logger.info("Call to method setXIncludeAware() not available");
-		}
-		
-		return dbFactory;
-	}
-
-	/**
-	 * Función que devuelve el documento a procesar.
-	 * 
-	 * @param String codigo de error de N38
-	 * @return Document Documento de error que incluye una descripción del problema
-	 * @throws NullPointerException
-	 */
-	public static Document getErrorsDocument(String codigo) throws NullPointerException {
-    	File xlnetsErrorMessageFile = new File(StaticsContainer.getN38ErrorMessagesPath() + codigo + "ERROR.xml");
-    	
-    	DocumentBuilderFactory dbFactory = securizeFactory(DocumentBuilderFactory.newInstance());
-    	
-		Document doc = null;
-		try {
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			doc = dBuilder.parse(xlnetsErrorMessageFile);
-		    doc.getDocumentElement().normalize();
-		} catch (ParserConfigurationException e) {
-			// No se puede crear un DocumentBuilder con la configuración solicitada.
-		    logger.info(DISALLOW_EXTERNAL_PARAMETER_ENTITIES, DISALLOW_EXTERNAL_PARAMETER_ENTITIES);
-		} catch (SAXException e) {
-		    // En Apache, esto debería ser lanzado al no permitir DOCTYPE.
-		    logger.warn("A DOCTYPE was passed into the XML document");
-		} catch (IOException e) {
-		    // Fichero inexistente. Todavía es posible un ataque por XXE.
-		    logger.debug("N38 {} error XML not found", codigo);
-		}
-	    
-	    return doc;
-	}
-
 	/**
 	 * Función que devuelve un Nodo dado un XPath.
 	 * 
