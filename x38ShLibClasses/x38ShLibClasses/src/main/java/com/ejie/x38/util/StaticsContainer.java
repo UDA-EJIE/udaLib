@@ -27,7 +27,6 @@ public class StaticsContainer {
 	public static String staticsUrl;
 	public static String modelPackageName;
 	public static String loginUrl;
-	public static String n38ErrorMessagesPath;
 	public static boolean aplicInPortal;
 	public static String weblogicInstance;
 	public static String layout;
@@ -76,14 +75,6 @@ public class StaticsContainer {
 
 	public static void setLoginUrl(String loginUrl) {
 		StaticsContainer.loginUrl = loginUrl;
-	}
-
-	public static String getN38ErrorMessagesPath() {
-		return n38ErrorMessagesPath;
-	}
-
-	public static void setN38ErrorMessagesPath(String n38ErrorMessagesPath) {
-		StaticsContainer.n38ErrorMessagesPath = n38ErrorMessagesPath;
 	}
 
 	public static boolean isAplicInPortal() {
