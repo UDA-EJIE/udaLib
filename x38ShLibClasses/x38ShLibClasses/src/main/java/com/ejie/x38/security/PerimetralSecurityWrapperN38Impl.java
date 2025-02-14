@@ -436,8 +436,7 @@ public class PerimetralSecurityWrapperN38Impl implements
 				}
 			} catch (Exception e) {
 				logger.error("isN38ApiValid(): There was an access error in XLNets. it Is possible that you having any problem with the configuration of XLNets or XLNets have some own internal error (Check that the service works correctly).", e);
-				SecurityException sec = new SecurityException("isN38ApiValid(): There was an access error in XLNets. it Is possible that you having any problem with the configuration of XLNets or XLNets have some own internal error (Check that the service works correctly).", e.getCause());
-				throw sec;
+				throw new SecurityException("isN38ApiValid(): There was an access error in XLNets. it Is possible that you having any problem with the configuration of XLNets or XLNets have some own internal error (Check that the service works correctly).", e.getCause());
 			}
 		} else {
 			deleteAllXLNetsCookies(httpRequest, httpResponse);
