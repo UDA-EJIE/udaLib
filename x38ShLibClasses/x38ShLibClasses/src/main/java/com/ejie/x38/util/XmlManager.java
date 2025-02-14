@@ -99,6 +99,40 @@ public class XmlManager {
 	}
 
 	/**
+	 * Función que devuelve un array de strings dado un XPath.
+	 * 
+	 * @param Node XML
+	 * @param String XPath
+	 * @return String[] Array de valores seleccionados con el Path
+	 * @throws TransformerException Problema en la lectura del nodo
+	 */
+	public static String[] searchDomStringArray(Node docDom, String strPath) throws TransformerException {
+		NodeList nodeLiResultado;
+		String[] valores = null;
+
+		try {
+			nodeLiResultado = (NodeList) xPath.evaluate(strPath, docDom, XPathConstants.NODESET);
+		} catch (XPathExpressionException e) {
+			throw new TransformerException(e);
+		}
+
+		if (nodeLiResultado.getLength() != 0) {
+			int x = 0;
+			valores = new String[nodeLiResultado.getLength()];
+			for (x = 0; x < nodeLiResultado.getLength(); x++) {
+				if (nodeLiResultado.item(x).hasChildNodes()) {
+					valores[x] = nodeLiResultado.item(x).getFirstChild().getNodeValue();
+				} else {
+					valores[x] = "";
+				}
+			}
+		} else {
+			valores = new String[0];
+		}
+		return valores;
+	}
+
+	/**
 	 * Función que devuelve un texto dado un XPath.
 	 * 
 	 * @param Node XML
