@@ -55,7 +55,7 @@ public class MyLogoutHandler implements LogoutHandler {
 		HttpSession httpSession = request.getSession(false);
 		
 		//Clear Spring Security Context
-		logger.info("XLNET session is invalid. Proceeding to clean the Security Context Holder.");
+		logger.info("XLNetS session is invalid. Proceeding to clean the Security Context Holder.");
 		
 		if(authentication != null){
 			authentication.setAuthenticated(false);
@@ -68,7 +68,7 @@ public class MyLogoutHandler implements LogoutHandler {
 		
 		logger.info( "SecurityContextHolder cleared!");
 		
-		//Destroy XLNET session
+		//Destroy XLNetS session
 		if(this.invalidateUserSession){
 			Assert.notNull(request, "HttpServletRequest required");			
 			getPerimetralSecurityWrapper().logout(request, response);

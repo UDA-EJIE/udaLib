@@ -87,7 +87,7 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint,
 			}
 		}
 		
-		logger.info("XLNET Session isn't valid or not created!");
+		logger.info("XLNetS session isn't valid or not created!");
 		
 		if (isAjax && StaticsContainer.isXhrRedirectOnError()){
 			if (StaticsContainer.getXhrUnauthorizedPage() != null && StaticsContainer.getXhrUnauthorizedPage().equals("referer")) {

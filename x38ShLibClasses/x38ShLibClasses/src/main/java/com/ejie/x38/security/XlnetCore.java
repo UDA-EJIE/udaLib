@@ -66,8 +66,8 @@ public class XlnetCore {
 	 * Si la request es inválida se propaga una excepción.
 	 * 
 	 * @param httpRequest
-	 *            La request que lleva la validación XLNET.
-	 * @return Un objeto N38API con información sobre la sesión XLNET.
+	 *            La request que lleva la validación XLNetS.
+	 * @return Un objeto N38API con información sobre la sesión XLNetS.
 	 */
 	public static N38API getN38API(HttpServletRequest httpRequest) {
 		N38API n38apiRetorno = null;
