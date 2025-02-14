@@ -69,7 +69,7 @@ public class WebContextParameterManager implements ApplicationContextAware {
 		logger.info("Applications Model Package is: " + StaticsContainer.getModelPackageName() + ".model.");
 
 		StaticsContainer.setLoginUrl(appProperties.getProperty("xlnets.path"));
-		logger.info("The URL to access the security provider of the application (\"XLNets\") is: "
+		logger.info("The URL to access the security provider of the application (\"XLNetS\") is: "
 				+ StaticsContainer.getLoginUrl());
 
 		if (appProperties.getProperty("xlnets.inPortal") != null
