@@ -293,25 +293,15 @@ public class XlnetCore {
 		return resultVector;
 	}
 	
-	public static String getParameterSession(N38API n38Api, String param){
-		String[] result = null;
-		
-		if (n38Api == null)
-			throw new IllegalArgumentException(
-					"getN38ItemSeguridad(): The N38API input parameter can't be NULL.");
-		
-		try {
-			result = n38Api.n38ItemSesion(param);
-		} catch (N38ParameterException e) {
-			logger.error(StackTraceManager.getStackTrace(e));
-		} catch (N38Excepcion e) {
-			logger.error(StackTraceManager.getStackTrace(e));
-		}	
-		if(result!=null && result.length>0){
-			return result[0];
-		}else{
-			return null;
-		}
+	/**
+	 * @deprecated As of 6.2.0, use {@link #getN38ItemSesion(N38API n38api, String parametro)} instead.
+	 */
+	@Deprecated(since="6.2.0", forRemoval=true)
+	public static String getParameterSession(N38API n38api, String parametro){
+		if (n38api == null)
+			throw new IllegalArgumentException("getParameterSession(): The N38API input parameter can't be NULL.");
+
+		return getN38ItemSesion(n38api, parametro);
 	}
 	
 	public static HashMap<String, String> getUserDataInfo(N38API n38Api){
