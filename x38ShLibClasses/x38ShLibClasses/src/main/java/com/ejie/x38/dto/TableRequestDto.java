@@ -17,7 +17,6 @@ package com.ejie.x38.dto;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -175,12 +174,12 @@ public class TableRequestDto implements java.io.Serializable {
 		
 		private String accion;
 		private List<String> deselectedIds;
-		private List<String> deselectedRowsPerPage;
+		private List<PageDto> deselectedRowsPerPage;
 		private String lastSelectedId;
 		private Integer numSelected;
 		private Boolean selectedAll;
 		private List<String> selectedIds;
-		private List<String> selectedRowsPerPage;
+		private List<PageDto> selectedRowsPerPage;
 
 		private Class<? extends Object> clazz;
 
@@ -200,11 +199,11 @@ public class TableRequestDto implements java.io.Serializable {
 			this.deselectedIds = deselectedIds;
 		}
 
-		public List<String> getDeselectedRowsPerPage() {
+		public List<PageDto> getDeselectedRowsPerPage() {
 			return deselectedRowsPerPage;
 		}
 
-		public void setDeselectedRowsPerPage(List<String> deselectedRowsPerPage) {
+		public void setDeselectedRowsPerPage(List<PageDto> deselectedRowsPerPage) {
 			this.deselectedRowsPerPage = deselectedRowsPerPage;
 		}
 
@@ -243,11 +242,11 @@ public class TableRequestDto implements java.io.Serializable {
 			this.selectedIds = selectedIds;
 		}
 
-		public List<String> getSelectedRowsPerPage() {
+		public List<PageDto> getSelectedRowsPerPage() {
 			return selectedRowsPerPage;
 		}
 
-		public void setSelectedRowsPerPage(List<String> selectedRowsPerPage) {
+		public void setSelectedRowsPerPage(List<PageDto> selectedRowsPerPage) {
 			this.selectedRowsPerPage = selectedRowsPerPage;
 		}
 

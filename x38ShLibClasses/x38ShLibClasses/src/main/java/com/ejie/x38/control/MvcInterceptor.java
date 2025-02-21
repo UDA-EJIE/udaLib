@@ -24,11 +24,10 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.support.RequestContextUtils;
@@ -47,7 +46,7 @@ import com.ejie.x38.util.StaticsContainer;
  * @author UDA
  *
  */
-public class MvcInterceptor extends HandlerInterceptorAdapter{
+public class MvcInterceptor implements HandlerInterceptor{
    
     @Autowired
     private WebApplicationContext webApplicationContext;
