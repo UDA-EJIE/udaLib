@@ -36,6 +36,7 @@ public class StaticsContainer {
 	public static boolean inheritableLocalContext;
 	public static boolean xhrRedirectOnError;
 	public static String xhrUnauthorizedPage;
+	public static boolean detailedError;
 
 	public static String getWebAppName() {
 		return webAppName;
@@ -147,6 +148,14 @@ public class StaticsContainer {
 
 	public static void setXhrUnauthorizedPage(String xhrUnauthorizedPage) {
 		StaticsContainer.xhrUnauthorizedPage = xhrUnauthorizedPage;
+	}
+
+	public static boolean isDetailedError() {
+		return detailedError;
+	}
+
+	public static void setDetailedError(boolean detailedError) {
+		StaticsContainer.detailedError = detailedError;
 	}
 
 }

@@ -116,6 +116,12 @@ public class WebContextParameterManager implements ApplicationContextAware {
 		if (appProperties.getProperty("xhr.unauthorizedPage") != null) {
 			StaticsContainer.setXhrUnauthorizedPage(appProperties.getProperty("xhr.unauthorizedPage"));
 		}
+
+		if (appProperties.getProperty("error.detailed") != null
+				&& ((appProperties.getProperty("error.detailed")).toLowerCase()).equals("true")) {
+			StaticsContainer.setDetailedError(true);
+			logger.info("Detailed information will be displayed in the error page.");
+		}
 	}
 
 	// Getters & Setters
