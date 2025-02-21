@@ -15,6 +15,7 @@
 */
 package com.ejie.x38;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +33,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.DelegatingFilterProxy;
+import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web.util.UriUtils;
 
 import com.ejie.x38.serialization.ThreadSafeCache;
 import com.ejie.x38.util.StackTraceManager;
@@ -171,7 +174,7 @@ public class UdaFilter extends DelegatingFilterProxy {
 						}
 					}
 
-					httpServletResponse.sendRedirect(error.toString());
+					httpServletResponse.sendRedirect(UriUtils.encodeQuery(error.toString(), StandardCharsets.UTF_8));
 				}
 			} catch (Exception exc) {
 				logger.error("Problem with sending of the response", exc);
