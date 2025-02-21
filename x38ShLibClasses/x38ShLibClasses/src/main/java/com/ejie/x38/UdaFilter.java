@@ -35,6 +35,7 @@ import org.springframework.web.filter.DelegatingFilterProxy;
 
 import com.ejie.x38.serialization.ThreadSafeCache;
 import com.ejie.x38.util.StackTraceManager;
+import com.ejie.x38.util.StaticsContainer;
 import com.ejie.x38.util.ThreadStorageManager;
 import com.ejie.x38.util.WrappedRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -151,18 +152,22 @@ public class UdaFilter extends DelegatingFilterProxy {
 			try {
 				if (!response.isCommitted()) {
 					StringBuilder error = new StringBuilder(httpServletRequest.getContextPath());
-					error.append("/error?exception_name=").append(exception.getClass().getName());
-					error.append("&exception_message=").append(exception.getMessage());
-					error.append("&exception_trace=");
-					int outLength = error.length();
+					error.append("/error");
+					
+					if (StaticsContainer.isDetailedError()) {
+						error.append("?exception_name=").append(exception.getClass().getName());
+						error.append("&exception_message=").append(exception.getMessage());
+						error.append("&exception_trace=");
+						int outLength = error.length();
 
-					for (StackTraceElement trace : exception.getStackTrace()) {
-						outLength = outLength + 5 + trace.toString().length();
-						// IE Query String limit
-						if (outLength <= 2043) {
-							error.append(trace.toString()).append("</br>");
-						} else {
-							break;
+						for (StackTraceElement trace : exception.getStackTrace()) {
+							outLength = outLength + 5 + trace.toString().length();
+							// IE Query String limit
+							if (outLength <= 2043) {
+								error.append(trace.toString()).append("</br>");
+							} else {
+								break;
+							}
 						}
 					}
 
