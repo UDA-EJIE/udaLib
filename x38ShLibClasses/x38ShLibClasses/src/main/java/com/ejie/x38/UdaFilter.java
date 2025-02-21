@@ -162,8 +162,8 @@ public class UdaFilter extends DelegatingFilterProxy {
 
 						for (StackTraceElement trace : exception.getStackTrace()) {
 							outLength = outLength + 5 + trace.toString().length();
-							// IE Query String limit
-							if (outLength <= 2043) {
+							// Query string limit to avoid leaving server unresponsive
+							if (outLength <= 1250) {
 								error.append(trace.toString()).append("</br>");
 							} else {
 								break;
