@@ -62,14 +62,16 @@ public class MvcExceptionHandler {
 		ModelAndView modelAndView = new ModelAndView();
 		modelAndView.setViewName("error");
 
+		modelAndView.addObject("exception_name", StaticsContainer.isDetailedError() ? exception.getClass().getName() : StaticsContainer.getDetailedErrorMessageHidden());
+		modelAndView.addObject("exception_message", StaticsContainer.isDetailedError() ? exception.getMessage() : StaticsContainer.getDetailedErrorMessageHidden());
 		if (StaticsContainer.isDetailedError()) {
-			modelAndView.addObject("exception_name", exception.getClass().getName());
-			modelAndView.addObject("exception_message", exception.getMessage());
 			StringBuilder sbTrace = new StringBuilder();
 			for (StackTraceElement trace : exception.getStackTrace()) {
 				sbTrace.append(trace.toString()).append("</br>");
 			}
 			modelAndView.addObject("exception_trace", sbTrace);
+		} else {
+			modelAndView.addObject("exception_trace", StaticsContainer.getDetailedErrorMessageHidden());
 		}
 
 		return modelAndView;

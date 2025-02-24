@@ -155,12 +155,11 @@ public class UdaFilter extends DelegatingFilterProxy {
 			try {
 				if (!response.isCommitted()) {
 					StringBuilder error = new StringBuilder(httpServletRequest.getContextPath());
-					error.append("/error");
-					
+					error.append("/error?query_string_limit=").append(StaticsContainer.isDetailedError());
+					error.append("&exception_name=").append(StaticsContainer.isDetailedError() ? exception.getClass().getName() : StaticsContainer.getDetailedErrorMessageHidden());
+					error.append("&exception_message=").append(StaticsContainer.isDetailedError() ? exception.getMessage() : StaticsContainer.getDetailedErrorMessageHidden());
+					error.append("&exception_trace=");
 					if (StaticsContainer.isDetailedError()) {
-						error.append("?exception_name=").append(exception.getClass().getName());
-						error.append("&exception_message=").append(exception.getMessage());
-						error.append("&exception_trace=");
 						int outLength = error.length();
 
 						for (StackTraceElement trace : exception.getStackTrace()) {
@@ -172,6 +171,8 @@ public class UdaFilter extends DelegatingFilterProxy {
 								break;
 							}
 						}
+					} else {
+						error.append(StaticsContainer.getDetailedErrorMessageHidden());
 					}
 
 					httpServletResponse.sendRedirect(UriUtils.encodeQuery(error.toString(), StandardCharsets.UTF_8));
