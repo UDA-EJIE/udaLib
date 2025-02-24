@@ -15,6 +15,8 @@
 */
 package com.ejie.x38.util;
 
+import org.springframework.context.i18n.LocaleContextHolder;
+
 /**
  * 
  * @author UDA
@@ -22,6 +24,11 @@ package com.ejie.x38.util;
  */
 public class StaticsContainer {
 
+	private static final String MENSAJE_ERROR_OCULTO_ES = "Mensaje oculto. Si desea visualizarlo, revise las trazas de la aplicación o active la propiedad \"error.detailed\".";
+	private static final String MENSAJE_ERROR_OCULTO_EU = "Ezkutuko mezua. Ikusi nahi baduzu, berrikusi aplikazioaren aztarnak edo aktibatu \"error.detailed\".";
+	private static final String MENSAJE_ERROR_OCULTO_EN = "Hidden message. If you want to see it, check the application traces or activate the property 'error.detailed'.";
+	private static final String MENSAJE_ERROR_OCULTO_FR = "Message caché. Si vous voulez le voir, vérifiez les traces de l'application ou activez la propriété «error.detailed».";
+	
 	public static String webAppName;
 	public static String webId;
 	public static String staticsUrl;
@@ -37,6 +44,7 @@ public class StaticsContainer {
 	public static boolean xhrRedirectOnError;
 	public static String xhrUnauthorizedPage;
 	public static boolean detailedError;
+	public static String detailedErrorMessageHidden;
 
 	public static String getWebAppName() {
 		return webAppName;
@@ -156,6 +164,31 @@ public class StaticsContainer {
 
 	public static void setDetailedError(boolean detailedError) {
 		StaticsContainer.detailedError = detailedError;
+	}
+
+	public static String getDetailedErrorMessageHidden() {
+		switch (LocaleContextHolder.getLocale().getLanguage()) {
+			case "es":
+				detailedErrorMessageHidden = MENSAJE_ERROR_OCULTO_ES;
+				break;
+			case "eu":
+				detailedErrorMessageHidden = MENSAJE_ERROR_OCULTO_EU;
+				break;
+			case "en":
+				detailedErrorMessageHidden = MENSAJE_ERROR_OCULTO_EN;
+				break;
+			case "fr":
+				detailedErrorMessageHidden = MENSAJE_ERROR_OCULTO_FR;
+				break;
+			default:
+				detailedErrorMessageHidden = MENSAJE_ERROR_OCULTO_ES;
+		}
+		
+		return detailedErrorMessageHidden;
+	}
+
+	public static void setDetailedErrorMessageHidden(String detailedErrorMessageHidden) {
+		StaticsContainer.detailedErrorMessageHidden = detailedErrorMessageHidden;
 	}
 
 }
