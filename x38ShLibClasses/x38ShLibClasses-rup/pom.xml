@@ -2,7 +2,7 @@
 	<parent>
 		<groupId>com.ejie.x38</groupId>
 		<artifactId>x38</artifactId>
-		<version>6.2.0-RELEASE</version>
+		<version>6.2.0-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>x38ShLibClasses-rup</artifactId>
@@ -13,7 +13,7 @@
 		<dependency>
 			<groupId>com.ejie.x38</groupId>
 			<artifactId>x38ShLibClasses</artifactId>
-			<version>6.2.0-RELEASE</version>
+			<version>6.2.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>
