@@ -167,23 +167,20 @@ public class StaticsContainer {
 	}
 
 	public static String getDetailedErrorMessageHidden() {
-		switch (LocaleContextHolder.getLocale().getLanguage()) {
-			case "es":
-				detailedErrorMessageHidden = MENSAJE_ERROR_OCULTO_ES;
-				break;
-			case "eu":
-				detailedErrorMessageHidden = MENSAJE_ERROR_OCULTO_EU;
-				break;
-			case "en":
-				detailedErrorMessageHidden = MENSAJE_ERROR_OCULTO_EN;
-				break;
-			case "fr":
-				detailedErrorMessageHidden = MENSAJE_ERROR_OCULTO_FR;
-				break;
-			default:
-				detailedErrorMessageHidden = MENSAJE_ERROR_OCULTO_ES;
+		String language = LocaleContextHolder.getLocale().getLanguage();
+
+		if (language.equals("es")) {
+			detailedErrorMessageHidden = MENSAJE_ERROR_OCULTO_ES;
+		} else if (language.equals("eu")) {
+			detailedErrorMessageHidden = MENSAJE_ERROR_OCULTO_EU;
+		} else if (language.equals("en")) {
+			detailedErrorMessageHidden = MENSAJE_ERROR_OCULTO_EN;
+		} else if (language.equals("fr")) {
+			detailedErrorMessageHidden = MENSAJE_ERROR_OCULTO_FR;
+		} else {
+			detailedErrorMessageHidden = MENSAJE_ERROR_OCULTO_ES;
 		}
-		
+
 		return detailedErrorMessageHidden;
 	}
 
