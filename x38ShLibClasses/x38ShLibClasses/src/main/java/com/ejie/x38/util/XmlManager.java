@@ -57,9 +57,11 @@ public class XmlManager {
 
 		try {
 			return (Node) xPath.evaluate(strPath, docDom, XPathConstants.NODE);
-		} catch (XPathExpressionException | DOMException e) {
+		} catch (XPathExpressionException e) {
 			throw new TransformerException(e);
-		} 
+		} catch (DOMException e) {
+			throw new TransformerException(e);
+		}
 	}
 
 	/**
@@ -149,9 +151,11 @@ public class XmlManager {
 
 		try {
 			return xPath.evaluate(strPath, docDom, XPathConstants.STRING).toString();
-		} catch (XPathExpressionException | DOMException e) {
+		} catch (XPathExpressionException e) {
 			throw new TransformerException(e);
-		} 
+		} catch (DOMException e) {
+			throw new TransformerException(e);
+		}
 	}
 
 }
