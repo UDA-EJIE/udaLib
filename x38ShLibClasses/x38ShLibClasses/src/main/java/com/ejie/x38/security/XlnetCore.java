@@ -34,6 +34,8 @@ import com.ejie.x38.util.XmlManager;
 
 import n38c.exe.N38API;
 import n38i.exe.N38DocumentPrinter;
+import n38i.exe.N38Excepcion;
+import n38i.exe.N38ParameterException;
 
 /**
  * 
@@ -294,9 +296,9 @@ public class XlnetCore {
 	}
 	
 	/**
-	 * @deprecated As of 6.2.0, use {@link #getN38ItemSesion(N38API n38api, String parametro)} instead.
+	 * @deprecated As of 4.5.3, use {@link #getN38ItemSesion(N38API n38api, String parametro)} instead.
 	 */
-	@Deprecated(since="6.2.0", forRemoval=true)
+	@Deprecated
 	public static String getParameterSession(N38API n38api, String parametro){
 		if (n38api == null)
 			throw new IllegalArgumentException("getParameterSession(): The N38API input parameter can't be NULL.");
