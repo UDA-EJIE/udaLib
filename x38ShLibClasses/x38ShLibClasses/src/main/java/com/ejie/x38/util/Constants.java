@@ -29,7 +29,7 @@ public class Constants {
 	public static final String CASTELLANO = "es";
 	public static final String ENGLISH = "en";
 	
-	public static final String X38_VERSION = "6.2.0-RELEASE";
+	public static final String X38_VERSION = "6.3.0-SNAPSHOT";
 	
 	public static final SimpleDateFormat DDMMYYYY_DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	public static final SimpleDateFormat YYYYMMDD_DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd");
