@@ -53,6 +53,8 @@ public class XlnetCore {
 	public static final String PATH_SUBTIPO_ORGANIZATIONALUNIT = "/n38/elementos/elemento[@subtipo='OrganizationalUnit']/parametro[@id='ou']/valor[text()='?']/../../elemento[@subtipo=\"n38itemSeguridad\"]/parametro[@id=\"n38uidobjseguridad\"]/valor";
 	public static final String PATH_SUBTIPO_VARIABLE = "/n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='%s']/valor";
 	public static final String PATH_CHECK_ERROR = "/n38/error";
+	public static final String PATH_CHECK_ERROR_CODIGO = "/n38/error/@codigo";
+	public static final String PATH_CHECK_ERROR_MOTIVO = "/n38/error/motivo";
 	public static final String PATH_CHECK_WARNING = "/n38/warning";
 	public static final String PATH_CHECK_WARNING_MOTIVO = "/n38/warning/motivo";
 	public static final String FILTRO_LDAP_UID = "uid=";
@@ -101,8 +103,7 @@ public class XlnetCore {
 			Document documentReturn = getN38ItemSesion(n38api);
 			String[] items = XmlManager.searchDomStringArray(documentReturn, String.format(PATH_SUBTIPO_VARIABLE, parametro));
 			if (items.length == 0) {
-				final String warning = XmlManager.searchDomText(documentReturn, PATH_CHECK_WARNING_MOTIVO);
-				logger.warn(warning);
+				logger(documentReturn);
 			} else {
 				n38UidSesion = items[0];
 			}
@@ -123,8 +124,7 @@ public class XlnetCore {
 			n38UidSesion = XmlManager.searchDomStringArray(documentReturn, String.format(PATH_SUBTIPO_VARIABLE, parametro));
 			if (n38UidSesion.length == 0) {
 				n38UidSesion = null;
-				final String warning = XmlManager.searchDomText(documentReturn, PATH_CHECK_WARNING_MOTIVO);
-				logger.warn(warning);
+				logger(documentReturn);
 			}
 		} catch (TransformerException e) {
 			e.printStackTrace();
@@ -338,5 +338,26 @@ public class XlnetCore {
 		}			
 
 		return result;
-	}	
+	}
+	
+	private static void logger(Document document) {
+		try {
+			final String warning = XmlManager.searchDomText(document, PATH_CHECK_WARNING_MOTIVO);
+
+			if (warning.length() > 0) {
+				logger.warn(warning);
+			} else {
+				final String errorCode = XmlManager.searchDomText(document, PATH_CHECK_ERROR_CODIGO);
+
+				if (errorCode.equals("E116")) {
+					logger.error(errorCode, "Puede que los ficheros que contienen los mensajes de error no estén presentes en la máquina o que los properties de n38 no estén correctamente formateados (deben de estar en una única línea).");
+				} else {
+					final String error = XmlManager.searchDomText(document, PATH_CHECK_ERROR_MOTIVO);
+					logger.error(errorCode, error);
+				}
+			}
+		} catch (TransformerException e) {
+			e.printStackTrace();
+		}
+	}
 }
