@@ -90,24 +90,6 @@ public class WebContextParameterManager implements ApplicationContextAware {
 		StaticsContainer.setWeblogicInstance(System.getProperty("weblogic.Name"));
 		logger.info("The WebLogic Instance Name is: " + StaticsContainer.getWeblogicInstance());
 
-		if (appProperties.getProperty("cookie.rootPath") != null
-				&& ((appProperties.getProperty("cookie.rootPath")).toLowerCase()).equals("true")) {
-			StaticsContainer.setCookiePathRoot(true);
-			logger.info("The cookie path is " + StaticsContainer.isCookiePathRoot());
-		}
-
-		if (appProperties.getProperty("cookie.secure") != null
-				&& ((appProperties.getProperty("cookie.secure")).toLowerCase()).equals("true")) {
-			StaticsContainer.setCookieSecure(true);
-			logger.info("The cookie secure value is " + StaticsContainer.isCookieSecure());
-		}
-
-		if (appProperties.getProperty("locale.allowInheritance") != null
-				&& ((appProperties.getProperty("locale.allowInheritance")).toLowerCase()).equals("true")) {
-			StaticsContainer.setInheritableLocalContext(true);
-			logger.info("The local context inheritance value is " + StaticsContainer.isInheritableLocalContext());
-		}
-
 		if (appProperties.getProperty("xhr.redirectOnError") != null
 				&& ((appProperties.getProperty("xhr.redirectOnError")).toLowerCase()).equals("true")) {
 			StaticsContainer.setXhrRedirectOnError(true);

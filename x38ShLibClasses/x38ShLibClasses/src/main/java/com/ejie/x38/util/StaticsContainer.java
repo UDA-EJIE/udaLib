@@ -38,9 +38,6 @@ public class StaticsContainer {
 	public static String weblogicInstance;
 	public static String layout;
 	public static String language;
-	public static boolean cookiePathRoot;
-	public static boolean cookieSecure;
-	public static boolean inheritableLocalContext;
 	public static boolean xhrRedirectOnError;
 	public static String xhrUnauthorizedPage;
 	public static boolean detailedError;
@@ -116,30 +113,6 @@ public class StaticsContainer {
 
 	public static void setLanguage(String language) {
 		StaticsContainer.language = language;
-	}
-
-	public static boolean isCookiePathRoot() {
-		return cookiePathRoot;
-	}
-
-	public static void setCookiePathRoot(boolean cookiePathRoot) {
-		StaticsContainer.cookiePathRoot = cookiePathRoot;
-	}
-
-	public static boolean isCookieSecure() {
-		return cookieSecure;
-	}
-
-	public static void setCookieSecure(boolean cookieSecure) {
-		StaticsContainer.cookieSecure = cookieSecure;
-	}
-
-	public static boolean isInheritableLocalContext() {
-		return inheritableLocalContext;
-	}
-
-	public static void setInheritableLocalContext(boolean inheritableLocalContext) {
-		StaticsContainer.inheritableLocalContext = inheritableLocalContext;
 	}
 
 	public static boolean isXhrRedirectOnError() {
