@@ -11,6 +11,8 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.ejie.x38.util.StaticsContainer;
+
 /**
  * 
  * Clase encargada del tratamiento por defecto de las excepciones propagadas por un Controller
@@ -59,13 +61,19 @@ public class MvcExceptionHandler {
 		//Non-AJAX request
 		ModelAndView modelAndView = new ModelAndView();
 		modelAndView.setViewName("error");
-		modelAndView.addObject("exception_name", exception.getClass().getName());
-		modelAndView.addObject("exception_message", exception.getMessage());
-		StringBuilder sbTrace = new StringBuilder();
-		for (StackTraceElement trace : exception.getStackTrace()) {
-			sbTrace.append(trace.toString()).append("</br>");
+
+		modelAndView.addObject("exception_name", StaticsContainer.isDetailedError() ? exception.getClass().getName() : StaticsContainer.getDetailedErrorMessageHidden());
+		modelAndView.addObject("exception_message", StaticsContainer.isDetailedError() ? exception.getMessage() : StaticsContainer.getDetailedErrorMessageHidden());
+		if (StaticsContainer.isDetailedError()) {
+			StringBuilder sbTrace = new StringBuilder();
+			for (StackTraceElement trace : exception.getStackTrace()) {
+				sbTrace.append(trace.toString()).append("</br>");
+			}
+			modelAndView.addObject("exception_trace", sbTrace);
+		} else {
+			modelAndView.addObject("exception_trace", StaticsContainer.getDetailedErrorMessageHidden());
 		}
-		modelAndView.addObject("exception_trace", sbTrace);
+
 		return modelAndView;
 	}
 	

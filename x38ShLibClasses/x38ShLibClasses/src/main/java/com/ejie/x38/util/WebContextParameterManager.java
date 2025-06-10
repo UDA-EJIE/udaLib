@@ -69,7 +69,7 @@ public class WebContextParameterManager implements ApplicationContextAware {
 		logger.info("Applications Model Package is: " + StaticsContainer.getModelPackageName() + ".model.");
 
 		StaticsContainer.setLoginUrl(appProperties.getProperty("xlnets.path"));
-		logger.info("The URL to access the security provider of the application (\"XLNets\") is: "
+		logger.info("The URL to access the security provider of the application (\"XLNetS\") is: "
 				+ StaticsContainer.getLoginUrl());
 
 		if (appProperties.getProperty("xlnets.inPortal") != null
@@ -95,22 +95,19 @@ public class WebContextParameterManager implements ApplicationContextAware {
 			logger.error("Error getting server instance", unknownHostException);
 		}
 
-		if (appProperties.getProperty("cookie.rootPath") != null
-				&& ((appProperties.getProperty("cookie.rootPath")).toLowerCase()).equals("true")) {
-			StaticsContainer.setCookiePathRoot(true);
-			logger.info("The cookie path is " + StaticsContainer.isCookiePathRoot());
+		if (appProperties.getProperty("xhr.redirectOnError") != null
+				&& ((appProperties.getProperty("xhr.redirectOnError")).toLowerCase()).equals("true")) {
+			StaticsContainer.setXhrRedirectOnError(true);
 		}
 
-		if (appProperties.getProperty("cookie.secure") != null
-				&& ((appProperties.getProperty("cookie.secure")).toLowerCase()).equals("true")) {
-			StaticsContainer.setCookieSecure(true);
-			logger.info("The cookie secure value is " + StaticsContainer.isCookieSecure());
+		if (appProperties.getProperty("xhr.unauthorizedPage") != null) {
+			StaticsContainer.setXhrUnauthorizedPage(appProperties.getProperty("xhr.unauthorizedPage"));
 		}
 
-		if (appProperties.getProperty("locale.allowInheritance") != null
-				&& ((appProperties.getProperty("locale.allowInheritance")).toLowerCase()).equals("true")) {
-			StaticsContainer.setInheritableLocalContext(true);
-			logger.info("The local context inheritance value is " + StaticsContainer.isInheritableLocalContext());
+		if (appProperties.getProperty("error.detailed") != null
+				&& ((appProperties.getProperty("error.detailed")).toLowerCase()).equals("true")) {
+			StaticsContainer.setDetailedError(true);
+			logger.info("Detailed information will be displayed in the error page.");
 		}
 	}
 

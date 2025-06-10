@@ -1,108 +1,71 @@
 package com.ejie.x38.rup.table.filter.model;
 
-public class Filter implements java.io.Serializable {
+import com.ejie.x38.generic.model.SelectGeneric;
+
+public class Filter extends SelectGeneric implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
-	private int filterId;
-	private String filterSelector;
-	private String filterUser;
-	private String filterName;
-	private boolean filterDefault;
-	private String filterValue;
-	private String filterFeedback;
+
+	private String selector;
+	private String user;
+	private boolean active;
+	private String feedback;
 
 	public Filter() {
 		super();
 	}
 
-	public Filter(String filterSelector, String filterUser, String filterName, boolean filterDefault, String filterValue, String filterFeedback) {
-		super();
-		this.filterSelector = filterSelector;
-		this.filterUser = filterUser;
-		this.filterName = filterName;
-		this.filterDefault = filterDefault;
-		this.filterValue = filterValue;
-		this.filterFeedback = filterFeedback;
+	public Filter(String id, String text, String data, String selector, String user, boolean active, String feedback) {
+		super(id, text, data, null, null);
+		this.selector = selector;
+		this.user = user;
+		this.active = active;
+		this.feedback = feedback;
 	}
 
-	public Filter(int filterId, String filterSelector, String filterUser, String filterName, boolean filterDefault, String filterValue, String filterFeedback) {
-		super();
-		this.filterId = filterId;
-		this.filterSelector = filterSelector;
-		this.filterUser = filterUser;
-		this.filterName = filterName;
-		this.filterDefault = filterDefault;
-		this.filterValue = filterValue;
-		this.filterFeedback = filterFeedback;
+	public String getSelector() {
+		return selector;
 	}
 
-	public int getFilterId() {
-		return filterId;
+	public void setSelector(String selector) {
+		this.selector = selector;
 	}
 
-	public void setFilterId(int pId) {
-		this.filterId = pId;
+	public String getUser() {
+		return user;
 	}
 
-	public String getFilterSelector() {
-		return filterSelector;
+	public void setUser(String user) {
+		this.user = user;
 	}
 
-	public void setFilterSelector(String pSelector) {
-		this.filterSelector = pSelector;
+	public boolean isActive() {
+		return active;
 	}
 
-	public String getFilterName() {
-		return filterName;
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
-	public void setFilterName(String pName) {
-		this.filterName = pName;
+	public String getFeedback() {
+		return feedback;
 	}
 
-	public boolean isFilterDefault() {
-		return filterDefault;
-	}
-
-	public void setFilterDefault(boolean pDefault) {
-		this.filterDefault = pDefault;
-	}
-
-	public String getFilterValue() {
-		return filterValue;
-	}
-
-	public void setFilterValue(String pValue) {
-		this.filterValue = pValue;
-	}
-
-	public String getFilterUser() {
-		return filterUser;
-	}
-
-	public void setFilterUser(String filterUser) {
-		this.filterUser = filterUser;
-	}
-
-	public String getFilterFeedback() {
-		return filterFeedback;
-	}
-
-	public void setFilterFeedback(String filterFeedback) {
-		this.filterFeedback = filterFeedback;
+	public void setFeedback(String feedback) {
+		this.feedback = feedback;
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();
 		result.append(this.getClass().getName()).append(" Object {");
-		result.append(" [ filterId: ").append(this.filterId).append(" ]");
-		result.append(" [ filterSelector: ").append(this.filterSelector).append(" ]");
-		result.append(" [ filterName: ").append(this.filterName).append(" ]");
-		result.append(" [ filterUser: ").append(this.filterUser).append(" ]");
-		result.append(" [ filterDefault: ").append(this.filterDefault).append(" ]");
-		result.append(" [ filterValue: ").append(this.filterValue).append(" ]");
+		result.append(" [ id: ").append(this.getId()).append(" ]");
+		result.append(" [ text: ").append(this.getText()).append(" ]");
+		result.append(" [ data: ").append(this.getData()).append(" ]");
+		result.append(" [ selector: ").append(this.selector).append(" ]");
+		result.append(" [ user: ").append(this.user).append(" ]");
+		result.append(" [ active: ").append(this.active).append(" ]");
+		result.append(" [ feedback: ").append(this.feedback).append(" ]");
 		result.append("}");
 		return result.toString();
 	}

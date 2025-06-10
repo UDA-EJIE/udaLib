@@ -17,7 +17,6 @@ package com.ejie.x38.dto;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -147,8 +146,9 @@ public class TableRequestDto implements java.io.Serializable {
 	}
 
 	//CLASES INTERNAS
-	
-	public class Core{
+	public static class Core implements java.io.Serializable {
+		private static final long serialVersionUID = 6159800242594290565L;
+		
 		private List<String> pkNames;
 		private String pkToken;
 
@@ -169,15 +169,17 @@ public class TableRequestDto implements java.io.Serializable {
 		}
 	}
 	
-	public class Multiselection {
+	public class Multiselection implements java.io.Serializable {
+		private static final long serialVersionUID = -289725895868612702L;
+		
 		private String accion;
 		private List<String> deselectedIds;
-		private List<String> deselectedRowsPerPage;
+		private List<PageDto> deselectedRowsPerPage;
 		private String lastSelectedId;
 		private Integer numSelected;
 		private Boolean selectedAll;
 		private List<String> selectedIds;
-		private List<String> selectedRowsPerPage;
+		private List<PageDto> selectedRowsPerPage;
 
 		private Class<? extends Object> clazz;
 
@@ -197,11 +199,11 @@ public class TableRequestDto implements java.io.Serializable {
 			this.deselectedIds = deselectedIds;
 		}
 
-		public List<String> getDeselectedRowsPerPage() {
+		public List<PageDto> getDeselectedRowsPerPage() {
 			return deselectedRowsPerPage;
 		}
 
-		public void setDeselectedRowsPerPage(List<String> deselectedRowsPerPage) {
+		public void setDeselectedRowsPerPage(List<PageDto> deselectedRowsPerPage) {
 			this.deselectedRowsPerPage = deselectedRowsPerPage;
 		}
 
@@ -240,11 +242,11 @@ public class TableRequestDto implements java.io.Serializable {
 			this.selectedIds = selectedIds;
 		}
 
-		public List<String> getSelectedRowsPerPage() {
+		public List<PageDto> getSelectedRowsPerPage() {
 			return selectedRowsPerPage;
 		}
 
-		public void setSelectedRowsPerPage(List<String> selectedRowsPerPage) {
+		public void setSelectedRowsPerPage(List<PageDto> selectedRowsPerPage) {
 			this.selectedRowsPerPage = selectedRowsPerPage;
 		}
 
@@ -286,7 +288,9 @@ public class TableRequestDto implements java.io.Serializable {
 		}
 	}
 	
-	public class Jerarquia {
+	public static class Jerarquia implements java.io.Serializable {
+		private static final long serialVersionUID = 6100719925408721192L;
+		
 		private String token = "/";		//Separador para los tooltips
 		private String tree;			//Nombre elementos expandidos/contraídos
 		private String parentId;		//Elemento sobre el que obtener hijos/descendientes

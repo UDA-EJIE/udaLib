@@ -239,10 +239,10 @@ public class PifServletHelper {
 		PifServletHelper.logger.trace("INI - getTokenAppDocument");
 		Document doc = null;
 			
-		PifServletHelper.logger.info(" logueandose en XLNets ...");
+		PifServletHelper.logger.info(" logueandose en XLNetS ...");
 
 		N38API n38api = new N38API(docAPISesionApp);
-		PifServletHelper.logger.info(webAppName + " logueada en XLNets.");
+		PifServletHelper.logger.info(webAppName + " logueada en XLNetS.");
 		
 		doc = n38api.n38ItemSesion();
 

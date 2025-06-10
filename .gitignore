@@ -2,3 +2,6 @@
 RemoteSystemsTempFiles/.project
 .idea/**
 *.iml
+
+# sonar
+.scannerwork

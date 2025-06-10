@@ -34,8 +34,6 @@ import com.ejie.x38.util.XmlManager;
 
 import n38c.exe.N38API;
 import n38i.exe.N38DocumentPrinter;
-import n38i.exe.N38Excepcion;
-import n38i.exe.N38ParameterException;
 
 /**
  * 
@@ -53,8 +51,12 @@ public class XlnetCore {
 	public static final String PATH_SUBTIPO_DNI = "/n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='dni']/valor";
 	public static final String PATH_SUBTIPO_N38PERSONAUID = "n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='n38personauid']/valor";
 	public static final String PATH_SUBTIPO_ORGANIZATIONALUNIT = "/n38/elementos/elemento[@subtipo='OrganizationalUnit']/parametro[@id='ou']/valor[text()='?']/../../elemento[@subtipo=\"n38itemSeguridad\"]/parametro[@id=\"n38uidobjseguridad\"]/valor";
+	public static final String PATH_SUBTIPO_VARIABLE = "/n38/elementos/elemento[@subtipo='N38Sesion']/parametro[@id='%s']/valor";
 	public static final String PATH_CHECK_ERROR = "/n38/error";
+	public static final String PATH_CHECK_ERROR_CODIGO = "/n38/error/@codigo";
+	public static final String PATH_CHECK_ERROR_MOTIVO = "/n38/error/motivo";
 	public static final String PATH_CHECK_WARNING = "/n38/warning";
+	public static final String PATH_CHECK_WARNING_MOTIVO = "/n38/warning/motivo";
 	public static final String FILTRO_LDAP_UID = "uid=";
 	public static final String PATH_PUESTOUID_SUBTIPO_SN = "/n38/elementos/elemento[@subtipo='n38persona']/parametro[@id='sn']/valor";
 	public static final String PATH_PUESTOUID_SUBTIPO_CN = "/n38/elementos/elemento[@subtipo='n38persona']/parametro[@id='cn']/valor";
@@ -66,8 +68,8 @@ public class XlnetCore {
 	 * Si la request es inválida se propaga una excepción.
 	 * 
 	 * @param httpRequest
-	 *            La request que lleva la validación XLNET.
-	 * @return Un objeto N38API con información sobre la sesión XLNET.
+	 *            La request que lleva la validación XLNetS.
+	 * @return Un objeto N38API con información sobre la sesión XLNetS.
 	 */
 	public static N38API getN38API(HttpServletRequest httpRequest) {
 		N38API n38apiRetorno = null;
@@ -94,22 +96,41 @@ public class XlnetCore {
 	
 	public static String getN38ItemSesion(N38API n38api, String parametro) {
 		if (n38api == null)
-			throw new IllegalArgumentException(
-					"getN38ItemSesion(): The N38API input parameter can't be NULL.");
-		
+			throw new IllegalArgumentException("getN38ItemSesion(): The N38API input parameter can't be NULL.");
+
+		String n38UidSesion = null;
 		try {
-			String[] n38UidSesion = n38api.n38ItemSesion(parametro);
-			if (n38UidSesion != null && n38UidSesion.length > 0) {
-				logger.trace("N38ItemSesion is: "+ n38UidSesion[0]);
-				return n38UidSesion[0];
+			Document documentReturn = getN38ItemSesion(n38api);
+			String[] items = XmlManager.searchDomStringArray(documentReturn, String.format(PATH_SUBTIPO_VARIABLE, parametro));
+			if (items.length == 0) {
+				logger(documentReturn);
+			} else {
+				n38UidSesion = items[0];
 			}
-		} catch (N38ParameterException e) {
-			logger.error(StackTraceManager.getStackTrace(e));
-		} catch (N38Excepcion e) {
-			logger.error("There is no XLNetS session or current has expired (error code {})", e.getCodigo());
+		} catch (TransformerException e) {
+			e.printStackTrace();
 		}
-		
-		return null;
+
+		return n38UidSesion;
+	}
+
+	public static String[] getN38ItemSesionArray(N38API n38api, String parametro) {
+		if (n38api == null)
+			throw new IllegalArgumentException("getN38ItemSesionArray(): The N38API input parameter can't be NULL.");
+
+		String[] n38UidSesion = null;
+		try {
+			Document documentReturn = getN38ItemSesion(n38api);
+			n38UidSesion = XmlManager.searchDomStringArray(documentReturn, String.format(PATH_SUBTIPO_VARIABLE, parametro));
+			if (n38UidSesion.length == 0) {
+				n38UidSesion = null;
+				logger(documentReturn);
+			}
+		} catch (TransformerException e) {
+			e.printStackTrace();
+		}
+
+		return n38UidSesion;
 	}
 
 	public static Document getN38ItemSeguridad(N38API n38api, String idItemSeguridad) {
@@ -272,25 +293,15 @@ public class XlnetCore {
 		return resultVector;
 	}
 	
-	public static String getParameterSession(N38API n38Api, String param){
-		String[] result = null;
-		
-		if (n38Api == null)
-			throw new IllegalArgumentException(
-					"getN38ItemSeguridad(): The N38API input parameter can't be NULL.");
-		
-		try {
-			result = n38Api.n38ItemSesion(param);
-		} catch (N38ParameterException e) {
-			logger.error(StackTraceManager.getStackTrace(e));
-		} catch (N38Excepcion e) {
-			logger.error(StackTraceManager.getStackTrace(e));
-		}	
-		if(result!=null && result.length>0){
-			return result[0];
-		}else{
-			return null;
-		}
+	/**
+	 * @deprecated As of 6.2.0, use {@link #getN38ItemSesion(N38API n38api, String parametro)} instead.
+	 */
+	@Deprecated(since="6.2.0", forRemoval=true)
+	public static String getParameterSession(N38API n38api, String parametro){
+		if (n38api == null)
+			throw new IllegalArgumentException("getParameterSession(): The N38API input parameter can't be NULL.");
+
+		return getN38ItemSesion(n38api, parametro);
 	}
 	
 	public static HashMap<String, String> getUserDataInfo(N38API n38Api){
@@ -327,5 +338,26 @@ public class XlnetCore {
 		}			
 
 		return result;
-	}	
+	}
+	
+	private static void logger(Document document) {
+		try {
+			final String warning = XmlManager.searchDomText(document, PATH_CHECK_WARNING_MOTIVO);
+
+			if (warning.length() > 0) {
+				logger.warn(warning);
+			} else {
+				final String errorCode = XmlManager.searchDomText(document, PATH_CHECK_ERROR_CODIGO);
+
+				if (errorCode.equals("E116")) {
+					logger.error(errorCode, "Puede que los ficheros que contienen los mensajes de error no estén presentes en la máquina o que los properties de n38 no estén correctamente formateados (deben de estar en una única línea).");
+				} else {
+					final String error = XmlManager.searchDomText(document, PATH_CHECK_ERROR_MOTIVO);
+					logger.error(errorCode, error);
+				}
+			}
+		} catch (TransformerException e) {
+			e.printStackTrace();
+		}
+	}
 }

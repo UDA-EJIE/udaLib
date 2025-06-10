@@ -95,7 +95,7 @@ public class PerimetralSecurityWrapperMockImpl implements
 				credentials = (Credentials)authentication.getCredentials();
 			}
 					
-			//If the sessionId changed, disable XLNET caching
+			//If the sessionId changed, disable XLNetS caching
 			if (credentials != null){
 				if(!(credentials.getUdaValidateSessionId().equals(udaMockSessionId.toString()))){
 					

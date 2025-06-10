@@ -15,6 +15,7 @@
 */
 package com.ejie.x38;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,9 +34,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web.util.UriUtils;
 
 import com.ejie.x38.serialization.ThreadSafeCache;
 import com.ejie.x38.util.StackTraceManager;
+import com.ejie.x38.util.StaticsContainer;
 import com.ejie.x38.util.ThreadStorageManager;
 import com.ejie.x38.util.WrappedRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -177,22 +180,27 @@ public class UdaFilter extends DelegatingFilterProxy {
 			try {
 				if (!response.isCommitted()) {
 					StringBuilder error = new StringBuilder(httpServletRequest.getContextPath());
-					error.append("/error?exception_name=").append(exception.getClass().getName());
-					error.append("&exception_message=").append(exception.getMessage());
+					error.append("/error?query_string_limit=").append(StaticsContainer.isDetailedError());
+					error.append("&exception_name=").append(StaticsContainer.isDetailedError() ? exception.getClass().getName() : StaticsContainer.getDetailedErrorMessageHidden());
+					error.append("&exception_message=").append(StaticsContainer.isDetailedError() ? exception.getMessage() : StaticsContainer.getDetailedErrorMessageHidden());
 					error.append("&exception_trace=");
-					int outLength = error.length();
+					if (StaticsContainer.isDetailedError()) {
+						int outLength = error.length();
 
-					for (StackTraceElement trace : exception.getStackTrace()) {
-						outLength = outLength + 5 + trace.toString().length();
-						// IE Query String limit
-						if (outLength <= 2043) {
-							error.append(trace.toString()).append("</br>");
-						} else {
-							break;
+						for (StackTraceElement trace : exception.getStackTrace()) {
+							outLength = outLength + 5 + trace.toString().length();
+							// Query string limit to avoid leaving server unresponsive
+							if (outLength <= 1250) {
+								error.append(trace.toString()).append("</br>");
+							} else {
+								break;
+							}
 						}
+					} else {
+						error.append(StaticsContainer.getDetailedErrorMessageHidden());
 					}
 
-					httpServletResponse.sendRedirect(error.toString());
+					httpServletResponse.sendRedirect(UriUtils.encodeQuery(error.toString(), StandardCharsets.UTF_8));
 				}
 			} catch (Exception exc) {
 				logger.error("Problem with sending of the response", exc);
