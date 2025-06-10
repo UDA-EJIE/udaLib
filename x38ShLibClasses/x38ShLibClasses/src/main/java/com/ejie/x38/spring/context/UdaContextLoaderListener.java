@@ -26,7 +26,7 @@ import org.springframework.web.context.ContextLoaderListener;
 /**
  * This class mirrors ContextLoaderListener from Spring 4 with BeanFactoryLocator mechanism enabled.
  * 
- * @since 6.0.0
+ * @since 6.3.0
  */
 public class UdaContextLoaderListener extends ContextLoaderListener {
 
