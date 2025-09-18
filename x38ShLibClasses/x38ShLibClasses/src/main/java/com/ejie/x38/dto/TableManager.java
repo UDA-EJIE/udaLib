@@ -684,14 +684,8 @@ public class TableManager implements java.io.Serializable{
 				// No se usa equalsIgnoreCase() para evitar problemas con algunos locales.
 				String fieldName = field.getName().toLowerCase();
 
-				// Intentar primero sin guiones bajos (caso más común).
-				if (cleanPkFieldName.toLowerCase().equals(fieldName)) {
-					object = new PropertyDescriptor(field.getName(), object.getClass()).getReadMethod().invoke(object);
-					pkOk = Boolean.TRUE;
-					break;
-				}
-				// Si no coincide, intentar con el nombre original.
-				else if (originalPkFieldName.toLowerCase().equals(fieldName)) {
+				// Intentar primero sin guiones bajos (caso más común), si no coincide, intentar con el nombre original.
+				if (cleanPkFieldName.toLowerCase().equals(fieldName) || originalPkFieldName.toLowerCase().equals(fieldName)) {
 					object = new PropertyDescriptor(field.getName(), object.getClass()).getReadMethod().invoke(object);
 					pkOk = Boolean.TRUE;
 					break;
