@@ -533,13 +533,22 @@ public class TableManager implements java.io.Serializable{
 		Object object = selectedBean;
 		
 		for (int j = 0; j < pkFieldNames.length; j++) {
-			String pkFieldName = pkFieldNames[j];
+			String originalPkFieldName = pkFieldNames[j];
+			String cleanPkFieldName = originalPkFieldName.replaceAll("_", "");
 			boolean pkOk = Boolean.FALSE;
 			
 			for (Field field : fields) {
 				// No se usa equalsIgnoreCase() para evitar problemas con algunos locales.
-				if (pkFieldName.toLowerCase().equals(field.getName().toLowerCase())) {
-					
+				String fieldName = field.getName().toLowerCase();
+
+				// Intentar primero sin guiones bajos (caso más común).
+				if (cleanPkFieldName.toLowerCase().equals(fieldName)) {
+					object = new PropertyDescriptor(field.getName(), object.getClass()).getReadMethod().invoke(object);
+					pkOk = Boolean.TRUE;
+					break;
+				}
+				// Si no coincide, intentar con el nombre original.
+				else if (originalPkFieldName.toLowerCase().equals(fieldName)) {
 					object = new PropertyDescriptor(field.getName(), object.getClass()).getReadMethod().invoke(object);
 					pkOk = Boolean.TRUE;
 					break;
