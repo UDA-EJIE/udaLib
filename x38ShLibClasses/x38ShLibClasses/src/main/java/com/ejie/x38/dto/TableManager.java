@@ -20,8 +20,10 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -40,6 +42,10 @@ public class TableManager implements java.io.Serializable{
 	private static final long serialVersionUID = 2127819481595995328L;
 
 	private static final Logger logger = LoggerFactory.getLogger(TableManager.class);
+
+	// Caches para optimización de rendimiento en introspección.
+	private static final Map<Class<?>, Map<String, Field>> FIELD_CACHE = new ConcurrentHashMap<>();
+	private static final Map<String, PropertyDescriptor> PROPERTY_DESCRIPTOR_CACHE = new ConcurrentHashMap<>();
 
 	/**
 	 * PAGINACIÃ“N
@@ -516,46 +522,255 @@ public class TableManager implements java.io.Serializable{
 	}
 	
 	/**
-	 * Gets the campo by introspection.
-	 * @param <T>
+	 * Obtiene el valor de un campo específico de un objeto mediante introspección,
+	 * navegando por propiedades anidadas si es necesario.
 	 *
-	 * @return the campo by introspection
-	 * @throws IntrospectionException 
-	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
-	 * @throws IllegalAccessException 
+	 * <p>Este método utiliza introspección para acceder a campos de un objeto, soportando
+	 * navegación por propiedades anidadas mediante notación de puntos (ej: "usuario.direccion.calle").
+	 * Incluye lógica de matching flexible que intenta coincidir nombres de campos tanto
+	 * con guiones bajos como sin ellos para mayor compatibilidad.</p>
+	 *
+	 * <p><strong>Características:</strong></p>
+	 * <ul>
+	 *   <li>Soporte para propiedades anidadas usando notación de puntos</li>
+	 *   <li>Matching flexible: intenta nombres con y sin guiones bajos</li>
+	 *   <li>Cache interno de PropertyDescriptors para mejor rendimiento</li>
+	 *   <li>Comparación case-insensitive de nombres de campos</li>
+	 * </ul>
+	 *
+	 * <p><strong>Ejemplos de uso:</strong></p>
+	 * <pre>
+	 * // Campo simple
+	 * Object nombre = getCampoByIntrospection(Usuario.class, usuario, "nombre");
+	 *
+	 * // Campo anidado
+	 * Object calle = getCampoByIntrospection(Usuario.class, usuario, "direccion.calle");
+	 *
+	 * // Campo con guiones bajos (busca "user_name" y "username")
+	 * Object userName = getCampoByIntrospection(Usuario.class, usuario, "user_name");
+	 * </pre>
+	 *
+	 * @param <T> el tipo de la clase del objeto
+	 * @param clazz la clase del objeto sobre el que realizar la introspección
+	 * @param selectedBean el objeto del cual extraer el valor del campo
+	 * @param pk la clave del campo a obtener, soporta notación de puntos para campos anidados
+	 *           (ej: "campo", "objeto.campo", "objeto.subObjeto.campo")
+	 *
+	 * @return el valor del campo especificado, puede ser de cualquier tipo según el campo accedido
+	 *
+	 * @throws IllegalAccessException si no se puede acceder al método getter del campo
+	 * @throws IllegalArgumentException si los argumentos proporcionados no son válidos
+	 * @throws InvocationTargetException si ocurre una excepción al invocar el método getter
+	 * @throws IntrospectionException si la clave especificada no corresponde con ningún campo
+	 *                                en la clase o si hay problemas creando el PropertyDescriptor
+	 * @throws IllegalStateException si hay problemas internos creando PropertyDescriptors para el cache
+	 *
+	 * @see PropertyDescriptor
+	 * @see java.beans.Introspector
 	 */
-	private static <T> Object getCampoByIntrospection(Class<T> clazz, T selectedBean, String pk) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IntrospectionException {
+	private static <T> Object getCampoByIntrospection(Class<T> clazz, T selectedBean, String pk)
+			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IntrospectionException {
 		
-		// Guardamos los campos declarados en la entidad.
-		Field[] fields = clazz.getDeclaredFields();
-		final String[] pkFieldNames = pk.split("\\.", -1);
-		Object object = selectedBean;
+		logger.debug("Starting introspection for class {} with pk {}", clazz.getName(), pk);
 		
-		for (int j = 0; j < pkFieldNames.length; j++) {
-			String originalPkFieldName = pkFieldNames[j];
-			String cleanPkFieldName = originalPkFieldName.replaceAll("_", "");
-			boolean pkOk = Boolean.FALSE;
-			
-			for (Field field : fields) {
-				// No se usa equalsIgnoreCase() para evitar problemas con algunos locales.
-				String fieldName = field.getName().toLowerCase();
-
-				// Intentar primero sin guiones bajos (caso más común), si no coincide, intentar con el nombre original.
-				if (cleanPkFieldName.toLowerCase().equals(fieldName) || originalPkFieldName.toLowerCase().equals(fieldName)) {
-					object = new PropertyDescriptor(field.getName(), object.getClass()).getReadMethod().invoke(object);
-					pkOk = Boolean.TRUE;
-					break;
-				}
-			}
-			
-			if(pkOk) {
-				fields = object.getClass().getDeclaredFields();
-			} else {
-				throw new IntrospectionException("La clave especificada \"" + pk + "\", no tiene su correspondencia en la clase \"" + clazz +"\". "); 
-			}
+		// Validaciones previas.
+		if (selectedBean == null) throw new IllegalArgumentException("selectedBean cannot be null");
+		if (pk == null) throw new IllegalArgumentException("pk cannot be null");
+		
+		var trimmedPk = pk.trim();
+		if (trimmedPk.isEmpty()) throw new IllegalArgumentException("pk cannot be empty");
+		if (trimmedPk.startsWith(".") || trimmedPk.endsWith(".") || trimmedPk.contains("..")) {
+			throw new IllegalArgumentException(
+				String.format("pk has invalid format: '%s'. Cannot start/end with dot or contain consecutive dots.", pk));
 		}
 		
-		return object;
+		var pkFieldNames = trimmedPk.split("\\.", 0);
+		Object currentObject = selectedBean;
+		Class<?> currentClass = clazz;
+		
+		// Navegación con caché.
+		for (var pkFieldName : pkFieldNames) {
+			logger.trace("Searching field {} in class {}", pkFieldName, currentClass.getName());
+			var classFields = FIELD_CACHE.computeIfAbsent(currentClass, TableManager::buildFieldMap);
+			var field = findFieldInMap(classFields, pkFieldName);
+			
+			if (field == null) {
+				logger.warn("Field {} not found in class {}", pkFieldName, currentClass.getName());
+				throw new IntrospectionException(
+					String.format("The specified key \"%s\" has no correspondence in class \"%s\".", 
+								trimmedPk, currentClass.getName()));
+			}
+			logger.trace("Field found: {} -> {}", pkFieldName, field.getName());
+			
+			// Capturar variables antes de la lambda.
+			var finalCurrentClass = currentClass;
+			var finalFieldName = field.getName();
+			var cacheKey = finalCurrentClass.getName() + "." + finalFieldName;
+			
+			var descriptor = PROPERTY_DESCRIPTOR_CACHE.computeIfAbsent(cacheKey, descriptorKey -> {
+				try {
+					return new PropertyDescriptor(finalFieldName, finalCurrentClass);
+				} catch (IntrospectionException e) {
+					throw new IllegalStateException(
+						String.format("Error creating PropertyDescriptor for %s", descriptorKey), e);
+				}
+			});
+			
+			currentObject = descriptor.getReadMethod().invoke(currentObject);
+			if (currentObject == null) {
+				logger.trace("Null value found in field {}, ending navigation", pkFieldName);
+				return null;
+			}
+			
+			currentClass = currentObject.getClass();
+		}
+		
+		logger.debug("Introspection completed successfully for class {} with pk {}", clazz.getName(), pk);
+		return currentObject;
+	}
+
+	/**
+	 * Construye un mapa de campos para una clase, incluyendo herencia.
+	 * 
+	 * <p>Este método recorre la jerarquía de herencia de la clase proporcionada,
+	 * recolectando todos los campos declarados y creando un mapa indexado por
+	 * el nombre del campo en minúsculas para facilitar búsquedas case-insensitive.</p>
+	 * 
+	 * <p>Los campos de las subclases tienen prioridad sobre los de las superclases
+	 * en caso de nombres duplicados (usando putIfAbsent).</p>
+	 * 
+	 * @param clazz la clase de la cual construir el mapa de campos
+	 * @return mapa con los campos indexados por nombre en minúsculas
+	 */
+	private static Map<String, Field> buildFieldMap(Class<?> clazz) {
+		logger.debug("Building field map for class {}", clazz.getName());
+		
+		var fieldMap = new HashMap<String, Field>();
+		var fieldCount = 0;
+		
+		var currentClass = clazz;
+		while (currentClass != null && currentClass != Object.class) {
+			var classFields = currentClass.getDeclaredFields();
+			logger.trace("Processing {} fields from class {}", classFields.length, currentClass.getName());
+			
+			for (Field field : classFields) {
+				var fieldKey = field.getName().toLowerCase();
+				if (fieldMap.putIfAbsent(fieldKey, field) == null) {
+					fieldCount++;
+				}
+			}
+			currentClass = currentClass.getSuperclass();
+		}
+		
+		logger.debug("Field map built for {}. {} total fields", clazz.getName(), fieldCount);
+		return fieldMap;
+	}
+
+	/**
+	 * Busca un campo en el mapa probando diferentes variantes del nombre.
+	 * 
+	 * <p>Implementa la lógica de matching flexible que intenta encontrar campos
+	 * tanto con el nombre original como con una versión "limpia" sin guiones bajos.
+	 * Esto proporciona compatibilidad con diferentes convenciones de nomenclatura.</p>
+	 * 
+	 * <p>Orden de búsqueda:</p>
+	 * <ol>
+	 *   <li>Nombre sin guiones bajos (ej: "username" para "user_name")</li>
+	 *   <li>Nombre original (ej: "user_name")</li>
+	 * </ol>
+	 * 
+	 * @param classFields mapa de campos de la clase indexado por nombre en minúsculas
+	 * @param fieldName nombre del campo a buscar (puede contener guiones bajos)
+	 * @return el campo encontrado o null si no existe ninguna variante
+	 */
+	private static Field findFieldInMap(Map<String, Field> classFields, String fieldName) {
+		var originalName = fieldName.toLowerCase();
+		var cleanName = fieldName.replace("_", "").toLowerCase();
+		
+		// Intentar primero sin guiones bajos (caso más común en Java).
+		var field = classFields.get(cleanName);
+		
+		// Si no se encuentra, intentar con el nombre original.
+		return field != null ? field : classFields.get(originalName);
+	}
+
+	/**
+	 * Limpia los cachés de introspección para liberar memoria.
+	 * 
+	 * <p>Los cachés se reconstruirán automáticamente en las siguientes llamadas.
+	 * Útil en aplicaciones de larga duración, después de hot-reload de clases,
+	 * entre tests unitarios, o cuando se necesita liberar memoria.</p>
+	 * 
+	 * <p><strong>Ejemplos de uso:</strong></p>
+	 * <pre>
+	 * // Limpieza básica
+	 * String resultado = TableManager.clearIntrospectionCaches();
+	 * 
+	 * // En endpoint de administración
+	 * {@code @PostMapping("/admin/clear-cache")}
+	 * public String clearCache() {
+	 *     return TableManager.clearIntrospectionCaches();
+	 * }
+	 * 
+	 * // Limpieza automática cada hora
+	 * {@code @Scheduled(fixedRate = 3600000)}
+	 * public void limpiezaPeriodicaCaches() {
+	 *     TableManager.clearIntrospectionCaches();
+	 * }
+	 * 
+	 * // En tests unitarios
+	 * {@code @AfterEach}
+	 * void limpiarCaches() {
+	 *     TableManager.clearIntrospectionCaches();
+	 * }
+	 * </pre>
+	 * 
+	 * @return estadísticas de limpieza para logging/monitoreo
+	 * @see #getCacheStats()
+	 */
+	public static String clearIntrospectionCaches() {
+		var fieldCacheSize = FIELD_CACHE.size();
+		var descriptorCacheSize = PROPERTY_DESCRIPTOR_CACHE.size();
+		
+		FIELD_CACHE.clear();
+		PROPERTY_DESCRIPTOR_CACHE.clear();
+		
+		var stats = String.format("Caches cleared - Fields: %d classes, PropertyDescriptors: %d entries", 
+								fieldCacheSize, descriptorCacheSize);
+		
+		logger.info("{}", stats);
+		return stats;
+	}
+
+	/**
+	 * Obtiene estadísticas actuales de los cachés sin modificarlos.
+	 * 
+	 * <p>Proporciona información sobre el estado actual de los cachés para
+	 * monitoreo, debugging y decisiones sobre limpieza de memoria.</p>
+	 * 
+	 * <p><strong>Ejemplos de uso:</strong></p>
+	 * <pre>
+	 * // Consulta básica
+	 * String stats = TableManager.getCacheStats();
+	 * 
+	 * // En endpoint de administración
+	 * {@code @GetMapping("/admin/cache-stats")}
+	 * public String getCacheStatus() {
+	 *     return TableManager.getCacheStats();
+	 * }
+	 * 
+	 * // Logging periódico
+	 * {@code @Scheduled(fixedRate = 300000)}
+	 * public void logCacheStats() {
+	 *     logger.info("Estado cachés: {}", TableManager.getCacheStats());
+	 * }
+	 * </pre>
+	 * 
+	 * @return información sobre el tamaño actual de los cachés
+	 * @see #clearIntrospectionCaches()
+	 */
+	public static String getCacheStats() {
+		return String.format("Current caches - Fields: %d classes, PropertyDescriptors: %d entries", 
+				FIELD_CACHE.size(), PROPERTY_DESCRIPTOR_CACHE.size());
 	}
 }
