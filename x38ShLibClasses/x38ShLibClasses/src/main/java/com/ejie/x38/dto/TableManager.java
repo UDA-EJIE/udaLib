@@ -382,9 +382,9 @@ public class TableManager implements java.io.Serializable{
 				String[] arrSord = pagination.getSord().split(",");
 				
 				for (int i = 0; i < arrSidx.length ; i++) {
-					reorderQuery.append(arrSidx);
+					reorderQuery.append(arrSidx[i]);
 					reorderQuery.append(" ");
-					reorderQuery.append(arrSord);
+					reorderQuery.append(arrSord[i]);
 					if(i < arrSidx.length -1) {
 						reorderQuery.append(",");
 					}
