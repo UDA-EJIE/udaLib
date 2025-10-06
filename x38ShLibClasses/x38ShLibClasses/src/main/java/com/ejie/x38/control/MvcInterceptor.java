@@ -400,13 +400,13 @@ public class MvcInterceptor implements HandlerInterceptor {
 	}
 
 	/**
-	 * Parse the given locale value as coming from a request parameter.
+	 * Procesa el valor del locale proveniente de un parámetro de petición.
 	 * <p>
-	 * The default implementation calls {@link StringUtils#parseLocale(String)},
-	 * accepting the {@link Locale#toString} format as well as BCP 47 language tags.
+	 * La implementación por defecto utiliza {@link StringUtils#parseLocale(String)},
+	 * aceptando el formato {@link Locale#toString} así como etiquetas de idioma BCP 47.
 	 * 
-	 * @param localeValue the locale value to parse
-	 * @return the corresponding {@code Locale} instance
+	 * @param localeValue el valor del locale a procesar
+	 * @return la instancia {@code Locale} correspondiente
 	 */
 	@Nullable
 	protected Locale parseLocaleValue(String localeValue) {
