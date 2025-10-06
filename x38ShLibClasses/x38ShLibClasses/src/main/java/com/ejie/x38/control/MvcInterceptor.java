@@ -106,7 +106,8 @@ public class MvcInterceptor implements HandlerInterceptor {
 	 * Gestiona el establecimiento del locale (idioma) de la aplicación basándose en:
 	 * <ol>
 	 *   <li>Cookie del portal (prioridad máxima)</li>
-	 *   <li>Parámetro de la petición HTTP</li>
+	 *   <li>Parámetro de la petición HTTP (elección explícita del usuario)</li>
+	 *   <li>Cookie n38Idioma de XLNetS (configuración del sistema de seguridad)</li>
 	 *   <li>Idioma actual en sesión o por defecto</li>
 	 * </ol>
 	 * 
@@ -137,15 +138,13 @@ public class MvcInterceptor implements HandlerInterceptor {
 
 	/**
 	 * Resuelve el idioma objetivo basándose en la cookie del portal, parámetro de
-	 * cambio de idioma o el idioma actual en uso.
-	 * <p>
-	 * La cookie del portal <strong>SIEMPRE</strong> tiene prioridad absoluta sobre
-	 * cualquier otro método de establecimiento de idioma.
+	 * cambio de idioma, cookie n38Idioma de XLNetS o el idioma actual en uso.
 	 * <p>
 	 * Orden de prioridades:
 	 * <ol>
 	 *   <li>Cookie del portal - prevalece sobre todo</li>
-	 *   <li>Parámetro de petición - solo si no hay cookie del portal</li>
+	 *   <li>Parámetro de petición - elección explícita del usuario</li>
+	 *   <li>Cookie n38Idioma de XLNetS - configuración del sistema de seguridad</li>
 	 *   <li>Locale actual o por defecto - como último recurso</li>
 	 * </ol>
 	 * 
@@ -155,54 +154,64 @@ public class MvcInterceptor implements HandlerInterceptor {
 	 */
 	private Locale resolveTargetLocale(HttpServletRequest request, Locale currentLocale) {
 		// Prioridad 1: cookie del portal (SIEMPRE prevalece).
-		Locale portalLocale = extractPortalLocale(request);
+		Locale portalLocale = extractCookieLocale(request, portalCookie, this::parsePortalCookie);
 		if (portalLocale != null) {
 			logger.debug("Using portal cookie locale: {}", portalLocale);
 			return portalLocale;
 		}
 
-		// Solo si NO hay cookie del portal, considerar otros métodos.
-		Locale defaultLocale = currentLocale.getLanguage().isEmpty() ? new Locale(defaultLanguage) : currentLocale;
-
-		// Prioridad 2: parámetro de petición (solo si no hay cookie del portal).
+		// Prioridad 2: parámetro de petición (elección explícita del usuario).
 		Locale parameterLocale = extractParameterLocale(request);
 		if (parameterLocale != null) {
-			logger.debug("Using parameter locale: {}", parameterLocale);
+			logger.debug("Using user parameter locale: {}", parameterLocale);
 			return parameterLocale;
 		}
 
-		// Prioridad 3: idioma actual o por defecto.
+		// Prioridad 3: cookie n38Idioma de XLNetS (configuración del sistema de seguridad).
+		Locale xlnetsLocale = extractCookieLocale(request, "n38Idioma", this::parseXLNetSCookie);
+		if (xlnetsLocale != null) {
+			logger.debug("Using XLNetS n38Idioma cookie locale: {}", xlnetsLocale);
+			return xlnetsLocale;
+		}
+
+		// Prioridad 4: idioma actual o por defecto.
+		Locale defaultLocale = currentLocale.getLanguage().isEmpty() ? new Locale(defaultLanguage) : currentLocale;
 		logger.debug("Using current/default locale: {}", defaultLocale);
 		return defaultLocale;
 	}
 
 	/**
-	 * Extrae el idioma desde la cookie del portal si está presente y es válida.
+	 * Extrae el idioma desde una cookie específica utilizando un procesador personalizado.
 	 * <p>
-	 * Busca específicamente la cookie configurada en {@link #portalCookie} entre
-	 * todas las cookies de la petición, sin importar su posición.
+	 * Método genérico que busca una cookie por nombre y aplica la lógica de procesamiento
+	 * correspondiente para extraer el locale.
 	 * 
 	 * @param request la petición HTTP que puede contener cookies
-	 * @return el locale extraído de la cookie del portal, o {@code null} si:
+	 * @param cookieName el nombre de la cookie a buscar, puede ser {@code null}
+	 * @param cookieProcessor función que procesa el valor de la cookie encontrada
+	 * @return el locale extraído de la cookie, o {@code null} si:
 	 *         <ul>
-	 *           <li>No está configurada la cookie del portal</li>
+	 *           <li>El nombre de la cookie es {@code null}</li>
 	 *           <li>No hay cookies en la petición</li>
 	 *           <li>No se encuentra la cookie específica</li>
-	 *           <li>El valor de la cookie no es válido</li>
+	 *           <li>El procesador devuelve {@code null}</li>
 	 *         </ul>
 	 */
-	private Locale extractPortalLocale(HttpServletRequest request) {
-		if (portalCookie == null)
+	private Locale extractCookieLocale(HttpServletRequest request, String cookieName, 
+									   java.util.function.Function<Cookie, Locale> cookieProcessor) {
+		if (cookieName == null) {
 			return null;
+		}
 
 		Cookie[] cookies = request.getCookies();
-		if (cookies == null)
+		if (cookies == null) {
 			return null;
+		}
 
 		return Arrays.stream(cookies)
-				.filter(cookie -> portalCookie.equals(cookie.getName()))
+				.filter(cookie -> cookieName.equals(cookie.getName()))
 				.findFirst()
-				.map(this::parsePortalCookie)
+				.map(cookieProcessor)
 				.orElse(null);
 	}
 
@@ -261,7 +270,7 @@ public class MvcInterceptor implements HandlerInterceptor {
 	 *   <li>El parámetro esté presente en la petición</li>
 	 *   <li>El método HTTP sea válido (según configuración)</li>
 	 *   <li>El idioma solicitado esté en la lista de idiomas disponibles</li>
-	 *   <li>El valor del parámetro se pueda parsear correctamente</li>
+	 *   <li>El valor del parámetro se pueda procesar correctamente</li>
 	 * </ul>
 	 * 
 	 * @param request la petición HTTP que puede contener el parámetro de idioma
@@ -270,7 +279,7 @@ public class MvcInterceptor implements HandlerInterceptor {
 	 *           <li>No hay parámetro de idioma en la petición</li>
 	 *           <li>El método HTTP no está permitido</li>
 	 *           <li>El idioma no está en la lista de disponibles</li>
-	 *           <li>El parsing del valor falla</li>
+	 *           <li>El procesamiento del valor falla</li>
 	 *         </ul>
 	 * @see #getParamName()
 	 * @see #checkHttpMethod(String)
@@ -290,6 +299,59 @@ public class MvcInterceptor implements HandlerInterceptor {
 			logger.warn("parseLocaleValue returned null for: {}", localeParam);
 		}
 		return parsed;
+	}
+
+	/**
+	 * Procesa el valor de la cookie n38Idioma de XLNetS para extraer y mapear el código de idioma.
+	 * <p>
+	 * Realiza el mapeo de valores específicos de XLNetS a códigos de idioma estándar:
+	 * <ul>
+	 *   <li><strong>Eusk</strong> → {@code "eu"} (euskera)</li>
+	 *   <li><strong>Cast</strong> → {@code "es"} (castellano)</li>
+	 * </ul>
+	 * <p>
+	 * El idioma mapeado se valida contra la lista de idiomas disponibles configurada
+	 * en {@link #availableLangs}.
+	 * 
+	 * @param cookie la cookie n38Idioma a procesar, no debe ser {@code null}
+	 * @return el locale correspondiente al idioma mapeado, o {@code null} si:
+	 *         <ul>
+	 *           <li>El valor de la cookie está vacío o es {@code null}</li>
+	 *           <li>El valor no coincide con "Eusk" ni "Cast"</li>
+	 *           <li>El idioma mapeado no está en la lista de idiomas disponibles</li>
+	 *         </ul>
+	 */
+	private Locale parseXLNetSCookie(Cookie cookie) {
+		String cookieValue = cookie.getValue();
+		logger.debug("Processing XLNetS n38Idioma cookie value: {}", cookieValue);
+
+		if (cookieValue == null || cookieValue.isEmpty()) {
+			logger.debug("XLNetS cookie value is null or empty");
+			return null;
+		}
+
+		// Mapear valores de XLNetS a códigos de idioma estándar directamente
+		String language = null;
+		String trimmedValue = cookieValue.trim();
+		
+		switch (trimmedValue) {
+			case "Eusk":
+				language = "eu";
+				break;
+			case "Cast":
+				language = "es";
+				break;
+			default:
+				logger.debug("Unknown XLNetS language value: {}", cookieValue);
+				return null;
+		}
+
+		// Validar que el idioma mapeado esté disponible
+		boolean isValidLanguage = availableLangs.contains(language);
+		logger.debug("Mapped XLNetS '{}' to '{}', is valid? {} (available: {})", 
+					 cookieValue, language, isValidLanguage, availableLangs);
+
+		return isValidLanguage ? new Locale(language) : null;
 	}
 
 	private boolean checkHttpMethod(String currentMethod) {
