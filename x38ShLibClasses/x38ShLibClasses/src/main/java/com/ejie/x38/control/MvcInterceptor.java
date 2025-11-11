@@ -65,6 +65,7 @@ public class MvcInterceptor implements HandlerInterceptor {
 	private String defaultLayout;
 	private String availableLangs;
 	private String portalCookie;
+	private String xlnetsCookie;
 
 	// Constructor con inyección de dependencias.
 	public MvcInterceptor(WebApplicationContext webApplicationContext) {
@@ -105,10 +106,10 @@ public class MvcInterceptor implements HandlerInterceptor {
 	 * <p>
 	 * Gestiona el establecimiento del locale (idioma) de la aplicación basándose en:
 	 * <ol>
-	 *   <li>Cookie del portal (prioridad máxima)</li>
+	 *   <li>Cookie del portal (si está configurada, tiene prioridad máxima)</li>
 	 *   <li>Parámetro de la petición HTTP (elección explícita del usuario)</li>
 	 *   <li>Idioma actual en sesión (si fue establecido previamente por el usuario)</li>
-	 *   <li>Cookie n38Idioma de XLNetS (solo como valor inicial)</li>
+	 *   <li>Cookie n38Idioma de XLNetS (si está configurada, solo como valor inicial)</li>
 	 *   <li>Idioma por defecto</li>
 	 * </ol>
 	 * 
@@ -142,10 +143,11 @@ public class MvcInterceptor implements HandlerInterceptor {
 	 * <p>
 	 * <strong>Orden de prioridades:</strong>
 	 * <ol>
-	 *   <li><strong>Cookie del portal</strong> - Prevalece sobre todo</li>
+	 *   <li><strong>Cookie del portal</strong> - Prevalece sobre todo (si está configurada mediante {@link #setPortalCookie(String)})</li>
 	 *   <li><strong>Parámetro de petición</strong> - Elección explícita del usuario, persiste en sesión</li>
 	 *   <li><strong>Idioma en sesión</strong> - Preferencia del usuario establecida previamente</li>
-	 *   <li><strong>Cookie n38Idioma de XLNetS</strong> - Solo se usa como valor inicial si no hay preferencia del usuario</li>
+	 *   <li><strong>Cookie n38Idioma de XLNetS</strong> - Solo se usa como valor inicial si no hay preferencia del usuario 
+	 *       (si está configurada mediante {@link #setXlnetsCookie(String)})</li>
 	 *   <li><strong>Idioma por defecto</strong> - Último recurso</li>
 	 * </ol>
 	 * <p>
@@ -159,7 +161,7 @@ public class MvcInterceptor implements HandlerInterceptor {
 	 * @return el locale que debe establecerse, nunca {@code null}
 	 */
 	private Locale resolveTargetLocale(HttpServletRequest request, Locale currentLocale) {
-		// Prioridad 1: cookie del portal (SIEMPRE prevalece).
+		// Prioridad 1: cookie del portal (SIEMPRE prevalece, si está configurada).
 		Locale portalLocale = extractCookieLocale(request, portalCookie, this::parsePortalCookie);
 		if (portalLocale != null) {
 			logger.debug("Using portal cookie locale: {}", portalLocale);
@@ -183,9 +185,9 @@ public class MvcInterceptor implements HandlerInterceptor {
 			return currentLocale;
 		}
 
-		// Prioridad 4: cookie n38Idioma de XLNetS (solo como valor inicial).
+		// Prioridad 4: cookie n38Idioma de XLNetS (solo como valor inicial, si está configurada).
 		// Solo se usa si el usuario no tiene ninguna preferencia establecida en sesión.
-		Locale xlnetsLocale = extractCookieLocale(request, "n38Idioma", this::parseXLNetSCookie);
+		Locale xlnetsLocale = extractCookieLocale(request, xlnetsCookie, this::parseXLNetSCookie);
 		if (xlnetsLocale != null) {
 			logger.debug("Using XLNetS n38Idioma cookie locale as initial value: {}", xlnetsLocale);
 			return xlnetsLocale;
@@ -470,6 +472,31 @@ public class MvcInterceptor implements HandlerInterceptor {
 
 	public void setPortalCookie(String portalCookie) {
 		this.portalCookie = portalCookie;
+	}
+
+	/**
+	 * Establece el nombre de la cookie de XLNetS para detección automática de idioma.
+	 * <p>
+	 * Si se configura (típicamente como "n38Idioma"), el interceptor intentará detectar
+	 * el idioma desde esta cookie del sistema de seguridad XLNetS. La cookie solo se
+	 * utiliza como valor inicial cuando el usuario no ha establecido una preferencia
+	 * explícita mediante parámetros.
+	 * <p>
+	 * Si se establece a {@code null}, la detección desde XLNetS se desactiva.
+	 * 
+	 * @param xlnetsCookie el nombre de la cookie de XLNetS, o {@code null} para desactivar
+	 */
+	public void setXlnetsCookie(String xlnetsCookie) {
+		this.xlnetsCookie = xlnetsCookie;
+	}
+
+	/**
+	 * Obtiene el nombre de la cookie de XLNetS configurada.
+	 * 
+	 * @return el nombre de la cookie de XLNetS, o {@code null} si no está configurada
+	 */
+	public String getXlnetsCookie() {
+		return xlnetsCookie;
 	}
 
 	/**
