@@ -107,8 +107,9 @@ public class MvcInterceptor implements HandlerInterceptor {
 	 * <ol>
 	 *   <li>Cookie del portal (prioridad máxima)</li>
 	 *   <li>Parámetro de la petición HTTP (elección explícita del usuario)</li>
-	 *   <li>Cookie n38Idioma de XLNetS (configuración del sistema de seguridad)</li>
-	 *   <li>Idioma actual en sesión o por defecto</li>
+	 *   <li>Idioma actual en sesión (si fue establecido previamente por el usuario)</li>
+	 *   <li>Cookie n38Idioma de XLNetS (solo como valor inicial)</li>
+	 *   <li>Idioma por defecto</li>
 	 * </ol>
 	 * 
 	 * @param request la petición HTTP actual
@@ -137,16 +138,21 @@ public class MvcInterceptor implements HandlerInterceptor {
 	}
 
 	/**
-	 * Resuelve el idioma objetivo basándose en la cookie del portal, parámetro de
-	 * cambio de idioma, cookie n38Idioma de XLNetS o el idioma actual en uso.
+	 * Resuelve el idioma objetivo basándose en múltiples fuentes con el siguiente orden de prioridades.
 	 * <p>
-	 * Orden de prioridades:
+	 * <strong>Orden de prioridades:</strong>
 	 * <ol>
-	 *   <li>Cookie del portal - prevalece sobre todo</li>
-	 *   <li>Parámetro de petición - elección explícita del usuario</li>
-	 *   <li>Cookie n38Idioma de XLNetS - configuración del sistema de seguridad</li>
-	 *   <li>Locale actual o por defecto - como último recurso</li>
+	 *   <li><strong>Cookie del portal</strong> - Prevalece sobre todo</li>
+	 *   <li><strong>Parámetro de petición</strong> - Elección explícita del usuario, persiste en sesión</li>
+	 *   <li><strong>Idioma en sesión</strong> - Preferencia del usuario establecida previamente</li>
+	 *   <li><strong>Cookie n38Idioma de XLNetS</strong> - Solo se usa como valor inicial si no hay preferencia del usuario</li>
+	 *   <li><strong>Idioma por defecto</strong> - Último recurso</li>
 	 * </ol>
+	 * <p>
+	 * <strong>Comportamiento importante:</strong> Una vez que el usuario establece un idioma mediante el parámetro,
+	 * este se mantiene en sesión y tiene prioridad sobre la cookie n38Idioma en navegaciones subsecuentes.
+	 * La cookie n38Idioma solo se utiliza como valor inicial cuando el usuario aún no ha establecido
+	 * una preferencia explícita.
 	 * 
 	 * @param request la petición HTTP actual
 	 * @param currentLocale el locale actualmente establecido en la sesión
@@ -161,22 +167,33 @@ public class MvcInterceptor implements HandlerInterceptor {
 		}
 
 		// Prioridad 2: parámetro de petición (elección explícita del usuario).
+		// Cuando el usuario cambia el idioma mediante parámetro, este se persiste en sesión
+		// y tendrá prioridad sobre n38Idioma en futuras navegaciones.
 		Locale parameterLocale = extractParameterLocale(request);
 		if (parameterLocale != null) {
 			logger.debug("Using user parameter locale: {}", parameterLocale);
 			return parameterLocale;
 		}
 
-		// Prioridad 3: cookie n38Idioma de XLNetS (configuración del sistema de seguridad).
+		// Prioridad 3: idioma actual en sesión (si fue establecido previamente).
+		// Si el usuario ya tiene un idioma en sesión (establecido por parámetro anteriormente),
+		// este prevalece sobre la cookie n38Idioma.
+		if (!currentLocale.getLanguage().isEmpty()) {
+			logger.debug("Using current session locale: {}", currentLocale);
+			return currentLocale;
+		}
+
+		// Prioridad 4: cookie n38Idioma de XLNetS (solo como valor inicial).
+		// Solo se usa si el usuario no tiene ninguna preferencia establecida en sesión.
 		Locale xlnetsLocale = extractCookieLocale(request, "n38Idioma", this::parseXLNetSCookie);
 		if (xlnetsLocale != null) {
-			logger.debug("Using XLNetS n38Idioma cookie locale: {}", xlnetsLocale);
+			logger.debug("Using XLNetS n38Idioma cookie locale as initial value: {}", xlnetsLocale);
 			return xlnetsLocale;
 		}
 
-		// Prioridad 4: idioma actual o por defecto.
-		Locale defaultLocale = currentLocale.getLanguage().isEmpty() ? new Locale(defaultLanguage) : currentLocale;
-		logger.debug("Using current/default locale: {}", defaultLocale);
+		// Prioridad 5: idioma por defecto.
+		Locale defaultLocale = new Locale(defaultLanguage);
+		logger.debug("Using default locale: {}", defaultLocale);
 		return defaultLocale;
 	}
 
